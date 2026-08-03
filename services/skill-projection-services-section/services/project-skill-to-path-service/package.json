@@ -1,0 +1,26 @@
+{
+  "name": "@red-cup-engineering/project-skill-to-path-service",
+  "version": "0.1.0",
+  "description": "Projects one skill record and its source script into the SKILL.md + scripts/ directory shape the Agent Skills harness reads. The only package in the skills split that writes to disk.",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "exports": {
+    ".": "./src/project-skill-to-path.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/project-skill-to-path.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "dependencies": {
+    "@red-cup-engineering/skills-services-section": "0.1.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

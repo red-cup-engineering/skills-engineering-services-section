@@ -1,0 +1,23 @@
+{
+  "name": "@red-cup-engineering/find-skill-scripts-in-a-directory-service",
+  "version": "0.1.0",
+  "description": "Finds every file directly inside a given directory that carries an @skill declaration, by reading each file — the directory is always an argument, never a hardcoded pool path.",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "exports": {
+    ".": "./src/find-skill-scripts-in-a-directory.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/find-skill-scripts-in-a-directory.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}
