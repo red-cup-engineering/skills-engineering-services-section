@@ -1,4 +1,0 @@
-<urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:emsenn:DirectExecutionRetirement> <urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> .
-<urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> <urn:emsenn:displacedCarrier> <ni:///sha-256;S21VDIqlRXIENZdsWepVtqn40BMah-f1P-23WgHtLwU> <urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> .
-<urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> <urn:emsenn:sourcePath> "src/attest-private-worker-market-capability.mjs" <urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> .
-<urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> <urn:emsenn:reason> "The carrier read a raw settlement controller key and broadcast a direct account call. It has no compatibility successor; an ERC-4337 operation provider must own future execution." <urn:uuid:4f18ad94-647c-4a93-88a6-23e84e8108c3> .

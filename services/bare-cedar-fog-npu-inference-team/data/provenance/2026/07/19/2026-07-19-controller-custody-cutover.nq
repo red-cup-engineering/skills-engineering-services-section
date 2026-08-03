@@ -1,4 +1,0 @@
-<urn:ame:bare-cedar-fog-npu-inference-team> <urn:emsenn:evm:retired-controller-artifact> <ni:///sha-256;sKsTwPQTXJ0OuO79ooC1NAF4BM2DimbGlPf6cKgROsk> <urn:ame:bare-cedar-fog-npu-inference-team:controller-custody-cutover:eip155-31337> .
-<ni:///sha-256;sKsTwPQTXJ0OuO79ooC1NAF4BM2DimbGlPf6cKgROsk> <urn:emsenn:evm:retired-path> "data/evm/controller-eip155-31337.env" <urn:ame:bare-cedar-fog-npu-inference-team:controller-custody-cutover:eip155-31337> .
-<urn:ame:bare-cedar-fog-npu-inference-team> <urn:emsenn:evm:controller-keystore-format> "Ethereum Secret Storage v3" <urn:ame:bare-cedar-fog-npu-inference-team:controller-custody-cutover:eip155-31337> .
-<urn:ame:bare-cedar-fog-npu-inference-team> <urn:emsenn:evm:controller-chain> <eip155:31337> <urn:ame:bare-cedar-fog-npu-inference-team:controller-custody-cutover:eip155-31337> .
