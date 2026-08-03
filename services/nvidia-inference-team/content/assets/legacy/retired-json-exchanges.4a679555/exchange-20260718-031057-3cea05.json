@@ -1,0 +1,67 @@
+{
+  "id": "exchange-20260718-031057-3cea05",
+  "packet": {
+    "model": "meta/llama-3.1-8b-instruct",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with only the exact model identifier you are currently running as."
+      }
+    ],
+    "max-tokens": 32
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "meta/llama-3.1-8b-instruct",
+    "text": "I'm not sure what model identifier I am currently running as.",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-01e8bf18-44f2-4d0a-bb15-0bd81543ed67",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "content": "I'm not sure what model identifier I am currently running as.",
+            "role": "assistant",
+            "reasoning_content": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "created": 1784344258,
+      "model": "meta/llama-3.1-8b-instruct",
+      "object": "chat.completion",
+      "usage": {
+        "prompt_tokens": 48,
+        "completion_tokens": 14,
+        "total_tokens": 62,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 32
+        }
+      },
+      "nvext": {
+        "worker_id": {
+          "prefill_worker_id": 7587896227968170000,
+          "prefill_dp_rank": 0,
+          "decode_worker_id": 7587896227968170000,
+          "decode_dp_rank": 0
+        },
+        "timing": {
+          "request_received_ms": 1784344258178,
+          "prefill_wait_time_ms": 0.34975,
+          "prefill_time_ms": 16.235117,
+          "ttft_ms": 16.584867,
+          "total_time_ms": 105.898713,
+          "kv_hit_rate": 0.3333333333333333,
+          "router_queue_depth": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.49,
+    "denomination": "nvidia-nim-api-requests"
+  }
+}

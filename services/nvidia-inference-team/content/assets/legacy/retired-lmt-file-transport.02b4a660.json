@@ -1,0 +1,47 @@
+{
+  "type": "RetiredCarrierDigestManifest",
+  "retiredAt": "2026-07-22T01:15:00.000Z",
+  "reason": "The custom LMT solicit-service/invoke-service and file transport duplicated the production typed RMN/A2A inference face and created a second capacity law. No live consumer referenced the carrier. The package now exposes only the signed standard A2A face hired through the inference-work-lot market.",
+  "supersededBy": [
+    "src/solicit-rmn-inference.mjs",
+    "src/execute-rmn-inference.mjs",
+    "bin/serve-a2a.mjs"
+  ],
+  "retiredExchangeCarrier": {
+    "source": "content/exchanges/*.json",
+    "destination": "content/assets/legacy/retired-json-exchanges.4a679555/",
+    "fileCount": 58,
+    "orderedPathAndContentDigest": "sha256:4a6795556125fc71cb4ca236a1fea1cdeccefe4d486a3ce1c95e8f32856cfac4"
+  },
+  "displacedBytes": [
+    {
+      "path": "src/contract-nvidia-inference.js",
+      "sha256": "02b4a6603ef513a27c53359fb6fd6c50ad01451acfe418ec6507e4c2868c7eb8"
+    },
+    {
+      "path": "test/contract-nvidia-inference.test.js",
+      "sha256": "5d21c404af755f6c905388285c7f99a56163094803f2e308857a26abe4f77ccf"
+    },
+    {
+      "path": "package.json",
+      "sha256": "0b05891118c203fc9e078f78088042366868c678cc5697e6b61ba77217464f34"
+    },
+    {
+      "path": "README.md",
+      "sha256": "3d267ebdd367ea9658c4cde9d8818963e604659cc361b9b98e0d63545f75d5e3"
+    },
+    {
+      "path": "content/policies/typed-inference-capacity.json",
+      "sha256": "0403272b4f0f43b6e2cc4dbc4f67448cb17ed093d035afbe37b805ebaf3c5592"
+    },
+    {
+      "path": "src/solicit-rmn-inference.mjs",
+      "sha256": "247793195aaa6bbe6ef58d54425992c9c5e35cae4a388ad711b80228567b0468"
+    },
+    {
+      "path": "test/solicit-rmn-inference.test.mjs",
+      "sha256": "ed20cf3837ed6d2fe35b14ad3d5267b1fb7cf71d25cc90cc05cf2d5ffa8b823a"
+    }
+  ],
+  "operationalCompatibility": false
+}

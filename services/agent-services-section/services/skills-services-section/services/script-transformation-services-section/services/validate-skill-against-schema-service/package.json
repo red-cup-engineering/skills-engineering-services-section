@@ -1,0 +1,26 @@
+{
+  "name": "@red-cup-engineering/validate-skill-against-schema-service",
+  "version": "0.1.0",
+  "description": "Validates a candidate skill record against a Draft 2020-12 schema by importing the published json-schema-services-section evaluator and calling it as a function — never by spawning a subprocess.",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "exports": {
+    ".": "./src/validate-skill-against-schema.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/validate-skill-against-schema.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "dependencies": {
+    "@red-cup-engineering/json-schema-services-section": "0.1.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "id": "exchange-20260719-173856-d02b6b",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return only JSON matching the schema. Examine category boundaries: deterministic derivation versus model inference, provider output versus customer assay, and EVM commitment versus truth."
+      },
+      {
+        "role": "user",
+        "content": "Given this mechanism: witnessed token/claim work and capability lots; FCA derives deterministic-service cover; compatible positive-integer ActivityStreams offers are ranked; an EVM Chu-Hoare seam binds the selected provider actor; provider returns a result; a customer-owned assayer independently accepts or withholds it; an effect receipt commits the customer assay; only typed no-cover residue can reach a language model, whose output remains pending customer assay. Finance and keccak256 both close through scripts with zero model calls, and repeated Finance runs assign a witnessed amortization claim to the work-class token. JSON is a replay projection, not authority. State whether the boundaries are preserved and list up to three residual risks. Do not suggest global orchestration or model-first dispatch."
+      }
+    ],
+    "max-tokens": 700,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "boundaries_preserved",
+          "residual_risks"
+        ],
+        "properties": {
+          "boundaries_preserved": {
+            "type": "boolean"
+          },
+          "residual_risks": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 400
+            }
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"boundaries_preserved\":true,\"residual_risks\":[\"Cover-type misclassification: if content that has deterministic cover is incorrectly typed as no-cover residue, it reaches the LLM when it should close deterministically; the filter's correctness is load-bearing and unwitnessed.\",\"Assayer liveness failure treated as acceptance: the customer-owned assayer's independence is structural only if liveness loss (timeout, crash, key loss) does not default to implicit acceptance; a silent-accept fallback would collapse the provider/customer boundary.\",\"Amortization witness lag: if the witnessing of repeated Finance runs trails actual execution — due to reorg, sequencer delay, or batching — capability lots can appear funded against stale amortization claims, creating a window of phantom cover before the next witnessed commit reconciles.\"]}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 27957,
+      "duration_api_ms": 29394,
+      "ttft_ms": 20821,
+      "ttft_stream_ms": 1706,
+      "time_to_request_ms": 50,
+      "num_turns": 2,
+      "result": "{\"boundaries_preserved\":true,\"residual_risks\":[\"Cover-type misclassification: if content that has deterministic cover is incorrectly typed as no-cover residue, it reaches the LLM when it should close deterministically; the filter's correctness is load-bearing and unwitnessed.\",\"Assayer liveness failure treated as acceptance: the customer-owned assayer's independence is structural only if liveness loss (timeout, crash, key loss) does not default to implicit acceptance; a silent-accept fallback would collapse the provider/customer boundary.\",\"Amortization witness lag: if the witnessing of repeated Finance runs trails actual execution — due to reorg, sequencer delay, or batching — capability lots can appear funded against stale amortization claims, creating a window of phantom cover before the next witnessed commit reconciles.\"]}",
+      "stop_reason": "tool_use",
+      "session_id": "c69fc7d1-c6bc-4fb8-882f-7f3c0f78b454",
+      "total_cost_usd": 0.06389399999999999,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 7074,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 1378,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7074,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 1378,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 7074,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 7074
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 686,
+          "outputTokens": 17,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000771,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 1378,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 7074,
+          "webSearchRequests": 0,
+          "costUSD": 0.063123,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "boundaries_preserved": true,
+        "residual_risks": [
+          "Cover-type misclassification: if content that has deterministic cover is incorrectly typed as no-cover residue, it reaches the LLM when it should close deterministically; the filter's correctness is load-bearing and unwitnessed.",
+          "Assayer liveness failure treated as acceptance: the customer-owned assayer's independence is structural only if liveness loss (timeout, crash, key loss) does not default to implicit acceptance; a silent-accept fallback would collapse the provider/customer boundary.",
+          "Amortization witness lag: if the witnessing of repeated Finance runs trails actual execution — due to reorg, sequencer delay, or batching — capability lots can appear funded against stale amortization claims, creating a window of phantom cover before the next witnessed commit reconciles."
+        ]
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "dbfea708-8e64-4798-a330-84806a2f5c7e"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 28.915,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

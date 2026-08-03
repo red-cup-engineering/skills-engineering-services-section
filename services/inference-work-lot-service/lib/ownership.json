@@ -1,0 +1,8 @@
+{
+  "node": "inference-work-lot-service",
+  "owner": "working-services-section",
+  "territory": ["lib/", "content/", "data/"],
+  "boundary": "The service receives customer-supplied ActivityStreams values and writes only its own append-only evidence and receipts. It neither reads customer territory nor writes it.",
+  "authority": "The customer admits signed provider Agent Cards, selects one exact provider-authored offer, and addresses one canonical RMN effect directly to that provider. Provider credentials remain outside this service.",
+  "non-claims": ["global queue", "customer usefulness", "provider resource escalation", "customer patch application", "credential custody", "customer-check interpretation"]
+}

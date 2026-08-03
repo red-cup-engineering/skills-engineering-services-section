@@ -1,0 +1,4 @@
+<urn:ame:logical-inference-service-section> <urn:emsenn:evm:retired-controller-artifact> <ni:///sha-256;6ek1k2--CvVJ3LyyL0zZsLGNtJqe2JXMBTmH0UYfcAg> <urn:ame:logical-inference-service-section:controller-custody-cutover:eip155-31337> .
+<ni:///sha-256;6ek1k2--CvVJ3LyyL0zZsLGNtJqe2JXMBTmH0UYfcAg> <urn:emsenn:evm:retired-path> "data/evm/controller-eip155-31337.env" <urn:ame:logical-inference-service-section:controller-custody-cutover:eip155-31337> .
+<urn:ame:logical-inference-service-section> <urn:emsenn:evm:controller-keystore-format> "Ethereum Secret Storage v3" <urn:ame:logical-inference-service-section:controller-custody-cutover:eip155-31337> .
+<urn:ame:logical-inference-service-section> <urn:emsenn:evm:controller-chain> <eip155:31337> <urn:ame:logical-inference-service-section:controller-custody-cutover:eip155-31337> .

@@ -1,0 +1,55 @@
+{
+  "type": "InferenceFabricDispatchSummary",
+  "startedAt": "2026-07-19T04:54:07.017Z",
+  "finishedAt": "2026-07-19T04:57:10.217Z",
+  "dryRun": false,
+  "input": {
+    "digest": "sha256:21f043edab7b5d541931e98f17ce244e1dd730f3438ce6ab9e9862fda49710fa",
+    "jobs": 24,
+    "skippedByResume": 0
+  },
+  "registryDigest": "sha256:5cbf1c429c24aa46f64670b67bf0b6c7c2defa7a50fa33b59a91abe3e41276d2",
+  "output": {
+    "recordsAppended": 24
+  },
+  "throughput": {
+    "elapsedMs": 183195,
+    "terminalJobsPerMinute": 7.860476541390322,
+    "usefulJobsPerMinute": 7.860476541390322,
+    "schemaVerifiedJobsPerMinute": 7.860476541390322,
+    "completed": 24,
+    "schemaVerifiedCompleted": 24,
+    "refused": 0,
+    "attempts": 39,
+    "fallbackCompletions": 11,
+    "verificationFailures": 0,
+    "p50LatencyMs": 30910,
+    "p95LatencyMs": 145731,
+    "byEndpoint": {
+      "groq-llama-3.1-8b-instant": {
+        "attempts": 11,
+        "completed": 0,
+        "refused": 11,
+        "verificationFailures": 0
+      },
+      "gemini-3.1-flash-lite": {
+        "attempts": 24,
+        "completed": 24,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "openrouter-llama-3.3-70b-free": {
+        "attempts": 4,
+        "completed": 0,
+        "refused": 4,
+        "verificationFailures": 0
+      },
+      "claude-code-claude-sonnet-4-6": {
+        "attempts": 0,
+        "completed": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      }
+    }
+  }
+}

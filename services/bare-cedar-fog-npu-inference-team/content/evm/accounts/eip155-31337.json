@@ -1,0 +1,28 @@
+{
+  "profile": "org.emsenn.evm.sovereign-enterprise-account.v3",
+  "enterprise": {
+    "nodeId": "bare-cedar-fog-npu-inference-team",
+    "urn": "urn:ame:bare-cedar-fog-npu-inference-team",
+    "enterpriseId": "0x2678870697c8173e4f376b0583db2c8e1b380edb4f7395aa5f4293d8f782ed5f"
+  },
+  "chain": {
+    "chainId": 31337,
+    "caip2": "eip155:31337"
+  },
+  "account": {
+    "address": "0x5e7cf391512defd4ff36c90ad7e2380a0443ec5c",
+    "caip10": "eip155:31337:0x5e7cf391512defd4ff36c90ad7e2380a0443ec5c"
+  },
+  "factory": {
+    "address": "0x7bf3cf1176c4a037d3ea2a5ff3d480359ac65ecd",
+    "userSalt": "0x4144171de1f0cb1b9975629819bf1809aebe8a3d32f8bfd15b87cbd8a5693f8d"
+  },
+  "policy": {
+    "signer": "0x3222031395d830d80bd5a23ddc3d8921dcdade99",
+    "custody": "settlement-private"
+  },
+  "deployment": {
+    "transaction": "0x98abc6b31ad7d77d5574081db504cf335292a68a3ba926a5693a89ee5c2c670e",
+    "block": 1389
+  }
+}

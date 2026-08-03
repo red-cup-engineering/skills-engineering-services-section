@@ -1,0 +1,185 @@
+{
+  "name": "NVIDIA Inference Team",
+  "description": "Executes one typed RMN text-inference effect through the settlement's bounded NVIDIA NIM harness.",
+  "supportedInterfaces": [
+    {
+      "url": "${BASE_URL}/a2a/jsonrpc",
+      "protocolBinding": "JSONRPC",
+      "tenant": "",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "${BASE_URL}/a2a/rest",
+      "protocolBinding": "HTTP+JSON",
+      "tenant": "",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "provider": {
+    "url": "https://emsenn.net/",
+    "organization": "NVIDIA Inference Team via A2A Services Section"
+  },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "ni:///sha-256;wzh-zYeFQCsh4zAzGS34uacNV4qJeIEmCKIUUWyRZ-M",
+        "description": "Signed sovereign M1 black-box circuit interface inhabited by this endpoint.",
+        "required": true,
+        "params": {
+          "profile": "org.emsenn.rmn.sovereign-circuit-interface.v1",
+          "account": "eip155:5615610:0x28a692f9652ce029ad3505c7d3904075425301de",
+          "authority": "ni:///sha-256;J3mM7NWqTIwYrneJK78MyGWzoLVbfEQJhqG_J-ARtuM",
+          "custody": "ni:///sha-256;wqUhUm0armSqEXCjfLHLW3VgOQ1KKrdu-5z63EP7Up8",
+          "territory": "ni:///sha-256;zhXvPSZEXkgPLl4y0utrUSpACPsZywUFivXnKXIDIZY",
+          "component": {
+            "profile": "org.emsenn.rmn.hierarchical-circuit.v3",
+            "law": "ni:///sha-256;tWSfEdGsqk0rvj-s8ZslGMGZFNZTwnRifjD0gPd0tG4",
+            "ports": [
+              {
+                "name": "proposal",
+                "direction": "input",
+                "predicate": "ni:///sha-256;tWSfEdGsqk0rvj-s8ZslGMGZFNZTwnRifjD0gPd0tG4",
+                "carrier": "ni:///sha-256;tWSfEdGsqk0rvj-s8ZslGMGZFNZTwnRifjD0gPd0tG4",
+                "mode": "tensor"
+              },
+              {
+                "name": "completion",
+                "direction": "output",
+                "predicate": "ni:///sha-256;tWSfEdGsqk0rvj-s8ZslGMGZFNZTwnRifjD0gPd0tG4",
+                "carrier": "ni:///sha-256;tWSfEdGsqk0rvj-s8ZslGMGZFNZTwnRifjD0gPd0tG4",
+                "mode": "tensor"
+              }
+            ],
+            "instances": [],
+            "nets": [],
+            "behavior": {
+              "factors": [
+                {
+                  "inputs": [
+                    "proposal"
+                  ],
+                  "outputs": [
+                    "completion"
+                  ],
+                  "rows": [
+                    {
+                      "input": [
+                        {
+                          "positiveEvidence": false,
+                          "negativeEvidence": false
+                        }
+                      ],
+                      "output": [
+                        {
+                          "positiveEvidence": false,
+                          "negativeEvidence": false
+                        }
+                      ]
+                    },
+                    {
+                      "input": [
+                        {
+                          "positiveEvidence": true,
+                          "negativeEvidence": false
+                        }
+                      ],
+                      "output": [
+                        {
+                          "positiveEvidence": true,
+                          "negativeEvidence": false
+                        }
+                      ]
+                    },
+                    {
+                      "input": [
+                        {
+                          "positiveEvidence": false,
+                          "negativeEvidence": true
+                        }
+                      ],
+                      "output": [
+                        {
+                          "positiveEvidence": false,
+                          "negativeEvidence": true
+                        }
+                      ]
+                    },
+                    {
+                      "input": [
+                        {
+                          "positiveEvidence": true,
+                          "negativeEvidence": true
+                        }
+                      ],
+                      "output": [
+                        {
+                          "positiveEvidence": true,
+                          "negativeEvidence": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "uri": "ni:///sha-256;hLCUM4R4uZnPEVaY9Cb6sDwruIVBtw2bjleYGbeATaQ",
+        "description": "Signed bounded capability and plural-consideration terms for direct typed inference contracting.",
+        "required": true,
+        "params": {
+          "profile": "org.emsenn.inference.market-offer.v2",
+          "model": "meta/llama-3.1-8b-instruct",
+          "workTypes": "chat classification extraction summarization inquiry",
+          "capabilities": "chat classification extraction summarization inquiry json-output json-schema-output text-output general-text",
+          "maximumDifficulty": "0.76",
+          "maximumSourceWords": "20000",
+          "maximumSourceCharacters": "100000",
+          "maximumRequestCharacters": "250000",
+          "maximumOutputTokens": "4096",
+          "maximumConcurrentLots": "1",
+          "considerationAlternatives": [{ "id": "resolution-credit", "obligations": [{ "id": "resolution-credit", "kind": "credit", "asset": "urn:union:credit:relative-resolution-milliquanta-v1", "amount": 31, "unit": "relative-resolution-milliquanta-v1", "settlementAdapter": "urn:union:settlement-adapter:direct-witness-v1" }] }]
+        }
+      }
+    ],
+    "extendedAgentCard": false
+  },
+  "securitySchemes": {},
+  "securityRequirements": [],
+  "defaultInputModes": [
+    "application/rmn+cbor"
+  ],
+  "defaultOutputModes": [
+    "application/rmn+cbor",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "execute-typed-nvidia-inference",
+      "name": "Execute typed NVIDIA inference",
+      "description": "Validates one RMN effect cell, hires this settlement's bounded NVIDIA exchange harness, and returns a witnessed completion or refusal.",
+      "tags": [
+        "rmn",
+        "a2a",
+        "nvidia",
+        "free-tier",
+        "inference"
+      ],
+      "examples": [],
+      "inputModes": [
+        "application/rmn+cbor"
+      ],
+      "outputModes": [
+        "application/rmn+cbor",
+        "text/plain"
+      ],
+      "securityRequirements": []
+    }
+  ],
+  "signatures": []
+}

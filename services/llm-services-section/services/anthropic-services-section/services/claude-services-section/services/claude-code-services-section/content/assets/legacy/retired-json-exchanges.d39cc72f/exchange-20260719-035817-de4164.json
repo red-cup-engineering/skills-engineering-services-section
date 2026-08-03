@@ -1,0 +1,176 @@
+{
+  "id": "exchange-20260719-035817-de4164",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return only JSON matching the schema. Review for exact boundaries, replay safety, and asynchronous throughput."
+      },
+      {
+        "role": "user",
+        "content": "LISS has a legacy ActivityStreams service contract that synchronously spawns child provider CLIs, and a newer persistent cheapest-sufficient broker over a local Unix socket. The broker returns immediate admission receipts, settles asynchronously, journals results, replays by job ID plus payload digest, and bounds queue/concurrency/RPM/attempts. Root law permits LISS to own its service-specific ActivityStreams semantic contract but reserves reusable network ActivityPub transport to a separately hireable provider. A separate metered-inference-tollbooth owns x402 authorization verification and truthfully does not claim on-chain broadcast. Proposed smallest repair: run a service-specific ActivityStreams adapter inside the one persistent LISS broker process. It handles addressed Offer<ServiceSolicitation>, provider-authored digest-bound Offer<ExecutableServiceOffer>, Accept<ServiceContract> with actor-bound attenuated capability, and actor-bound Question<InferenceResultQuery>. Acceptance maps to broker.admit and returns immediately as Accept<InferenceSubmissionResult>; inquiry later returns the terminal record or typed not-settled refusal. Provider offers, contracts, submission responses, and ownership bindings are append-only LISS records and replay safely across restart. Raw NDJSON stays classified A2A; ActivityStreams envelopes are the semantic inter-enterprise face over the local carrier. Network federation is deferred to the missing ActivityPub provider. x402 stays outside LISS. Identify critical changes or reject this design. Never recommend another scheduler or synchronous waiting."
+      }
+    ],
+    "max-tokens": 900,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "verdict",
+          "criticalRisks",
+          "requiredInvariants",
+          "smallestSafeShape"
+        ],
+        "properties": {
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "accept",
+              "accept-with-changes",
+              "reject"
+            ]
+          },
+          "criticalRisks": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "string"
+            }
+          },
+          "requiredInvariants": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 10,
+            "items": {
+              "type": "string"
+            }
+          },
+          "smallestSafeShape": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"verdict\":\"accept-with-changes\",\"criticalRisks\":[\"Digest computed over the ActivityStreams envelope rather than the inner offer payload — envelope re-wrapping on retry (different timestamp, @context version) produces a different digest, breaks broker idempotency, and causes duplicate admission for the same Offer<ExecutableServiceOffer>.\",\"Actor binding verified only at Accept<ServiceContract> but not re-checked on Question<InferenceResultQuery> — an expired or revoked capability passes inquiry and receives a terminal record it is no longer authorized to read.\",\"Replay causal ordering not enforced — if Accept<ServiceContract> is replayed before its referenced Offer<ExecutableServiceOffer> the adapter's state machine is inconsistent; opening ingress before replay completes compounds this.\",\"Not-settled, failed, and unknown-job-ID responses collapsed to a single type — callers cannot distinguish a retryable transient state from a terminal failure from a bad job ID, breaking the typed refusal contract.\",\"Broker admission rejections (queue full, RPM cap, concurrency limit) not mapped to typed Reject<ServiceSolicitation> before surfacing — callers receive opaque transport errors instead of machine-readable retryable signals.\",\"Address validation absent on ingress — a mis-routed Offer<ServiceSolicitation> addressed to another actor is processed under LISS identity, admitting jobs on behalf of a party LISS does not represent.\"],\"requiredInvariants\":[\"Digest is computed over the canonical serialization of the inner service offer payload only; ActivityStreams envelope fields (id, published, @context, wrapping actor) are excluded from the digest input.\",\"Actor binding is verified on both Accept<ServiceContract> and every subsequent Question<InferenceResultQuery>; queries from actors not bound to the originating contract are rejected with a typed authorization refusal.\",\"broker.admit is the sole write path for job admission from this adapter; no parallel, fallback, or legacy synchronous CLI path remains reachable after the adapter is potential.\",\"Not-settled, failed, and unknown-job-ID states map to three distinct ActivityStreams response types and are never collapsed into a single error or generic Reject.\",\"Every broker admission rejection (queue full, RPM cap, concurrency limit, attempt cap) maps to a Reject<ServiceSolicitation> carrying a machine-readable typed reason field before any transport error is raised.\",\"On restart the adapter reads the journal to EOF in causal order — offer before dependent contract, contract before dependent submission — and reaches a consistent state before binding its ingress path.\",\"All addressed objects are validated against LISS's own actor ID as the first step in every dispatch handler; mis-routed envelopes are discarded without side effects and without touching broker state.\",\"x402 authorization result is consumed as a verified input precondition before the adapter processes a solicitation; it is never re-fetched or re-verified inside the adapter.\",\"ActivityStreams envelope parsing never mutates the underlying NDJSON journal record; envelope state and journal record share no mutable references.\",\"Provider offer, contract, submission response, and ownership binding records are written append-only and are never updated or deleted in place.\"],\"smallestSafeShape\":[\"ActivityStreams adapter as a single in-process module sharing the broker's existing journal handle and queue state directly — no IPC, no subprocess, no separate socket between adapter and broker internals.\",\"Canonical digest function over inner offer payload only, called before broker.admit and stored alongside the job ID in the journal record as the idempotency key.\",\"Dispatch table with exactly four typed handlers — Offer<ServiceSolicitation>, Offer<ExecutableServiceOffer>, Accept<ServiceContract>, Question<InferenceResultQuery> — plus an explicit discard path for mis-addressed or unrecognized types; no catch-all handler that silently succeeds.\",\"Inquiry handler returning exactly one of three typed responses: the terminal journal record, a typed not-settled refusal, or an unknown-job-ID rejection; the response type is determined before any awaiting or polling.\",\"Replay guard on startup: adapter reads journal to EOF and validates causal order, then binds the ingress path; ingress is not reachable until replay completes.\",\"Address validator as step zero in every handler, checking envelope to/cc against LISS's own actor ID before any state read or write.\"]}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 54022,
+      "duration_api_ms": 54872,
+      "ttft_ms": 40907,
+      "ttft_stream_ms": 960,
+      "time_to_request_ms": 45,
+      "num_turns": 2,
+      "result": "{\"verdict\":\"accept-with-changes\",\"criticalRisks\":[\"Digest computed over the ActivityStreams envelope rather than the inner offer payload — envelope re-wrapping on retry (different timestamp, @context version) produces a different digest, breaks broker idempotency, and causes duplicate admission for the same Offer<ExecutableServiceOffer>.\",\"Actor binding verified only at Accept<ServiceContract> but not re-checked on Question<InferenceResultQuery> — an expired or revoked capability passes inquiry and receives a terminal record it is no longer authorized to read.\",\"Replay causal ordering not enforced — if Accept<ServiceContract> is replayed before its referenced Offer<ExecutableServiceOffer> the adapter's state machine is inconsistent; opening ingress before replay completes compounds this.\",\"Not-settled, failed, and unknown-job-ID responses collapsed to a single type — callers cannot distinguish a retryable transient state from a terminal failure from a bad job ID, breaking the typed refusal contract.\",\"Broker admission rejections (queue full, RPM cap, concurrency limit) not mapped to typed Reject<ServiceSolicitation> before surfacing — callers receive opaque transport errors instead of machine-readable retryable signals.\",\"Address validation absent on ingress — a mis-routed Offer<ServiceSolicitation> addressed to another actor is processed under LISS identity, admitting jobs on behalf of a party LISS does not represent.\"],\"requiredInvariants\":[\"Digest is computed over the canonical serialization of the inner service offer payload only; ActivityStreams envelope fields (id, published, @context, wrapping actor) are excluded from the digest input.\",\"Actor binding is verified on both Accept<ServiceContract> and every subsequent Question<InferenceResultQuery>; queries from actors not bound to the originating contract are rejected with a typed authorization refusal.\",\"broker.admit is the sole write path for job admission from this adapter; no parallel, fallback, or legacy synchronous CLI path remains reachable after the adapter is potential.\",\"Not-settled, failed, and unknown-job-ID states map to three distinct ActivityStreams response types and are never collapsed into a single error or generic Reject.\",\"Every broker admission rejection (queue full, RPM cap, concurrency limit, attempt cap) maps to a Reject<ServiceSolicitation> carrying a machine-readable typed reason field before any transport error is raised.\",\"On restart the adapter reads the journal to EOF in causal order — offer before dependent contract, contract before dependent submission — and reaches a consistent state before binding its ingress path.\",\"All addressed objects are validated against LISS's own actor ID as the first step in every dispatch handler; mis-routed envelopes are discarded without side effects and without touching broker state.\",\"x402 authorization result is consumed as a verified input precondition before the adapter processes a solicitation; it is never re-fetched or re-verified inside the adapter.\",\"ActivityStreams envelope parsing never mutates the underlying NDJSON journal record; envelope state and journal record share no mutable references.\",\"Provider offer, contract, submission response, and ownership binding records are written append-only and are never updated or deleted in place.\"],\"smallestSafeShape\":[\"ActivityStreams adapter as a single in-process module sharing the broker's existing journal handle and queue state directly — no IPC, no subprocess, no separate socket between adapter and broker internals.\",\"Canonical digest function over inner offer payload only, called before broker.admit and stored alongside the job ID in the journal record as the idempotency key.\",\"Dispatch table with exactly four typed handlers — Offer<ServiceSolicitation>, Offer<ExecutableServiceOffer>, Accept<ServiceContract>, Question<InferenceResultQuery> — plus an explicit discard path for mis-addressed or unrecognized types; no catch-all handler that silently succeeds.\",\"Inquiry handler returning exactly one of three typed responses: the terminal journal record, a typed not-settled refusal, or an unknown-job-ID rejection; the response type is determined before any awaiting or polling.\",\"Replay guard on startup: adapter reads journal to EOF and validates causal order, then binds the ingress path; ingress is not reachable until replay completes.\",\"Address validator as step zero in every handler, checking envelope to/cc against LISS's own actor ID before any state read or write.\"]}",
+      "stop_reason": "tool_use",
+      "session_id": "366518da-67e3-4b8e-870b-f5ef7831f3d0",
+      "total_cost_usd": 0.098993,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 7476,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 3545,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7476,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 3545,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 7476,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 7476
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 858,
+          "outputTokens": 19,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0009530000000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 3545,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 7476,
+          "webSearchRequests": 0,
+          "costUSD": 0.09804,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "verdict": "accept-with-changes",
+        "criticalRisks": [
+          "Digest computed over the ActivityStreams envelope rather than the inner offer payload — envelope re-wrapping on retry (different timestamp, @context version) produces a different digest, breaks broker idempotency, and causes duplicate admission for the same Offer<ExecutableServiceOffer>.",
+          "Actor binding verified only at Accept<ServiceContract> but not re-checked on Question<InferenceResultQuery> — an expired or revoked capability passes inquiry and receives a terminal record it is no longer authorized to read.",
+          "Replay causal ordering not enforced — if Accept<ServiceContract> is replayed before its referenced Offer<ExecutableServiceOffer> the adapter's state machine is inconsistent; opening ingress before replay completes compounds this.",
+          "Not-settled, failed, and unknown-job-ID responses collapsed to a single type — callers cannot distinguish a retryable transient state from a terminal failure from a bad job ID, breaking the typed refusal contract.",
+          "Broker admission rejections (queue full, RPM cap, concurrency limit) not mapped to typed Reject<ServiceSolicitation> before surfacing — callers receive opaque transport errors instead of machine-readable retryable signals.",
+          "Address validation absent on ingress — a mis-routed Offer<ServiceSolicitation> addressed to another actor is processed under LISS identity, admitting jobs on behalf of a party LISS does not represent."
+        ],
+        "requiredInvariants": [
+          "Digest is computed over the canonical serialization of the inner service offer payload only; ActivityStreams envelope fields (id, published, @context, wrapping actor) are excluded from the digest input.",
+          "Actor binding is verified on both Accept<ServiceContract> and every subsequent Question<InferenceResultQuery>; queries from actors not bound to the originating contract are rejected with a typed authorization refusal.",
+          "broker.admit is the sole write path for job admission from this adapter; no parallel, fallback, or legacy synchronous CLI path remains reachable after the adapter is potential.",
+          "Not-settled, failed, and unknown-job-ID states map to three distinct ActivityStreams response types and are never collapsed into a single error or generic Reject.",
+          "Every broker admission rejection (queue full, RPM cap, concurrency limit, attempt cap) maps to a Reject<ServiceSolicitation> carrying a machine-readable typed reason field before any transport error is raised.",
+          "On restart the adapter reads the journal to EOF in causal order — offer before dependent contract, contract before dependent submission — and reaches a consistent state before binding its ingress path.",
+          "All addressed objects are validated against LISS's own actor ID as the first step in every dispatch handler; mis-routed envelopes are discarded without side effects and without touching broker state.",
+          "x402 authorization result is consumed as a verified input precondition before the adapter processes a solicitation; it is never re-fetched or re-verified inside the adapter.",
+          "ActivityStreams envelope parsing never mutates the underlying NDJSON journal record; envelope state and journal record share no mutable references.",
+          "Provider offer, contract, submission response, and ownership binding records are written append-only and are never updated or deleted in place."
+        ],
+        "smallestSafeShape": [
+          "ActivityStreams adapter as a single in-process module sharing the broker's existing journal handle and queue state directly — no IPC, no subprocess, no separate socket between adapter and broker internals.",
+          "Canonical digest function over inner offer payload only, called before broker.admit and stored alongside the job ID in the journal record as the idempotency key.",
+          "Dispatch table with exactly four typed handlers — Offer<ServiceSolicitation>, Offer<ExecutableServiceOffer>, Accept<ServiceContract>, Question<InferenceResultQuery> — plus an explicit discard path for mis-addressed or unrecognized types; no catch-all handler that silently succeeds.",
+          "Inquiry handler returning exactly one of three typed responses: the terminal journal record, a typed not-settled refusal, or an unknown-job-ID rejection; the response type is determined before any awaiting or polling.",
+          "Replay guard on startup: adapter reads journal to EOF and validates causal order, then binds the ingress path; ingress is not reachable until replay completes.",
+          "Address validator as step zero in every handler, checking envelope to/cc against LISS's own actor ID before any state read or write."
+        ]
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "afc47b4b-bcc9-4b04-b43a-7a526000a0fd"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 59.989,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

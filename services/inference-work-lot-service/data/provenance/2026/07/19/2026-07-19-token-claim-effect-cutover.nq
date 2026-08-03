@@ -1,0 +1,2 @@
+<urn:sha256:5ea2d255ba46a8303a269e552616ccd0e7cdcdebf3e10a6e1e2c329511647bd1> <http://www.w3.org/ns/prov#wasRevisionOf> <urn:ame:inference-work-lot-service:contract:token-claim-resolution-v1> <urn:ame:inference-work-lot-service:cutover:2026-07-19> .
+<urn:sha256:ac8f21f32405b7a92aa94bfe0e3d8212ea15a622bc01f824d6c134aeb75ef5a3> <http://www.w3.org/ns/prov#invalidatedAtTime> "2026-07-19" <urn:ame:inference-work-lot-service:cutover:2026-07-19> .

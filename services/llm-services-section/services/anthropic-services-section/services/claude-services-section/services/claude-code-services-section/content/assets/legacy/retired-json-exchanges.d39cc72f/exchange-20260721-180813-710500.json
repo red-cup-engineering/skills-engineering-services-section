@@ -1,0 +1,100 @@
+{
+  "id": "exchange-20260721-180813-710500",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"properties\":{\"boardPins\":{\"items\":{\"type\":\"string\"},\"minItems\":7,\"type\":\"array\"},\"boundaries\":{\"items\":{\"properties\":{\"faculty\":{\"type\":\"string\"},\"hires\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"id\":{\"type\":\"string\"},\"owns\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"type\":\"array\"}},\"required\":[\"id\",\"faculty\",\"owns\",\"hires\"],\"type\":\"object\"},\"minItems\":7,\"type\":\"array\"},\"delete\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"}},\"required\":[\"boundaries\",\"boardPins\",\"delete\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:work-lot:codex:ba09c685-7c4e-4bc3-bde3-540866e1c36f\",\"producer\":\"urn:ame:algora-recovery-pilot\"},\"context\":{\"objective\":\"Design the complete minimum sovereign die family and board netlist for Algora. Reject any die that combines observation, assay, decision, synthesis, execution, publication, or witnessing. Map every current source group to exactly one owner, name external provider hires, order the board pins, and name deletions. Parent owns sequencing only. No wrappers, compatibility, direct cross-settlement imports, or duplicated inference/RMN/RWIL faculties.\",\"suppliedContext\":\"Constitution: enterprise=one sovereign faculty/die; board=circuit of hired dies. Existing providers own signed A2A, inference market, RMN conformance, RWIL/RDF. Measured current groups: monitor fetch/parse/reputation/trust; analyze deterministic qualification; decision Bayesian scoring/calibration/allocation; solver repo read/locate/inference/edit/static check; execute GitHub API/Actions/local execution/run outcome; prepare/post attempt package and posting; witness RWIL outcomes/cost; root planner/orchestrator/CLI. Illegal sibling imports from free-compute-dev must disappear. Raw tokens and unsafe-local are prohibited. Each reusable public protocol is a hired provider. Do not collapse multiple listed semantic operations into vague ingestion/analytics/operational dies.\",\"desiredUse\":\"Return one advisory candidate for independent Codex inspection, testing, and acceptance.\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:work-lot:codex:ba09c685-7c4e-4bc3-bde3-540866e1c36f\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"properties\":{\"boardPins\":{\"items\":{\"type\":\"string\"},\"minItems\":7,\"type\":\"array\"},\"boundaries\":{\"items\":{\"properties\":{\"faculty\":{\"type\":\"string\"},\"hires\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"id\":{\"type\":\"string\"},\"owns\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"type\":\"array\"}},\"required\":[\"id\",\"faculty\",\"owns\",\"hires\"],\"type\":\"object\"},\"minItems\":7,\"type\":\"array\"},\"delete\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"}},\"required\":[\"boundaries\",\"boardPins\",\"delete\"],\"type\":\"object\"}}}"
+      }
+    ],
+    "max-tokens": 4000
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"boundaries\":[{\"id\":\"urn:die:algora:root\",\"faculty\":\"orchestration\",\"owns\":[\"planner\",\"orchestrator\",\"cli\",\"sequencing\"],\"hires\":[\"urn:die:algora:monitor\",\"urn:die:algora:analyze\",\"urn:die:algora:decision\",\"urn:die:algora:solver\",\"urn:die:algora:execute\",\"urn:die:algora:publish\",\"urn:die:algora:witness\"]},{\"id\":\"urn:die:algora:monitor\",\"faculty\":\"observation\",\"owns\":[\"fetch\",\"parse\",\"reputation\",\"trust\"],\"hires\":[\"urn:provider:rmn-conformance\"]},{\"id\":\"urn:die:algora:analyze\",\"faculty\":\"assay\",\"owns\":[\"deterministic-qualification\"],\"hires\":[]},{\"id\":\"urn:die:algora:decision\",\"faculty\":\"decision\",\"owns\":[\"bayesian-scoring\",\"calibration\",\"allocation\"],\"hires\":[\"urn:provider:inference-market\"]},{\"id\":\"urn:die:algora:solver\",\"faculty\":\"synthesis\",\"owns\":[\"repo-read\",\"locate\",\"edit\",\"static-check\"],\"hires\":[\"urn:provider:inference-market\"]},{\"id\":\"urn:die:algora:execute\",\"faculty\":\"execution\",\"owns\":[\"github-api\",\"github-actions\",\"local-execution\",\"run-outcome\"],\"hires\":[\"urn:provider:signed-a2a\"]},{\"id\":\"urn:die:algora:publish\",\"faculty\":\"publication\",\"owns\":[\"attempt-package\",\"posting\"],\"hires\":[\"urn:provider:signed-a2a\"]},{\"id\":\"urn:die:algora:witness\",\"faculty\":\"witnessing\",\"owns\":[\"rwil-outcomes\",\"cost-accounting\"],\"hires\":[\"urn:provider:rwil-rdf\"]}],\"boardPins\":[\"root-plan-emit\",\"monitor-observation-in\",\"monitor-observation-out\",\"analyze-assay-in\",\"analyze-assay-out\",\"decision-select-in\",\"decision-select-out\",\"solver-synthesis-in\",\"solver-synthesis-out\",\"execute-run-in\",\"execute-run-out\",\"publish-post-in\",\"publish-post-out\",\"witness-record-in\",\"witness-record-out\"],\"delete\":[\"free-compute-dev:sibling-imports\",\"raw-token-bindings\",\"unsafe-local-execution-paths\",\"cross-settlement-direct-imports\"]}",
+    "finish-reason": "end_turn",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 31813,
+      "duration_api_ms": 33245,
+      "ttft_ms": 27222,
+      "ttft_stream_ms": 1798,
+      "time_to_request_ms": 232,
+      "num_turns": 1,
+      "result": "{\"boundaries\":[{\"id\":\"urn:die:algora:root\",\"faculty\":\"orchestration\",\"owns\":[\"planner\",\"orchestrator\",\"cli\",\"sequencing\"],\"hires\":[\"urn:die:algora:monitor\",\"urn:die:algora:analyze\",\"urn:die:algora:decision\",\"urn:die:algora:solver\",\"urn:die:algora:execute\",\"urn:die:algora:publish\",\"urn:die:algora:witness\"]},{\"id\":\"urn:die:algora:monitor\",\"faculty\":\"observation\",\"owns\":[\"fetch\",\"parse\",\"reputation\",\"trust\"],\"hires\":[\"urn:provider:rmn-conformance\"]},{\"id\":\"urn:die:algora:analyze\",\"faculty\":\"assay\",\"owns\":[\"deterministic-qualification\"],\"hires\":[]},{\"id\":\"urn:die:algora:decision\",\"faculty\":\"decision\",\"owns\":[\"bayesian-scoring\",\"calibration\",\"allocation\"],\"hires\":[\"urn:provider:inference-market\"]},{\"id\":\"urn:die:algora:solver\",\"faculty\":\"synthesis\",\"owns\":[\"repo-read\",\"locate\",\"edit\",\"static-check\"],\"hires\":[\"urn:provider:inference-market\"]},{\"id\":\"urn:die:algora:execute\",\"faculty\":\"execution\",\"owns\":[\"github-api\",\"github-actions\",\"local-execution\",\"run-outcome\"],\"hires\":[\"urn:provider:signed-a2a\"]},{\"id\":\"urn:die:algora:publish\",\"faculty\":\"publication\",\"owns\":[\"attempt-package\",\"posting\"],\"hires\":[\"urn:provider:signed-a2a\"]},{\"id\":\"urn:die:algora:witness\",\"faculty\":\"witnessing\",\"owns\":[\"rwil-outcomes\",\"cost-accounting\"],\"hires\":[\"urn:provider:rwil-rdf\"]}],\"boardPins\":[\"root-plan-emit\",\"monitor-observation-in\",\"monitor-observation-out\",\"analyze-assay-in\",\"analyze-assay-out\",\"decision-select-in\",\"decision-select-out\",\"solver-synthesis-in\",\"solver-synthesis-out\",\"execute-run-in\",\"execute-run-out\",\"publish-post-in\",\"publish-post-out\",\"witness-record-in\",\"witness-record-out\"],\"delete\":[\"free-compute-dev:sibling-imports\",\"raw-token-bindings\",\"unsafe-local-execution-paths\",\"cross-settlement-direct-imports\"]}",
+      "stop_reason": "end_turn",
+      "session_id": "7ff8f419-fc76-4703-9f18-54826c9f3944",
+      "total_cost_usd": 0.06869040000000001,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 4765,
+        "cache_read_input_tokens": 2308,
+        "output_tokens": 2543,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4765,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 2543,
+            "cache_read_input_tokens": 2308,
+            "cache_creation_input_tokens": 4765,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 4765
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1159,
+          "outputTokens": 19,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0012540000000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 2543,
+          "cacheReadInputTokens": 2308,
+          "cacheCreationInputTokens": 4765,
+          "webSearchRequests": 0,
+          "costUSD": 0.06743640000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "b7f3218b-3d1c-456d-8cb8-448c18615ddc"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 36.51770780100001,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

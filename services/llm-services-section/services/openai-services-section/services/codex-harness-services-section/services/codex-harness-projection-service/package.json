@@ -1,0 +1,18 @@
+{
+  "name": "@red-cup-engineering/codex-harness-projection-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Projects a machine-specific Codex actor configuration into one disposable project-local .codex runtime substrate.",
+  "bin": {
+    "project-codex-harness": "./scripts/project-codex-harness.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/projector.mjs && node --check scripts/project-codex-harness.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

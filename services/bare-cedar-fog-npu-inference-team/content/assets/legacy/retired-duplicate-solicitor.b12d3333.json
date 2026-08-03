@@ -1,0 +1,11 @@
+{
+  "type": "RetiredCarrierDigestManifest",
+  "reason": "The executable solicitor duplicated the signed standing A2A market offer and was removed from the operational die.",
+  "supersededBy": ["content/agent-cards/bare-cedar-fog-npu-inference-team.json", "src/execute-rmn-inference.mjs", "bin/serve-a2a.mjs"],
+  "displacedBytes": [
+    {"path": "src/solicit-rmn-inference.mjs", "sha256": "b12d3333699b388cf27ce47eee6181b5965460f1b08f40cc14f6685f28051309"},
+    {"path": "test/solicit-rmn-inference.test.mjs", "sha256": "6461c5be4cdc8b20de15b8c7bbee3f01a31dac23edf69072525ae5e38951a852"},
+    {"path": "package.json", "sha256": "a437509d56763c4adeac1364a2ca118b5176067883e8b23f3992f0273b38245f"}
+  ],
+  "operationalCompatibility": false
+}

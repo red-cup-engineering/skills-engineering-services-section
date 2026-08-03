@@ -1,0 +1,96 @@
+{
+  "id": "exchange-20260718-231914-549b90",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Summarize the scheduling behavior in 4 labeled, machine-checkable lines exactly: SELECT=..., ADMIT=..., PACE=..., RETRY=.... Cite only identifiers or literals present in the excerpt.\n\nconst candidate = candidates.find(({ endpoint }) => state.get(endpoint.id).inFlight < (endpoint.concurrency ?? 1));\nif (!candidate) { await waitForRelease(); continue; }\nconst { endpoint, quote } = candidate, s = state.get(endpoint.id);\nconst interval = Math.max(endpoint.minIntervalMs ?? 0, endpoint.rpm ? Math.ceil(60000 / endpoint.rpm) : 0);\nconst slot = Math.max(Date.now(), s.next);\ns.inFlight += 1; s.next = slot + interval;\nawait sleep(Math.max(0, slot - Date.now()));\ncandidates.splice(candidates.indexOf(candidate), 1);"
+      }
+    ],
+    "max-tokens": 240
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "```\nSELECT = candidates.find(({ endpoint }) => state.get(endpoint.id).inFlight < (endpoint.concurrency ?? 1))\nADMIT  = inFlight < (endpoint.concurrency ?? 1)\nPACE   = sleep(Math.max(0, slot - Date.now())); slot = Math.max(Date.now(), s.next); s.next = slot + Math.max(endpoint.minIntervalMs ?? 0, endpoint.rpm ? Math.ceil(60000 / endpoint.rpm) : 0)\nRETRY  = await waitForRelease(); continue\n```",
+    "finish-reason": "end_turn",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 10215,
+      "duration_api_ms": 11119,
+      "ttft_ms": 9186,
+      "ttft_stream_ms": 3693,
+      "time_to_request_ms": 54,
+      "num_turns": 1,
+      "result": "```\nSELECT = candidates.find(({ endpoint }) => state.get(endpoint.id).inFlight < (endpoint.concurrency ?? 1))\nADMIT  = inFlight < (endpoint.concurrency ?? 1)\nPACE   = sleep(Math.max(0, slot - Date.now())); slot = Math.max(Date.now(), s.next); s.next = slot + Math.max(endpoint.minIntervalMs ?? 0, endpoint.rpm ? Math.ceil(60000 / endpoint.rpm) : 0)\nRETRY  = await waitForRelease(); continue\n```",
+      "stop_reason": "end_turn",
+      "session_id": "cf125581-32b8-4028-b6e8-ea14169965a0",
+      "total_cost_usd": 0.0368809,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 4201,
+        "cache_read_input_tokens": 2303,
+        "output_tokens": 678,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4201,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 678,
+            "cache_read_input_tokens": 2303,
+            "cache_creation_input_tokens": 4201,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 4201
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 735,
+          "outputTokens": 14,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0008049999999999999,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 678,
+          "cacheReadInputTokens": 2303,
+          "cacheCreationInputTokens": 4201,
+          "webSearchRequests": 0,
+          "costUSD": 0.0360759,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "8fcee543-8e36-440e-a7ad-400bb8502d55"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 15.927,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@red-cup-engineering/openai-inference-team",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "check": "node --check scripts/run-one-exchange.mjs"
+  },
+  "dependencies": {
+    "@red-cup-engineering/relation-model-notation-runtime": "7.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sovereign-state-enterprise"
+  ],
+  "version": "0.1.1"
+}

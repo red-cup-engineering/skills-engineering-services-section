@@ -1,0 +1,190 @@
+{
+  "id": "exchange-20260719-060459-543bfb",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design promotion from repeated verified model trajectories into deterministic scripts/resolvers/skills, with an objective trigger and regression evidence.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "component",
+          "absentMechanism",
+          "design",
+          "firstVerticalSlice",
+          "failureModes",
+          "successMetric"
+        ],
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "absentMechanism": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 700
+          },
+          "design": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            }
+          },
+          "firstVerticalSlice": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 400
+            }
+          },
+          "failureModes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 300
+            }
+          },
+          "successMetric": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"component\":\"Trajectory Promotion Engine\",\"absentMechanism\":\"The seed captures append-only prompt/tool/result sequences per session but discards them at session end. There is no cross-session trajectory fingerprinting, no clustering of structurally identical model output sequences, no extraction pipeline converting repeated verified sequences into deterministic resolvers, no shadow-run gate comparing an extracted function against a live model, and no regression corpus generated from promotion evidence. Every verified solution is relearned from scratch; structural repetition accumulates no capital.\",\"design\":[\"Append every completed tool-call sequence as a TrajectoryRecord {task_type_tag, context_schema_hash, [(tool_name, arg_shape_hash, result_schema_hash)...], verified:bool} to an immutable JSON-Lines trajectory store keyed by session-id. No deletion ever; compaction only appends a summary pointer.\",\"Cluster records by structural_fingerprint = xxHash64(tool_name sequence + arg_shape_hash sequence, literals stripped). Cluster insert is O(1) via bloom-filter pre-check then exact bucket append. A record belongs to exactly one cluster.\",\"Emit PromotionCandidate when cluster satisfies all three: size >= N_threshold (default 5), verified_fraction >= 0.90, inter-trajectory step-count standard deviation <= 1.0. Trigger evaluates on every insert; candidate is idempotent if already PENDING.\",\"Extract invariant: token-level diff across all N trajectories; identical-across-all positions become hardcoded steps; variant positions become typed parameters. Output is a ResolverScript: a YAML tool-call template with parameter bindings and a JSON Schema for each parameter.\",\"Shadow phase: transition skill to SHADOW for K_shadow=10 invocations. Script and fresh model call both execute; compare result_schema_hash. If divergence_rate < 0.05 over all K_shadow runs, transition to potential. Otherwise emit DemotionEvent and route to model.\",\"Regression corpus: the N promotion trajectories plus every matched SHADOW-phase pair are locked as regression cases with context_schema_hash and environment_schema_hash. CI gate: a skill whose pass-rate drops below 0.95 is immediately demoted, state written atomically before any routing change.\",\"Demotion is non-destructive: DEMOTED skills remain in store. If the same task_type cluster gains 3 more verified trajectories diverging from the demoted script by more than 2 steps, a new independent extraction run is triggered.\"],\"firstVerticalSlice\":[\"Select task_type 'env_diagnosis' as the target — highest-frequency trajectory class evidenced by 84 sessions. Manually label 5 already-captured session transcripts as verified env_diagnosis TrajectoryRecords and write them into a seed trajectory store.\",\"Implement TrajectoryRecord schema (JSON Schema, strict) and append-to-file store. Verify round-trip: write 5 records, read them back, assert schema validation passes on all 5.\",\"Write the structural fingerprinter as a pure function: strip literal values from tool arguments, hash the remaining shape sequence with xxHash64. Unit-test against the 5 seed records to confirm all 5 map to the same bucket.\",\"Run the extractor on the 5 seed records to produce env_diagnosis_v1.yaml with 3-4 variant parameter fields (repo_path, expected_tool_list, os_marker). Confirm the YAML validates against the ResolverScript schema and replaying it reproduces each seed record's result_schema_hash.\",\"Wire env_diagnosis_v1.yaml into the existing resolver: if task_type == 'env_diagnosis' and skill state == ACTIVE, execute the script and skip model routing. Log each invocation result to the trajectory store as a new TrajectoryRecord.\",\"After 10 live invocations, compute divergence_rate versus held-out model runs on identical inputs. Accept promotion if divergence_rate < 0.05; otherwise record failing cases as regression seeds for the next extraction iteration.\"],\"failureModes\":[\"Over-promotion on surface structure: trajectories share tool-name sequence but solve subtly different subtasks, diverging on distribution shift. Mitigation: require context_schema_hash match as a secondary cluster key alongside structural_fingerprint.\",\"Parameter extraction explosion: variant positions span deeply nested objects, producing unbounded parameter arity. Mitigation: cap max_parameter_count at 8; reject PromotionCandidate if extraction exceeds the cap and log as UNEXTRACTABLE.\",\"Shadow-phase model degradation: model degrades between promotion trigger and shadow window, making the script appear better than warranted. Mitigation: shadow against N_shadow independent fresh model invocations, not the triggering session.\",\"Corpus staleness on environment drift: new OS or API revision invalidates the promotion corpus silently. Mitigation: include environment_schema_hash in regression keys; a hash mismatch on replay triggers re-verification rather than a silent pass.\",\"Demotion race: skill transitions to DEMOTED while an in-flight SHADOW invocation is still executing. Mitigation: state transitions are atomic file-rename operations; in-flight invocations check state at result-write time and discard if DEMOTED.\"],\"successMetric\":\"After 10 ACTIVE invocations of a promoted skill, divergence_rate versus fresh model output for the same task_type is below 0.05, median wall-clock latency is at least 40% lower than a baseline model call on identical input, and zero regression cases added since promotion have failed their result_schema_hash assertion.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 74802,
+      "duration_api_ms": 76156,
+      "ttft_ms": 42433,
+      "ttft_stream_ms": 2465,
+      "time_to_request_ms": 35,
+      "num_turns": 3,
+      "result": "{\"component\":\"Trajectory Promotion Engine\",\"absentMechanism\":\"The seed captures append-only prompt/tool/result sequences per session but discards them at session end. There is no cross-session trajectory fingerprinting, no clustering of structurally identical model output sequences, no extraction pipeline converting repeated verified sequences into deterministic resolvers, no shadow-run gate comparing an extracted function against a live model, and no regression corpus generated from promotion evidence. Every verified solution is relearned from scratch; structural repetition accumulates no capital.\",\"design\":[\"Append every completed tool-call sequence as a TrajectoryRecord {task_type_tag, context_schema_hash, [(tool_name, arg_shape_hash, result_schema_hash)...], verified:bool} to an immutable JSON-Lines trajectory store keyed by session-id. No deletion ever; compaction only appends a summary pointer.\",\"Cluster records by structural_fingerprint = xxHash64(tool_name sequence + arg_shape_hash sequence, literals stripped). Cluster insert is O(1) via bloom-filter pre-check then exact bucket append. A record belongs to exactly one cluster.\",\"Emit PromotionCandidate when cluster satisfies all three: size >= N_threshold (default 5), verified_fraction >= 0.90, inter-trajectory step-count standard deviation <= 1.0. Trigger evaluates on every insert; candidate is idempotent if already PENDING.\",\"Extract invariant: token-level diff across all N trajectories; identical-across-all positions become hardcoded steps; variant positions become typed parameters. Output is a ResolverScript: a YAML tool-call template with parameter bindings and a JSON Schema for each parameter.\",\"Shadow phase: transition skill to SHADOW for K_shadow=10 invocations. Script and fresh model call both execute; compare result_schema_hash. If divergence_rate < 0.05 over all K_shadow runs, transition to potential. Otherwise emit DemotionEvent and route to model.\",\"Regression corpus: the N promotion trajectories plus every matched SHADOW-phase pair are locked as regression cases with context_schema_hash and environment_schema_hash. CI gate: a skill whose pass-rate drops below 0.95 is immediately demoted, state written atomically before any routing change.\",\"Demotion is non-destructive: DEMOTED skills remain in store. If the same task_type cluster gains 3 more verified trajectories diverging from the demoted script by more than 2 steps, a new independent extraction run is triggered.\"],\"firstVerticalSlice\":[\"Select task_type 'env_diagnosis' as the target — highest-frequency trajectory class evidenced by 84 sessions. Manually label 5 already-captured session transcripts as verified env_diagnosis TrajectoryRecords and write them into a seed trajectory store.\",\"Implement TrajectoryRecord schema (JSON Schema, strict) and append-to-file store. Verify round-trip: write 5 records, read them back, assert schema validation passes on all 5.\",\"Write the structural fingerprinter as a pure function: strip literal values from tool arguments, hash the remaining shape sequence with xxHash64. Unit-test against the 5 seed records to confirm all 5 map to the same bucket.\",\"Run the extractor on the 5 seed records to produce env_diagnosis_v1.yaml with 3-4 variant parameter fields (repo_path, expected_tool_list, os_marker). Confirm the YAML validates against the ResolverScript schema and replaying it reproduces each seed record's result_schema_hash.\",\"Wire env_diagnosis_v1.yaml into the existing resolver: if task_type == 'env_diagnosis' and skill state == ACTIVE, execute the script and skip model routing. Log each invocation result to the trajectory store as a new TrajectoryRecord.\",\"After 10 live invocations, compute divergence_rate versus held-out model runs on identical inputs. Accept promotion if divergence_rate < 0.05; otherwise record failing cases as regression seeds for the next extraction iteration.\"],\"failureModes\":[\"Over-promotion on surface structure: trajectories share tool-name sequence but solve subtly different subtasks, diverging on distribution shift. Mitigation: require context_schema_hash match as a secondary cluster key alongside structural_fingerprint.\",\"Parameter extraction explosion: variant positions span deeply nested objects, producing unbounded parameter arity. Mitigation: cap max_parameter_count at 8; reject PromotionCandidate if extraction exceeds the cap and log as UNEXTRACTABLE.\",\"Shadow-phase model degradation: model degrades between promotion trigger and shadow window, making the script appear better than warranted. Mitigation: shadow against N_shadow independent fresh model invocations, not the triggering session.\",\"Corpus staleness on environment drift: new OS or API revision invalidates the promotion corpus silently. Mitigation: include environment_schema_hash in regression keys; a hash mismatch on replay triggers re-verification rather than a silent pass.\",\"Demotion race: skill transitions to DEMOTED while an in-flight SHADOW invocation is still executing. Mitigation: state transitions are atomic file-rename operations; in-flight invocations check state at result-write time and discard if DEMOTED.\"],\"successMetric\":\"After 10 ACTIVE invocations of a promoted skill, divergence_rate versus fresh model output for the same task_type is below 0.05, median wall-clock latency is at least 40% lower than a baseline model call on identical input, and zero regression cases added since promotion have failed their result_schema_hash assertion.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "6332ba15-fd51-45cb-a26f-6eb5bcba00c0",
+      "total_cost_usd": 0.1041156,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 4321,
+        "cache_read_input_tokens": 14432,
+        "output_tokens": 4860,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4321,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 1393,
+            "cache_read_input_tokens": 7599,
+            "cache_creation_input_tokens": 3555,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 3555
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 863,
+          "outputTokens": 17,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0009480000000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 4,
+          "outputTokens": 4860,
+          "cacheReadInputTokens": 14432,
+          "cacheCreationInputTokens": 4321,
+          "webSearchRequests": 0,
+          "costUSD": 0.1031676,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "component": "Trajectory Promotion Engine",
+        "absentMechanism": "The seed captures append-only prompt/tool/result sequences per session but discards them at session end. There is no cross-session trajectory fingerprinting, no clustering of structurally identical model output sequences, no extraction pipeline converting repeated verified sequences into deterministic resolvers, no shadow-run gate comparing an extracted function against a live model, and no regression corpus generated from promotion evidence. Every verified solution is relearned from scratch; structural repetition accumulates no capital.",
+        "design": [
+          "Append every completed tool-call sequence as a TrajectoryRecord {task_type_tag, context_schema_hash, [(tool_name, arg_shape_hash, result_schema_hash)...], verified:bool} to an immutable JSON-Lines trajectory store keyed by session-id. No deletion ever; compaction only appends a summary pointer.",
+          "Cluster records by structural_fingerprint = xxHash64(tool_name sequence + arg_shape_hash sequence, literals stripped). Cluster insert is O(1) via bloom-filter pre-check then exact bucket append. A record belongs to exactly one cluster.",
+          "Emit PromotionCandidate when cluster satisfies all three: size >= N_threshold (default 5), verified_fraction >= 0.90, inter-trajectory step-count standard deviation <= 1.0. Trigger evaluates on every insert; candidate is idempotent if already PENDING.",
+          "Extract invariant: token-level diff across all N trajectories; identical-across-all positions become hardcoded steps; variant positions become typed parameters. Output is a ResolverScript: a YAML tool-call template with parameter bindings and a JSON Schema for each parameter.",
+          "Shadow phase: transition skill to SHADOW for K_shadow=10 invocations. Script and fresh model call both execute; compare result_schema_hash. If divergence_rate < 0.05 over all K_shadow runs, transition to potential. Otherwise emit DemotionEvent and route to model.",
+          "Regression corpus: the N promotion trajectories plus every matched SHADOW-phase pair are locked as regression cases with context_schema_hash and environment_schema_hash. CI gate: a skill whose pass-rate drops below 0.95 is immediately demoted, state written atomically before any routing change.",
+          "Demotion is non-destructive: DEMOTED skills remain in store. If the same task_type cluster gains 3 more verified trajectories diverging from the demoted script by more than 2 steps, a new independent extraction run is triggered."
+        ],
+        "firstVerticalSlice": [
+          "Select task_type 'env_diagnosis' as the target — highest-frequency trajectory class evidenced by 84 sessions. Manually label 5 already-captured session transcripts as verified env_diagnosis TrajectoryRecords and write them into a seed trajectory store.",
+          "Implement TrajectoryRecord schema (JSON Schema, strict) and append-to-file store. Verify round-trip: write 5 records, read them back, assert schema validation passes on all 5.",
+          "Write the structural fingerprinter as a pure function: strip literal values from tool arguments, hash the remaining shape sequence with xxHash64. Unit-test against the 5 seed records to confirm all 5 map to the same bucket.",
+          "Run the extractor on the 5 seed records to produce env_diagnosis_v1.yaml with 3-4 variant parameter fields (repo_path, expected_tool_list, os_marker). Confirm the YAML validates against the ResolverScript schema and replaying it reproduces each seed record's result_schema_hash.",
+          "Wire env_diagnosis_v1.yaml into the existing resolver: if task_type == 'env_diagnosis' and skill state == ACTIVE, execute the script and skip model routing. Log each invocation result to the trajectory store as a new TrajectoryRecord.",
+          "After 10 live invocations, compute divergence_rate versus held-out model runs on identical inputs. Accept promotion if divergence_rate < 0.05; otherwise record failing cases as regression seeds for the next extraction iteration."
+        ],
+        "failureModes": [
+          "Over-promotion on surface structure: trajectories share tool-name sequence but solve subtly different subtasks, diverging on distribution shift. Mitigation: require context_schema_hash match as a secondary cluster key alongside structural_fingerprint.",
+          "Parameter extraction explosion: variant positions span deeply nested objects, producing unbounded parameter arity. Mitigation: cap max_parameter_count at 8; reject PromotionCandidate if extraction exceeds the cap and log as UNEXTRACTABLE.",
+          "Shadow-phase model degradation: model degrades between promotion trigger and shadow window, making the script appear better than warranted. Mitigation: shadow against N_shadow independent fresh model invocations, not the triggering session.",
+          "Corpus staleness on environment drift: new OS or API revision invalidates the promotion corpus silently. Mitigation: include environment_schema_hash in regression keys; a hash mismatch on replay triggers re-verification rather than a silent pass.",
+          "Demotion race: skill transitions to DEMOTED while an in-flight SHADOW invocation is still executing. Mitigation: state transitions are atomic file-rename operations; in-flight invocations check state at result-write time and discard if DEMOTED."
+        ],
+        "successMetric": "After 10 ACTIVE invocations of a promoted skill, divergence_rate versus fresh model output for the same task_type is below 0.05, median wall-clock latency is at least 40% lower than a baseline model call on identical input, and zero regression cases added since promotion have failed their result_schema_hash assertion."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "995f564e-bb0a-4190-8879-27c416e1c834"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 83.253,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

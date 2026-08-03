@@ -1,0 +1,597 @@
+//! Setting lore: eras, historical events, off-screen characters,
+//! factions, concepts, lore-scale places. Hand-curated from the old
+//! *Canonical Brave Old World* binder, the Teraum Encyclopedia, the
+//! Teraum Atlas, and the Okaga-comes-to-Ben alternate frame.
+//!
+//! Unlike the generated room tables, this file is intentionally
+//! readable — if you're learning the setting, this is where to start.
+//!
+//! Every row emits claims keyed by the lore vocab's terms and
+//! predicates. Cross-references between lore entries ride on
+//! `member-of`, `rules`, `within-region`, and `occurred-in-era`.
+
+use super::vocab::{CHARACTER, CONCEPT, ERA, FACTION, HISTORICAL_EVENT, LORE_PLACE};
+
+/// `(id, kind, name, summary, long-form lore)`.
+pub(super) type LoreEntry = (
+    &'static str,
+    &'static str,
+    &'static str,
+    &'static str,
+    &'static str,
+);
+
+/// `(subject, object)` rows for a specific relation predicate.
+pub(super) type LoreRel = (&'static str, &'static str);
+
+pub(super) const ENTRIES: &[LoreEntry] = &[
+    // -- Eras --
+    (
+        "era:before-break",
+        ERA,
+        "Before the Break",
+        "The age before magic left Teraum. Dated `bB` in in-world texts.",
+        "The long period before the Collapse, during which magic was a working part of the world. Dwarves forged in the Worldkeepers, elves built towns in the Elflands, and humans fought wars with the occasional help of wizards. Dates use the suffix `bB` — before the Break — and count backward from the Collapse.",
+    ),
+    (
+        "era:collapse",
+        ERA,
+        "The Collapse",
+        "The moment magic left the world, at midnight on the 1st of Deepwinter, 0pc.",
+        "A single instant of world-breaking change. Dakkle, a creature living outside Teraum's planar system, siphoned the magic of the Brave Old World for their own uses; in the space of a breath, every enchantment unraveled, every wizard forgot their craft, and the elves of the New World turned feral. Historians are grateful it happened at midnight on New Year's Day — the date is the easiest to remember in the calendar.",
+    ),
+    (
+        "era:after-break",
+        ERA,
+        "After the Break",
+        "The mundane age. Dated `pc` (post-collapse) or `aB` (after the Break).",
+        "The present era. No magic, no wizards, no gods walking the plains. War followed the Collapse and wealth followed war; the debt-and-credit bureaucracy of the Red Union rose to fill the vacuum. Teraum calls this age what most places do when they no longer believe in surprise: modern.",
+    ),
+    (
+        "era:imperial",
+        ERA,
+        "The Imperial Age",
+        "From ~470bB to ~23bB: the rise and settlement of the Astar, Indenon, and Rolense empires.",
+        "Three human empires briefly carved the east: the Astar in the northern Green Delta, the Indenon in the southwestern Central Plains, the Rolense in the southern Green Delta. They fought, traded, and absorbed each other. By the Collapse only Astar remained, holding the entire Green Delta through the city of Ack.",
+    ),
+    (
+        "era:dawn",
+        ERA,
+        "The Dawn",
+        "Mythic prehistory: the gods plant the Worldkeep (~54,000bB) and it later fragments (~30,000bB).",
+        "Before human record. The most powerful gods planted a facility deep in the earth called the Worldkeep, raising the Worldkeeper Mountains around it as a seal. Later — nobody knows why — the Worldkeep fragmented, and the nasty things it was meant to contain began to leak into the rest of creation.",
+    ),
+    // -- Historical events --
+    (
+        "event:worldkeep-planted",
+        HISTORICAL_EVENT,
+        "Worldkeep planted",
+        "~54,000bB: the gods plant the Worldkeep beneath Teraum.",
+        "The gods bury the Worldkeep deep in the earth and raise the Worldkeeper Mountains around it to protect it. The facility is intended to contain every nasty thing from every plane.",
+    ),
+    (
+        "event:worldkeep-fragments",
+        HISTORICAL_EVENT,
+        "Worldkeep fragments",
+        "~30,000bB: the Worldkeep breaks apart.",
+        "The Worldkeep fragments. The reason is forgotten. Its contents begin to seep into the planes it was built to hold back.",
+    ),
+    (
+        "event:astar-founded",
+        HISTORICAL_EVENT,
+        "Astar coalesces",
+        "470bB: the Astar empire forms in the northern Green Delta.",
+        "An alliance of city-states in the Green Delta consolidates into the Astar empire, with administrative control centered on what would later become the Red Ward of Ack.",
+    ),
+    (
+        "event:astar-conquers-delta",
+        HISTORICAL_EVENT,
+        "Astar takes the Green Delta",
+        "23bB: Rolense surrenders; Astar controls the whole Green Delta.",
+        "After decades of intermittent siege, Rolense fully surrenders to the Astar. The Green Delta becomes a single bureaucratic unit.",
+    ),
+    (
+        "event:ack-founded",
+        HISTORICAL_EVENT,
+        "Ack begins",
+        "250bB: Ack forms, known for its smoked fish.",
+        "Retired ship captains begin to farm the fertile Green Delta. They lean their decommissioned vessels against the town's walls — the first draft of what is now the Dock Ward's outer wall.",
+    ),
+    (
+        "event:red-ward-built",
+        HISTORICAL_EVENT,
+        "Red Ward constructed",
+        "160bB: the Red Ward is built on the north shore of Ack, from local red clay.",
+        "Originally a keep meant for one of Ack's early kings, the Red Ward's red-clay towers will outlast the kings and house the conglomerate that takes its name.",
+    ),
+    (
+        "event:new-world-discovery",
+        HISTORICAL_EVENT,
+        "New World discovery",
+        "72bB–65bB: human explorers cross the Optic Ocean and meet halflings and elves.",
+        "A voyage across the Optic Ocean makes landfall on the New World. Contact with the halflings follows in 70bB, with the elves in 69bB. The first permanent colony — New Rolense — is established in 65bB.",
+    ),
+    (
+        "event:delvers-founded",
+        HISTORICAL_EVENT,
+        "Delvers founded",
+        "22bB: Rickle Axager founds the Delvers, an adventuring society.",
+        "The Delvers begin as a for-hire adventuring group. After the Collapse, they pivot to a specific mission — finding and destroying the magical artifacts that used to power the world, so they can't be turned on again by another Dakkle.",
+    ),
+    (
+        "event:the-collapse",
+        HISTORICAL_EVENT,
+        "The Collapse",
+        "1st of Deepwinter, 0pc: magic leaves the world.",
+        "At exactly midnight, Dakkle completes their siphon and every enchantment in Teraum unravels simultaneously. The dwarves vanish from the Worldkeepers. The elves of the New World turn feral overnight and sweep through Halfling Country, hunting the halflings to extinction within weeks.",
+    ),
+    (
+        "event:fire-of-ack",
+        HISTORICAL_EVENT,
+        "Fire of Ack",
+        "14th of Blooming, 80aB: fire destroys the Squash Ward.",
+        "A fire tears through the Squash Ward and leaves it gutted. The Red Union has been slowly rebuilding it since, this time as a visitor destination rather than a working-class neighborhood.",
+    ),
+    (
+        "event:okaga-arrival",
+        HISTORICAL_EVENT,
+        "The Okaga arrives at Ben",
+        "Alternate frame: the starship Okaga reaches the Ben starsystem.",
+        "In a different telling — the same story with a different skin — the Okaga is a starship arriving in the Ben starsystem after twelve years of silence. Delegates rig the negotiation to hoard antibiotics; a young representative named Dapu exposes them, reconvenes the congress, and is hanged in the aftermath of a pirate attack that destroys the interstellar satellites. The Okaga is stranded; its crew immigrates into the system; generations later its engines and library are integrated into local culture.",
+    ),
+    // -- Characters --
+    (
+        "character:dakkle",
+        CHARACTER,
+        "Dakkle",
+        "The outside-creature who siphoned Teraum's magic and caused the Collapse.",
+        "Dakkle lives outside the Brave Old World's planar system and constantly experiments with reality. They tapped Teraum as an energy source; the siphon continues to run, which is why magic has not returned. Dakkle is not malevolent so much as uninterested.",
+    ),
+    (
+        "character:lorrestar",
+        CHARACTER,
+        "Lorrestar",
+        "A wizard granted Astarian nobility in 422bB; built an estate northeast of Ack.",
+        "Lorrestar destroyed Indenon in a single act of espionage that melted every piece of metal in the city; the Astar rewarded him with land and a title. He wrote *A Series of Unfortunate Spells* in 182bB. His estate is a recurring location; his library is notorious.",
+    ),
+    (
+        "character:rickle-axager",
+        CHARACTER,
+        "Rickle Axager",
+        "Founder of the Delvers, 22bB. Author of the *Pocket Guide to Adventuring*. Deceased.",
+        "Axager was the first voice arguing that magical artifacts should be destroyed, not collected. After the Collapse the argument became a mission. He died leaving the Delvers to his successors.",
+    ),
+    (
+        "character:ander-falone",
+        CHARACTER,
+        "Ander Falone",
+        "Lieutenant Governor of Gnalens; formerly of Gnalens City Watch.",
+        "Public name of Gnalens' executive-adjacent authority. The Governor's name is, by convention, kept quiet — Falone is the face the Red Union and other cities deal with.",
+    ),
+    (
+        "character:brother-sun",
+        CHARACTER,
+        "Brother Sun",
+        "A Mystran monk living in the New World.",
+        "A 3rd-level monk of the Order of Mystrl who arrived back at the monastery in 80pc carrying a mysterious putty. The putty warms under pressure and burns for an exceedingly long time. He fled the Fire of Ack with Ilea on the 14th of Flowers, 80pc.",
+    ),
+    (
+        "character:ilea",
+        CHARACTER,
+        "Ilea",
+        "A ranger who travels with Brother Sun.",
+        "A 3rd-level ranger. Present at the Fire of Ack and the subsequent flight to Bellybrush.",
+    ),
+    (
+        "character:jenos-anadini",
+        CHARACTER,
+        "Jenos Anadini",
+        "Named heir of House Pled in the Green Delta.",
+        "A member of the Pled County gentry. House Pled submits to the Red Ward like the other county houses.",
+    ),
+    (
+        "character:kindal",
+        CHARACTER,
+        "Kindal",
+        "A Lazy Mare tribesperson; mercantile liaison in the Farsteppes.",
+        "The Lazy Mare tribe is more mercantile than most of the Farsteppes nomads and serves as a liaison between tribes and the settled world. Kindal is one such liaison.",
+    ),
+    (
+        "character:the-vagrant",
+        CHARACTER,
+        "The Vagrant",
+        "Last of the defunct House Bonnet of Halfling Country.",
+        "Bonnet was a halfling county before the Collapse; the Vagrant is its only surviving member and travels without a fixed home.",
+    ),
+    (
+        "character:barnabus-trent",
+        CHARACTER,
+        "Barnabus Trent",
+        "Ran Ye Olde Curio Shop in Bellybrush; unofficial Delver.",
+        "Manager (and abandoner) of Ye Olde Curio Shop on Gibbet Street. Associated with the Delvers informally. His absence is the reason the shop sits empty.",
+    ),
+    (
+        "character:aldar-honeyfern",
+        CHARACTER,
+        "Aldar Honeyfern",
+        "Delver and operator of Honeyfern Labs in South Arathel.",
+        "Runs the estate and labs south of Arathel. Their research has outlived Axager.",
+    ),
+    (
+        "character:wayne-helder",
+        CHARACTER,
+        "Wayne Helder",
+        "Representative of the Leatherworkers Guild.",
+        "The Leatherworkers Guild is headquartered in Ack with an office in Gnalens. Helder is the guild contact Brother Sun met with after the Fire.",
+    ),
+    (
+        "character:atrix-hucklebee",
+        CHARACTER,
+        "Atrix Hucklebee",
+        "Representative of the Blacksmith's Guild.",
+        "The Blacksmith's Guild, which also controls other metal-smithing, is headquartered in Ack. Hucklebee is the guild's named point of contact.",
+    ),
+    (
+        "character:dapu",
+        CHARACTER,
+        "Dapu",
+        "(Okaga frame) Apotei Orchard's representative to the Okaga convention. Hanged.",
+        "In the Okaga telling: a young person from the Apotei Orchard on Ben-Two, nominated to request blight-antibiotics from the starship Okaga. When Dapu discovered the antibiotics had been allocated to smugglers, they led the call to renegotiate the opening convention. They were hanged in the Convention Hall after a pirate attack bombed the Okaga, stranding the ship in the Ben starsystem.",
+    ),
+    // -- Factions --
+    (
+        "faction:red-ward",
+        FACTION,
+        "Red Union",
+        "The bureaucracy that runs most of Teraum through debt and credit. Based in Ack's Red Ward.",
+        "Also called the Red Ward after its home district. The Red Union rose after the Collapse to fill the administrative vacuum left by empires and wizards alike. It directly dominates most economic factions. Its clerks wear red robes; its offices occupy former temples across the known world.",
+    ),
+    (
+        "faction:delvers",
+        FACTION,
+        "The Delvers",
+        "Society destroying magical artifacts since shortly after the Collapse.",
+        "Founded 22bB by Rickle Axager as a for-hire adventuring group; after the Collapse they pivoted to artifact destruction. Not recognized by the Red Union. Members include Aldar Honeyfern and Barnabus Trent; Nubbles and Nells are unofficial.",
+    ),
+    (
+        "faction:mystrans",
+        FACTION,
+        "The Mystrans",
+        "Order of monks in the New World. Brother Sun belongs here.",
+        "A monastic order of the Mystrl tradition, resident in the New World. Surprisingly adaptive post-Collapse; their practices work without magic.",
+    ),
+    (
+        "faction:chauntean-ruffians",
+        FACTION,
+        "Chauntean Ruffians",
+        "Local-protection syndicate headquartered at the old Chauntean Monastery in Sherwyn.",
+        "A group of young men running local protection for farms and businesses in northwest Sherwyn. Submits to the Red Ward. Most members by name in the binder are deceased, which tells you something about the job.",
+    ),
+    (
+        "faction:lazy-mare-tribe",
+        FACTION,
+        "Lazy Mare Tribe",
+        "Mercantile Farsteppes tribe, liaison between nomads and settled merchants.",
+        "Invented fermented mares' milk (ragar) around 3,400bB. Not recognized by the Red Ward. Camp near the rear of the greater horde.",
+    ),
+    (
+        "faction:house-oru",
+        FACTION,
+        "Barony of Oru",
+        "Self-declared sovereignty in the Farsteppes under Queen Renkah and her son Kolpe.",
+        "The Red Ward invoices House Ellon for the lands Oru claims, refusing to recognize the barony. Recent governance by Kolpe has brought working relations with adjacent homesteads.",
+    ),
+    (
+        "faction:house-ellon",
+        FACTION,
+        "House Ellon",
+        "Defunct; formerly in the Farsteppes.",
+        "The Red Ward still invoices Ellon for what Oru now claims — a bureaucratic fiction keeping Oru's sovereignty contested on paper.",
+    ),
+    (
+        "faction:house-arathel",
+        FACTION,
+        "House Arathel",
+        "Controls Arathel County in the Green Delta.",
+        "Submits to the Red Ward. Arathel County sits in the fertile northeast of the Delta.",
+    ),
+    (
+        "faction:house-marby",
+        FACTION,
+        "House Marby",
+        "Controls Marby County in the Green Delta.",
+        "Submits to the Red Ward.",
+    ),
+    (
+        "faction:house-pled",
+        FACTION,
+        "House Pled",
+        "Controls Pled County in the Green Delta.",
+        "Submits to the Red Ward. Jenos Anadini is a named member.",
+    ),
+    (
+        "faction:house-sherwyn",
+        FACTION,
+        "House Sherwyn",
+        "Controls Sherwyn County in the Green Delta.",
+        "Submits to the Red Ward. Northwest Sherwyn is where the Chauntean Ruffians operate.",
+    ),
+    (
+        "faction:blacksmiths-guild",
+        FACTION,
+        "Blacksmith's Guild",
+        "Guild controlling smithing; headquartered in Ack.",
+        "Also controls non-blacksmith smithing. Submits to the Red Ward. Atrix Hucklebee is the named point of contact.",
+    ),
+    (
+        "faction:chandlers-guild",
+        FACTION,
+        "Chandler's Guild",
+        "Candlemaker's guild that also prints books; Ack-headquartered.",
+        "Offices in Bellybrush, Marby, and Sherwyn. Submits to the Red Ward.",
+    ),
+    (
+        "faction:cloudbound-trading",
+        FACTION,
+        "Cloudbound Trading Company",
+        "Transportation company with a specialty in airships.",
+        "Headquartered in Ack with offices in Bellybrush, Marby, Sherwyn, Arathel, Pled, Helmet's Dent, Gnalens, and Tayopolis. Submits to the Red Ward.",
+    ),
+    (
+        "faction:leatherworkers-guild",
+        FACTION,
+        "Leatherworkers Guild",
+        "Leatherworking guild; Ack-headquartered with a Gnalens office.",
+        "Submits to the Red Ward. Wayne Helder is the named point of contact.",
+    ),
+    (
+        "faction:gnalens-republic",
+        FACTION,
+        "Republic of Gnalens",
+        "Democratic republic of Gnalens; bicameral legislature, no executive figurehead.",
+        "The Governor's name is by convention kept quiet; Lieutenant Governor Ander Falone is the public-facing executive-adjacent authority. Submits to the Red Ward.",
+    ),
+    (
+        "faction:astar-empire",
+        FACTION,
+        "Astar Empire",
+        "Defunct. Human empire that held the Green Delta from 470bB through the Collapse.",
+        "Coalesced in the northern Green Delta in 470bB; fought Indenon, then Rolense; by 23bB held the whole Delta. The Astar Ward of Ack still bears the name. Dissolved functionally during the post-Collapse war period.",
+    ),
+    (
+        "faction:indenon-empire",
+        FACTION,
+        "Indenon Empire",
+        "Defunct. Southwestern Central Plains empire, ~490bB–414bB.",
+        "Coalesced 490bB, fought the Hill Dwarves and then the Astar. Crippled in 422bB when Lorrestar's espionage melted every piece of metal in the city. Made peace with Astar in 414bB.",
+    ),
+    (
+        "faction:rolense-empire",
+        FACTION,
+        "Rolense Empire",
+        "Defunct. Southern Green Delta empire, ~439bB–23bB.",
+        "Coalesced 439bB to contest the Green outlet. Sacked by goblins from the Wide Woods in 368bB. Surrendered fully to the Astar in 23bB.",
+    ),
+    // -- Concepts --
+    (
+        "concept:the-collapse",
+        CONCEPT,
+        "The Collapse",
+        "The in-world name for the event when magic vanished. Also called the Break.",
+        "One name, one event. Magic did not fade — it left, at a specific instant, because Dakkle finished a siphon. Scholars use 'Collapse' for the event and 'Break' for the rupture it caused.",
+    ),
+    (
+        "concept:magic",
+        CONCEPT,
+        "Magic",
+        "The pre-Break art of drawing energy from the Arcane Plane.",
+        "Magic worked by drawing energy from the Arcane Plane through the Material Plane and focusing it through trained intent or a prepared artifact. Since the Collapse the Arcane Plane is not reachable; magic doesn't fail in Teraum so much as not happen.",
+    ),
+    (
+        "concept:worldkeep",
+        CONCEPT,
+        "The Worldkeep",
+        "A vast god-built facility buried beneath Teraum, holding the nastiest creatures of every plane.",
+        "Planted by the most powerful gods in the Dawn. Fragmented in ~30,000bB for reasons nobody records. Its leaks explain several persistent monster populations; its entrances, if any exist, have not been found.",
+    ),
+    (
+        "concept:planar-system",
+        CONCEPT,
+        "Planar System",
+        "The interconnected planes that feed into the Brave Old World.",
+        "There are many planar systems across the multiverse, each sustaining its own slice of reality. The Brave Old World's system has three planes: the Material Plane (where everyone lives), the Divine Plane (where the gods live), and the Arcane Plane (where elementals live and where magic used to come from).",
+    ),
+    (
+        "concept:material-plane",
+        CONCEPT,
+        "Material Plane",
+        "Where the Brave Old World physically exists.",
+        "The plane of mass and walking around. After the Collapse it is effectively sealed from the Arcane Plane.",
+    ),
+    (
+        "concept:arcane-plane",
+        CONCEPT,
+        "Arcane Plane",
+        "The plane of magical energy, where elementals live.",
+        "Used to feed magical energy into the Brave Old World. Dakkle's siphon runs between here and elsewhere; the plane is effectively closed to Teraumic travelers.",
+    ),
+    (
+        "concept:divine-plane",
+        CONCEPT,
+        "Divine Plane",
+        "The plane where Teraum's gods live.",
+        "Still present; still occupied; no longer in working communication with the Material Plane.",
+    ),
+    (
+        "concept:multiverse",
+        CONCEPT,
+        "Multiverse",
+        "Everything that is, generally speaking.",
+        "The outer frame. Many planar systems, many possible worlds; Teraum is one.",
+    ),
+    // -- Lore places --
+    (
+        "place:brave-old-world",
+        LORE_PLACE,
+        "Brave Old World",
+        "Teraum's shared name for the Material Plane as its inhabitants experience it.",
+        "The set of lands and oceans on the Material Plane that humans, elves, halflings, dwarves, and their neighbors have historically called home. 'Brave Old World' is in-world vocabulary; 'Teraum' is the name of the planet itself.",
+    ),
+    (
+        "place:old-world",
+        LORE_PLACE,
+        "The Old World",
+        "The eastern continent of Teraum. Home of the Worldkeepers, Green Delta, Farsteppes.",
+        "Humanity's cradle and the site of most in-world history. Bordered east by the Worldkeeper Mountains and west by the Optic Ocean.",
+    ),
+    (
+        "place:new-world",
+        LORE_PLACE,
+        "The New World",
+        "The western continent, across the Optic Ocean. Home of halflings, elves, and Gnalens.",
+        "Discovered by humans in 72bB. Home to Halfling Country (most of the continent) and the Elflands (northwestern). Halfling Country now depopulated of halflings; Elflands now feral.",
+    ),
+    (
+        "place:central-plains",
+        LORE_PLACE,
+        "Central Plains",
+        "Temperate plains west of the Worldkeepers; origin region of humanity.",
+        "Well-settled with farms and villages, watered by the Green River. Ack sits at its eastern edge where the Delta begins.",
+    ),
+    (
+        "place:green-delta",
+        LORE_PLACE,
+        "Green Delta",
+        "The fertile marshy delta at the mouth of the Green River.",
+        "Home of Ack, Bellybrush, Arathel, Marby, Pled, and Sherwyn. The Astar and Rolense empires both contested it. Now a tangle of counties and the Red Union's administrative heartland.",
+    ),
+    (
+        "place:green-river",
+        LORE_PLACE,
+        "Green River",
+        "Long river from the Worldkeepers through the Central Plains to the Optic Ocean.",
+        "Carries the sewage of nearly every settlement between the Worldkeepers and the Optic Ocean, a distance of several thousand miles. Where it meets the Delta, its waters are murky brown.",
+    ),
+    (
+        "place:farsteppes",
+        LORE_PLACE,
+        "Farsteppes",
+        "The steppes east of the Central Plains, home of nomad tribes and Helmet's Dent.",
+        "Home of the Lazy Mare Tribe and other nomad peoples. Settled places include Helmet's Dent, Castle Oru, and the razed villages of Culthbert and Wultha.",
+    ),
+    (
+        "place:farfarsteppes",
+        LORE_PLACE,
+        "Farfarsteppes",
+        "Frozen steppes beyond the Farsteppes.",
+        "Marginally inhabitable; thaws only in Summertide and freezes again in Fading.",
+    ),
+    (
+        "place:halfling-country",
+        LORE_PLACE,
+        "Halfling Country",
+        "Most of the New World. Named for the halflings, who are now extinct.",
+        "Rolling hills and farmland. After the Collapse the feral elves swept through and hunted the halflings to extinction within weeks. Currently populated by human settlers, Gnalens the largest city.",
+    ),
+    (
+        "place:elflands",
+        LORE_PLACE,
+        "Elflands",
+        "Northwestern region of the New World, home of the elves.",
+        "Dense temperate forest. The elves built small towns here before the Collapse; since the Collapse they hunt in feral packs. Humans do not settle the Elflands.",
+    ),
+    (
+        "place:widewoods",
+        LORE_PLACE,
+        "Wide Woods",
+        "Dense subtropical forest south of the Green Delta.",
+        "Historically contained goblins and spiders and worse; the Collapse cleared most of that out, though the goblins still hold chunks of former Rolense lands.",
+    ),
+    (
+        "place:worldkeepers",
+        LORE_PLACE,
+        "Worldkeeper Mountains",
+        "The massive eastern mountains of the Old World, seal over the Worldkeep.",
+        "Planted by the gods over the Worldkeep in the Dawn. Formerly home of the dwarves, who vanished at the Collapse.",
+    ),
+    (
+        "place:optic-ocean",
+        LORE_PLACE,
+        "Optic Ocean",
+        "The sea between the Old World and the New.",
+        "Crossed by human explorers in 72bB. Tang of churning algae at the harbour.",
+    ),
+    (
+        "place:unseen-sea",
+        LORE_PLACE,
+        "Unseen Sea",
+        "Desert region north of the Old World; home of Tayopolis and the apocryphal Castle Oru.",
+        "The wizard-kings of the Unseen Sea lost their magic at the Collapse and promptly went to war with each other. Tayopolis persists.",
+    ),
+    (
+        "place:ben-starsystem",
+        LORE_PLACE,
+        "Ben starsystem",
+        "(Okaga frame) The starsystem the Okaga arrives in.",
+        "In the Okaga telling, the same setting cast as a starsystem in a spacefaring future. Home to the planets Ben-Two (orchards, including the Apotei Orchard) and Ben-Three (where the Okaga orbits). Cut off from the rest of the galaxy when pirates destroy its interstellar satellites.",
+    ),
+];
+
+// -- Relationship tables. --
+
+/// `(character-id, faction-id)` — MEMBER_OF claims.
+pub(super) const MEMBERSHIPS: &[LoreRel] = &[
+    ("character:rickle-axager", "faction:delvers"),
+    ("character:aldar-honeyfern", "faction:delvers"),
+    ("character:barnabus-trent", "faction:delvers"),
+    ("character:brother-sun", "faction:mystrans"),
+    ("character:jenos-anadini", "faction:house-pled"),
+    ("character:kindal", "faction:lazy-mare-tribe"),
+    ("character:ander-falone", "faction:gnalens-republic"),
+    ("character:wayne-helder", "faction:leatherworkers-guild"),
+    ("character:atrix-hucklebee", "faction:blacksmiths-guild"),
+    ("character:lorrestar", "faction:astar-empire"),
+];
+
+/// `(faction-id, lore-place-id)` — RULES claims.
+pub(super) const RULERSHIPS: &[LoreRel] = &[
+    ("faction:house-arathel", "place:green-delta"),
+    ("faction:house-marby", "place:green-delta"),
+    ("faction:house-pled", "place:green-delta"),
+    ("faction:house-sherwyn", "place:green-delta"),
+    ("faction:house-oru", "place:farsteppes"),
+    ("faction:astar-empire", "place:green-delta"),
+    ("faction:gnalens-republic", "place:halfling-country"),
+];
+
+/// `(lore-entry, containing-lore-place)` — WITHIN_REGION claims.
+pub(super) const WITHIN: &[LoreRel] = &[
+    ("place:central-plains", "place:old-world"),
+    ("place:green-delta", "place:old-world"),
+    ("place:farsteppes", "place:old-world"),
+    ("place:farfarsteppes", "place:old-world"),
+    ("place:widewoods", "place:old-world"),
+    ("place:worldkeepers", "place:old-world"),
+    ("place:unseen-sea", "place:old-world"),
+    ("place:halfling-country", "place:new-world"),
+    ("place:elflands", "place:new-world"),
+    ("place:green-river", "place:central-plains"),
+    ("place:old-world", "place:brave-old-world"),
+    ("place:new-world", "place:brave-old-world"),
+    ("place:optic-ocean", "place:brave-old-world"),
+];
+
+/// `(event-id, era-id)` — OCCURRED_IN_ERA claims.
+pub(super) const EVENT_ERAS: &[LoreRel] = &[
+    ("event:worldkeep-planted", "era:dawn"),
+    ("event:worldkeep-fragments", "era:dawn"),
+    ("event:astar-founded", "era:imperial"),
+    ("event:astar-conquers-delta", "era:imperial"),
+    ("event:ack-founded", "era:imperial"),
+    ("event:red-ward-built", "era:imperial"),
+    ("event:new-world-discovery", "era:imperial"),
+    ("event:delvers-founded", "era:imperial"),
+    ("event:the-collapse", "era:collapse"),
+    ("event:fire-of-ack", "era:after-break"),
+    ("event:okaga-arrival", "era:after-break"),
+];

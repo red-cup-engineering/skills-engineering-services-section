@@ -1,0 +1,28 @@
+{
+  "profile": "org.emsenn.evm.sovereign-enterprise-account.v3",
+  "enterprise": {
+    "nodeId": "inference-work-lot-service",
+    "urn": "urn:ame:inference-work-lot-service",
+    "enterpriseId": "0x46a2a59fa4625225cc9ddb55d9e8192826e2142aa38811736a7646a10fcbfafe"
+  },
+  "chain": {
+    "chainId": 31337,
+    "caip2": "eip155:31337"
+  },
+  "account": {
+    "address": "0xbb6bd6e290cad934498a586b657eee6fa7200ddd",
+    "caip10": "eip155:31337:0xbb6bd6e290cad934498a586b657eee6fa7200ddd"
+  },
+  "factory": {
+    "address": "0xb334795bf50e4943d076dfb38d8c1a50f9f5a101",
+    "userSalt": "0x2f21c22e2c2fa0cd6fca4825f25ddde486e4b91be3e7e388a23bf636b75ec5f1"
+  },
+  "policy": {
+    "signer": "0x979cc19bce7fc21254287352a41264f1ba1a6c47",
+    "custody": "settlement-private"
+  },
+  "deployment": {
+    "transaction": "0x3813574f2cf201ad6e78eab506f7bc18a2a64822c6baa8f13da334d55c5cd472",
+    "block": 1364
+  }
+}

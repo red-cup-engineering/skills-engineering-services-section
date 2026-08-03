@@ -1,0 +1,70 @@
+{
+  "id": "exchange-20260721-034000-e7e207",
+  "packet": {
+    "model": "meta/llama-3.1-8b-instruct",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"antiPatterns\":{\"items\":{\"type\":\"string\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"firstDistributedProof\":{\"items\":{\"type\":\"string\"},\"maxItems\":10,\"minItems\":4,\"type\":\"array\"},\"missingSeams\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"carrier\":{\"type\":\"string\"},\"seam\":{\"type\":\"string\"},\"why\":{\"type\":\"string\"}},\"required\":[\"seam\",\"why\",\"carrier\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"ownership\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"faculty\":{\"type\":\"string\"},\"owner\":{\"type\":\"string\"}},\"required\":[\"faculty\",\"owner\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"}},\"required\":[\"missingSeams\",\"ownership\",\"firstDistributedProof\",\"antiPatterns\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"context\":{\"messages\":[{\"content\":\"Adversarially audit this network for why distributed RSI is dormant. Preserve sovereign competition and downshift work from models into scripts.\",\"role\":\"system\"},{\"content\":\"Observed existing sovereign variants:\\n1. free-compute-dev: persistent mission queue, parallel isolated actors, competing cloud planners, customer verification/integration, trajectory recall, resolver promotion. It has no installed/running worker and no ActivityStreams/A2A service ingress. Its pipeline currently escalates failed cheap rounds to difficulty 0.72 and learns to bypass base rounds.\\n2. Software Development Services Section: customer tenders, provider-authored bundles, exact capabilities, customer acceptance, provider-local MAPE-K mutation guard. It is a separate enterprise and may not be its own customer.\\n3. inference-work-lot-service: customer-side typed provider offer comparison and direct selected-provider A2A settlement.\\n4. Clockkeeper: live exact-operation pulse delivery only; never owns work.\\n5. recursive observation circuit synthesis/fabrication and RMN/WIT/RWIL assays are live sovereign providers.\\n6. Cloud Groq/NVIDIA/Gemini/Claude providers are live. Local NPU provider is advertised but its Lemonade endpoint is unavailable.\\nConstraints: no global queue, central scheduler, umbrella runtime, or primary implementation. Existing software-production enterprises must compete. Target economics are frontier model -> smaller models -> induced deterministic scripts, never cheap failure -> expensive model. Autonomous operation must continue with no Codex sessions.\",\"role\":\"user\"}],\"purpose\":\"Produce one candidate for independent free-compute-dev assay and bounded tool execution.\",\"supplierExclusions\":[\"urn:ame:bare-cedar-fog-npu-inference-team\",\"urn:ame:gemini-inference-team\",\"urn:ame:groq-inference-team\",\"urn:ame:claude-code-inference-team\"]},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"antiPatterns\":{\"items\":{\"type\":\"string\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"firstDistributedProof\":{\"items\":{\"type\":\"string\"},\"maxItems\":10,\"minItems\":4,\"type\":\"array\"},\"missingSeams\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"carrier\":{\"type\":\"string\"},\"seam\":{\"type\":\"string\"},\"why\":{\"type\":\"string\"}},\"required\":[\"seam\",\"why\",\"carrier\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"ownership\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"faculty\":{\"type\":\"string\"},\"owner\":{\"type\":\"string\"}},\"required\":[\"faculty\",\"owner\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"}},\"required\":[\"missingSeams\",\"ownership\",\"firstDistributedProof\",\"antiPatterns\"],\"type\":\"object\"}},\"residue\":{\"customerAcceptanceRequired\":true,\"reason\":\"no deterministic resolver covered the next context-complete work move\",\"type\":\"TypedWorkInferenceResidue\",\"workLot\":\"urn:work-lot:distributed-rsi-seam-audit:nvidia\"},\"workLot\":{\"id\":\"urn:work-lot:distributed-rsi-seam-audit:nvidia\",\"producer\":\"urn:ame:free-compute-dev\"}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "meta/llama-3.1-8b-instruct",
+    "text": "{\"missingSeams\":[{\"carrier\":\"urn:ame:free-compute-dev\",\"seam\":\"RSI is dormant\",\"why\":\"distributed RSI is dormant\"}],\"ownership\":[{\"faculty\":\"inference-work-lot-service\",\"owner\":\"urn:ame:free-compute-dev\"}],\"firstDistributedProof\":[\"urn:work-lot:distributed-rsi-seam-audit:nvidia\"],\"antiPatterns\":[\"free-compute-dev\"]}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-070037ef-f633-474e-b532-c901e1bb8381",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "content": "{\"missingSeams\":[{\"carrier\":\"urn:ame:free-compute-dev\",\"seam\":\"RSI is dormant\",\"why\":\"distributed RSI is dormant\"}],\"ownership\":[{\"faculty\":\"inference-work-lot-service\",\"owner\":\"urn:ame:free-compute-dev\"}],\"firstDistributedProof\":[\"urn:work-lot:distributed-rsi-seam-audit:nvidia\"],\"antiPatterns\":[\"free-compute-dev\"]}",
+            "role": "assistant",
+            "reasoning_content": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "created": 1784605199,
+      "model": "meta/llama-3.1-8b-instruct",
+      "object": "chat.completion",
+      "usage": {
+        "prompt_tokens": 928,
+        "completion_tokens": 86,
+        "total_tokens": 1014,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 16
+        }
+      },
+      "nvext": {
+        "worker_id": {
+          "prefill_worker_id": 7587896227968170000,
+          "prefill_dp_rank": 0,
+          "decode_worker_id": 7587896227968170000,
+          "decode_dp_rank": 0
+        },
+        "timing": {
+          "request_received_ms": 1784605199899,
+          "prefill_wait_time_ms": 2.054407,
+          "prefill_time_ms": 41.596344,
+          "ttft_ms": 43.650751,
+          "total_time_ms": 562.5064870000001,
+          "kv_hit_rate": 0.017241379310344827,
+          "router_queue_depth": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.5362593569999998,
+    "denomination": "nvidia-nim-api-requests"
+  }
+}

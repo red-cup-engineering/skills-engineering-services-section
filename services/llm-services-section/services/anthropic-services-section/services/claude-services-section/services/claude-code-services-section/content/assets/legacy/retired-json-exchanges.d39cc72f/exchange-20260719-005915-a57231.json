@@ -1,0 +1,136 @@
+{
+  "id": "exchange-20260719-005915-a57231",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON with keys nextArtifact,probe,admission,refusal. We have a disabled OpenAI-compatible registry template addressed by TAILSCALE_VLLM_BASE_URL and optional API key, plus a probe that checks URL safety, model response shape, latency and bounded output without exposing auth. Remote people have agreed to install software and offer their CPU/GPU through Tailscale, but no endpoint is presently configured. Name the smallest software artifact that turns one volunteer host into a safely discoverable contractable worker, the exact probe evidence needed before enabling it, the admission mutation, and a fail-closed refusal. Avoid governance work."
+      }
+    ],
+    "max-tokens": 280,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "nextArtifact",
+          "probe",
+          "admission",
+          "refusal"
+        ],
+        "properties": {
+          "nextArtifact": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 500
+          },
+          "probe": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 500
+          },
+          "admission": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          },
+          "refusal": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 300
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"nextArtifact\":\"A single `docker-compose.yml` on the volunteer host: service `vllm` using image `vllm/vllm-openai`, port `8000:8000` bound to `0.0.0.0`, command `--model <agreed-model> --served-model-name worker --max-model-len 4096`. Volunteer runs `docker compose up -d` then sends the output of `tailscale ip -4`. Tailscale ACLs already gate the 100.x subnet; no other configuration is required from the volunteer.\",\"probe\":\"Four sequential checks — all must pass. (1) Candidate URL matches `^http://100\\\\.` (Tailscale IP, not public internet). (2) `GET /v1/models` → HTTP 200, response body contains `.data[0].id`. (3) `POST /v1/completions` with `{\\\"model\\\":\\\"worker\\\",\\\"prompt\\\":\\\"ping\\\",\\\"max_tokens\\\":1,\\\"temperature\\\":0}` → HTTP 200 within 30 s. (4) `choices[0].text` byte-length ≤ 50 (bounded output). No `Authorization` header is sent at any step. On full pass, emit a probe receipt containing `url`, `model_id`, and `latency_ms`.\",\"admission\":\"On receipt of a valid probe receipt: write `TAILSCALE_VLLM_BASE_URL=<probed_url>` into the registry template, flip `enabled: true`, and record `model_id` and `latency_ms` as annotations. The operation is idempotent — re-probing an already-enabled URL updates `latency_ms` only and does not toggle `enabled` off mid-update.\",\"refusal\":\"If any of the four probe checks fails or the 30 s deadline is exceeded, the registry entry remains `enabled: false`, `TAILSCALE_VLLM_BASE_URL` is not written, and the caller receives `{\\\"error\\\":\\\"probe_failed\\\",\\\"reason\\\":\\\"<first_failing_check>\\\"}`. No partial state is persisted.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 34115,
+      "duration_api_ms": 35023,
+      "ttft_ms": 29406,
+      "ttft_stream_ms": 1302,
+      "time_to_request_ms": 29,
+      "num_turns": 2,
+      "result": "{\"nextArtifact\":\"A single `docker-compose.yml` on the volunteer host: service `vllm` using image `vllm/vllm-openai`, port `8000:8000` bound to `0.0.0.0`, command `--model <agreed-model> --served-model-name worker --max-model-len 4096`. Volunteer runs `docker compose up -d` then sends the output of `tailscale ip -4`. Tailscale ACLs already gate the 100.x subnet; no other configuration is required from the volunteer.\",\"probe\":\"Four sequential checks — all must pass. (1) Candidate URL matches `^http://100\\\\.` (Tailscale IP, not public internet). (2) `GET /v1/models` → HTTP 200, response body contains `.data[0].id`. (3) `POST /v1/completions` with `{\\\"model\\\":\\\"worker\\\",\\\"prompt\\\":\\\"ping\\\",\\\"max_tokens\\\":1,\\\"temperature\\\":0}` → HTTP 200 within 30 s. (4) `choices[0].text` byte-length ≤ 50 (bounded output). No `Authorization` header is sent at any step. On full pass, emit a probe receipt containing `url`, `model_id`, and `latency_ms`.\",\"admission\":\"On receipt of a valid probe receipt: write `TAILSCALE_VLLM_BASE_URL=<probed_url>` into the registry template, flip `enabled: true`, and record `model_id` and `latency_ms` as annotations. The operation is idempotent — re-probing an already-enabled URL updates `latency_ms` only and does not toggle `enabled` off mid-update.\",\"refusal\":\"If any of the four probe checks fails or the 30 s deadline is exceeded, the registry entry remains `enabled: false`, `TAILSCALE_VLLM_BASE_URL` is not written, and the caller receives `{\\\"error\\\":\\\"probe_failed\\\",\\\"reason\\\":\\\"<first_failing_check>\\\"}`. No partial state is persisted.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "39fb1b38-ba38-4726-8a4a-5ffbed413d84",
+      "total_cost_usd": 0.07892900000000001,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 7206,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 2328,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7206,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 2328,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 7206,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 7206
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 659,
+          "outputTokens": 21,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0007639999999999999,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 2328,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 7206,
+          "webSearchRequests": 0,
+          "costUSD": 0.07816500000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "nextArtifact": "A single `docker-compose.yml` on the volunteer host: service `vllm` using image `vllm/vllm-openai`, port `8000:8000` bound to `0.0.0.0`, command `--model <agreed-model> --served-model-name worker --max-model-len 4096`. Volunteer runs `docker compose up -d` then sends the output of `tailscale ip -4`. Tailscale ACLs already gate the 100.x subnet; no other configuration is required from the volunteer.",
+        "probe": "Four sequential checks — all must pass. (1) Candidate URL matches `^http://100\\.` (Tailscale IP, not public internet). (2) `GET /v1/models` → HTTP 200, response body contains `.data[0].id`. (3) `POST /v1/completions` with `{\"model\":\"worker\",\"prompt\":\"ping\",\"max_tokens\":1,\"temperature\":0}` → HTTP 200 within 30 s. (4) `choices[0].text` byte-length ≤ 50 (bounded output). No `Authorization` header is sent at any step. On full pass, emit a probe receipt containing `url`, `model_id`, and `latency_ms`.",
+        "admission": "On receipt of a valid probe receipt: write `TAILSCALE_VLLM_BASE_URL=<probed_url>` into the registry template, flip `enabled: true`, and record `model_id` and `latency_ms` as annotations. The operation is idempotent — re-probing an already-enabled URL updates `latency_ms` only and does not toggle `enabled` off mid-update.",
+        "refusal": "If any of the four probe checks fails or the 30 s deadline is exceeded, the registry entry remains `enabled: false`, `TAILSCALE_VLLM_BASE_URL` is not written, and the caller receives `{\"error\":\"probe_failed\",\"reason\":\"<first_failing_check>\"}`. No partial state is persisted."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "c22e90ff-437c-4fc6-a737-b597c1e020e6"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 38.42,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

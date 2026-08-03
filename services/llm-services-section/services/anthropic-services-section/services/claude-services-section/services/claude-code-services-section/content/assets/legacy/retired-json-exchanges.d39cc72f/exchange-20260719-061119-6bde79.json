@@ -1,0 +1,193 @@
+{
+  "id": "exchange-20260719-061119-6bde79",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Specify one implementable vertical slice that can take a real repository task from objective through cloud fanout and tool-use to a test-verified integrated patch, then learn from it.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "component",
+          "absentMechanism",
+          "design",
+          "firstVerticalSlice",
+          "failureModes",
+          "successMetric"
+        ],
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "absentMechanism": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 700
+          },
+          "design": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            }
+          },
+          "firstVerticalSlice": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 400
+            }
+          },
+          "failureModes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 300
+            }
+          },
+          "successMetric": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"component\":\"Work-claim/settle loop with append-only tool-use capture\",\"absentMechanism\":\"The seed has one human-triggered linear pass: model→apply→test. Five connectives are missing: (1) queue-backed work-claim with heartbeat/TTL for autonomous pickup; (2) DAG decomposition emitting typed subtasks with dependency edges enabling safe fanout; (3) append-only per-step capture of (task_id, step_id, tool, input, output, timestamp); (4) a settlement gate withholding integration until test-verified exit-0 is recorded; (5) a governed post-settlement consolidation call that writes a memory entry. Without these, no objective can move from intake through fanout and tool-use to a verified patch and learning without human hand-carrying each transition.\",\"design\":[\"Task queue as SQLite WAL table: columns (task_id UUID, parent_id, status enum(pending|claimed|settled|failed), tool_type, input_json, output_json, claimed_by, claim_expires_at, heartbeat_at). Workers claim via UPDATE WHERE status=pending AND claim_expires_at < now() LIMIT 1 RETURNING *, preventing double-claim without a lock server.\",\"Decomposer: cheapest-sufficient model call (Gemini Flash via LISS) receives (objective, repo_snapshot_hash), returns a JSON DAG: {nodes:[{id, tool_type, input_template, depends_on:[]}]}. DAG is validated by topological sort before any node is enqueued. The decomposer output is itself a settled task node.\",\"Worker pool: N stateless processes each polling for nodes whose depends_on are all settled. Each executes its tool deterministically (read_file, grep, apply_patch, run_tests, model_call), appends one capture record to the append-only log, then updates node status to settled or failed.\",\"Fanout: all nodes with no unsettled dependencies are simultaneously claimable. Workers are model-agnostic; LISS selects the cheapest endpoint per tool_type and token estimate. Code-generation nodes use Gemini Flash; escalation nodes use Claude Sonnet via OpenRouter.\",\"Settlement gate: run_tests nodes only transition to settled on exit_code==0. On failure, the parent subtask chain requeues with stderr appended to input_json. Two consecutive green runs required to guard against flaky tests.\",\"Integration: a merge_patch node (always the final leaf) receives all apply_patch outputs in dependency order, concatenates diffs, resolves conflicts via git apply --3way, emits a single patch. Enqueued only after all sibling nodes settle.\",\"Consolidation: a governed model_call node enqueued only after merge_patch settles — enforced by depends_on at claim time, not convention. Reads the full trace, emits a structured memory entry {pattern, files_touched, fix_type, what_failed, token_cost}, writes it to the memory store.\",\"Context projection: each model_call node receives only files named in its input_json plus its depends_on outputs. Workers expand context lazily via logged read_file calls during their turn, keeping each call within a 32k token budget.\"],\"firstVerticalSlice\":[\"Input: one real GitHub issue — 'ImportError: cannot import name X from module Y' — in a repo with an existing test suite. The issue URL is the only human input.\",\"Decomposer node runs: reads the issue body and repo file-tree hash, emits a 4-node DAG: grep_for_symbol, read_source_file, propose_edit, run_tests.\",\"grep_for_symbol and read_source_file are independent and claimed in parallel by two workers. Each appends its (tool, input, output) record to the capture log. Elapsed: ~3 s.\",\"propose_edit is claimed once both dependencies settle. Worker sends grep result and file content to Gemini Flash via LISS, receives a unified diff. Appends to log. Elapsed: ~8 s.\",\"apply_patch applies the diff via git apply; run_tests executes the repo's test command. On exit 0 both settle. On failure, propose_edit requeues with test stderr appended to context.\",\"merge_patch (pass-through for a single patch) emits the final diff and opens a draft PR via a logged GitHub API tool call.\",\"Consolidation reads the full 6-node trace and writes one memory entry: {fix_type: moved_symbol, pattern: 'grep before proposing avoids hallucinated paths', token_cost: 1840}. Task complete.\"],\"failureModes\":[\"Decomposer emits a cyclic DAG — topological sort at enqueue time rejects it and requeues the decomposer with the cycle description in context, forcing corrected emission.\",\"Worker dies mid-step and heartbeat expires — any worker re-claims the node because claim_expires_at < now(); deterministic tool calls are idempotent; model_call nodes carry full input_json so replay is safe.\",\"run_tests passes on a flaky test then fails in CI — settlement requires two consecutive exit-0 runs with a 30-second gap; a single green is insufficient.\",\"Consolidation fires before all patches are verified — structurally prevented: consolidation's depends_on includes merge_patch; the claim-poll check enforces this, not a runtime flag.\",\"propose_edit hallucinates a file path — apply_patch runs git apply --check first; failure appends 'file not found: <path>' to context and requeues propose_edit with grep output as ground truth.\",\"Context projection misses a transitive dependency — the propose_edit worker may issue read_file calls during its turn; each is logged and appended to context before the model call executes.\"],\"successMetric\":\"A real ImportError issue moves from filed GitHub issue to merged PR with passing CI, full append-only tool-use trace in the capture log, and one structured memory entry persisted — zero human keystrokes after issue creation, wall-clock time under five minutes, verified across three independent runs on different repositories.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 99465,
+      "duration_api_ms": 100350,
+      "ttft_ms": 35096,
+      "ttft_stream_ms": 2905,
+      "time_to_request_ms": 40,
+      "num_turns": 3,
+      "result": "{\"component\":\"Work-claim/settle loop with append-only tool-use capture\",\"absentMechanism\":\"The seed has one human-triggered linear pass: model→apply→test. Five connectives are missing: (1) queue-backed work-claim with heartbeat/TTL for autonomous pickup; (2) DAG decomposition emitting typed subtasks with dependency edges enabling safe fanout; (3) append-only per-step capture of (task_id, step_id, tool, input, output, timestamp); (4) a settlement gate withholding integration until test-verified exit-0 is recorded; (5) a governed post-settlement consolidation call that writes a memory entry. Without these, no objective can move from intake through fanout and tool-use to a verified patch and learning without human hand-carrying each transition.\",\"design\":[\"Task queue as SQLite WAL table: columns (task_id UUID, parent_id, status enum(pending|claimed|settled|failed), tool_type, input_json, output_json, claimed_by, claim_expires_at, heartbeat_at). Workers claim via UPDATE WHERE status=pending AND claim_expires_at < now() LIMIT 1 RETURNING *, preventing double-claim without a lock server.\",\"Decomposer: cheapest-sufficient model call (Gemini Flash via LISS) receives (objective, repo_snapshot_hash), returns a JSON DAG: {nodes:[{id, tool_type, input_template, depends_on:[]}]}. DAG is validated by topological sort before any node is enqueued. The decomposer output is itself a settled task node.\",\"Worker pool: N stateless processes each polling for nodes whose depends_on are all settled. Each executes its tool deterministically (read_file, grep, apply_patch, run_tests, model_call), appends one capture record to the append-only log, then updates node status to settled or failed.\",\"Fanout: all nodes with no unsettled dependencies are simultaneously claimable. Workers are model-agnostic; LISS selects the cheapest endpoint per tool_type and token estimate. Code-generation nodes use Gemini Flash; escalation nodes use Claude Sonnet via OpenRouter.\",\"Settlement gate: run_tests nodes only transition to settled on exit_code==0. On failure, the parent subtask chain requeues with stderr appended to input_json. Two consecutive green runs required to guard against flaky tests.\",\"Integration: a merge_patch node (always the final leaf) receives all apply_patch outputs in dependency order, concatenates diffs, resolves conflicts via git apply --3way, emits a single patch. Enqueued only after all sibling nodes settle.\",\"Consolidation: a governed model_call node enqueued only after merge_patch settles — enforced by depends_on at claim time, not convention. Reads the full trace, emits a structured memory entry {pattern, files_touched, fix_type, what_failed, token_cost}, writes it to the memory store.\",\"Context projection: each model_call node receives only files named in its input_json plus its depends_on outputs. Workers expand context lazily via logged read_file calls during their turn, keeping each call within a 32k token budget.\"],\"firstVerticalSlice\":[\"Input: one real GitHub issue — 'ImportError: cannot import name X from module Y' — in a repo with an existing test suite. The issue URL is the only human input.\",\"Decomposer node runs: reads the issue body and repo file-tree hash, emits a 4-node DAG: grep_for_symbol, read_source_file, propose_edit, run_tests.\",\"grep_for_symbol and read_source_file are independent and claimed in parallel by two workers. Each appends its (tool, input, output) record to the capture log. Elapsed: ~3 s.\",\"propose_edit is claimed once both dependencies settle. Worker sends grep result and file content to Gemini Flash via LISS, receives a unified diff. Appends to log. Elapsed: ~8 s.\",\"apply_patch applies the diff via git apply; run_tests executes the repo's test command. On exit 0 both settle. On failure, propose_edit requeues with test stderr appended to context.\",\"merge_patch (pass-through for a single patch) emits the final diff and opens a draft PR via a logged GitHub API tool call.\",\"Consolidation reads the full 6-node trace and writes one memory entry: {fix_type: moved_symbol, pattern: 'grep before proposing avoids hallucinated paths', token_cost: 1840}. Task complete.\"],\"failureModes\":[\"Decomposer emits a cyclic DAG — topological sort at enqueue time rejects it and requeues the decomposer with the cycle description in context, forcing corrected emission.\",\"Worker dies mid-step and heartbeat expires — any worker re-claims the node because claim_expires_at < now(); deterministic tool calls are idempotent; model_call nodes carry full input_json so replay is safe.\",\"run_tests passes on a flaky test then fails in CI — settlement requires two consecutive exit-0 runs with a 30-second gap; a single green is insufficient.\",\"Consolidation fires before all patches are verified — structurally prevented: consolidation's depends_on includes merge_patch; the claim-poll check enforces this, not a runtime flag.\",\"propose_edit hallucinates a file path — apply_patch runs git apply --check first; failure appends 'file not found: <path>' to context and requeues propose_edit with grep output as ground truth.\",\"Context projection misses a transitive dependency — the propose_edit worker may issue read_file calls during its turn; each is logged and appended to context before the model call executes.\"],\"successMetric\":\"A real ImportError issue moves from filed GitHub issue to merged PR with passing CI, full append-only tool-use trace in the capture log, and one structured memory entry persisted — zero human keystrokes after issue creation, wall-clock time under five minutes, verified across three independent runs on different repositories.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "001ea13e-d539-475d-adc4-ace57971a4f8",
+      "total_cost_usd": 0.10584589999999999,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 4327,
+        "cache_read_input_tokens": 14443,
+        "output_tokens": 4972,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4327,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 1506,
+            "cache_read_input_tokens": 7610,
+            "cache_creation_input_tokens": 3550,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 3550
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 874,
+          "outputTokens": 17,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000959,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 4,
+          "outputTokens": 4972,
+          "cacheReadInputTokens": 14443,
+          "cacheCreationInputTokens": 4327,
+          "webSearchRequests": 0,
+          "costUSD": 0.1048869,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "component": "Work-claim/settle loop with append-only tool-use capture",
+        "absentMechanism": "The seed has one human-triggered linear pass: model→apply→test. Five connectives are missing: (1) queue-backed work-claim with heartbeat/TTL for autonomous pickup; (2) DAG decomposition emitting typed subtasks with dependency edges enabling safe fanout; (3) append-only per-step capture of (task_id, step_id, tool, input, output, timestamp); (4) a settlement gate withholding integration until test-verified exit-0 is recorded; (5) a governed post-settlement consolidation call that writes a memory entry. Without these, no objective can move from intake through fanout and tool-use to a verified patch and learning without human hand-carrying each transition.",
+        "design": [
+          "Task queue as SQLite WAL table: columns (task_id UUID, parent_id, status enum(pending|claimed|settled|failed), tool_type, input_json, output_json, claimed_by, claim_expires_at, heartbeat_at). Workers claim via UPDATE WHERE status=pending AND claim_expires_at < now() LIMIT 1 RETURNING *, preventing double-claim without a lock server.",
+          "Decomposer: cheapest-sufficient model call (Gemini Flash via LISS) receives (objective, repo_snapshot_hash), returns a JSON DAG: {nodes:[{id, tool_type, input_template, depends_on:[]}]}. DAG is validated by topological sort before any node is enqueued. The decomposer output is itself a settled task node.",
+          "Worker pool: N stateless processes each polling for nodes whose depends_on are all settled. Each executes its tool deterministically (read_file, grep, apply_patch, run_tests, model_call), appends one capture record to the append-only log, then updates node status to settled or failed.",
+          "Fanout: all nodes with no unsettled dependencies are simultaneously claimable. Workers are model-agnostic; LISS selects the cheapest endpoint per tool_type and token estimate. Code-generation nodes use Gemini Flash; escalation nodes use Claude Sonnet via OpenRouter.",
+          "Settlement gate: run_tests nodes only transition to settled on exit_code==0. On failure, the parent subtask chain requeues with stderr appended to input_json. Two consecutive green runs required to guard against flaky tests.",
+          "Integration: a merge_patch node (always the final leaf) receives all apply_patch outputs in dependency order, concatenates diffs, resolves conflicts via git apply --3way, emits a single patch. Enqueued only after all sibling nodes settle.",
+          "Consolidation: a governed model_call node enqueued only after merge_patch settles — enforced by depends_on at claim time, not convention. Reads the full trace, emits a structured memory entry {pattern, files_touched, fix_type, what_failed, token_cost}, writes it to the memory store.",
+          "Context projection: each model_call node receives only files named in its input_json plus its depends_on outputs. Workers expand context lazily via logged read_file calls during their turn, keeping each call within a 32k token budget."
+        ],
+        "firstVerticalSlice": [
+          "Input: one real GitHub issue — 'ImportError: cannot import name X from module Y' — in a repo with an existing test suite. The issue URL is the only human input.",
+          "Decomposer node runs: reads the issue body and repo file-tree hash, emits a 4-node DAG: grep_for_symbol, read_source_file, propose_edit, run_tests.",
+          "grep_for_symbol and read_source_file are independent and claimed in parallel by two workers. Each appends its (tool, input, output) record to the capture log. Elapsed: ~3 s.",
+          "propose_edit is claimed once both dependencies settle. Worker sends grep result and file content to Gemini Flash via LISS, receives a unified diff. Appends to log. Elapsed: ~8 s.",
+          "apply_patch applies the diff via git apply; run_tests executes the repo's test command. On exit 0 both settle. On failure, propose_edit requeues with test stderr appended to context.",
+          "merge_patch (pass-through for a single patch) emits the final diff and opens a draft PR via a logged GitHub API tool call.",
+          "Consolidation reads the full 6-node trace and writes one memory entry: {fix_type: moved_symbol, pattern: 'grep before proposing avoids hallucinated paths', token_cost: 1840}. Task complete."
+        ],
+        "failureModes": [
+          "Decomposer emits a cyclic DAG — topological sort at enqueue time rejects it and requeues the decomposer with the cycle description in context, forcing corrected emission.",
+          "Worker dies mid-step and heartbeat expires — any worker re-claims the node because claim_expires_at < now(); deterministic tool calls are idempotent; model_call nodes carry full input_json so replay is safe.",
+          "run_tests passes on a flaky test then fails in CI — settlement requires two consecutive exit-0 runs with a 30-second gap; a single green is insufficient.",
+          "Consolidation fires before all patches are verified — structurally prevented: consolidation's depends_on includes merge_patch; the claim-poll check enforces this, not a runtime flag.",
+          "propose_edit hallucinates a file path — apply_patch runs git apply --check first; failure appends 'file not found: <path>' to context and requeues propose_edit with grep output as ground truth.",
+          "Context projection misses a transitive dependency — the propose_edit worker may issue read_file calls during its turn; each is logged and appended to context before the model call executes."
+        ],
+        "successMetric": "A real ImportError issue moves from filed GitHub issue to merged PR with passing CI, full append-only tool-use trace in the capture log, and one structured memory entry persisted — zero human keystrokes after issue creation, wall-clock time under five minutes, verified across three independent runs on different repositories."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "1a3c1460-ad74-4948-94d2-0967c8347506"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 115.054,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

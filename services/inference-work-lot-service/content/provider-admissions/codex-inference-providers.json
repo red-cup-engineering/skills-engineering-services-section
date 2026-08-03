@@ -1,0 +1,11 @@
+{
+  "kind": "inference-work-lot.provider-admissions",
+  "version": 1,
+  "market": "urn:ame:inference-work-lot-service:provider-admissions",
+  "admissions": [
+    {
+      "actor": "urn:ame:gemini-inference-team",
+      "agentCard": "https://gemini-inference-team-a2d7mjqbfa-uc.a.run.app/.well-known/agent-card.json"
+    }
+  ]
+}

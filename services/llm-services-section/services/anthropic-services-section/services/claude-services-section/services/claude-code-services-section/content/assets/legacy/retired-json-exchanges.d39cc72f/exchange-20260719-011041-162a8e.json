@@ -1,0 +1,176 @@
+{
+  "id": "exchange-20260719-011041-162a8e",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only contracted JSON. Review exact proposal-development bid urn:sha256:ba43e269b4ad365f5a30bac172b3b526d7a2a49062a2e18b4cb8c390790d606c for an award decision, not implementation/staging/admission. Its predecessor was blocked by TOCTOU, symlink/traversal, partial-write recovery, receipt authenticity, undefined mesh scope, replay, and receipt-type ambiguity. The superseding contract now requires canonical realpath+lstat component snapshots; rejects unsafe/symlink segments; uses private create-only candidate; immediate precommit and postcommit revalidation; prepared/committed transitions with crash injection and deterministic recovery; content-ID-valid exact product/Accept/decision-receipt linkage; imports adopted inspectMeshScope/admitEnterpriseInstall/revalidateEnterpriseInstall without copying classifier and binds request SHA/snapshots; append-only prepared/committed capability and distinct grant consumption for at-most-once/replay; distinct AcceptedSoftwareDeliveryStagingReceipt and SoftwareDeliveryAdmissionReceipt; admission consumes only exact content-valid staging receipt; accepted alone creates nothing, staged alone creates no admission; refusals leave committed target/receipt state unchanged; zero network/spend/credentials/Git/customer/foreign/TTI effects. Delivery is proposal bytes only. Decide whether the seven predecessor blockers are closed sufficiently to let the Leader decide whether to fund implementation."
+      }
+    ],
+    "max-tokens": 550,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "reviewTarget",
+          "verdict",
+          "toctouAndPathClosed",
+          "crashAndReplayClosed",
+          "receiptAndMeshClosed",
+          "blockingIssues",
+          "nonclaims"
+        ],
+        "properties": {
+          "reviewTarget": {
+            "const": "urn:sha256:ba43e269b4ad365f5a30bac172b3b526d7a2a49062a2e18b4cb8c390790d606c"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "terms-sufficient-for-award-decision",
+              "needs-repair",
+              "refuse"
+            ]
+          },
+          "toctouAndPathClosed": {
+            "type": "boolean"
+          },
+          "crashAndReplayClosed": {
+            "type": "boolean"
+          },
+          "receiptAndMeshClosed": {
+            "type": "boolean"
+          },
+          "blockingIssues": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "nonclaims": {
+            "type": "array",
+            "minItems": 5,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "enum": [
+                "award-decision",
+                "implementation-exists",
+                "customer-acceptance",
+                "staging-authority",
+                "admission-authority",
+                "receiver-installation",
+                "tti-authority"
+              ]
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"reviewTarget\":\"urn:sha256:ba43e269b4ad365f5a30bac172b3b526d7a2a49062a2e18b4cb8c390790d606c\",\"verdict\":\"terms-sufficient-for-award-decision\",\"toctouAndPathClosed\":true,\"crashAndReplayClosed\":true,\"receiptAndMeshClosed\":true,\"blockingIssues\":[],\"nonclaims\":[\"award-decision\",\"implementation-exists\",\"customer-acceptance\",\"staging-authority\",\"admission-authority\",\"receiver-installation\",\"tti-authority\"]}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 29630,
+      "duration_api_ms": 30508,
+      "ttft_ms": 28208,
+      "ttft_stream_ms": 1209,
+      "time_to_request_ms": 48,
+      "num_turns": 2,
+      "result": "{\"reviewTarget\":\"urn:sha256:ba43e269b4ad365f5a30bac172b3b526d7a2a49062a2e18b4cb8c390790d606c\",\"verdict\":\"terms-sufficient-for-award-decision\",\"toctouAndPathClosed\":true,\"crashAndReplayClosed\":true,\"receiptAndMeshClosed\":true,\"blockingIssues\":[],\"nonclaims\":[\"award-decision\",\"implementation-exists\",\"customer-acceptance\",\"staging-authority\",\"admission-authority\",\"receiver-installation\",\"tti-authority\"]}",
+      "stop_reason": "tool_use",
+      "session_id": "146cba9c-3866-4b95-a396-652a58f9d3d8",
+      "total_cost_usd": 0.085069,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 7593,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 2571,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7593,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 2571,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 7593,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 7593
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 862,
+          "outputTokens": 15,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000937,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 2571,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 7593,
+          "webSearchRequests": 0,
+          "costUSD": 0.08413200000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "reviewTarget": "urn:sha256:ba43e269b4ad365f5a30bac172b3b526d7a2a49062a2e18b4cb8c390790d606c",
+        "verdict": "terms-sufficient-for-award-decision",
+        "toctouAndPathClosed": true,
+        "crashAndReplayClosed": true,
+        "receiptAndMeshClosed": true,
+        "blockingIssues": [],
+        "nonclaims": [
+          "award-decision",
+          "implementation-exists",
+          "customer-acceptance",
+          "staging-authority",
+          "admission-authority",
+          "receiver-installation",
+          "tti-authority"
+        ]
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "1247606b-125b-4d93-a6de-ca17cdd73b24"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 34.713,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

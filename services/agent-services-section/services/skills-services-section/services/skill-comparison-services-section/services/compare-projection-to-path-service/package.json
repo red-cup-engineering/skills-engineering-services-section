@@ -1,0 +1,29 @@
+{
+  "name": "@red-cup-engineering/compare-projection-to-path-service",
+  "version": "0.1.0",
+  "description": "Compares a skill record's would-be projection against what actually sits at a target directory, read-only. Reports a missing SKILL.md, a missing or byte-differing script, and SKILL.md content differing from what would be rendered.",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "exports": {
+    ".": "./src/compare-projection-to-path.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/compare-projection-to-path.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "dependencies": {
+    "@red-cup-engineering/skills-services-section": "0.1.0"
+  },
+  "devDependencies": {
+    "@red-cup-engineering/project-skill-to-path-service": "0.1.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

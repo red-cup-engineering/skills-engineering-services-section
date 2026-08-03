@@ -1,0 +1,175 @@
+{
+  "id": "exchange-20260719-010322-2f6cc7",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only contracted JSON. Review proposal-only NotebookLM audio delivery terms for an award decision, not implementation or live use. Unsafe current result exposes provider-local path. Proposed owner-local result requires audioBase64, audio/mpeg, byteLength, audioDigest, sourcePacketDigest, notebookSourceReceiptId; prohibits path; verifies MP3 signature/length/SHA-256, provider-owned receipt, and exact equality of result bindings to generation solicitation; mismatches refuse. Dry-run must make zero Google/Discord/network/spend/customer/foreign effects. Decide whether confused-deputy, binding, path-privacy, or downstream NotebookLMAudioArtifact composition gaps still block a Leader award of proposal development bid urn:sha256:7180be4c0057cb4f55d5f3744a5f4ec09dfe7b45abc1b4e69a2b43a1452bf60a."
+      }
+    ],
+    "max-tokens": 450,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "reviewTarget",
+          "verdict",
+          "boundaryCovered",
+          "bindingsSufficient",
+          "pathPrivacySufficient",
+          "blockingIssues",
+          "nonclaims"
+        ],
+        "properties": {
+          "reviewTarget": {
+            "const": "urn:sha256:7180be4c0057cb4f55d5f3744a5f4ec09dfe7b45abc1b4e69a2b43a1452bf60a"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "terms-sufficient-for-award-decision",
+              "needs-repair",
+              "refuse"
+            ]
+          },
+          "boundaryCovered": {
+            "type": "boolean"
+          },
+          "bindingsSufficient": {
+            "type": "boolean"
+          },
+          "pathPrivacySufficient": {
+            "type": "boolean"
+          },
+          "blockingIssues": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "nonclaims": {
+            "type": "array",
+            "minItems": 5,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "enum": [
+                "award-decision",
+                "implementation-exists",
+                "customer-acceptance",
+                "receiver-admission",
+                "live-notebooklm-authority",
+                "discord-authority",
+                "external-effects"
+              ]
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"reviewTarget\":\"urn:sha256:7180be4c0057cb4f55d5f3744a5f4ec09dfe7b45abc1b4e69a2b43a1452bf60a\",\"verdict\":\"terms-sufficient-for-award-decision\",\"boundaryCovered\":true,\"bindingsSufficient\":true,\"pathPrivacySufficient\":true,\"blockingIssues\":[],\"nonclaims\":[\"implementation-exists\",\"customer-acceptance\",\"receiver-admission\",\"live-notebooklm-authority\",\"discord-authority\",\"external-effects\"]}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 26983,
+      "duration_api_ms": 27874,
+      "ttft_ms": 25832,
+      "ttft_stream_ms": 1091,
+      "time_to_request_ms": 63,
+      "num_turns": 2,
+      "result": "{\"reviewTarget\":\"urn:sha256:7180be4c0057cb4f55d5f3744a5f4ec09dfe7b45abc1b4e69a2b43a1452bf60a\",\"verdict\":\"terms-sufficient-for-award-decision\",\"boundaryCovered\":true,\"bindingsSufficient\":true,\"pathPrivacySufficient\":true,\"blockingIssues\":[],\"nonclaims\":[\"implementation-exists\",\"customer-acceptance\",\"receiver-admission\",\"live-notebooklm-authority\",\"discord-authority\",\"external-effects\"]}",
+      "stop_reason": "tool_use",
+      "session_id": "ac3dc812-fb43-4a23-af1c-8e78b2aa899b",
+      "total_cost_usd": 0.074484,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 7467,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 1923,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7467,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 1923,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 7467,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 7467
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 738,
+          "outputTokens": 18,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0008280000000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 1923,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 7467,
+          "webSearchRequests": 0,
+          "costUSD": 0.073656,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "reviewTarget": "urn:sha256:7180be4c0057cb4f55d5f3744a5f4ec09dfe7b45abc1b4e69a2b43a1452bf60a",
+        "verdict": "terms-sufficient-for-award-decision",
+        "boundaryCovered": true,
+        "bindingsSufficient": true,
+        "pathPrivacySufficient": true,
+        "blockingIssues": [],
+        "nonclaims": [
+          "implementation-exists",
+          "customer-acceptance",
+          "receiver-admission",
+          "live-notebooklm-authority",
+          "discord-authority",
+          "external-effects"
+        ]
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "6b5bb91f-d5a8-411f-8fda-e11c9f55d9b8"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 32.34,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emsenn/schema/skill",
+  "title": "Skill",
+  "description": "An invocable procedure, and the unit at which an agent acts on the substrate; admissible only if it declares a name and a description.",
+  "$comment": "A skill is an invocable procedure, and it is the unit at which an agent acts on the substrate. Its record is read off the script's own leading JSDoc header rather than a private declaration vocabulary: `name` is derived from the script's filename, `description` from the standard `@description` tag, and whatever `@param`, `@returns`, and `@throws` tags the header carries become `params`, `returns`, and `throws` here. A skill sits at the third rung of the formality progression observation -> instinct -> skill -> tool; it is the office's constructor, and constructors are the one component of an office that is universally F3-formal.",
+  "type": "object",
+  "required": [
+    "name",
+    "description"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "$ref": "#/$defs/actId",
+      "$comment": "Equals the containing directory's basename, and before projection, the flat source script's basename without extension. The harness resolves the skill by this name; a mismatch installs a skill nobody can invoke by the name they read."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "$comment": "What it does and when to use it. The only field the harness shows before the body loads, so it carries the whole triggering decision, written for a blank incumbent with no access to emsenn's judgment."
+    },
+    "params": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/predicatePattern"
+      },
+      "$comment": "Read off the script header's `@param` tags, in source order — a standard JSDoc concept, not a schema-invented one. Optional: a skill that takes no argument declares none."
+    },
+    "returns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/predicatePattern"
+      },
+      "$comment": "Read off the script header's `@returns` tags. Optional."
+    },
+    "throws": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/predicatePattern"
+      },
+      "$comment": "Read off the script header's `@throws` tags. Optional."
+    },
+    "provides-capability": {
+      "$ref": "#/$defs/capabilityId",
+      "$comment": "What invoking this skill makes available. Read by eligibility-by-capabilities at dispatch."
+    },
+    "requires-capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/capabilityId"
+      },
+      "$comment": "The capabilities the invoker must hold. Checked against the dispatchable's held set; this is where the skill layer and the capability layer actually meet."
+    },
+    "requires-skills": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/actId"
+      },
+      "$comment": "Composition — skills this skill calls."
+    },
+    "input-shape": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output-shape": {
+      "type": "string",
+      "minLength": 1
+    },
+    "script": {
+      "type": "string",
+      "pattern": "^scripts/[^\\s]+$",
+      "$comment": "The body's entrypoint, relative to the skill directory. Repo-relative or absolute paths are refused: the whole directory copies on install, so a path reaching outside it names a file the incumbent will not have. Derived from the source filename, never declared in the header."
+    },
+    "install": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "claude",
+          "codex"
+        ]
+      }
+    }
+  },
+  "$comment-absences": "No duty key, no office key, no position key: a skill does not name what bears it. An office's provides-skill list and its deontic profile are where the relation lives — an agent's provided set is 'the union of its directly-listed skills plus the skills its offices' duties qualify it to invoke.' No contract key: `params`, `throws`, and `returns` — read off the script's own JSDoc — are the closest thing to a contract this schema states; there is no separate `witness` or `closure-kind` declaration layered on top of them. No registry key: the substrate is the registry — 'there is no separate registry, no compiled list of available skills, no service layer that mediates skill discovery.'",
+  "$comment-projection": "This file is a PROJECTION, not a hand-authored source of law: it is a rendering of the skill record shape into JSON Schema form for this package's tooling. If the shape of a skill record changes, change the canonical definition and re-render this file — do not treat an edit made directly here as the record of that decision.",
+  "$defs": {
+    "actId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(\\.[a-z0-9]+)*$"
+    },
+    "predicatePattern": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "x-provenance": {
+    "recorded-by": "claude-session",
+    "recorded-on": "2026-07-15",
+    "revised-by": "claude-session",
+    "revised-on": "2026-07-31",
+    "revision-note": "Reseated from executive-office/lib/schemas to this package's data/records, and shrunk to drop the invented verb-phrase/closure-kind/witness/fuel/models vocabulary and its allOf conditionals; preconditions/postconditions replaced by standard-JSDoc-sourced params/returns/throws."
+  }
+}

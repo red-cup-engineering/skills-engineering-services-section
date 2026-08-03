@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Current Evidence"
+  short_description: "Diagnose from bounded repository evidence"
+  default_prompt: "Use $analyzing to diagnose this condition from current evidence."

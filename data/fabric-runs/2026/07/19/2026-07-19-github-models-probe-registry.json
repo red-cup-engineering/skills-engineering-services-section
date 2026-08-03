@@ -1,0 +1,22 @@
+{
+  "attempts": 1,
+  "concurrency": 1,
+  "endpoints": [
+    {
+      "id": "github-models-gpt-4o-mini-probe",
+      "type": "harness",
+      "enabled": true,
+      "command": "/home/emsenn/info/lib/emsenn/services/561-group/services/red-cup-engineering/services/logical-inference-service-section/services/github-models-inference-team/run-one-exchange.mjs",
+      "model": "openai/gpt-4o-mini",
+      "concurrency": 1,
+      "rpm": 1,
+      "timeoutMs": 90000,
+      "capabilities": ["chat"],
+      "workTypes": ["inquiry"],
+      "cost": {"unit":"relative-resolution-cost-v1","dispatch":0.05,"inference":0.2,"verification":0.1,"scarcity":0.1},
+      "successPrior": {"default":0.5,"difficultyPenalty":0.5},
+      "expectedLatencyMs": 2000,
+      "bootstrapEstimate": true
+    }
+  ]
+}

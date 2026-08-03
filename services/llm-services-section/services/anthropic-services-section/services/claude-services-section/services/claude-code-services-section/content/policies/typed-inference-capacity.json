@@ -1,0 +1,6 @@
+{
+  "type": "ClaudeCodeTypedInferenceCapacityPolicy",
+  "maximumConcurrentLots": 1,
+  "occupiedDisposition": "immediate-provider-refusal",
+  "authority": "one provider-local kernel flock lease held by the live Claude process; the lock state, not elapsed time, forms admission"
+}

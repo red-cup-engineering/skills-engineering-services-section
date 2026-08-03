@@ -1,0 +1,136 @@
+{
+  "id": "exchange-20260719-005839-9eb884",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON with keys defect,consequence,repair,evidence. A router ranks feasible suppliers by expectedResolutionCost=(dispatch+inference+verification+scarcity+expectedLatencyMs*latencyCostPerMs)/pSuccess. pSuccess is a smoothed work-type prior multiplied by (1-difficulty*difficultyPenalty), bounded to [0.01,0.999]. It learns attempts and successes from durable records. Prices are provisional but share one declared relative unit. Identify the most important way this could still pay more than needed for verified resolution, and propose one bounded measurable repair. Under 1000 characters total."
+      }
+    ],
+    "max-tokens": 300,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "defect",
+          "consequence",
+          "repair",
+          "evidence"
+        ],
+        "properties": {
+          "defect": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          },
+          "consequence": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          },
+          "repair": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 500
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"defect\":\"pSuccess uses a work-type prior shared across all suppliers in that category, masking per-supplier reliability variance. A low-reliability supplier receives the same prior as a high-reliability one, making it appear cost-equivalent or cheaper.\",\"consequence\":\"The router selects suppliers whose failure rate exceeds the prior estimate. Each failure triggers an unpriced retry cycle (dispatch+inference+verification paid again), causing realized spend to systematically exceed expectedResolutionCost for verified resolution.\",\"repair\":\"Track per-supplier attempt and success counts in durable records alongside work-type aggregates. Once a supplier reaches n≥30 attempts, replace the work-type prior with a blended rate: pSuccess = 0.3×work_type_prior + 0.7×supplier_empirical_rate. Below n=30, keep the prior unmodified to avoid high-variance estimates destabilizing selection.\",\"evidence\":\"A supplier with empirical pSuccess=0.50 assigned a work-type prior of 0.80 appears 37% cheaper per resolution unit (cost/0.80 vs cost/0.50). Selecting it over a true-0.80 supplier increases expected retry count by 60%, converting a predicted saving into a measurable overpayment traceable in durable attempt records.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 30942,
+      "duration_api_ms": 31797,
+      "ttft_ms": 26315,
+      "ttft_stream_ms": 1582,
+      "time_to_request_ms": 28,
+      "num_turns": 2,
+      "result": "{\"defect\":\"pSuccess uses a work-type prior shared across all suppliers in that category, masking per-supplier reliability variance. A low-reliability supplier receives the same prior as a high-reliability one, making it appear cost-equivalent or cheaper.\",\"consequence\":\"The router selects suppliers whose failure rate exceeds the prior estimate. Each failure triggers an unpriced retry cycle (dispatch+inference+verification paid again), causing realized spend to systematically exceed expectedResolutionCost for verified resolution.\",\"repair\":\"Track per-supplier attempt and success counts in durable records alongside work-type aggregates. Once a supplier reaches n≥30 attempts, replace the work-type prior with a blended rate: pSuccess = 0.3×work_type_prior + 0.7×supplier_empirical_rate. Below n=30, keep the prior unmodified to avoid high-variance estimates destabilizing selection.\",\"evidence\":\"A supplier with empirical pSuccess=0.50 assigned a work-type prior of 0.80 appears 37% cheaper per resolution unit (cost/0.80 vs cost/0.50). Selecting it over a true-0.80 supplier increases expected retry count by 60%, converting a predicted saving into a measurable overpayment traceable in durable attempt records.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "8bebfabc-f077-4417-8926-db51ac1ce55d",
+      "total_cost_usd": 0.07282299999999998,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 7199,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 1926,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7199,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 1926,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 7199,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 7199
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 660,
+          "outputTokens": 14,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.00073,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 1926,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 7199,
+          "webSearchRequests": 0,
+          "costUSD": 0.07209299999999999,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "defect": "pSuccess uses a work-type prior shared across all suppliers in that category, masking per-supplier reliability variance. A low-reliability supplier receives the same prior as a high-reliability one, making it appear cost-equivalent or cheaper.",
+        "consequence": "The router selects suppliers whose failure rate exceeds the prior estimate. Each failure triggers an unpriced retry cycle (dispatch+inference+verification paid again), causing realized spend to systematically exceed expectedResolutionCost for verified resolution.",
+        "repair": "Track per-supplier attempt and success counts in durable records alongside work-type aggregates. Once a supplier reaches n≥30 attempts, replace the work-type prior with a blended rate: pSuccess = 0.3×work_type_prior + 0.7×supplier_empirical_rate. Below n=30, keep the prior unmodified to avoid high-variance estimates destabilizing selection.",
+        "evidence": "A supplier with empirical pSuccess=0.50 assigned a work-type prior of 0.80 appears 37% cheaper per resolution unit (cost/0.80 vs cost/0.50). Selecting it over a true-0.80 supplier increases expected retry count by 60%, converting a predicted saving into a measurable overpayment traceable in durable attempt records."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "059a81e4-b2a6-4538-872f-6ad86cf5b86f"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 35.642,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

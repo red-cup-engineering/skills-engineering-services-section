@@ -1,0 +1,31 @@
+[package]
+name         = "mash-engine"
+description  = "The MASH substrate — algebra, inference, proof engine, hub, SDK, utilities. Ontology-neutral; the library carries the ontology."
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+authors.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+keywords     = ["bilattice", "belnap", "predication", "cascade", "hub"]
+categories   = ["data-structures", "mathematics", "science"]
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow             = { workspace = true }
+async-trait        = { workspace = true }
+fs2                = "0.4"
+libc               = { workspace = true }
+serde              = { workspace = true }
+serde_json         = { workspace = true }
+sha2               = "0.10"
+thiserror          = { workspace = true }
+tokio              = { workspace = true }
+tracing            = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"

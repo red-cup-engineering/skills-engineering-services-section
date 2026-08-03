@@ -1,0 +1,100 @@
+{
+  "id": "exchange-20260722-002742-079e14",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"missing\":{\"items\":{\"maxLength\":300,\"minLength\":2,\"type\":\"string\"},\"maxItems\":16,\"type\":\"array\"},\"reason\":{\"maxLength\":4000,\"minLength\":5,\"type\":\"string\"},\"vectorVerdicts\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"id\":{\"enum\":[\"canonical-cut-ni-identity\",\"key-order-independent-cut-identity\",\"repeatable-cut-identity\",\"material-change-changes-cut-identity\"],\"type\":\"string\"},\"missing\":{\"items\":{\"maxLength\":300,\"minLength\":2,\"type\":\"string\"},\"maxItems\":8,\"type\":\"array\"}},\"required\":[\"id\",\"accepted\",\"missing\"],\"type\":\"object\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"}},\"required\":[\"accepted\",\"reason\",\"missing\",\"vectorVerdicts\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:union:mission:cut-identity-v1:compact-review-repaired:semantic-review:3:a055cea0-908d-4295-a146-8e5079a09918\",\"producer\":\"urn:ame:semantic-candidate-review-service\"},\"context\":{\"objective\":\"Independently review software candidate urn:union:mission:cut-identity-v1:compact-review-repaired:semantic-review:3:a055cea0-908d-4295-a146-8e5079a09918\",\"suppliedContext\":\"{\\\"messages\\\":[{\\\"role\\\":\\\"system\\\",\\\"content\\\":\\\"Independently review whether a verification-passing source change actually satisfies the stated objective, every constraint, and every structured test vector. A vector id in a title or comment is not coverage. For each vector, locate assertions that exercise its when operation and prove all then and forbidden clauses. Reject globally if any vector is incomplete. Judge only supplied evidence. Return contracted JSON.\\\"},{\\\"role\\\":\\\"user\\\",\\\"content\\\":\\\"{\\\\\\\"objective\\\\\\\":\\\\\\\"Implement the protected cut identity vectors in src/scan-territory.mjs. Each cutFrontier entry must carry the deterministic typed RMN semantic identity required by the sealed acceptance capsule. Change only the admitted source path; do not alter tests or dependencies.\\\\\\\",\\\\\\\"constraints\\\\\\\":[],\\\\\\\"writablePaths\\\\\\\":[\\\\\\\"src/scan-territory.mjs\\\\\\\"],\\\\\\\"testVectors\\\\\\\":[{\\\\\\\"forbidden\\\\\\\":[],\\\\\\\"given\\\\\\\":[\\\\\\\"one scanned settlement cut\\\\\\\"],\\\\\\\"id\\\\\\\":\\\\\\\"canonical-cut-ni-identity\\\\\\\",\\\\\\\"then\\\\\\\":[\\\\\\\"cutId is the exact deterministic RMN ni identity\\\\\\\"],\\\\\\\"when\\\\\\\":\\\\\\\"the cut frontier is emitted\\\\\\\"},{\\\\\\\"forbidden\\\\\\\":[],\\\\\\\"given\\\\\\\":[\\\\\\\"semantically identical manifests with different property insertion order\\\\\\\"],\\\\\\\"id\\\\\\\":\\\\\\\"key-order-independent-cut-identity\\\\\\\",\\\\\\\"then\\\\\\\":[\\\\\\\"their cutId values are equal\\\\\\\"],\\\\\\\"when\\\\\\\":\\\\\\\"both territories are scanned\\\\\\\"},{\\\\\\\"forbidden\\\\\\\":[],\\\\\\\"given\\\\\\\":[\\\\\\\"one unchanged territory\\\\\\\"],\\\\\\\"id\\\\\\\":\\\\\\\"repeatable-cut-identity\\\\\\\",\\\\\\\"then\\\\\\\":[\\\\\\\"both cutId values are equal\\\\\\\"],\\\\\\\"when\\\\\\\":\\\\\\\"it is scanned twice\\\\\\\"},{\\\\\\\"forbidden\\\\\\\":[],\\\\\\\"given\\\\\\\":[\\\\\\\"one scanned territory\\\\\\\"],\\\\\\\"id\\\\\\\":\\\\\\\"material-change-changes-cut-identity\\\\\\\",\\\\\\\"then\\\\\\\":[\\\\\\\"the cutId changes\\\\\\\"],\\\\\\\"when\\\\\\\":\\\\\\\"a prohibited JSONL path is added\\\\\\\"}],\\\\\\\"reviewRule\\\\\\\":\\\\\\\"For every test vector, identify concrete changed-source evidence for its given/when/then behavior and every forbidden observation. A marker, test title, or comment is not evidence. Reject globally if any vector is incomplete.\\\\\\\",\\\\\\\"changed\\\\\\\":[{\\\\\\\"path\\\\\\\":\\\\\\\"src/scan-territory.mjs\\\\\\\",\\\\\\\"projection\\\\\\\":\\\\\\\"exact-changed-span-with-context\\\\\\\",\\\\\\\"beforeStartLine\\\\\\\":151,\\\\\\\"before\\\\\\\":\\\\\\\"    const key = violation.settlement ?? \\\\\\\\\\\\\\\"(unseated territory)\\\\\\\\\\\\\\\";\\\\\\\\n    const group = groups.get(key) ?? { settlement: violation.settlement, violationCount: 0, rules: new Set(), paths: new Set() };\\\\\\\\n    group.violationCount += 1; group.rules.add(violation.rule); group.paths.add(violation.path); groups.set(key, group);\\\\\\\\n  }\\\\\\\\n  const cutFrontier = [...groups.values()].map((group) => Object.freeze({ settlement: group.settlement, violationCount: group.violationCount, rules: Object.freeze([...group.rules].sort()), paths: Object.freeze([...group.paths].sort()) }))\\\\\\\\n    .sort((left, right) => right.violationCount - left.violationCount || String(left.settlement).localeCompare(String(right.settlement)));\\\\\\\\n  return Object.freeze({ type: \\\\\\\\\\\\\\\"Phase2TerritoryConformanceReport\\\\\\\\\\\\\\\", ruleset: PHASE2_RULESET_ID, territory, conforming: located.length === 0, violationCount: located.length, byRule: Object.freeze(byRule), cutFrontier: Object.freeze(cutFrontier), violations: Object.freeze(located) });\\\\\\\\n}\\\\\\\\n\\\\\\\\nif (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {\\\\\\\",\\\\\\\"afterStartLine\\\\\\\":151,\\\\\\\"after\\\\\\\":\\\\\\\"    const key = violation.settlement ?? \\\\\\\\\\\\\\\"(unseated territory)\\\\\\\\\\\\\\\";\\\\\\\\n    const group = groups.get(key) ?? { settlement: violation.settlement, violationCount: 0, rules: new Set(), paths: new Set() };\\\\\\\\n    group.violationCount += 1; group.rules.add(violation.rule); group.paths.add(violation.path); groups.set(key, group);\\\\\\\\n  }\\\\\\\\n  const CUT_PROFILE = \\\\\\\\\\\\\\\"org.emsenn.phase2.territory-cut.v1\\\\\\\\\\\\\\\";\\\\\\\\n  const cutFrontier = [...groups.values()].map((group) => {\\\\\\\\n    const entry = { settlement: group.settlement, violationCount: group.violationCount, rules: Object.freeze([...group.rules].sort()), paths: Object.freeze([...group.paths].sort()) };\\\\\\\\n    const encoded = encodeRelationalValue({\\\\\\\\n      profile: CUT_PROFILE,\\\\\\\\n      ruleset: PHASE2_RULESET_ID,\\\\\\\\n      settlement: entry.settlement,\\\\\\\\n      violationCount: entry.violationCount,\\\\\\\\n      rules: entry.rules,\\\\\\\\n      paths: entry.paths,\\\\\\\\n    });\\\\\\\\n    return Object.freeze({ ...entry, cutId: semanticId([\\\\\\\\\\\\\\\"ascribe\\\\\\\\\\\\\\\", encoded.type, encoded.term]) });\\\\\\\\n  }).sort((left, right) => right.violationCount - left.violationCount || String(left.settlement).localeCompare(String(right.settlement)));\\\\\\\\n  return Object.freeze({ type: \\\\\\\\\\\\\\\"Phase2TerritoryConformanceReport\\\\\\\\\\\\\\\", ruleset: PHASE2_RULESET_ID, territory, conforming: located.length === 0, violationCount: located.length, byRule: Object.freeze(byRule), cutFrontier: Object.freeze(cutFrontier), violations: Object.freeze(located) });\\\\\\\\n}\\\\\\\\n\\\\\\\\nif (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {\\\\\\\",\\\\\\\"omittedUnchangedPrefixLines\\\\\\\":150,\\\\\\\"omittedUnchangedSuffixLines\\\\\\\":5}],\\\\\\\"actions\\\\\\\":[{\\\\\\\"action\\\\\\\":\\\\\\\"edit\\\\\\\",\\\\\\\"path\\\\\\\":\\\\\\\"src/scan-territory.mjs\\\\\\\",\\\\\\\"reason\\\\\\\":\\\\\\\"The tests require a `cutId` property on each `cutFrontier` entry, which must be derived from the deterministic RMN identity of the entry's properties. I am implementing this identity calculation within `scanTerritory` using `encodeRelationalValue` and `semanticId` as required by the objective.\\\\\\\"}],\\\\\\\"verificationPassing\\\\\\\":true}\\\"}],\\\"boundary\\\":\\\"Return one advisory review; do not claim customer acceptance.\\\"}\",\"desiredUse\":\"Supply one evidence-bound semantic verdict for a customer-owned quorum.\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:union:mission:cut-identity-v1:compact-review-repaired:semantic-review:3:a055cea0-908d-4295-a146-8e5079a09918\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"code-review\",\"executionBounds\":{\"maximumOutputTokens\":500,\"sourceMeasures\":{\"words\":416,\"characters\":5277}},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"missing\":{\"items\":{\"maxLength\":300,\"minLength\":2,\"type\":\"string\"},\"maxItems\":16,\"type\":\"array\"},\"reason\":{\"maxLength\":4000,\"minLength\":5,\"type\":\"string\"},\"vectorVerdicts\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"id\":{\"enum\":[\"canonical-cut-ni-identity\",\"key-order-independent-cut-identity\",\"repeatable-cut-identity\",\"material-change-changes-cut-identity\"],\"type\":\"string\"},\"missing\":{\"items\":{\"maxLength\":300,\"minLength\":2,\"type\":\"string\"},\"maxItems\":8,\"type\":\"array\"}},\"required\":[\"id\",\"accepted\",\"missing\"],\"type\":\"object\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"}},\"required\":[\"accepted\",\"reason\",\"missing\",\"vectorVerdicts\"],\"type\":\"object\"}}}"
+      }
+    ],
+    "max-tokens": 4000
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"accepted\":false,\"reason\":\"The diff adds a cutId field computed via semanticId([\\\"ascribe\\\", encoded.type, encoded.term]) where encoded comes from encodeRelationalValue. For three of four vectors the structural evidence is sufficient: rules and paths are sorted before encoding and the object literal passed to encodeRelationalValue has a fixed property order (key-order-independence); the computation is pure and constant-seeded (repeatability); and paths is included in the encoded payload so adding a path changes the hash (material-change). However, the canonical-cut-ni-identity vector requires that cutId be the exact deterministic RMN ni identity — a specific URI format (ni://{authority};{alg}={hash} per RFC 6920). The supplied diff does not include the implementation of semanticId or encodeRelationalValue, and no test assertion verifying the ni:// format appears in the evidence. The function call shape (\\\"ascribe\\\", encoded.type, encoded.term) is suggestive but is not concrete proof of the required format. Per the review rule, a marker or implied intent is not evidence. Because canonical-cut-ni-identity cannot be confirmed from the supplied evidence, the candidate is rejected globally.\",\"missing\":[\"Implementation of semanticId showing it produces an ni:// URI conforming to RFC 6920\",\"Implementation of encodeRelationalValue confirming key-order-independent encoding\",\"Test assertion verifying cutId matches the expected RMN ni:// pattern for a known input\"],\"vectorVerdicts\":[{\"id\":\"canonical-cut-ni-identity\",\"accepted\":false,\"missing\":[\"No implementation of semanticId is supplied to confirm output is an RMN ni:// URI\",\"No test assertion verifying the ni:// format of cutId appears in the evidence\"]},{\"id\":\"key-order-independent-cut-identity\",\"accepted\":true,\"missing\":[]},{\"id\":\"repeatable-cut-identity\",\"accepted\":true,\"missing\":[]},{\"id\":\"material-change-changes-cut-identity\",\"accepted\":true,\"missing\":[]}]}",
+    "finish-reason": "end_turn",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 65614,
+      "duration_api_ms": 67542,
+      "ttft_ms": 56091,
+      "ttft_stream_ms": 2164,
+      "time_to_request_ms": 73,
+      "num_turns": 1,
+      "result": "{\"accepted\":false,\"reason\":\"The diff adds a cutId field computed via semanticId([\\\"ascribe\\\", encoded.type, encoded.term]) where encoded comes from encodeRelationalValue. For three of four vectors the structural evidence is sufficient: rules and paths are sorted before encoding and the object literal passed to encodeRelationalValue has a fixed property order (key-order-independence); the computation is pure and constant-seeded (repeatability); and paths is included in the encoded payload so adding a path changes the hash (material-change). However, the canonical-cut-ni-identity vector requires that cutId be the exact deterministic RMN ni identity — a specific URI format (ni://{authority};{alg}={hash} per RFC 6920). The supplied diff does not include the implementation of semanticId or encodeRelationalValue, and no test assertion verifying the ni:// format appears in the evidence. The function call shape (\\\"ascribe\\\", encoded.type, encoded.term) is suggestive but is not concrete proof of the required format. Per the review rule, a marker or implied intent is not evidence. Because canonical-cut-ni-identity cannot be confirmed from the supplied evidence, the candidate is rejected globally.\",\"missing\":[\"Implementation of semanticId showing it produces an ni:// URI conforming to RFC 6920\",\"Implementation of encodeRelationalValue confirming key-order-independent encoding\",\"Test assertion verifying cutId matches the expected RMN ni:// pattern for a known input\"],\"vectorVerdicts\":[{\"id\":\"canonical-cut-ni-identity\",\"accepted\":false,\"missing\":[\"No implementation of semanticId is supplied to confirm output is an RMN ni:// URI\",\"No test assertion verifying the ni:// format of cutId appears in the evidence\"]},{\"id\":\"key-order-independent-cut-identity\",\"accepted\":true,\"missing\":[]},{\"id\":\"repeatable-cut-identity\",\"accepted\":true,\"missing\":[]},{\"id\":\"material-change-changes-cut-identity\",\"accepted\":true,\"missing\":[]}]}",
+      "stop_reason": "end_turn",
+      "session_id": "844880e4-f05a-4ab0-8cf9-7c732bddff4d",
+      "total_cost_usd": 0.0724904,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 2362,
+        "cache_read_input_tokens": 6398,
+        "output_tokens": 3569,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 2362,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 3569,
+            "cache_read_input_tokens": 6398,
+            "cache_creation_input_tokens": 2362,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 2362
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 2775,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.002855,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 3569,
+          "cacheReadInputTokens": 6398,
+          "cacheCreationInputTokens": 2362,
+          "webSearchRequests": 0,
+          "costUSD": 0.0696354,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "81f807b6-f9e3-40c8-a4ae-d2f0b0e7525e"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 68.22973420400001,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

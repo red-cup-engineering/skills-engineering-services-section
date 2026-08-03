@@ -1,0 +1,190 @@
+{
+  "id": "exchange-20260719-061422-fa32a1",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design the cheapest-provider tool-using coding worker protocol: bounded read/search/edit/test actions over an isolated workspace, with no provider-native tools required.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "component",
+          "absentMechanism",
+          "design",
+          "firstVerticalSlice",
+          "failureModes",
+          "successMetric"
+        ],
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "absentMechanism": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 700
+          },
+          "design": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            }
+          },
+          "firstVerticalSlice": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 400
+            }
+          },
+          "failureModes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 300
+            }
+          },
+          "successMetric": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"component\":\"CheapProviderToolWorker\",\"absentMechanism\":\"The current seed executes one model→edit→apply→test round with no multi-turn tool loop. Missing: (1) a text-protocol tool parser so any completion endpoint works without provider function-calling APIs; (2) workspace isolation — per-task tmpdir copy so failed attempts don't corrupt the repo; (3) tool result injection — appending structured results back into the prompt sequence; (4) a budget governor counting steps against a max_steps cap; (5) any ability for the model to read or search the repo before committing an edit. The model currently edits blind.\",\"design\":[\"System prompt encodes all tools as plain-text schema with call/result examples — no API function schema, so any completion endpoint works: Gemini free, GitHub Models, OpenRouter cheapest tier, or Claude.\",\"Tool call format uses minimal XML tags the harness parses with a single regex: <tool>name</tool><arg1>val</arg1>... One tool call per model turn; harness rejects and re-prompts if multiple are emitted.\",\"Six deterministic tools: read_file(path, start_line?, end_line?) → text; list_dir(path) → names; search(pattern, path) → grep -n output; edit_file(path, old_exact, new_exact) → ok | no_match; write_file(path, content) → ok; run_test(cmd) → {exit_code, stdout, stderr} all truncated to 2 KB.\",\"Workspace: on task claim, copy declared file set into an isolated tmpdir. All tool paths are validated against tmpdir prefix — path traversal returns path_violation, never executes.\",\"Harness loop: call model → scan output for tool tags → dispatch → append <tool_result> block to context → repeat until (a) model emits no tool tag (final answer), (b) run_test exit_code==0, or (c) steps_used == max_steps.\",\"Budget governor: max_steps is a job-level config (default 20). On exhaustion the harness emits a partial result record with escalate:true and last workspace diff, consumable by the LISS escalation path.\",\"Duplicate-call detector: if (tool, canonical_args) repeats twice, harness injects 'already returned this result' without re-executing, decrement budget by 1 to break loops.\",\"Result record schema: {job_id, steps_used, exit_code, diff_patch, cost_tokens, escalate, error?} — typed and schema-verified the same way LISS currently verifies its 24/24 jobs.\"],\"firstVerticalSlice\":[\"Write the six tool dispatcher functions (pure Python, no subprocess except run_test) with tmpdir-prefix enforcement as the only security boundary.\",\"Write the regex tool-call parser: extract tool name and all sibling arg tags from a completion string; return ParseError if malformed.\",\"Write the system prompt template: header, tool catalog with one call+result example each, task slot, and explicit instruction to emit exactly one tool call or a final ANSWER: block.\",\"Wire into one LISS job type 'tool_worker_task': claim job → copy file_set to tmpdir → run harness loop → emit result record → settle job.\",\"Smoke test: job payload = {task: 'add a return-type annotation to function parse_entry in parser.py', file_set: ['parser.py', 'test_parser.py'], test_cmd: 'pytest test_parser.py -q'}. Assert: worker reads parser.py, edits it, runs pytest, result record has exit_code=0, diff_patch non-empty, steps_used ≤ 20.\"],\"failureModes\":[\"Malformed tool syntax: parser returns ParseError; harness injects error as tool_result and continues loop — model self-corrects on next turn without burning a subprocess call.\",\"run_test hangs: subprocess runs under a timeout (default 30 s); on expiry returns {exit_code: -1, stderr: 'timeout_exceeded'} and counts as one step.\",\"edit_file no_match: model used wrong exact string; harness returns no_match, model must re-read then retry — duplicate-call detector prevents infinite read loops.\",\"Context window saturation before budget exhausted: harness tracks estimated token count; at 80% of provider limit it stops the loop, sets escalate:true, and emits partial result.\",\"Path traversal attempt: any resolved path outside tmpdir returns path_violation immediately; logged to result record for audit; loop continues.\"],\"successMetric\":\"One worker, given a task and file set, completes read→edit→test in ≤20 text-protocol tool steps with no provider function-calling API, emits a schema-valid result record (diff_patch, exit_code, steps_used, cost_tokens), and passes the repo's own test suite on Gemini free tier and GitHub Models free tier.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 77401,
+      "duration_api_ms": 78345,
+      "ttft_ms": 38343,
+      "ttft_stream_ms": 740,
+      "time_to_request_ms": 34,
+      "num_turns": 3,
+      "result": "{\"component\":\"CheapProviderToolWorker\",\"absentMechanism\":\"The current seed executes one model→edit→apply→test round with no multi-turn tool loop. Missing: (1) a text-protocol tool parser so any completion endpoint works without provider function-calling APIs; (2) workspace isolation — per-task tmpdir copy so failed attempts don't corrupt the repo; (3) tool result injection — appending structured results back into the prompt sequence; (4) a budget governor counting steps against a max_steps cap; (5) any ability for the model to read or search the repo before committing an edit. The model currently edits blind.\",\"design\":[\"System prompt encodes all tools as plain-text schema with call/result examples — no API function schema, so any completion endpoint works: Gemini free, GitHub Models, OpenRouter cheapest tier, or Claude.\",\"Tool call format uses minimal XML tags the harness parses with a single regex: <tool>name</tool><arg1>val</arg1>... One tool call per model turn; harness rejects and re-prompts if multiple are emitted.\",\"Six deterministic tools: read_file(path, start_line?, end_line?) → text; list_dir(path) → names; search(pattern, path) → grep -n output; edit_file(path, old_exact, new_exact) → ok | no_match; write_file(path, content) → ok; run_test(cmd) → {exit_code, stdout, stderr} all truncated to 2 KB.\",\"Workspace: on task claim, copy declared file set into an isolated tmpdir. All tool paths are validated against tmpdir prefix — path traversal returns path_violation, never executes.\",\"Harness loop: call model → scan output for tool tags → dispatch → append <tool_result> block to context → repeat until (a) model emits no tool tag (final answer), (b) run_test exit_code==0, or (c) steps_used == max_steps.\",\"Budget governor: max_steps is a job-level config (default 20). On exhaustion the harness emits a partial result record with escalate:true and last workspace diff, consumable by the LISS escalation path.\",\"Duplicate-call detector: if (tool, canonical_args) repeats twice, harness injects 'already returned this result' without re-executing, decrement budget by 1 to break loops.\",\"Result record schema: {job_id, steps_used, exit_code, diff_patch, cost_tokens, escalate, error?} — typed and schema-verified the same way LISS currently verifies its 24/24 jobs.\"],\"firstVerticalSlice\":[\"Write the six tool dispatcher functions (pure Python, no subprocess except run_test) with tmpdir-prefix enforcement as the only security boundary.\",\"Write the regex tool-call parser: extract tool name and all sibling arg tags from a completion string; return ParseError if malformed.\",\"Write the system prompt template: header, tool catalog with one call+result example each, task slot, and explicit instruction to emit exactly one tool call or a final ANSWER: block.\",\"Wire into one LISS job type 'tool_worker_task': claim job → copy file_set to tmpdir → run harness loop → emit result record → settle job.\",\"Smoke test: job payload = {task: 'add a return-type annotation to function parse_entry in parser.py', file_set: ['parser.py', 'test_parser.py'], test_cmd: 'pytest test_parser.py -q'}. Assert: worker reads parser.py, edits it, runs pytest, result record has exit_code=0, diff_patch non-empty, steps_used ≤ 20.\"],\"failureModes\":[\"Malformed tool syntax: parser returns ParseError; harness injects error as tool_result and continues loop — model self-corrects on next turn without burning a subprocess call.\",\"run_test hangs: subprocess runs under a timeout (default 30 s); on expiry returns {exit_code: -1, stderr: 'timeout_exceeded'} and counts as one step.\",\"edit_file no_match: model used wrong exact string; harness returns no_match, model must re-read then retry — duplicate-call detector prevents infinite read loops.\",\"Context window saturation before budget exhausted: harness tracks estimated token count; at 80% of provider limit it stops the loop, sets escalate:true, and emits partial result.\",\"Path traversal attempt: any resolved path outside tmpdir returns path_violation immediately; logged to result record for audit; loop continues.\"],\"successMetric\":\"One worker, given a task and file set, completes read→edit→test in ≤20 text-protocol tool steps with no provider function-calling API, emits a schema-valid result record (diff_patch, exit_code, steps_used, cost_tokens), and passes the repo's own test suite on Gemini free tier and GitHub Models free tier.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "ba44ba1d-9626-45ff-889b-dda36e985d41",
+      "total_cost_usd": 0.0977563,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 4090,
+        "cache_read_input_tokens": 14441,
+        "output_tokens": 4528,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4090,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 1332,
+            "cache_read_input_tokens": 7608,
+            "cache_creation_input_tokens": 3315,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 3315
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 872,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000952,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 4,
+          "outputTokens": 4528,
+          "cacheReadInputTokens": 14441,
+          "cacheCreationInputTokens": 4090,
+          "webSearchRequests": 0,
+          "costUSD": 0.09680430000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "component": "CheapProviderToolWorker",
+        "absentMechanism": "The current seed executes one model→edit→apply→test round with no multi-turn tool loop. Missing: (1) a text-protocol tool parser so any completion endpoint works without provider function-calling APIs; (2) workspace isolation — per-task tmpdir copy so failed attempts don't corrupt the repo; (3) tool result injection — appending structured results back into the prompt sequence; (4) a budget governor counting steps against a max_steps cap; (5) any ability for the model to read or search the repo before committing an edit. The model currently edits blind.",
+        "design": [
+          "System prompt encodes all tools as plain-text schema with call/result examples — no API function schema, so any completion endpoint works: Gemini free, GitHub Models, OpenRouter cheapest tier, or Claude.",
+          "Tool call format uses minimal XML tags the harness parses with a single regex: <tool>name</tool><arg1>val</arg1>... One tool call per model turn; harness rejects and re-prompts if multiple are emitted.",
+          "Six deterministic tools: read_file(path, start_line?, end_line?) → text; list_dir(path) → names; search(pattern, path) → grep -n output; edit_file(path, old_exact, new_exact) → ok | no_match; write_file(path, content) → ok; run_test(cmd) → {exit_code, stdout, stderr} all truncated to 2 KB.",
+          "Workspace: on task claim, copy declared file set into an isolated tmpdir. All tool paths are validated against tmpdir prefix — path traversal returns path_violation, never executes.",
+          "Harness loop: call model → scan output for tool tags → dispatch → append <tool_result> block to context → repeat until (a) model emits no tool tag (final answer), (b) run_test exit_code==0, or (c) steps_used == max_steps.",
+          "Budget governor: max_steps is a job-level config (default 20). On exhaustion the harness emits a partial result record with escalate:true and last workspace diff, consumable by the LISS escalation path.",
+          "Duplicate-call detector: if (tool, canonical_args) repeats twice, harness injects 'already returned this result' without re-executing, decrement budget by 1 to break loops.",
+          "Result record schema: {job_id, steps_used, exit_code, diff_patch, cost_tokens, escalate, error?} — typed and schema-verified the same way LISS currently verifies its 24/24 jobs."
+        ],
+        "firstVerticalSlice": [
+          "Write the six tool dispatcher functions (pure Python, no subprocess except run_test) with tmpdir-prefix enforcement as the only security boundary.",
+          "Write the regex tool-call parser: extract tool name and all sibling arg tags from a completion string; return ParseError if malformed.",
+          "Write the system prompt template: header, tool catalog with one call+result example each, task slot, and explicit instruction to emit exactly one tool call or a final ANSWER: block.",
+          "Wire into one LISS job type 'tool_worker_task': claim job → copy file_set to tmpdir → run harness loop → emit result record → settle job.",
+          "Smoke test: job payload = {task: 'add a return-type annotation to function parse_entry in parser.py', file_set: ['parser.py', 'test_parser.py'], test_cmd: 'pytest test_parser.py -q'}. Assert: worker reads parser.py, edits it, runs pytest, result record has exit_code=0, diff_patch non-empty, steps_used ≤ 20."
+        ],
+        "failureModes": [
+          "Malformed tool syntax: parser returns ParseError; harness injects error as tool_result and continues loop — model self-corrects on next turn without burning a subprocess call.",
+          "run_test hangs: subprocess runs under a timeout (default 30 s); on expiry returns {exit_code: -1, stderr: 'timeout_exceeded'} and counts as one step.",
+          "edit_file no_match: model used wrong exact string; harness returns no_match, model must re-read then retry — duplicate-call detector prevents infinite read loops.",
+          "Context window saturation before budget exhausted: harness tracks estimated token count; at 80% of provider limit it stops the loop, sets escalate:true, and emits partial result.",
+          "Path traversal attempt: any resolved path outside tmpdir returns path_violation immediately; logged to result record for audit; loop continues."
+        ],
+        "successMetric": "One worker, given a task and file set, completes read→edit→test in ≤20 text-protocol tool steps with no provider function-calling API, emits a schema-valid result record (diff_patch, exit_code, steps_used, cost_tokens), and passes the repo's own test suite on Gemini free tier and GitHub Models free tier."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "b88c24be-7e5c-4c04-bfca-5d52291f06d9"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 85.814,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

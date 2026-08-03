@@ -1,0 +1,28 @@
+{
+  "profile": "org.emsenn.evm.sovereign-enterprise-account.v3",
+  "enterprise": {
+    "nodeId": "nvidia-inference-team",
+    "urn": "urn:ame:nvidia-inference-team",
+    "enterpriseId": "0x9005c5e61a6a3ae57b6834fd7a4212d6484909e03f2da5c63a34bbaffef98f47"
+  },
+  "chain": {
+    "chainId": 31337,
+    "caip2": "eip155:31337"
+  },
+  "account": {
+    "address": "0x29541cdfdac23a30e81df1d255c3a33dbce74e30",
+    "caip10": "eip155:31337:0x29541cdfdac23a30e81df1d255c3a33dbce74e30"
+  },
+  "factory": {
+    "address": "0xb334795bf50e4943d076dfb38d8c1a50f9f5a101",
+    "userSalt": "0xef9a6575d0fb0903ef29d0e944604b5487f16d49a60a17ffa076a953d7ac61c2"
+  },
+  "policy": {
+    "signer": "0xdc9594e977f2179f833d17164ba0deaf7b1aa79e",
+    "custody": "settlement-private"
+  },
+  "deployment": {
+    "transaction": "0xdece2716d492426c9e3c6edded640f79cc0436eeded791eccc34c38dea0a44fb",
+    "block": 1278
+  }
+}

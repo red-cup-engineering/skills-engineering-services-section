@@ -1,0 +1,141 @@
+{
+  "id": "exchange-20260719-073404-8159ec",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an autonomous software worker operating an isolated copy of one admitted territory. Invoke exactly one tool per response using the contracted JSON. Available actions:\nlist_files {path?,max?}; search {query,path?}; read {path,startLine?,endLine?}; edit {path,blocks}; command {name}; test {}; finish {summary?}.\nInclude only the arguments used by the selected action. For edit, blocks must be exact SEARCH/REPLACE blocks: <<<<<<< SEARCH, exact old text, =======, replacement, >>>>>>> REPLACE. You have no shell. Inspect declared focus paths first, then edit as soon as enough evidence is available. Do not explore operational data records unless the objective names them. Make the smallest correct change. The host automatically runs the declared verification after every edit. Never claim success without a passing verification result."
+      },
+      {
+        "role": "user",
+        "content": "OBJECTIVE: Add a deterministic test to test/mission-runtime.test.mjs proving that one valid actor action resets consecutiveRefusals. The injected dispatch sequence must be: round 1 refusal or invalid record; round 2 valid read action; round 3 refusal or invalid record; round 4 valid edit of calc.mjs that passes verification. With maxConsecutiveRefusals set to 2, assert exactly four dispatch waves, a verified candidate, and a terminal verified actor. A test that merely exercises multiple actors or consecutive refusals does not satisfy this objective.\n\nPRIOR VERIFIED-EXECUTION RESIDUE: {\"classification\":\"learned-route-bypass\",\"summary\":\"base bypassed by route witness urn:ame:free-compute-dev:mission:2026-07-19:prove-refusal-circuit:auto-escalation:focused\",\"metrics\":{\"inferenceAttempts\":0,\"usefulCompletions\":0,\"directInteractiveModelCalls\":0},\"actors\":[]}\n\nCONSTRAINTS: Change test/mission-runtime.test.mjs only.; Do not weaken or remove existing assertions.; The test itself must make no provider calls.; Assert the exact four-wave refusal/read/refusal/edit sequence and final verified status.; Resolve the prior phase's verified-execution residue; do not merely restate it.\n\nFOCUS PATHS (inspect before anything else): test/mission-runtime.test.mjs, src/mission-runtime.mjs\n\nWRITABLE PATHS (mechanically enforced): test/mission-runtime.test.mjs\n\nDECLARED VERIFICATION: node --test test/mission-runtime.test.mjs\n\nOBJECTIVE ACCEPTANCE: node --test test/mission-runtime.test.mjs\n\nNo commands beyond test/acceptance are admitted.\n\nTERRITORY FILES (complete): README.md, bin/abandon-mission.mjs, bin/run-mission.mjs, bin/run-program.mjs, bin/run-worker.mjs, bin/submit-mission.mjs, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-schema-escalation.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-focused.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-learned-route.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-quality-escalation.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-claude-worktype.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-registry-fixed.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation.json, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-quality-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-schema-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-claude-worktype.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-focused.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-registry-fixed.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-learned-route.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json, data/mission-queue/workers/worker-2.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum-quality-escalation.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum-schema-escalation.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-auto-escalation.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-reset-learned-route.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json, data/route-observations/2026/07/19/2026-07-19-free-compute-dev-route-observations.jsonl, data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl, package.json, src/agent-tools.mjs, src/context.mjs, src/edits.mjs, src/escalate.mjs, src/executor.mjs, src/fabric-client.mjs, src/inference.mjs, src/mission-pipeline.mjs, src/mission-queue.mjs, src/mission-runtime.mjs, src/program-runtime.mjs, src/resolvers.mjs, src/semantic-review.mjs, src/solve-loop.mjs, src/trajectory-memory.mjs, test/agent-tools.test.mjs, test/edits.test.mjs, test/executor.test.mjs, test/mission-pipeline.test.mjs, test/mission-queue.test.mjs, test/mission-runtime.test.mjs, test/program-runtime.test.mjs, test/semantic-review.test.mjs, test/solve-loop.test.mjs\n\nRECALLED VERIFIED TRAJECTORIES: [{\"similarity\":0.7725290582613705,\"objective\":\"Add a deterministic test to test/mission-runtime.test.mjs proving that one valid actor action resets consecutiveRefusals: inject a refusal, then a valid read action, then another refusal, then a valid edit that passes verification. With maxConsecutiveRefusals set to 2, assert the actor remains eligible after the separated refusals and ultimately produces a verified candidate.\\n\\nPRIOR VERIFIED-EXECUTION RESIDUE: {\\\"classification\\\":\\\"learned-route-bypass\\\",\\\"summary\\\":\\\"base bypassed by route witness urn:ame:free-compute-dev:mission:2026-07-19:prove-refusal-circuit:auto-escalation:focused\\\",\\\"metrics\\\":{\\\"inferenceAttempts\\\":0,\\\"usefulCompletions\\\":0,\\\"directInteractiveModelCalls\\\":0},\\\"actors\\\":[]}\",\"changedPaths\":[\"test/mission-runtime.test.mjs\"],\"rounds\":5,\"usefulCompletions\":5,\"summary\":\"actor 1 produced a verification-passing candidate\",\"taskClass\":\"mission-refusal-circuit-regression\",\"trajectoryFingerprint\":\"dbcbddd96637b3224d78431171875552127f097b202c79d368fa6ad5a1d391e6\",\"verifiedActions\":[{\"action\":\"read\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\"},\"reason\":\"Inspect existing test file to understand current structure and test patterns\"},{\"action\":\"read\",\"args\":{\"path\":\"src/mission-runtime.mjs\"},\"reason\":\"Inspect mission-runtime to understand consecutiveRefusals reset logic and dispatch wave structure\"},{\"action\":\"read\",\"args\":{\"path\":\"src/mission-runtime.mjs\",\"startLine\":130,\"endLine\":320},\"reason\":\"Read the rest of mission-runtime.mjs to understand refusal circuit, actor eligibility, and result.actors structure\"},{\"action\":\"test\",\"args\":{},\"reason\":\"Run the test suite to verify all tests pass including the circuit-breaker and minVerifiedCandidates regression tests already present in the file\"},{\"action\":\"edit\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\",\"blocks\":[{\"search\":\"  assert.equal(result.outcome.verified, false);\\n  assert.equal(result.outcome.classification, \\\"unresolved\\\");\\n  assert.equal(result.metrics.verifiedCandidates, 0);\\n  assert.equal(dispatchCalls, 2);\\n  assert.equal(result.metrics.rounds, 2);\\n  assert.equal(result.actors[0].status, \\\"refused\\\");\\n});\",\"replace\":\"  assert.equal(result.outcome.verified, false);\\n  assert.equal(result.outcome.classification, \\\"unresolved\\\");\\n  assert.equal(result.metrics.verifiedCandidates, 0);\\n  assert.equal(dispatchCalls, 2);\\n  assert.equal(result.metrics.rounds, 2);\\n  assert.equal(result.actors[0].status, \\\"refused\\\");\\n});\\n\\ntest(\\\"five-actor dispatch stops after maxConsecutiveRefusals with exactly two dispatch calls and all actors refused\\\", async () => {\\n  const territory = fixture(), ledgerRoot = join(territory, \\\"trajectory-ledger\\\");\\n  let dispatchCalls = 0;\\n  const dispatch = async (jobs) => {\\n    dispatchCalls += 1;\\n    return jobs.map((job) => ({ id: job.id, refusal: { type: \\\"no-feasible-endpoint\\\" }, attempts: [] }));\\n  };\\n  const result = await runMission({\\n    id: \\\"urn:test:mission:five-actor-circuit\\\",\\n    objective: \\\"Repair the add function so the declared test passes.\\\",\\n    territory,\\n    verifyCommand: \\\"node --test calc.test.mjs\\\",\\n    actors: 5,\\n    maxRounds: 5,\\n    maxConsecutiveRefusals: 2,\\n    apply: false,\\n  }, { dispatch, ledgerRoot });\\n\\n  assert.equal(result.outcome.verified, false);\\n  assert.equal(result.metrics.verifiedCandidates, 0);\\n  assert.equal(dispatchCalls, 2);\\n  assert.equal(result.metrics.rounds, 2);\\n  assert.ok(result.actors.every((a) => a.status === \\\"refused\\\"));\\n});\"}]},\"reason\":\"Add five-actor circuit-breaker regression test: ds=5, all actors refuse, asserts exactly 2 dispatch calls and all actors refused with no verified candidate\"}]},{\"similarity\":0.4800768184369166,\"objective\":\"Add a deterministic test to test/mission-runtime.test.mjs proving that an actor receiving invalid or refused inference records opens its circuit after maxConsecutiveRefusals, stops before maxRounds, and produces no verified candidate. Use an injected dispatch function and assert the exact dispatch-wave count and terminal actor status.\\n\\nPRIOR VERIFIED-EXECUTION RESIDUE: {\\\"classification\\\":\\\"unresolved\\\",\\\"summary\\\":\\\"no actor produced a verification-passing candidate\\\",\\\"metrics\\\":{\\\"actors\\\":1,\\\"rounds\\\":2,\\\"inferenceAttempts\\\":0,\\\"usefulCompletions\\\":0,\\\"verifiedCandidates\\\":0,\\\"directInteractiveModelCalls\\\":0},\\\"actors\\\":[{\\\"id\\\":1,\\\"status\\\":\\\"refused\\\",\\\"observations\\\":[\\\"Inference refusal or invalid action: no-feasible-endpoint\\\",\\\"Inference refusal or invalid action: no-feasible-endpoint\\\"]}]}\",\"changedPaths\":[\"test/mission-runtime.test.mjs\"],\"rounds\":8,\"usefulCompletions\":8,\"summary\":\"actor 1 produced a verification-passing candidate\",\"taskClass\":\"mission-refusal-circuit-regression\",\"trajectoryFingerprint\":\"7b1af1a0e46465c0888036b4ffdf72a1d73313889195656d9d1b6bc4d1760c05\",\"verifiedActions\":[{\"action\":\"read\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\"},\"reason\":\"Inspect existing test file before making any changes\"},{\"action\":\"read\",\"args\":{\"path\":\"src/mission-runtime.mjs\"},\"reason\":\"Inspect mission-runtime to understand maxConsecutiveRefusals, circuit breaker logic, and how dispatch waves work\"},{\"action\":\"read\",\"args\":{\"path\":\"src/mission-runtime.mjs\",\"startLine\":130,\"endLine\":300},\"reason\":\"Read the rest of mission-runtime.mjs to understand circuit breaker and maxConsecutiveRefusals logic\"},{\"action\":\"test\",\"args\":{},\"reason\":\"Verify all tests pass with the existing early-quorum test and minVerifiedCandidates logic already present in the codebase.\"},{\"action\":\"read\",\"args\":{\"path\":\"data/mission-queue/workers/worker-2.json\"},\"reason\":\"Read worker assignment to understand current mission\"},{\"action\":\"read\",\"args\":{\"path\":\"data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum.json\"},\"reason\":\"Read the first mission to understand its objective\"},{\"action\":\"read\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\"},\"reason\":\"Inspect the current test file before editing\"},{\"action\":\"edit\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\",\"blocks\":[{\"search\":\"  assert.equal(result.metrics.rounds, 1);\\n  assert.equal(dispatchCalls, 1);\\n});\",\"replace\":\"  assert.equal(result.metrics.rounds, 1);\\n  assert.equal(dispatchCalls, 1);\\n});\\n\\ntest(\\\"actor circuit opens after maxConsecutiveRefusals and stops before maxRounds with no verified candidate\\\", async () => {\\n  const territory = fixture(), ledgerRoot = join(territory, \\\"trajectory-ledger\\\");\\n  let dispatchCalls = 0;\\n  const dispatch = async (jobs) => {\\n    dispatchCalls += 1;\\n    return jobs.map((job) => ({ id: job.id, refusal: { type: \\\"no-feasible-endpoint\\\" }, attempts: [] }));\\n  };\\n  const result = await runMission({\\n    id: \\\"urn:test:mission:circuit-breaker\\\",\\n    objective: \\\"Repair the add function so the declared test passes.\\\",\\n    territory,\\n    verifyCommand: \\\"node --test calc.test.mjs\\\",\\n    actors: 1,\\n    maxRounds: 5,\\n    maxConsecutiveRefusals: 2,\\n    apply: false,\\n  }, { dispatch, ledgerRoot });\\n\\n  assert.equal(result.outcome.verified, false);\\n  assert.equal(result.outcome.classification, \\\"unresolved\\\");\\n  assert.equal(result.metrics.verifiedCandidates, 0);\\n  assert.equal(dispatchCalls, 2);\\n  assert.equal(result.metrics.rounds, 2);\\n  assert.equal(result.actors[0].status, \\\"refused\\\");\\n});\"}]},\"reason\":\"Add circuit-breaker test: dispatch returns refusal records, maxConsecutiveRefusals=2 < maxRounds=5, asserts exactly 2 dispatch calls and actor status refused with no verified candidate\"}]},{\"similarity\":0.38222014561347567,\"objective\":\"Add a deterministic regression test proving that runMission stops contracting later inference waves as soon as minVerifiedCandidates is satisfied. The injected dispatch must return an exact edit action that changes calc.mjs from subtraction to addition in the first wave, allowing automatic verification to mark the candidate verified. Configure maxRounds well above one, then assert exactly one round or dispatch call and a verified candidate. This is a test-only change.\",\"changedPaths\":[\"test/mission-runtime.test.mjs\"],\"rounds\":4,\"usefulCompletions\":4,\"summary\":\"actor 1 produced a verification-passing candidate\",\"taskClass\":\"inference-spend-regression-test\",\"trajectoryFingerprint\":\"b11e711f0fac961803f74d2684d8a513bd4ac38c39f9d99336e958712d8faee7\",\"verifiedActions\":[{\"action\":\"read\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\"},\"reason\":\"Read existing test file to understand current test structure and patterns\"},{\"action\":\"read\",\"args\":{\"path\":\"src/mission-runtime.mjs\"},\"reason\":\"Need to understand minVerifiedCandidates, maxRounds, and how waves are dispatched to write the regression test correctly.\"},{\"action\":\"read\",\"args\":{\"path\":\"src/mission-runtime.mjs\",\"startLine\":133,\"endLine\":250},\"reason\":\"Read the dispatch loop and minVerifiedCandidates logic\"},{\"action\":\"edit\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\",\"blocks\":[{\"search\":\"  assert.equal(result.outcome.verified, true);\\n  assert.equal(result.outcome.integrated, false);\\n  assert.equal(result.outcome.classification, \\\"protected-border\\\");\\n  assert.match(readFileSync(join(territory, \\\"calc.mjs\\\"), \\\"utf8\\\"), /Number\\\\(a\\\\)/);\\n});\",\"replace\":\"  assert.equal(result.outcome.verified, true);\\n  assert.equal(result.outcome.integrated, false);\\n  assert.equal(result.outcome.classification, \\\"protected-border\\\");\\n  assert.match(readFileSync(join(territory, \\\"calc.mjs\\\"), \\\"utf8\\\"), /Number\\\\(a\\\\)/);\\n});\\n\\ntest(\\\"runMission stops dispatching after minVerifiedCandidates is satisfied in the first wave\\\", async () => {\\n  const territory = fixture(), ledgerRoot = join(territory, \\\"trajectory-ledger\\\");\\n  let dispatchCalls = 0;\\n  const dispatch = async (jobs) => {\\n    dispatchCalls += 1;\\n    return jobs.map((job) => response(job, {\\n      action: \\\"edit\\\",\\n      args: {\\n        path: \\\"calc.mjs\\\",\\n        blocks: \\\"<<<<<<< SEARCH\\\\nexport const add = (a, b) => a - b;\\\\n=======\\\\nexport const add = (a, b) => a + b;\\\\n>>>>>>> REPLACE\\\",\\n      },\\n      reason: \\\"replace subtraction with addition\\\",\\n    }));\\n  };\\n  const result = await runMission({\\n    id: \\\"urn:test:mission:early-quorum\\\",\\n    objective: \\\"Repair the add function so the declared test passes.\\\",\\n    territory,\\n    verifyCommand: \\\"node --test calc.test.mjs\\\",\\n    actors: 3,\\n    maxRounds: 10,\\n    minVerifiedCandidates: 1,\\n    apply: false,\\n  }, { dispatch, ledgerRoot });\\n\\n  assert.equal(result.outcome.verified, true);\\n  assert.equal(result.metrics.rounds, 1);\\n  assert.equal(dispatchCalls, 1);\\n});\"}]},\"reason\":\"Add regression test proving runMission stops dispatching after minVerifiedCandidates is reached in wave 1\"}]}]\n\nNo tool observations yet. Begin by inspecting the territory."
+      }
+    ],
+    "max-tokens": 1400,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "action",
+          "args",
+          "reason"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "list_files",
+              "search",
+              "read",
+              "edit",
+              "command",
+              "test",
+              "finish"
+            ]
+          },
+          "args": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"action\":\"read\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\"},\"reason\":\"Inspect existing test file to understand current structure and test patterns\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 2740,
+      "duration_api_ms": 4283,
+      "ttft_ms": 1684,
+      "ttft_stream_ms": 973,
+      "time_to_request_ms": 31,
+      "num_turns": 2,
+      "result": "{\"action\":\"read\",\"args\":{\"path\":\"test/mission-runtime.test.mjs\"},\"reason\":\"Inspect existing test file to understand current structure and test patterns\"}",
+      "stop_reason": "tool_use",
+      "session_id": "81480024-d01b-4331-b81b-605a866e9725",
+      "total_cost_usd": 0.0429958,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 5479,
+        "cache_read_input_tokens": 6806,
+        "output_tokens": 160,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 5479,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 160,
+            "cache_read_input_tokens": 6806,
+            "cache_creation_input_tokens": 5479,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 5479
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 5576,
+          "outputTokens": 19,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.005671,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 160,
+          "cacheReadInputTokens": 6806,
+          "cacheCreationInputTokens": 5479,
+          "webSearchRequests": 0,
+          "costUSD": 0.0373248,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "action": "read",
+        "args": {
+          "path": "test/mission-runtime.test.mjs"
+        },
+        "reason": "Inspect existing test file to understand current structure and test patterns"
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "0114c072-d86d-4080-bab4-82d589127ba4"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 4.508,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

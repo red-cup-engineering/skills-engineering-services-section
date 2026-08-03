@@ -1,0 +1,16 @@
+[book]
+title = "The MASH Manual"
+authors = ["emsenn"]
+description = "The Modeled Agential Semiotic Hub: a predication substrate over the Belnap 2⊗2 bilattice."
+language = "en"
+multilingual = false
+src = "src"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+site-url = "/mash/"
+git-repository-url = "https://github.com/emsenn/mash"
+edit-url-template = "https://github.com/emsenn/mash/edit/main/docs/{path}"

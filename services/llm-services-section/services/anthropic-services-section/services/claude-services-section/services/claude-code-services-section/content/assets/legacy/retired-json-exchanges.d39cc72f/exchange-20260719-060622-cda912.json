@@ -1,0 +1,191 @@
+{
+  "id": "exchange-20260719-060622-cda912",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design a continuously running mission queue with heartbeats/events, budgets, retries, crash recovery, and hundreds of inference requests per minute without a conversation supervising it.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "component",
+          "absentMechanism",
+          "design",
+          "firstVerticalSlice",
+          "failureModes",
+          "successMetric"
+        ],
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "absentMechanism": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 700
+          },
+          "design": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            }
+          },
+          "firstVerticalSlice": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 400
+            }
+          },
+          "failureModes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 300
+            }
+          },
+          "successMetric": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"component\":\"Mission Queue Substrate\",\"absentMechanism\":\"The seed has no durable work-item state machine. Every mission lives only in the conversation turn that spawned it — no persistent row with an owner, heartbeat timestamp, budget ledger, attempt counter, or result slot. When a conversation ends or a worker crashes, work disappears with no reclaim path. There is no intake API, no fanout to parallel workers, no integrator that fires after siblings settle, and no budget enforcer. The resolver→edit→test loop exists but is orchestrated by a human turn, not an autonomous queue.\",\"design\":[\"Mission table: mission_id, parent_id, type, payload JSONB, state ENUM(PENDING|IN_FLIGHT|SETTLED|FAILED), worker_id, claimed_at, heartbeat_at, budget_allocated, budget_spent DEFAULT 0, attempt DEFAULT 0, max_attempts, depth, result JSONB. All transitions are UPDATE ... WHERE state=X AND mission_id=Y (optimistic CAS; no lock table).\",\"Append-only events table: id, mission_id, event_type, ts, payload — written in the same transaction as every state UPDATE. Workers tail this table or a Redis-stream copy. The event row IS the notification; no side-channel coordination.\",\"Heartbeat daemon: every 15 s runs UPDATE missions SET state='PENDING', worker_id=NULL, attempt=attempt+1 WHERE state='IN_FLIGHT' AND heartbeat_at < NOW()-60s AND attempt < max_attempts. A recovering worker's result write hits WHERE state='IN_FLIGHT' AND worker_id=$me, touching 0 rows — result discarded, not doubled.\",\"Worker claim loop: SELECT ... FOR UPDATE SKIP LOCKED WHERE state='PENDING' ORDER BY priority DESC LIMIT 1; transition IN_FLIGHT; goroutine updates heartbeat_at every 20 s; call inference adapter; on success write result and transition SETTLED; on soft failure requeue PENDING with attempt+1; on hard failure transition FAILED.\",\"Budget ledger enforced at DB layer: adapter receives remaining=(budget_allocated - budget_spent) as max_tokens hard cap; after call, UPDATE budget_spent = budget_spent + actual WHERE budget_spent + actual <= budget_allocated. A DB CHECK constraint rejects the row if arithmetic overflows — overspend is structurally impossible.\",\"Decomposer worker: claims PENDING TERRITORY missions, calls cheapest model with structured output schema [{type, payload, budget_tokens}], bulk-inserts children as PENDING with parent_id and depth=parent.depth+1 (refused if depth >= max_depth), transitions self to AWAITING_INTEGRATION.\",\"Integrator: polls SETTLED/FAILED events; after each, queries unsettled sibling count; if 0, claims parent integration slot, merges child results or propagates failure, writes parent.result, transitions parent SETTLED. Parent state is only touched by the integrator — never by child writes.\",\"Intake API: POST /missions writes one PENDING row, returns {mission_id}. Caller polls GET /missions/{id} or subscribes to SSE event stream. Rate-limited at HTTP layer; queue has no concept of session or conversation.\"],\"firstVerticalSlice\":[\"Add one SQLite missions table — no events table, no decomposer, no integrator yet.\",\"Single worker binary: claim PENDING via SELECT FOR UPDATE SKIP LOCKED, transition IN_FLIGHT, spawn heartbeat goroutine updating heartbeat_at every 20 s, call one hardcoded LISS fabric inference endpoint, write result, transition SETTLED.\",\"Heartbeat daemon as a second process: every 15 s run the reclaim UPDATE and log each reclaimed mission_id.\",\"Crash proof: kill worker mid-run; after 60 s verify daemon reclaims the row (state=PENDING, attempt=1); restart worker; confirm SETTLED with no duplicate rows.\",\"Budget enforcement: test missions get budget_allocated=200 tokens; pass remaining as max_tokens; after call UPDATE budget_spent; assert budget_spent never exceeds budget_allocated across a 10-mission batch.\",\"Acceptance gate: 10 missions across 3 workers, kill one worker mid-run, all 10 reach SETTLED or FAILED within 3 minutes, SELECT ... WHERE state='IN_FLIGHT' AND heartbeat_at < NOW()-120s returns 0.\"],\"failureModes\":[\"Split-brain settle: two workers race to settle the same row after heartbeat mis-fire. WHERE state='IN_FLIGHT' AND worker_id=$me guard ensures the loser's UPDATE hits 0 rows; verify SETTLED count per mission never exceeds 1.\",\"Budget drift under concurrent children: siblings read budget_remaining simultaneously and collectively overspend. DB CHECK constraint on the UPDATE makes the overspending write fail atomically; worker catches constraint violation and transitions FAILED.\",\"Integrator starvation: a child reaches FAILED at max_attempts; parent never reaches 0 unsettled siblings. Integrator must trigger on FAILED events and apply an explicit partial-results or failure-propagation policy per mission type.\",\"Daemon as SPOF: if it crashes, IN_FLIGHT rows are never reclaimed. Run two daemon instances; the reclaim UPDATE is idempotent — the second instance finds 0 rows to act on once the first has run.\",\"Decomposer recursion: TERRITORY missions emit TERRITORY children without bound. Enforce max_depth column; decomposer refuses TERRITORY children when parent.depth >= max_depth, emitting LEAF tasks instead.\"],\"successMetric\":\"PENDING mission reaches SETTLED within 90 s under normal load; worker killed mid-run causes reclaim and re-execution within 120 s with exactly one SETTLED row; budget_spent never exceeds budget_allocated for any row; 200 concurrent IN_FLIGHT missions across 8 workers for 10 minutes ends with zero orphaned rows (heartbeat_at older than 120 s).\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 103636,
+      "duration_api_ms": 104551,
+      "ttft_ms": 50828,
+      "ttft_stream_ms": 963,
+      "time_to_request_ms": 36,
+      "num_turns": 3,
+      "result": "{\"component\":\"Mission Queue Substrate\",\"absentMechanism\":\"The seed has no durable work-item state machine. Every mission lives only in the conversation turn that spawned it — no persistent row with an owner, heartbeat timestamp, budget ledger, attempt counter, or result slot. When a conversation ends or a worker crashes, work disappears with no reclaim path. There is no intake API, no fanout to parallel workers, no integrator that fires after siblings settle, and no budget enforcer. The resolver→edit→test loop exists but is orchestrated by a human turn, not an autonomous queue.\",\"design\":[\"Mission table: mission_id, parent_id, type, payload JSONB, state ENUM(PENDING|IN_FLIGHT|SETTLED|FAILED), worker_id, claimed_at, heartbeat_at, budget_allocated, budget_spent DEFAULT 0, attempt DEFAULT 0, max_attempts, depth, result JSONB. All transitions are UPDATE ... WHERE state=X AND mission_id=Y (optimistic CAS; no lock table).\",\"Append-only events table: id, mission_id, event_type, ts, payload — written in the same transaction as every state UPDATE. Workers tail this table or a Redis-stream copy. The event row IS the notification; no side-channel coordination.\",\"Heartbeat daemon: every 15 s runs UPDATE missions SET state='PENDING', worker_id=NULL, attempt=attempt+1 WHERE state='IN_FLIGHT' AND heartbeat_at < NOW()-60s AND attempt < max_attempts. A recovering worker's result write hits WHERE state='IN_FLIGHT' AND worker_id=$me, touching 0 rows — result discarded, not doubled.\",\"Worker claim loop: SELECT ... FOR UPDATE SKIP LOCKED WHERE state='PENDING' ORDER BY priority DESC LIMIT 1; transition IN_FLIGHT; goroutine updates heartbeat_at every 20 s; call inference adapter; on success write result and transition SETTLED; on soft failure requeue PENDING with attempt+1; on hard failure transition FAILED.\",\"Budget ledger enforced at DB layer: adapter receives remaining=(budget_allocated - budget_spent) as max_tokens hard cap; after call, UPDATE budget_spent = budget_spent + actual WHERE budget_spent + actual <= budget_allocated. A DB CHECK constraint rejects the row if arithmetic overflows — overspend is structurally impossible.\",\"Decomposer worker: claims PENDING TERRITORY missions, calls cheapest model with structured output schema [{type, payload, budget_tokens}], bulk-inserts children as PENDING with parent_id and depth=parent.depth+1 (refused if depth >= max_depth), transitions self to AWAITING_INTEGRATION.\",\"Integrator: polls SETTLED/FAILED events; after each, queries unsettled sibling count; if 0, claims parent integration slot, merges child results or propagates failure, writes parent.result, transitions parent SETTLED. Parent state is only touched by the integrator — never by child writes.\",\"Intake API: POST /missions writes one PENDING row, returns {mission_id}. Caller polls GET /missions/{id} or subscribes to SSE event stream. Rate-limited at HTTP layer; queue has no concept of session or conversation.\"],\"firstVerticalSlice\":[\"Add one SQLite missions table — no events table, no decomposer, no integrator yet.\",\"Single worker binary: claim PENDING via SELECT FOR UPDATE SKIP LOCKED, transition IN_FLIGHT, spawn heartbeat goroutine updating heartbeat_at every 20 s, call one hardcoded LISS fabric inference endpoint, write result, transition SETTLED.\",\"Heartbeat daemon as a second process: every 15 s run the reclaim UPDATE and log each reclaimed mission_id.\",\"Crash proof: kill worker mid-run; after 60 s verify daemon reclaims the row (state=PENDING, attempt=1); restart worker; confirm SETTLED with no duplicate rows.\",\"Budget enforcement: test missions get budget_allocated=200 tokens; pass remaining as max_tokens; after call UPDATE budget_spent; assert budget_spent never exceeds budget_allocated across a 10-mission batch.\",\"Acceptance gate: 10 missions across 3 workers, kill one worker mid-run, all 10 reach SETTLED or FAILED within 3 minutes, SELECT ... WHERE state='IN_FLIGHT' AND heartbeat_at < NOW()-120s returns 0.\"],\"failureModes\":[\"Split-brain settle: two workers race to settle the same row after heartbeat mis-fire. WHERE state='IN_FLIGHT' AND worker_id=$me guard ensures the loser's UPDATE hits 0 rows; verify SETTLED count per mission never exceeds 1.\",\"Budget drift under concurrent children: siblings read budget_remaining simultaneously and collectively overspend. DB CHECK constraint on the UPDATE makes the overspending write fail atomically; worker catches constraint violation and transitions FAILED.\",\"Integrator starvation: a child reaches FAILED at max_attempts; parent never reaches 0 unsettled siblings. Integrator must trigger on FAILED events and apply an explicit partial-results or failure-propagation policy per mission type.\",\"Daemon as SPOF: if it crashes, IN_FLIGHT rows are never reclaimed. Run two daemon instances; the reclaim UPDATE is idempotent — the second instance finds 0 rows to act on once the first has run.\",\"Decomposer recursion: TERRITORY missions emit TERRITORY children without bound. Enforce max_depth column; decomposer refuses TERRITORY children when parent.depth >= max_depth, emitting LEAF tasks instead.\"],\"successMetric\":\"PENDING mission reaches SETTLED within 90 s under normal load; worker killed mid-run causes reclaim and re-execution within 120 s with exactly one SETTLED row; budget_spent never exceeds budget_allocated for any row; 200 concurrent IN_FLIGHT missions across 8 workers for 10 minutes ends with zero orphaned rows (heartbeat_at older than 120 s).\"}",
+      "stop_reason": "tool_use",
+      "session_id": "f558ca56-1145-44d2-844f-3a79755e4607",
+      "total_cost_usd": 0.12323659999999999,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 5169,
+        "cache_read_input_tokens": 14442,
+        "output_tokens": 5795,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 5169,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 1560,
+            "cache_read_input_tokens": 7609,
+            "cache_creation_input_tokens": 4393,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 4393
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 873,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000953,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 4,
+          "outputTokens": 5795,
+          "cacheReadInputTokens": 14442,
+          "cacheCreationInputTokens": 5169,
+          "webSearchRequests": 0,
+          "costUSD": 0.12228359999999999,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "component": "Mission Queue Substrate",
+        "absentMechanism": "The seed has no durable work-item state machine. Every mission lives only in the conversation turn that spawned it — no persistent row with an owner, heartbeat timestamp, budget ledger, attempt counter, or result slot. When a conversation ends or a worker crashes, work disappears with no reclaim path. There is no intake API, no fanout to parallel workers, no integrator that fires after siblings settle, and no budget enforcer. The resolver→edit→test loop exists but is orchestrated by a human turn, not an autonomous queue.",
+        "design": [
+          "Mission table: mission_id, parent_id, type, payload JSONB, state ENUM(PENDING|IN_FLIGHT|SETTLED|FAILED), worker_id, claimed_at, heartbeat_at, budget_allocated, budget_spent DEFAULT 0, attempt DEFAULT 0, max_attempts, depth, result JSONB. All transitions are UPDATE ... WHERE state=X AND mission_id=Y (optimistic CAS; no lock table).",
+          "Append-only events table: id, mission_id, event_type, ts, payload — written in the same transaction as every state UPDATE. Workers tail this table or a Redis-stream copy. The event row IS the notification; no side-channel coordination.",
+          "Heartbeat daemon: every 15 s runs UPDATE missions SET state='PENDING', worker_id=NULL, attempt=attempt+1 WHERE state='IN_FLIGHT' AND heartbeat_at < NOW()-60s AND attempt < max_attempts. A recovering worker's result write hits WHERE state='IN_FLIGHT' AND worker_id=$me, touching 0 rows — result discarded, not doubled.",
+          "Worker claim loop: SELECT ... FOR UPDATE SKIP LOCKED WHERE state='PENDING' ORDER BY priority DESC LIMIT 1; transition IN_FLIGHT; goroutine updates heartbeat_at every 20 s; call inference adapter; on success write result and transition SETTLED; on soft failure requeue PENDING with attempt+1; on hard failure transition FAILED.",
+          "Budget ledger enforced at DB layer: adapter receives remaining=(budget_allocated - budget_spent) as max_tokens hard cap; after call, UPDATE budget_spent = budget_spent + actual WHERE budget_spent + actual <= budget_allocated. A DB CHECK constraint rejects the row if arithmetic overflows — overspend is structurally impossible.",
+          "Decomposer worker: claims PENDING TERRITORY missions, calls cheapest model with structured output schema [{type, payload, budget_tokens}], bulk-inserts children as PENDING with parent_id and depth=parent.depth+1 (refused if depth >= max_depth), transitions self to AWAITING_INTEGRATION.",
+          "Integrator: polls SETTLED/FAILED events; after each, queries unsettled sibling count; if 0, claims parent integration slot, merges child results or propagates failure, writes parent.result, transitions parent SETTLED. Parent state is only touched by the integrator — never by child writes.",
+          "Intake API: POST /missions writes one PENDING row, returns {mission_id}. Caller polls GET /missions/{id} or subscribes to SSE event stream. Rate-limited at HTTP layer; queue has no concept of session or conversation."
+        ],
+        "firstVerticalSlice": [
+          "Add one SQLite missions table — no events table, no decomposer, no integrator yet.",
+          "Single worker binary: claim PENDING via SELECT FOR UPDATE SKIP LOCKED, transition IN_FLIGHT, spawn heartbeat goroutine updating heartbeat_at every 20 s, call one hardcoded LISS fabric inference endpoint, write result, transition SETTLED.",
+          "Heartbeat daemon as a second process: every 15 s run the reclaim UPDATE and log each reclaimed mission_id.",
+          "Crash proof: kill worker mid-run; after 60 s verify daemon reclaims the row (state=PENDING, attempt=1); restart worker; confirm SETTLED with no duplicate rows.",
+          "Budget enforcement: test missions get budget_allocated=200 tokens; pass remaining as max_tokens; after call UPDATE budget_spent; assert budget_spent never exceeds budget_allocated across a 10-mission batch.",
+          "Acceptance gate: 10 missions across 3 workers, kill one worker mid-run, all 10 reach SETTLED or FAILED within 3 minutes, SELECT ... WHERE state='IN_FLIGHT' AND heartbeat_at < NOW()-120s returns 0."
+        ],
+        "failureModes": [
+          "Split-brain settle: two workers race to settle the same row after heartbeat mis-fire. WHERE state='IN_FLIGHT' AND worker_id=$me guard ensures the loser's UPDATE hits 0 rows; verify SETTLED count per mission never exceeds 1.",
+          "Budget drift under concurrent children: siblings read budget_remaining simultaneously and collectively overspend. DB CHECK constraint on the UPDATE makes the overspending write fail atomically; worker catches constraint violation and transitions FAILED.",
+          "Integrator starvation: a child reaches FAILED at max_attempts; parent never reaches 0 unsettled siblings. Integrator must trigger on FAILED events and apply an explicit partial-results or failure-propagation policy per mission type.",
+          "Daemon as SPOF: if it crashes, IN_FLIGHT rows are never reclaimed. Run two daemon instances; the reclaim UPDATE is idempotent — the second instance finds 0 rows to act on once the first has run.",
+          "Decomposer recursion: TERRITORY missions emit TERRITORY children without bound. Enforce max_depth column; decomposer refuses TERRITORY children when parent.depth >= max_depth, emitting LEAF tasks instead."
+        ],
+        "successMetric": "PENDING mission reaches SETTLED within 90 s under normal load; worker killed mid-run causes reclaim and re-execution within 120 s with exactly one SETTLED row; budget_spent never exceeds budget_allocated for any row; 200 concurrent IN_FLIGHT missions across 8 workers for 10 minutes ends with zero orphaned rows (heartbeat_at older than 120 s)."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "858b6d0d-7e53-488e-884c-246284022954"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 115.734,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

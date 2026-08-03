@@ -1,0 +1,75 @@
+{
+  "type": "InferenceFabricDispatchSummary",
+  "startedAt": "2026-07-19T05:06:22.008Z",
+  "finishedAt": "2026-07-19T05:07:55.639Z",
+  "dryRun": false,
+  "input": {
+    "digest": "sha256:e1ce5dc0f73b0eaeb109431be06dd0034964479e1bb1c35f89839f0bac895d7b",
+    "jobs": 24,
+    "skippedByResume": 0
+  },
+  "history": {
+    "digest": "sha256:b101f7ec31dc301bb3076d772029f6d1e09ec2dce9921b1fddb868b49f71f6be",
+    "records": 24
+  },
+  "registryDigest": "sha256:8e4b943b37dd9fca9469d6878459398873fd6e70150d5a072e1ec1ab8749c9dd",
+  "output": {
+    "recordsAppended": 24
+  },
+  "throughput": {
+    "elapsedMs": 93629,
+    "terminalJobsPerMinute": 15.379850260068995,
+    "usefulJobsPerMinute": 15.379850260068995,
+    "schemaVerifiedJobsPerMinute": 15.379850260068995,
+    "completed": 24,
+    "schemaVerifiedCompleted": 24,
+    "usefulYield": 1,
+    "schemaVerifiedYield": 1,
+    "refused": 0,
+    "attempts": 24,
+    "fallbackCompletions": 0,
+    "verificationFailures": 0,
+    "quotedAttemptConsiderationByUnit": {
+      "relative-resolution-cost-v1": 16.6039954272949
+    },
+    "realizedResourcesByDenomination": {
+      "google-ai-studio-api-requests": {
+        "fuelConsumed": 24,
+        "wallTimeSeconds": 20.073999999999998,
+        "completions": 24
+      }
+    },
+    "p50LatencyMs": 45076,
+    "p95LatencyMs": 48614,
+    "byEndpoint": {
+      "groq-llama-3.1-8b-instant": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "gemini-3.1-flash-lite": {
+        "attempts": 24,
+        "completed": 24,
+        "schemaVerifiedCompleted": 24,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "openrouter-llama-3.3-70b-free": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "claude-code-claude-sonnet-4-6": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      }
+    }
+  }
+}

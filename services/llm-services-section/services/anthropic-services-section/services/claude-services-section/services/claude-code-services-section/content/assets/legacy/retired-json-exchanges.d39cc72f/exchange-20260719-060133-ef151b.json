@@ -1,0 +1,190 @@
+{
+  "id": "exchange-20260719-060133-ef151b",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design safe candidate isolation, verification, selection, and integration into a dirty shared repository.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "component",
+          "absentMechanism",
+          "design",
+          "firstVerticalSlice",
+          "failureModes",
+          "successMetric"
+        ],
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "absentMechanism": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 700
+          },
+          "design": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            }
+          },
+          "firstVerticalSlice": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 400
+            }
+          },
+          "failureModes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 300
+            }
+          },
+          "successMetric": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"component\":\"Candidate Isolation and Integration Engine\",\"absentMechanism\":\"The seed applies edits directly to the shared working tree with no per-candidate sandbox: one task, one agent, edits applied in place. There is no git-worktree isolation scoped to a verified-clean base commit, no verifier role distinct from the producer (the producer's own test run is the only gate), no multi-candidate scoring or selection, and no conflict-aware patch application back to a dirty shared repository. Any mid-task crash or parallel work leaves the shared tree in an undefined state with no rollback path.\",\"design\":[\"Each claimed job shells out `git worktree add /tmp/candidate-<job_id> <last_verified_sha>` immediately on claim, forking from the last integration-verified commit, not from the current dirty working tree. The worktree path is written into the job record before any agent invocation.\",\"The producing agent's file-write tool enforces a path prefix constraint: any write outside `job.worktree_path` returns an error and halts the edit loop. No other isolation mechanism is needed; the constraint is in the tool layer, not the model.\",\"After the producer commits inside the worktree, `git -C <worktree_path> format-patch HEAD~1 --stdout` extracts the patch, stored in the job record as opaque bytes. The worktree is now read-only to the producer.\",\"A separate verifier agent invocation receives only (task_spec, patch_bytes) — no producer reasoning trace, no shared filesystem path to the worktree. It applies the patch to a fresh copy of the worktree base, runs tests, and emits a structured verdict: `{pass: bool, test_counts: {pass, fail, skip}, static_violations: []}`.\",\"When multiple candidates exist for one task, selection is deterministic: verified candidates rank by (test_pass_rate DESC, static_violations_count ASC, patch_line_count ASC); ties break by claim_timestamp ASC. Selection is a pure function over job records — no model call.\",\"Integration applies the selected patch to the shared repo via `git am --3way <patch_bytes>`; on conflict the job transitions to CONFLICT state with the conflict diff appended to its context field and re-enters the work queue. The patch is never silently discarded.\",\"A post-integration step re-runs the full test suite on the shared repo; failure triggers `git am --abort` and transitions to INTEGRATION_FAILED. After three such transitions, the job escalates to HUMAN_REVIEW with full failure history.\",\"Worktrees are removed unconditionally via `git worktree remove --force` after integration success or failure. The patch bytes in the job record are the durable artifact; the directory is ephemeral.\"],\"firstVerticalSlice\":[\"Add `worktree_path: str | None` and `patch_bytes: bytes | None` to the job schema. On claim, run `git worktree add /tmp/candidate-{job_id} HEAD` and write the path into the job record before returning the job to the agent.\",\"Wrap the existing file-write tool: reject any path not prefixed by `job.worktree_path` with a structured error. This enforces isolation without changing the agent's edit loop.\",\"After the agent's existing commit step, run `git -C {worktree_path} format-patch HEAD~1 --stdout` and store the result in `job.patch_bytes`. Transition job status from IN_PROGRESS to AWAITING_VERIFICATION.\",\"Invoke a second agent process with env vars `TASK_SPEC` and `PATCH_BYTES` only — no worktree path, no session state. It applies the patch, runs pytest, and writes a verdict JSON to stdout. The orchestrator reads and stores it in the job record.\",\"On PASS verdict, run `git am --3way` in the shared repo. On success, settle job DONE and run `git worktree remove --force`. On conflict, set status CONFLICT and re-queue with the conflict diff prepended to the task context.\"],\"failureModes\":[\"Base SHA drifts: shared repo advances before integration, causing `git am` conflicts on a valid patch. Mitigation: before `git am`, rebase the worktree commit onto current HEAD and re-verify if the rebased diff delta exceeds a threshold.\",\"Verifier learns producer context via a shared log sink or tmp directory, breaking independence. Mitigation: verifier subprocess launches with a clean environment, no worktree path access, stdout-only result channel.\",\"Flaky tests cause a valid patch to fail verification. Mitigation: verifier re-runs the suite up to three times; a patch must fail all runs to be rejected, with per-run results stored in the verdict.\",\"Stale worktrees accumulate after crashes. Mitigation: on every job claim, scan /tmp/candidate-* for entries whose job_id has no IN_PROGRESS record and prune them before creating the new worktree.\",\"Repeated INTEGRATION_FAILED with no new context causes infinite re-queue loops. Mitigation: track `integration_attempt_count`; at count >= 3, set status HUMAN_REVIEW and stop re-queuing.\"],\"successMetric\":\"Single-task round trip visible in the append-only job log: worktree created on claim, all producer writes confined to it, patch stored after commit, verifier verdict present with no producer context visible, `git am` applied to shared repo, post-integration tests green, worktree removed, job settled DONE — zero direct writes to the shared repo working tree during candidate production.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 87052,
+      "duration_api_ms": 88025,
+      "ttft_ms": 42716,
+      "ttft_stream_ms": 2061,
+      "time_to_request_ms": 30,
+      "num_turns": 3,
+      "result": "{\"component\":\"Candidate Isolation and Integration Engine\",\"absentMechanism\":\"The seed applies edits directly to the shared working tree with no per-candidate sandbox: one task, one agent, edits applied in place. There is no git-worktree isolation scoped to a verified-clean base commit, no verifier role distinct from the producer (the producer's own test run is the only gate), no multi-candidate scoring or selection, and no conflict-aware patch application back to a dirty shared repository. Any mid-task crash or parallel work leaves the shared tree in an undefined state with no rollback path.\",\"design\":[\"Each claimed job shells out `git worktree add /tmp/candidate-<job_id> <last_verified_sha>` immediately on claim, forking from the last integration-verified commit, not from the current dirty working tree. The worktree path is written into the job record before any agent invocation.\",\"The producing agent's file-write tool enforces a path prefix constraint: any write outside `job.worktree_path` returns an error and halts the edit loop. No other isolation mechanism is needed; the constraint is in the tool layer, not the model.\",\"After the producer commits inside the worktree, `git -C <worktree_path> format-patch HEAD~1 --stdout` extracts the patch, stored in the job record as opaque bytes. The worktree is now read-only to the producer.\",\"A separate verifier agent invocation receives only (task_spec, patch_bytes) — no producer reasoning trace, no shared filesystem path to the worktree. It applies the patch to a fresh copy of the worktree base, runs tests, and emits a structured verdict: `{pass: bool, test_counts: {pass, fail, skip}, static_violations: []}`.\",\"When multiple candidates exist for one task, selection is deterministic: verified candidates rank by (test_pass_rate DESC, static_violations_count ASC, patch_line_count ASC); ties break by claim_timestamp ASC. Selection is a pure function over job records — no model call.\",\"Integration applies the selected patch to the shared repo via `git am --3way <patch_bytes>`; on conflict the job transitions to CONFLICT state with the conflict diff appended to its context field and re-enters the work queue. The patch is never silently discarded.\",\"A post-integration step re-runs the full test suite on the shared repo; failure triggers `git am --abort` and transitions to INTEGRATION_FAILED. After three such transitions, the job escalates to HUMAN_REVIEW with full failure history.\",\"Worktrees are removed unconditionally via `git worktree remove --force` after integration success or failure. The patch bytes in the job record are the durable artifact; the directory is ephemeral.\"],\"firstVerticalSlice\":[\"Add `worktree_path: str | None` and `patch_bytes: bytes | None` to the job schema. On claim, run `git worktree add /tmp/candidate-{job_id} HEAD` and write the path into the job record before returning the job to the agent.\",\"Wrap the existing file-write tool: reject any path not prefixed by `job.worktree_path` with a structured error. This enforces isolation without changing the agent's edit loop.\",\"After the agent's existing commit step, run `git -C {worktree_path} format-patch HEAD~1 --stdout` and store the result in `job.patch_bytes`. Transition job status from IN_PROGRESS to AWAITING_VERIFICATION.\",\"Invoke a second agent process with env vars `TASK_SPEC` and `PATCH_BYTES` only — no worktree path, no session state. It applies the patch, runs pytest, and writes a verdict JSON to stdout. The orchestrator reads and stores it in the job record.\",\"On PASS verdict, run `git am --3way` in the shared repo. On success, settle job DONE and run `git worktree remove --force`. On conflict, set status CONFLICT and re-queue with the conflict diff prepended to the task context.\"],\"failureModes\":[\"Base SHA drifts: shared repo advances before integration, causing `git am` conflicts on a valid patch. Mitigation: before `git am`, rebase the worktree commit onto current HEAD and re-verify if the rebased diff delta exceeds a threshold.\",\"Verifier learns producer context via a shared log sink or tmp directory, breaking independence. Mitigation: verifier subprocess launches with a clean environment, no worktree path access, stdout-only result channel.\",\"Flaky tests cause a valid patch to fail verification. Mitigation: verifier re-runs the suite up to three times; a patch must fail all runs to be rejected, with per-run results stored in the verdict.\",\"Stale worktrees accumulate after crashes. Mitigation: on every job claim, scan /tmp/candidate-* for entries whose job_id has no IN_PROGRESS record and prune them before creating the new worktree.\",\"Repeated INTEGRATION_FAILED with no new context causes infinite re-queue loops. Mitigation: track `integration_attempt_count`; at count >= 3, set status HUMAN_REVIEW and stop re-queuing.\"],\"successMetric\":\"Single-task round trip visible in the append-only job log: worktree created on claim, all producer writes confined to it, patch stored after commit, verifier verdict present with no producer context visible, `git am` applied to shared repo, post-integration tests green, worktree removed, job settled DONE — zero direct writes to the shared repo working tree during candidate production.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "0209f558-aba9-4d75-ae3b-5c82acabb918",
+      "total_cost_usd": 0.1129502,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 4496,
+        "cache_read_input_tokens": 14424,
+        "output_tokens": 5379,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4496,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 1714,
+            "cache_read_input_tokens": 7591,
+            "cache_creation_input_tokens": 3738,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 3738
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 855,
+          "outputTokens": 19,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.00095,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 4,
+          "outputTokens": 5379,
+          "cacheReadInputTokens": 14424,
+          "cacheCreationInputTokens": 4496,
+          "webSearchRequests": 0,
+          "costUSD": 0.1120002,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "component": "Candidate Isolation and Integration Engine",
+        "absentMechanism": "The seed applies edits directly to the shared working tree with no per-candidate sandbox: one task, one agent, edits applied in place. There is no git-worktree isolation scoped to a verified-clean base commit, no verifier role distinct from the producer (the producer's own test run is the only gate), no multi-candidate scoring or selection, and no conflict-aware patch application back to a dirty shared repository. Any mid-task crash or parallel work leaves the shared tree in an undefined state with no rollback path.",
+        "design": [
+          "Each claimed job shells out `git worktree add /tmp/candidate-<job_id> <last_verified_sha>` immediately on claim, forking from the last integration-verified commit, not from the current dirty working tree. The worktree path is written into the job record before any agent invocation.",
+          "The producing agent's file-write tool enforces a path prefix constraint: any write outside `job.worktree_path` returns an error and halts the edit loop. No other isolation mechanism is needed; the constraint is in the tool layer, not the model.",
+          "After the producer commits inside the worktree, `git -C <worktree_path> format-patch HEAD~1 --stdout` extracts the patch, stored in the job record as opaque bytes. The worktree is now read-only to the producer.",
+          "A separate verifier agent invocation receives only (task_spec, patch_bytes) — no producer reasoning trace, no shared filesystem path to the worktree. It applies the patch to a fresh copy of the worktree base, runs tests, and emits a structured verdict: `{pass: bool, test_counts: {pass, fail, skip}, static_violations: []}`.",
+          "When multiple candidates exist for one task, selection is deterministic: verified candidates rank by (test_pass_rate DESC, static_violations_count ASC, patch_line_count ASC); ties break by claim_timestamp ASC. Selection is a pure function over job records — no model call.",
+          "Integration applies the selected patch to the shared repo via `git am --3way <patch_bytes>`; on conflict the job transitions to CONFLICT state with the conflict diff appended to its context field and re-enters the work queue. The patch is never silently discarded.",
+          "A post-integration step re-runs the full test suite on the shared repo; failure triggers `git am --abort` and transitions to INTEGRATION_FAILED. After three such transitions, the job escalates to HUMAN_REVIEW with full failure history.",
+          "Worktrees are removed unconditionally via `git worktree remove --force` after integration success or failure. The patch bytes in the job record are the durable artifact; the directory is ephemeral."
+        ],
+        "firstVerticalSlice": [
+          "Add `worktree_path: str | None` and `patch_bytes: bytes | None` to the job schema. On claim, run `git worktree add /tmp/candidate-{job_id} HEAD` and write the path into the job record before returning the job to the agent.",
+          "Wrap the existing file-write tool: reject any path not prefixed by `job.worktree_path` with a structured error. This enforces isolation without changing the agent's edit loop.",
+          "After the agent's existing commit step, run `git -C {worktree_path} format-patch HEAD~1 --stdout` and store the result in `job.patch_bytes`. Transition job status from IN_PROGRESS to AWAITING_VERIFICATION.",
+          "Invoke a second agent process with env vars `TASK_SPEC` and `PATCH_BYTES` only — no worktree path, no session state. It applies the patch, runs pytest, and writes a verdict JSON to stdout. The orchestrator reads and stores it in the job record.",
+          "On PASS verdict, run `git am --3way` in the shared repo. On success, settle job DONE and run `git worktree remove --force`. On conflict, set status CONFLICT and re-queue with the conflict diff prepended to the task context."
+        ],
+        "failureModes": [
+          "Base SHA drifts: shared repo advances before integration, causing `git am` conflicts on a valid patch. Mitigation: before `git am`, rebase the worktree commit onto current HEAD and re-verify if the rebased diff delta exceeds a threshold.",
+          "Verifier learns producer context via a shared log sink or tmp directory, breaking independence. Mitigation: verifier subprocess launches with a clean environment, no worktree path access, stdout-only result channel.",
+          "Flaky tests cause a valid patch to fail verification. Mitigation: verifier re-runs the suite up to three times; a patch must fail all runs to be rejected, with per-run results stored in the verdict.",
+          "Stale worktrees accumulate after crashes. Mitigation: on every job claim, scan /tmp/candidate-* for entries whose job_id has no IN_PROGRESS record and prune them before creating the new worktree.",
+          "Repeated INTEGRATION_FAILED with no new context causes infinite re-queue loops. Mitigation: track `integration_attempt_count`; at count >= 3, set status HUMAN_REVIEW and stop re-queuing."
+        ],
+        "successMetric": "Single-task round trip visible in the append-only job log: worktree created on claim, all producer writes confined to it, patch stored after commit, verifier verdict present with no producer context visible, `git am` applied to shared repo, post-integration tests green, worktree removed, job settled DONE — zero direct writes to the shared repo working tree during candidate production."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "9354881c-4599-4f5a-9549-331702bb8a3e"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 99.234,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

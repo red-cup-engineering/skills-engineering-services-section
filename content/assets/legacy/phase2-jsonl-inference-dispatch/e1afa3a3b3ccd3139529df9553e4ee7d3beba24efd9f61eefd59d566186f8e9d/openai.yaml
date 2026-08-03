@@ -1,0 +1,4 @@
+interface:
+  display_name: "Contract Cheapest Inference"
+  short_description: "Route bounded LLM work to the cheapest supply"
+  default_prompt: "Use $contract-cheapest-inference to quote and dispatch this work through the verified inference fabric."

@@ -1,0 +1,28 @@
+{
+  "profile": "org.emsenn.evm.sovereign-enterprise-account.v3",
+  "enterprise": {
+    "nodeId": "claude-code-inference-team",
+    "urn": "urn:ame:claude-code-inference-team",
+    "enterpriseId": "0x9f26b3a6e3432315d2bf4ea798757aae4f07331050c78e894a9e7aac7f11d485"
+  },
+  "chain": {
+    "chainId": 5615610,
+    "caip2": "eip155:5615610"
+  },
+  "account": {
+    "address": "0x524ba34e71323b6cc1b85d6deaa3cf460fae5364",
+    "caip10": "eip155:5615610:0x524ba34e71323b6cc1b85d6deaa3cf460fae5364"
+  },
+  "factory": {
+    "address": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    "userSalt": "0xc9d3109beaa42221085191c13045ea2e63fa2f4b356bfb43d27fa22041ce5e15"
+  },
+  "policy": {
+    "signer": "0x509c28de959b4c330cbf1c62926828e72bcf08ce",
+    "custody": "settlement-private"
+  },
+  "deployment": {
+    "transaction": "0x6f64b31f68d8fa148bc1626f753971f5c133867b9ac0e2782c4ffd0844a19241",
+    "block": 147
+  }
+}

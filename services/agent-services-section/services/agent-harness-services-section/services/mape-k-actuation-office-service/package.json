@@ -1,0 +1,18 @@
+{
+  "name": "@red-cup-engineering/mape-k-actuation-office-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generates a provider's MAPE-K actuation-office record and its seven duty records from bare-cedar-fog-codex-actuation-office's shape, generalized across providers rather than hand-copied per provider.",
+  "exports": {
+    ".": "./src/generator.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/generator.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

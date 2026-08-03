@@ -1,0 +1,100 @@
+{
+  "id": "exchange-20260722-011149-f4a9cf",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"findings\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"area\":{\"maxLength\":100,\"type\":\"string\"},\"evidence\":{\"maxLength\":700,\"type\":\"string\"},\"problem\":{\"maxLength\":700,\"type\":\"string\"},\"recommendation\":{\"maxLength\":700,\"type\":\"string\"},\"severity\":{\"enum\":[\"critical\",\"high\",\"medium\",\"low\"],\"type\":\"string\"}},\"required\":[\"severity\",\"area\",\"problem\",\"evidence\",\"recommendation\"],\"type\":\"object\"},\"maxItems\":8,\"type\":\"array\"},\"summary\":{\"maxLength\":1600,\"minLength\":10,\"type\":\"string\"}},\"required\":[\"accepted\",\"summary\",\"findings\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:union:review:inference-circuit-rectifications:2026-07-21:a2a:final\",\"producer\":\"urn:codex:project-session\"},\"context\":{\"objective\":\"Final independent code review of the inference-circuit rectifications after adversarial fixes. Decide whether any material defect remains in the bounded source design. Do not treat procurement metadata or unrequested formal proof as a requirement.\",\"suppliedContext\":\"MISSION: copyTerritory recursively copies source except .git,node_modules,.lake,dist,coverage. It then copies source/node_modules into the disposable workspace with cpSync(...,{recursive:true,dereference:true}); no symlink to source remains. Model edits are restricted to declared writablePaths. Adversarial verifier writes a touch file into workspace node_modules; after the mission, source dependency bytes are unchanged and the source touch path is absent. Mission full suite 47/47. Measured production dependency closure is 46 MB; bounded copy cost is accepted for current safety.\\n\\nSEMANTIC ACCEPTANCE: changed-source projection sends the exact common-prefix/suffix diff span plus four context lines. Fresh route accepts only a majority of unique reviewers. Protected route additionally requires a previously validated acceptance capsule with evidence-bound semanticReview.accepted=true, redWitness.passed=false proving the exact oracle fails untouched baseline, nonempty digest-bound oracle artifacts, exact oracle pass on candidate, and at least one fresh evidence-bound accepted review. Review suite 9/9.\\n\\nNVIDIA CAP: absent env means ordinary capacity open. Present env must match /^(0|[1-9][0-9]*)$/ and Number(value) must be a safe integer; malformed is unavailable. Valid cap is exhausted when exchange count>=cap. Vectors cover text,fraction,negative,hex,whitespace,leading zero,unsafe integer,zero/exhausted,open,unset. NVIDIA suite 13/13.\\n\\nPERSISTENCE: inference market and semantic review each run as separately signed localhost A2A dies under enabled systemd units with exact working directories, RWIL/market bindings, restart-on-failure, NoNewPrivileges and PrivateTmp. Their signed cards are reachable. Market suite 26/26; Groq 11/11.\\n\\nPRIOR REVIEW RESIDUES: Groq response failed the customer JSON schema and was refused. NVIDIA repeated generic market resolver metadata as a defect and was rejected by customer assay. Gemini raised copy cost (measured/accepted), misread protected composition as removing fresh review (it does not), and recommended strict decimal cap parsing (implemented). The customer seeks concrete remaining source defects only.\",\"desiredUse\":\"Customer will inspect findings against source and tests. Candidate remains advisory and cannot accept itself.\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:union:review:inference-circuit-rectifications:2026-07-21:a2a:final\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"code-review\",\"executionBounds\":{\"maximumOutputTokens\":1400,\"sourceMeasures\":{\"words\":270,\"characters\":2186}},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"findings\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"area\":{\"maxLength\":100,\"type\":\"string\"},\"evidence\":{\"maxLength\":700,\"type\":\"string\"},\"problem\":{\"maxLength\":700,\"type\":\"string\"},\"recommendation\":{\"maxLength\":700,\"type\":\"string\"},\"severity\":{\"enum\":[\"critical\",\"high\",\"medium\",\"low\"],\"type\":\"string\"}},\"required\":[\"severity\",\"area\",\"problem\",\"evidence\",\"recommendation\"],\"type\":\"object\"},\"maxItems\":8,\"type\":\"array\"},\"summary\":{\"maxLength\":1600,\"minLength\":10,\"type\":\"string\"}},\"required\":[\"accepted\",\"summary\",\"findings\"],\"type\":\"object\"}}}"
+      }
+    ],
+    "max-tokens": 4000
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"accepted\":false,\"summary\":\"The bounded design is substantially sound across its declared test surface: workspace isolation, semantic gating, cap validation, and persistence all pass their stated suites, and the three prior review residues (Groq schema failure, NVIDIA metadata repetition, Gemini misreads) are correctly resolved or accepted. Two concrete residual defects remain material. First, the NVIDIA cap exhaustion check (exchange count >= cap) is not described as atomic; under concurrent inference requests, two callers can both observe count < cap, both proceed, and both increment, yielding final count exceeding cap by the concurrency factor. The 13-vector suite covers only single-threaded boundary shapes. Second, the fresh-route majority predicate over reviewers is undefined when review empties the eligible pool; a vacuously-true evaluation would admit a change with zero reviews, and this edge is not listed among the 9 covered review-suite vectors. A third lower-severity asymmetry exists between the protected route's 'at least one' fresh acceptance and the fresh route's majority requirement, but this may be intentional given the capsule's prior validation burden. No file-mutation, execution, integration, or customer-acceptance claims are made.\",\"findings\":[{\"severity\":\"medium\",\"area\":\"NVIDIA cap — concurrent exhaustion\",\"problem\":\"The cap check (exchange count >= cap) and the subsequent increment are two separate steps. Under concurrent inference requests, multiple callers can pass the predicate before any increment lands, allowing the realised exchange count to exceed the declared cap by the degree of concurrency.\",\"evidence\":\"The 13-vector suite covers text, fraction, negative, hex, whitespace, leading-zero, unsafe-integer, zero/exhausted, open, and unset — all single-threaded boundary shapes. No concurrent-increment vector is described or implied.\",\"recommendation\":\"Gate cap consumption behind an atomic compare-and-increment (e.g., an atomic counter, a mutex-protected read-modify-write, or a single-writer queue). Alternatively enforce the cap at the scheduler level before any exchange is dispatched.\"},{\"severity\":\"medium\",\"area\":\"Semantic acceptance — empty reviewer pool\",\"problem\":\"The fresh route requires 'a majority of unique reviewers.' If review empties the eligible set, the majority predicate is undefined; a vacuously-true evaluation admits the change with zero reviews, defeating the gate entirely.\",\"evidence\":\"Nine review-suite vectors are described as passing, but the degenerate empty-pool case is not listed among them. The description does not state a fail-closed guard when eligible count is zero.\",\"recommendation\":\"Assert eligible reviewer count >= 1 (or a configured minimum) before evaluating the majority predicate, and fail closed when the pool is empty. Add a dedicated zero-pool vector to the review suite.\"},{\"severity\":\"low\",\"area\":\"Semantic acceptance — protected route fresh-review gate asymmetry\",\"problem\":\"The protected route requires 'at least one' fresh evidence-bound accepted review; the fresh route requires a majority. With a two-reviewer pool, one acceptance satisfies the protected gate but not necessarily the spirit of independent majority review, creating a weaker ongoing review requirement on the stronger protection path.\",\"evidence\":\"Context states: 'Fresh route accepts only a majority of unique reviewers. Protected route … requires … at least one fresh evidence-bound accepted review.' No reviewer-pool floor is declared.\",\"recommendation\":\"Clarify whether 'at least one' is intentionally weaker because the capsule supplies prior validation, or whether it should match the majority threshold. If intentional, document the rationale so a future reviewer does not tighten it incorrectly.\"}]}",
+    "finish-reason": "end_turn",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 71085,
+      "duration_api_ms": 72327,
+      "ttft_ms": 56951,
+      "ttft_stream_ms": 1590,
+      "time_to_request_ms": 125,
+      "num_turns": 1,
+      "result": "{\"accepted\":false,\"summary\":\"The bounded design is substantially sound across its declared test surface: workspace isolation, semantic gating, cap validation, and persistence all pass their stated suites, and the three prior review residues (Groq schema failure, NVIDIA metadata repetition, Gemini misreads) are correctly resolved or accepted. Two concrete residual defects remain material. First, the NVIDIA cap exhaustion check (exchange count >= cap) is not described as atomic; under concurrent inference requests, two callers can both observe count < cap, both proceed, and both increment, yielding final count exceeding cap by the concurrency factor. The 13-vector suite covers only single-threaded boundary shapes. Second, the fresh-route majority predicate over reviewers is undefined when review empties the eligible pool; a vacuously-true evaluation would admit a change with zero reviews, and this edge is not listed among the 9 covered review-suite vectors. A third lower-severity asymmetry exists between the protected route's 'at least one' fresh acceptance and the fresh route's majority requirement, but this may be intentional given the capsule's prior validation burden. No file-mutation, execution, integration, or customer-acceptance claims are made.\",\"findings\":[{\"severity\":\"medium\",\"area\":\"NVIDIA cap — concurrent exhaustion\",\"problem\":\"The cap check (exchange count >= cap) and the subsequent increment are two separate steps. Under concurrent inference requests, multiple callers can pass the predicate before any increment lands, allowing the realised exchange count to exceed the declared cap by the degree of concurrency.\",\"evidence\":\"The 13-vector suite covers text, fraction, negative, hex, whitespace, leading-zero, unsafe-integer, zero/exhausted, open, and unset — all single-threaded boundary shapes. No concurrent-increment vector is described or implied.\",\"recommendation\":\"Gate cap consumption behind an atomic compare-and-increment (e.g., an atomic counter, a mutex-protected read-modify-write, or a single-writer queue). Alternatively enforce the cap at the scheduler level before any exchange is dispatched.\"},{\"severity\":\"medium\",\"area\":\"Semantic acceptance — empty reviewer pool\",\"problem\":\"The fresh route requires 'a majority of unique reviewers.' If review empties the eligible set, the majority predicate is undefined; a vacuously-true evaluation admits the change with zero reviews, defeating the gate entirely.\",\"evidence\":\"Nine review-suite vectors are described as passing, but the degenerate empty-pool case is not listed among them. The description does not state a fail-closed guard when eligible count is zero.\",\"recommendation\":\"Assert eligible reviewer count >= 1 (or a configured minimum) before evaluating the majority predicate, and fail closed when the pool is empty. Add a dedicated zero-pool vector to the review suite.\"},{\"severity\":\"low\",\"area\":\"Semantic acceptance — protected route fresh-review gate asymmetry\",\"problem\":\"The protected route requires 'at least one' fresh evidence-bound accepted review; the fresh route requires a majority. With a two-reviewer pool, one acceptance satisfies the protected gate but not necessarily the spirit of independent majority review, creating a weaker ongoing review requirement on the stronger protection path.\",\"evidence\":\"Context states: 'Fresh route accepts only a majority of unique reviewers. Protected route … requires … at least one fresh evidence-bound accepted review.' No reviewer-pool floor is declared.\",\"recommendation\":\"Clarify whether 'at least one' is intentionally weaker because the capsule supplies prior validation, or whether it should match the majority threshold. If intentional, document the rationale so a future reviewer does not tighten it incorrectly.\"}]}",
+      "stop_reason": "end_turn",
+      "session_id": "275affad-ca88-41e0-bae5-648820518701",
+      "total_cost_usd": 0.08619040000000001,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 5121,
+        "cache_read_input_tokens": 2308,
+        "output_tokens": 3546,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 5121,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 3546,
+            "cache_read_input_tokens": 2308,
+            "cache_creation_input_tokens": 5121,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 5121
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1498,
+          "outputTokens": 15,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.001573,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 3546,
+          "cacheReadInputTokens": 2308,
+          "cacheCreationInputTokens": 5121,
+          "webSearchRequests": 0,
+          "costUSD": 0.08461740000000001,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "565dbd69-d98c-48c7-afe3-396afb765db5"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 74.059177106,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

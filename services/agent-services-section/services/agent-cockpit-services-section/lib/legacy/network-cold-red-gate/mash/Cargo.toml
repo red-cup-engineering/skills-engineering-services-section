@@ -1,0 +1,54 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version      = "0.1.0"
+edition      = "2021"
+rust-version = "1.86"
+license      = "MIT"
+authors      = ["emsenn"]
+repository   = "https://github.com/emsenn/mash"
+homepage     = "https://github.com/emsenn/mash"
+description  = "Modeled Agential Semiotic Hub — a predication substrate over the Belnap 2⊗2 bilattice."
+
+[workspace.lints.rust]
+unsafe_code  = "deny"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
+
+[workspace.dependencies]
+# ─────────────────────────────────────────────────────────────────────
+# Engine — the substrate. Algebra, inference, proof, hub, sdk, util.
+# ─────────────────────────────────────────────────────────────────────
+mash-engine      = { path = "crates/mash-engine",      version = "0.1" }
+
+# ─────────────────────────────────────────────────────────────────────
+# Library — OQRA-structured content, built atop mash-engine.
+# ─────────────────────────────────────────────────────────────────────
+mash-library     = { path = "crates/mash-library",     version = "0.1" }
+
+# External
+toml               = "0.8"
+libc               = "0.2"
+tokio              = { version = "1", features = ["full"] }
+tokio-util         = { version = "0.7", features = ["codec"] }
+serde              = { version = "1", features = ["derive"] }
+serde_json         = "1"
+serde_yaml_ng      = "0.10"
+thiserror          = "1"
+anyhow             = "1"
+tracing            = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+futures            = "0.3"
+bytes              = "1"
+async-trait        = "0.1"
+
+[profile.release]
+lto           = true
+codegen-units = 1

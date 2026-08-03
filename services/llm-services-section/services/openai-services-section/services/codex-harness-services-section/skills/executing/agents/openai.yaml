@@ -1,0 +1,4 @@
+interface:
+  display_name: "Execute Repository Change"
+  short_description: "Finish one cutover and verify it"
+  default_prompt: "Use $executing to implement this change through independent verification."

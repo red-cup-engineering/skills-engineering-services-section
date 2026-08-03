@@ -1,0 +1,86 @@
+{
+  "type": "InferenceFabricDispatchSummary",
+  "startedAt": "2026-07-19T16:59:37.551Z",
+  "finishedAt": "2026-07-19T17:02:30.723Z",
+  "dryRun": false,
+  "input": {
+    "digest": "sha256:76878617620c5e36d63278763a852d5f2e4f1e8fff4284668b168e78a7c71640",
+    "jobs": 1,
+    "skippedByResume": 0
+  },
+  "history": null,
+  "registryDigest": "sha256:91cbfee647fa31072eef59fb674ba4e630a4d43ff831b82ef50f4b546aaf009d",
+  "output": {
+    "recordsAppended": 1
+  },
+  "throughput": {
+    "elapsedMs": 173171,
+    "terminalJobsPerMinute": 0.346478336442014,
+    "usefulJobsPerMinute": 0.346478336442014,
+    "schemaVerifiedJobsPerMinute": 0.346478336442014,
+    "completed": 1,
+    "schemaVerifiedCompleted": 1,
+    "usefulYield": 1,
+    "schemaVerifiedYield": 1,
+    "refused": 0,
+    "attempts": 3,
+    "fallbackCompletions": 1,
+    "verificationFailures": 0,
+    "quotedAttemptConsiderationByUnit": {
+      "relative-resolution-cost-v1": 11.828178185901393
+    },
+    "realizedResourcesByDenomination": {
+      "claude-code-cli-invocations": {
+        "fuelConsumed": 1,
+        "wallTimeSeconds": 171.842,
+        "completions": 1
+      }
+    },
+    "p50LatencyMs": 173169,
+    "p95LatencyMs": 173169,
+    "byEndpoint": {
+      "groq-llama-3.1-8b-instant": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "gemini-3.1-flash-lite": {
+        "attempts": 1,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 1,
+        "verificationFailures": 0
+      },
+      "openrouter-llama-3.3-70b-free": {
+        "attempts": 1,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 1,
+        "verificationFailures": 0
+      },
+      "claude-code-claude-sonnet-4-6": {
+        "attempts": 1,
+        "completed": 1,
+        "schemaVerifiedCompleted": 1,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "github-models-gpt-4o-mini": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "nvidia-inference-pilot": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      }
+    }
+  }
+}

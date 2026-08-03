@@ -1,0 +1,30 @@
+{
+  "name": "@red-cup-engineering/claude-code-services-section",
+  "version": "0.2.1",
+  "description": "A directly contractable Claude Code print-mode inference provider.",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@a2a-js/sdk": "1.0.0-beta.0",
+    "@red-cup-engineering/a2a-contracted-agent-service": "2.0.5",
+    "@red-cup-engineering/relation-model-notation-runtime": "7.0.0",
+    "@red-cup-engineering/relation-model-notation-conformance": "7.0.0",
+    "@red-cup-engineering/witness-journal-rdf-projection-service": "1.1.0",
+    "@lenticule-science/wit-transition-assay": "1.0.1"
+  },
+  "bin": {
+    "execute-rmn-inference": "./src/execute-rmn-inference.mjs",
+    "serve-inference-a2a": "./scripts/serve-a2a.mjs"
+  },
+  "scripts": {
+    "check": "node --check run-one-exchange.mjs && node --check src/claude-capacity.mjs && node --check src/execute-rmn-inference.mjs && node --check scripts/serve-a2a.mjs && node --check test/provider-boundary.test.mjs && node --check test/request-slot.test.mjs",
+    "test": "node --test test/provider-boundary.test.mjs test/request-slot.test.mjs test/private-relay-cancellation.test.mjs test/plain-text-carrier.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sovereign-state-enterprise"
+  ]
+}

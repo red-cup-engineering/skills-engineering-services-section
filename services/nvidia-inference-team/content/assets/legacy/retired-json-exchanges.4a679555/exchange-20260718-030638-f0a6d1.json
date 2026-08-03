@@ -1,0 +1,25 @@
+{
+  "id": "exchange-20260718-030638-f0a6d1",
+  "packet": {
+    "model": "meta/llama-3.1-405b-instruct",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with exactly: NIM_READY"
+      }
+    ],
+    "max-tokens": 16
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "NVIDIA NIM responded with HTTP 404 Not Found: 404 page not found\n",
+    "unmet": [
+      "http-failure:404"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.239,
+    "denomination": "nvidia-nim-api-requests"
+  }
+}

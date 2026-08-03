@@ -1,0 +1,84 @@
+{
+  "kind": "metroplat.contract",
+  "id": "claude-code-inference-service",
+  "material": {
+    "id": "claude-code-inference-exchange-material",
+    "loci": ["consuming-micro-enterprise", "claude-code-inference-unit", "local-claude-cli-print-mode-surface"],
+    "incidence": [
+      "consuming-micro-enterprise--solicits-and-accepts-a-provider-authored-activitystreams-offer-from--claude-code-inference-unit",
+      "claude-code-inference-unit--drives--local-claude-cli-print-mode-surface-via-one-bounded-claude-p-subprocess",
+      "claude-code-inference-unit--returns-completion-or-refusal-over-a2a-to--consuming-micro-enterprise"
+    ],
+    "fibers": ["context-packet", "completion-record", "refusal-record", "exchange-record"],
+    "valueAlgebra": "boolean",
+    "constraints": [
+      "exactly-one-bounded-claude-p-subprocess-per-packet-model-messages-and-max-tokens-named-by-the-caller-with-a-300-second-default-wall-clock-fuel-bound",
+      "the-claude-cli-dependency-sits-on-this-units-own-books-never-the-consumers",
+      "this-unit-is-a-fresh-implementation-and-shares-no-code-or-dependency-with-any-other-claude-client-in-the-tree-including-metroplats-own-and-the-anthropic-inference-teams-own-which-remain-out-of-scope-and-untouched",
+      "no-retry-or-fallback-model-substitution-happens-inside-this-units-move",
+      "the-subprocess-is-constrained-to-pure-text-inference-with-an-empty-tool-allowlist-and-no-mcp-servers-so-it-cannot-use-tools-or-touch-the-filesystem"
+    ],
+    "closure": ["an-exchange-closes-on-exactly-one-of-completion-or-refusal-never-left-open"],
+    "boundary": ["the-activitystreams-service-solicitation-and-accepted-provider-offer-are-the-contract-boundary"]
+  },
+  "precondition": {
+    "id": "context-packet-received",
+    "description": "A consuming micro-enterprise has accepted this provider's ActivityStreams ExecutableServiceOffer for a typed context packet naming: model (a Claude model id, optional — defaults to claude-opus-4-8), messages (a non-empty array of {role, content} chat turns), optionally max-tokens (accepted and echoed but not enforceable on the wire), and optionally params.outputSchema carrying one bounded JSON Schema no larger than 32768 bytes. The accepted ServiceContract carries a capability attenuated to the exact offer and packet digest; live execution additionally grants external-network and leader-inference-account."
+  },
+  "move": {
+    "id": "realize-the-exchange",
+    "description": "The unit flattens the packet's messages into one prompt — a system message maps to --append-system-prompt; user/assistant turns are flattened, in order, and streamed to the print-mode subprocess over standard input — and spawns exactly one bounded `claude -p` subprocess (--model, --output-format json, --tools \"\" for an empty filesystem/tool allowlist, --strict-mcp-config with no --mcp-config for zero MCP servers, --setting-sources \"\" so no project or user settings are loaded, and --json-schema only when the accepted packet carries params.outputSchema) within a bounded fuel budget. Schema-bound output is provider-validated and separately preserved as structuredOutput while a report field remains prose. The move settles to exactly one of completion or refusal.",
+    "domain": "context-packet",
+    "codomain": "completion-or-refusal",
+    "partial": false,
+    "deterministic": false,
+    "effects": ["material", "boundary", "evidence"]
+  },
+  "postcondition": {
+    "id": "exchange-settled",
+    "description": "An exchange record exists in the unit's own content/exchanges/ pool whose .outcome is exactly 'completion' (carrying the served model, response prose, finish reason, and provider-validated structured output in the raw provider result when contracted) or 'refusal' (a structured refusal record stating grounds) — settled within the bounded fuel budget, never a hang and never an untyped failure.",
+    "entails": ["context-packet-received"]
+  },
+  "phase": {
+    "id": "claude-code-inference-exchange-phase",
+    "closureDepth": "finite", "finality": "normal-form", "recurrence": "none",
+    "mobility": "fixed", "coherence": "total", "contradiction": "reject",
+    "coordinationCost": "evidenced", "observability": "boundary-only", "energy": "costed"
+  },
+  "lens": {
+    "id": "claude-code-inference-exchange-lens",
+    "domain": "context-packet",
+    "boundary": "activitystreams-solicitation-offer-accept-and-result-values-between-consuming-micro-enterprise-and-claude-code-inference-unit",
+    "preserves": ["the-consumers-requested-model-and-messages", "the-totality-of-outcome-completion-xor-refusal-never-a-hang"],
+    "hides": ["the-local-claude-cli-authentication-state-and-subprocess-argv-construction", "the-claude-clis-own-retry-and-overload-backoff-behavior", "claude-account-and-subscription-state"],
+    "output": "completion-or-refusal-record",
+    "evidenceRequired": true
+  },
+  "evidencePolicy": {
+    "id": "claude-code-inference-exchange-evidence-policy",
+    "required": true,
+    "records": [
+      "an-exchange-record-in-content-exchanges-with-outcome-completion-or-refusal",
+      "the-completion-records-served-model-and-response-text-when-outcome-is-completion",
+      "the-refusal-records-stated-grounds-when-outcome-is-refusal",
+      "the-exchanges-cost-figure-for-the-chief-financial-officers-books"
+    ],
+    "time": "interval", "caller": "required", "boundaryObject": "full"
+  },
+  "energetics": [{
+    "kind": "metroplat.energetic-obligation",
+    "id": "bounded-fuel",
+    "law": "total-correctness-under-a-fuel-bound",
+    "behavior": "Every exchange terminates — as completion or as refusal — inside a bounded wall-clock fuel budget; the subprocess is killed on timeout; it never hangs, and it never returns an untyped failure.",
+    "source": "context-packet-received", "target": "exchange-settled",
+    "invariant": "fuel-consumed-by-an-exchange-is-bounded-and-recorded",
+    "measure": "claude -p subprocess invocations made and wall-clock seconds consumed per exchange, recorded on the exchange record",
+    "evidenceRequired": true
+  }],
+  "refinements": [{
+    "id": "activitystreams-adapter-and-claude-cli-print-mode-client-realize-the-move",
+    "implementation": "src/contract-claude-code.js authors and validates Internal Market offers and accepted capabilities; run-one-exchange.mjs owns the one bounded local `claude -p` call (Node child_process.spawnSync, --tools \"\" --strict-mcp-config --setting-sources \"\", no vendored SDK)",
+    "refines": "tool",
+    "preserves": ["the-completion-xor-refusal-totality", "the-membrane-rule-keeping-the-claude-cli-dependency-on-this-units-own-books-rather-than-the-consumers"]
+  }]
+}

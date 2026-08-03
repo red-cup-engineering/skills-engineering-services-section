@@ -1,0 +1,8 @@
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredPath> "README.md" <urn:retirement:metered-inference-tollbooth:2026-07-19> .
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredBytes> "ni:///sha-256;elqZWNiM_P13z-C2NynQzNdEQDAoHA-w9mJtB8LV8A8" <urn:retirement:metered-inference-tollbooth:2026-07-19> .
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredPath> "content/contracts/metered-inference-tollbooth.json" <urn:retirement:metered-inference-tollbooth:2026-07-19> .
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredBytes> "ni:///sha-256;B-3eDCer5ueOSrRqhblihKdjpJI5GmDKX4_y57Z6laQ" <urn:retirement:metered-inference-tollbooth:2026-07-19> .
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredPath> "src/tollbooth.mjs" <urn:retirement:metered-inference-tollbooth:2026-07-19> .
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredBytes> "ni:///sha-256;g5J4VaXELg3aPzq3PRYnyqtLfL2zL-qzpVk10Ki3Eb4" <urn:retirement:metered-inference-tollbooth:2026-07-19> .
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredPath> "test/tollbooth.test.mjs" <urn:retirement:metered-inference-tollbooth:2026-07-19> .
+<urn:retirement:metered-inference-tollbooth:2026-07-19> <urn:prov:retiredBytes> "ni:///sha-256;5zWdD1bWnHK2L1KTu5m9WMwb5_Cuxc1jLpcRCy-GQns" <urn:retirement:metered-inference-tollbooth:2026-07-19> .

@@ -1,0 +1,189 @@
+{
+  "id": "exchange-20260719-060818-90602e",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Identify the minimum combined capability set needed to meet or beat Hermes Agent, OpenClaw, Paperclip, and Honcho as an autonomous software-production fabric rather than a chatbot.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "component",
+          "absentMechanism",
+          "design",
+          "firstVerticalSlice",
+          "failureModes",
+          "successMetric"
+        ],
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "absentMechanism": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 700
+          },
+          "design": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            }
+          },
+          "firstVerticalSlice": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 400
+            }
+          },
+          "failureModes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 300
+            }
+          },
+          "successMetric": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"component\":\"Intake-Decompose-Fanout-Integrate-Learn Loop\",\"absentMechanism\":\"The seed runs one task per session with no durable work queue, no decomposer emitting a dependency DAG, no claim/settle fanout across concurrent workers, no integration oracle merging parallel results, and no memory projector writing patterns between sessions. The 84-session audit (2,067 direct mutations, 30% human corrections) proves work lives in conversation turns, not a fabric. Hermes, OpenClaw, Paperclip, and Honcho each provide at least one of: durable task state, autonomous decomposition, parallel execution isolation, or cross-session context accumulation. The seed provides none of the four.\",\"design\":[\"Durable work queue (append-only rows, status: open|claimed|settled|failed): problems land as schema-validated rows; workers poll, heartbeat on TTL, and settle with a result pointer; zero substrate intelligence in the queue itself — it is a log, not a reasoner.\",\"Decomposer agent: accepts a territory spec, emits a JSON DAG of 2–8 subtasks with explicit input/output contracts and dependency edges; result stored durably so identical problems never re-derive their DAG.\",\"Worker executor: for each DAG leaf, spawns an isolated carrier session on the existing LISS fabric, appends every tool call + result to a per-task append-only log, settles when schema-verified output is produced or escalates after N failures — one subtask per session.\",\"Integration oracle: topological walk of the DAG; for each node whose dependencies are settled, runs merge + verification (schema, test suite, static analysis) before promoting status; conflicts on shared output namespaces block promotion.\",\"Memory projector: after full settlement with zero human corrections, extracts (context, action, outcome) triples from append-only logs and writes to a vector store; future decomposer and worker sessions query this store before first tool call.\",\"Escalation router: each subtask carries a token budget; cheap models (Gemini, GitHub Models) dispatch first; persistent failure triggers OpenRouter → Claude escalation; budget consumed is a settled-row field.\",\"Heartbeat monitor: claimed task not heartbeating within TTL is automatically returned to open status; prevents silent API timeouts from masking as in-progress work.\"],\"firstVerticalSlice\":[\"Write a decomposer that accepts a natural-language software problem and emits a valid JSON DAG of exactly 2–3 subtasks with input/output schemas; gate emission on the existing LISS schema validator.\",\"Insert DAG leaves as rows in the existing LISS job queue — no new queue infrastructure, reuse the proven 24.45 jobs/min substrate.\",\"Execute the two leaf subtasks in parallel on the existing multi-model fabric (Gemini + GitHub Models); each worker appends its tool log to a per-task file.\",\"Implement a linear integrator: concatenate settled outputs in topological order and run schema verification; no branching DAG support in this slice.\",\"On full settlement, write one (problem_statement, dag_json, settled_output_hash) record to a flat JSON memory file; decomposer reads it on the next identical problem and reuses the prior DAG without re-deriving.\"],\"failureModes\":[\"Decomposer emits subtasks with underspecified input/output contracts → worker cannot begin; mitigation: schema-validate the DAG before any subtask is claimed, re-prompt up to 3 times before escalating.\",\"Parallel workers produce conflicting edits to the same output namespace → integration oracle halts; mitigation: DAG schema enforces disjoint output paths at decomposition time, not at integration time.\",\"Memory projector ingests triples from failed or human-corrected sessions → future lookups steer toward bad patterns; mitigation: project only from sessions where settled_status is verified and human_corrections equals zero.\",\"Claimed task stops heartbeating due to API timeout → appears in-progress but makes no progress; mitigation: TTL monitor returns the row to open within one TTL window, logged as a retry event.\",\"Cost runaway: cheap-model failures cascade into Claude escalations across a large DAG → per-problem budget exhausted mid-graph; mitigation: escalation router checks remaining problem budget before each escalation and fails the subtask rather than exceeding the cap.\"],\"successMetric\":\"Fabric accepts a 3-part problem (spec, codebase pointer, acceptance tests), decomposes without human input, executes in parallel using cheap models for ≥80% of token spend, verifies against acceptance tests, and completes 5 consecutive problems with zero human corrections at throughput matching the 24.45 jobs/min LISS baseline.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 76670,
+      "duration_api_ms": 77536,
+      "ttft_ms": 42489,
+      "ttft_stream_ms": 1880,
+      "time_to_request_ms": 52,
+      "num_turns": 3,
+      "result": "{\"component\":\"Intake-Decompose-Fanout-Integrate-Learn Loop\",\"absentMechanism\":\"The seed runs one task per session with no durable work queue, no decomposer emitting a dependency DAG, no claim/settle fanout across concurrent workers, no integration oracle merging parallel results, and no memory projector writing patterns between sessions. The 84-session audit (2,067 direct mutations, 30% human corrections) proves work lives in conversation turns, not a fabric. Hermes, OpenClaw, Paperclip, and Honcho each provide at least one of: durable task state, autonomous decomposition, parallel execution isolation, or cross-session context accumulation. The seed provides none of the four.\",\"design\":[\"Durable work queue (append-only rows, status: open|claimed|settled|failed): problems land as schema-validated rows; workers poll, heartbeat on TTL, and settle with a result pointer; zero substrate intelligence in the queue itself — it is a log, not a reasoner.\",\"Decomposer agent: accepts a territory spec, emits a JSON DAG of 2–8 subtasks with explicit input/output contracts and dependency edges; result stored durably so identical problems never re-derive their DAG.\",\"Worker executor: for each DAG leaf, spawns an isolated carrier session on the existing LISS fabric, appends every tool call + result to a per-task append-only log, settles when schema-verified output is produced or escalates after N failures — one subtask per session.\",\"Integration oracle: topological walk of the DAG; for each node whose dependencies are settled, runs merge + verification (schema, test suite, static analysis) before promoting status; conflicts on shared output namespaces block promotion.\",\"Memory projector: after full settlement with zero human corrections, extracts (context, action, outcome) triples from append-only logs and writes to a vector store; future decomposer and worker sessions query this store before first tool call.\",\"Escalation router: each subtask carries a token budget; cheap models (Gemini, GitHub Models) dispatch first; persistent failure triggers OpenRouter → Claude escalation; budget consumed is a settled-row field.\",\"Heartbeat monitor: claimed task not heartbeating within TTL is automatically returned to open status; prevents silent API timeouts from masking as in-progress work.\"],\"firstVerticalSlice\":[\"Write a decomposer that accepts a natural-language software problem and emits a valid JSON DAG of exactly 2–3 subtasks with input/output schemas; gate emission on the existing LISS schema validator.\",\"Insert DAG leaves as rows in the existing LISS job queue — no new queue infrastructure, reuse the proven 24.45 jobs/min substrate.\",\"Execute the two leaf subtasks in parallel on the existing multi-model fabric (Gemini + GitHub Models); each worker appends its tool log to a per-task file.\",\"Implement a linear integrator: concatenate settled outputs in topological order and run schema verification; no branching DAG support in this slice.\",\"On full settlement, write one (problem_statement, dag_json, settled_output_hash) record to a flat JSON memory file; decomposer reads it on the next identical problem and reuses the prior DAG without re-deriving.\"],\"failureModes\":[\"Decomposer emits subtasks with underspecified input/output contracts → worker cannot begin; mitigation: schema-validate the DAG before any subtask is claimed, re-prompt up to 3 times before escalating.\",\"Parallel workers produce conflicting edits to the same output namespace → integration oracle halts; mitigation: DAG schema enforces disjoint output paths at decomposition time, not at integration time.\",\"Memory projector ingests triples from failed or human-corrected sessions → future lookups steer toward bad patterns; mitigation: project only from sessions where settled_status is verified and human_corrections equals zero.\",\"Claimed task stops heartbeating due to API timeout → appears in-progress but makes no progress; mitigation: TTL monitor returns the row to open within one TTL window, logged as a retry event.\",\"Cost runaway: cheap-model failures cascade into Claude escalations across a large DAG → per-problem budget exhausted mid-graph; mitigation: escalation router checks remaining problem budget before each escalation and fails the subtask rather than exceeding the cap.\"],\"successMetric\":\"Fabric accepts a 3-part problem (spec, codebase pointer, acceptance tests), decomposes without human input, executes in parallel using cheap models for ≥80% of token spend, verifies against acceptance tests, and completes 5 consecutive problems with zero human corrections at throughput matching the 24.45 jobs/min LISS baseline.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "51a05313-6855-417f-a898-71679c28e20e",
+      "total_cost_usd": 0.1046607,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 4519,
+        "cache_read_input_tokens": 14449,
+        "output_tokens": 4816,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4519,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 1184,
+            "cache_read_input_tokens": 7616,
+            "cache_creation_input_tokens": 3736,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 3736
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 880,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.00096,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 4,
+          "outputTokens": 4816,
+          "cacheReadInputTokens": 14449,
+          "cacheCreationInputTokens": 4519,
+          "webSearchRequests": 0,
+          "costUSD": 0.1037007,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "component": "Intake-Decompose-Fanout-Integrate-Learn Loop",
+        "absentMechanism": "The seed runs one task per session with no durable work queue, no decomposer emitting a dependency DAG, no claim/settle fanout across concurrent workers, no integration oracle merging parallel results, and no memory projector writing patterns between sessions. The 84-session audit (2,067 direct mutations, 30% human corrections) proves work lives in conversation turns, not a fabric. Hermes, OpenClaw, Paperclip, and Honcho each provide at least one of: durable task state, autonomous decomposition, parallel execution isolation, or cross-session context accumulation. The seed provides none of the four.",
+        "design": [
+          "Durable work queue (append-only rows, status: open|claimed|settled|failed): problems land as schema-validated rows; workers poll, heartbeat on TTL, and settle with a result pointer; zero substrate intelligence in the queue itself — it is a log, not a reasoner.",
+          "Decomposer agent: accepts a territory spec, emits a JSON DAG of 2–8 subtasks with explicit input/output contracts and dependency edges; result stored durably so identical problems never re-derive their DAG.",
+          "Worker executor: for each DAG leaf, spawns an isolated carrier session on the existing LISS fabric, appends every tool call + result to a per-task append-only log, settles when schema-verified output is produced or escalates after N failures — one subtask per session.",
+          "Integration oracle: topological walk of the DAG; for each node whose dependencies are settled, runs merge + verification (schema, test suite, static analysis) before promoting status; conflicts on shared output namespaces block promotion.",
+          "Memory projector: after full settlement with zero human corrections, extracts (context, action, outcome) triples from append-only logs and writes to a vector store; future decomposer and worker sessions query this store before first tool call.",
+          "Escalation router: each subtask carries a token budget; cheap models (Gemini, GitHub Models) dispatch first; persistent failure triggers OpenRouter → Claude escalation; budget consumed is a settled-row field.",
+          "Heartbeat monitor: claimed task not heartbeating within TTL is automatically returned to open status; prevents silent API timeouts from masking as in-progress work."
+        ],
+        "firstVerticalSlice": [
+          "Write a decomposer that accepts a natural-language software problem and emits a valid JSON DAG of exactly 2–3 subtasks with input/output schemas; gate emission on the existing LISS schema validator.",
+          "Insert DAG leaves as rows in the existing LISS job queue — no new queue infrastructure, reuse the proven 24.45 jobs/min substrate.",
+          "Execute the two leaf subtasks in parallel on the existing multi-model fabric (Gemini + GitHub Models); each worker appends its tool log to a per-task file.",
+          "Implement a linear integrator: concatenate settled outputs in topological order and run schema verification; no branching DAG support in this slice.",
+          "On full settlement, write one (problem_statement, dag_json, settled_output_hash) record to a flat JSON memory file; decomposer reads it on the next identical problem and reuses the prior DAG without re-deriving."
+        ],
+        "failureModes": [
+          "Decomposer emits subtasks with underspecified input/output contracts → worker cannot begin; mitigation: schema-validate the DAG before any subtask is claimed, re-prompt up to 3 times before escalating.",
+          "Parallel workers produce conflicting edits to the same output namespace → integration oracle halts; mitigation: DAG schema enforces disjoint output paths at decomposition time, not at integration time.",
+          "Memory projector ingests triples from failed or human-corrected sessions → future lookups steer toward bad patterns; mitigation: project only from sessions where settled_status is verified and human_corrections equals zero.",
+          "Claimed task stops heartbeating due to API timeout → appears in-progress but makes no progress; mitigation: TTL monitor returns the row to open within one TTL window, logged as a retry event.",
+          "Cost runaway: cheap-model failures cascade into Claude escalations across a large DAG → per-problem budget exhausted mid-graph; mitigation: escalation router checks remaining problem budget before each escalation and fails the subtask rather than exceeding the cap."
+        ],
+        "successMetric": "Fabric accepts a 3-part problem (spec, codebase pointer, acceptance tests), decomposes without human input, executes in parallel using cheap models for ≥80% of token spend, verifies against acceptance tests, and completes 5 consecutive problems with zero human corrections at throughput matching the 24.45 jobs/min LISS baseline."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "6f37e7ad-26d6-4c28-b7a5-e72a11655ce3"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 88.588,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

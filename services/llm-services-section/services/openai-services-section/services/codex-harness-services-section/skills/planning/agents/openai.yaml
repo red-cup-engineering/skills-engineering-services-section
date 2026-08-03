@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan One Existing Move"
+  short_description: "Choose one bounded evidenced change"
+  default_prompt: "Use $planning to plan this change without inventing a new system."

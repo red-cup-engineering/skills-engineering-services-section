@@ -1,0 +1,44 @@
+{
+  "type": "InferenceFabricBenchmarkAudit",
+  "run": "2026-07-18-inference-fabric-benchmark-04",
+  "workload": {
+    "jobs": 12,
+    "classification": 4,
+    "extraction": 4,
+    "summarization": 4
+  },
+  "performance": {
+    "elapsedMs": 9717,
+    "jobsPerMinute": 74.09694350108057,
+    "completed": 12,
+    "refused": 0,
+    "p50LatencyMs": 2890,
+    "p95LatencyMs": 7703
+  },
+  "verification": {
+    "strictJson": 12,
+    "schemaVerified": 12,
+    "semanticReviewUsable": 11,
+    "semanticReviewTotal": 12,
+    "verificationFailureAttempts": 2,
+    "automaticFallbacksSettled": 2,
+    "weakResults": [
+      {
+        "id": "b04-s3",
+        "endpoint": "groq-llama-3.1-8b-instant",
+        "reason": "schema-valid summary substituted generic count placeholders and omitted the nonempty-completion success condition"
+      }
+    ]
+  },
+  "providers": {
+    "groq-llama-3.1-8b-instant": { "completed": 4, "verificationFailures": 2 },
+    "gemini-3.1-flash-lite": { "completed": 8, "verificationFailures": 0 }
+  },
+  "comparison": {
+    "uncontractedRun": "2026-07-18-inference-fabric-benchmark-03",
+    "uncontractedJobsPerMinute": 94.04388714733543,
+    "uncontractedStrictJson": 2,
+    "uncontractedRecoverableJson": 9,
+    "interpretation": "Output contracts exchanged some raw throughput for complete strict-JSON yield and automatic supplier fallback; semantic verification remains a distinct priced service."
+  }
+}

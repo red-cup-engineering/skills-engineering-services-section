@@ -1,0 +1,96 @@
+{
+  "id": "exchange-20260718-231930-074d08",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Review this exact timeout logic for one concrete termination defect. Return exactly JSON {\"verdict\":\"safe\"|\"defect\",\"finding\":string,\"trigger\":string,\"minimalTest\":string}. If safe, explain the TERM/KILL/close sequence using only shown identifiers.\n\nconst timeoutMs = options.timeoutMs ?? endpoint.timeoutMs ?? 120000, graceMs = options.timeoutGraceMs ?? endpoint.timeoutGraceMs ?? 250;\nlet killed = false;\nconst timeout = setTimeout(() => { killed = true; child.kill(\"SIGTERM\"); }, timeoutMs);\nconst kill = setTimeout(() => { if (killed && child.exitCode === null) child.kill(\"SIGKILL\"); }, timeoutMs + graceMs);\nconst code = await new Promise((resolve) => child.on(\"close\", resolve));\nclearTimeout(timeout); clearTimeout(kill);\nif (code !== 0) throw new Error(Buffer.concat(err).toString().trim() || `harness exited ${code}`);"
+      }
+    ],
+    "max-tokens": 300
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "Looking at the SIGKILL guard condition specifically.\n\n```json\n{\n  \"verdict\": \"defect\",\n  \"finding\": \"In Node.js, child.exitCode is null for BOTH a still-running process AND a process already killed by a signal. When the child exits via unhandled SIGTERM (the default signal handler), Node.js sets child.signalCode='SIGTERM' and leaves child.exitCode=null — it does NOT set exitCode to a number. The kill timer guard `killed && child.exitCode === null` therefore cannot distinguish 'process still running' from 'process already dead from SIGTERM'. If the child's piped stdio takes longer than graceMs to drain after signal death, the close event (and thus clearTimeout(kill)) is delayed past the kill timer, which fires, sees exitCode===null, and sends a spurious SIGKILL to the already-dead child. In a high-frequency spawning environment the PID may have been recycled, delivering SIGKILL to an unrelated process. The correct guard is `child.exitCode === null && child.signalCode === null`.\",\n  \"trigger\": \"Child with no SIGTERM handler (OS delivers signal death: exitCode=null, signalCode='SIGTERM') and piped stdio containing enough buffered data that the parent takes longer than graceMs (250 ms) to drain it after the child exits. clearTimeout(kill) has not yet run when the kill timer fires.\",\n  \"minimalTest\": \"// child.js — no SIGTERM handler, large buffered stderr, then blocks\\nprocess.stderr.write(Buffer.alloc(65536, 0x41));\\nsetInterval(() => {}, 9999);\\n// harness: spawn('node', ['child.js'], { stdio: ['ignore','ignore','pipe'] })\\n//          with timeoutMs: 10, timeoutGraceMs: 1\\n// child dies at ~10ms from SIGTERM (exitCode===null, signalCode==='SIGTERM'),\\n// stdio drains slowly, kill timer fires at ~11ms before close,\\n// exitCode===null passes the guard → SIGKILL sent to dead child\"\n}\n```",
+    "finish-reason": "end_turn",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 205612,
+      "duration_api_ms": 206621,
+      "ttft_ms": 199790,
+      "ttft_stream_ms": 1212,
+      "time_to_request_ms": 24,
+      "num_turns": 1,
+      "result": "Looking at the SIGKILL guard condition specifically.\n\n```json\n{\n  \"verdict\": \"defect\",\n  \"finding\": \"In Node.js, child.exitCode is null for BOTH a still-running process AND a process already killed by a signal. When the child exits via unhandled SIGTERM (the default signal handler), Node.js sets child.signalCode='SIGTERM' and leaves child.exitCode=null — it does NOT set exitCode to a number. The kill timer guard `killed && child.exitCode === null` therefore cannot distinguish 'process still running' from 'process already dead from SIGTERM'. If the child's piped stdio takes longer than graceMs to drain after signal death, the close event (and thus clearTimeout(kill)) is delayed past the kill timer, which fires, sees exitCode===null, and sends a spurious SIGKILL to the already-dead child. In a high-frequency spawning environment the PID may have been recycled, delivering SIGKILL to an unrelated process. The correct guard is `child.exitCode === null && child.signalCode === null`.\",\n  \"trigger\": \"Child with no SIGTERM handler (OS delivers signal death: exitCode=null, signalCode='SIGTERM') and piped stdio containing enough buffered data that the parent takes longer than graceMs (250 ms) to drain it after the child exits. clearTimeout(kill) has not yet run when the kill timer fires.\",\n  \"minimalTest\": \"// child.js — no SIGTERM handler, large buffered stderr, then blocks\\nprocess.stderr.write(Buffer.alloc(65536, 0x41));\\nsetInterval(() => {}, 9999);\\n// harness: spawn('node', ['child.js'], { stdio: ['ignore','ignore','pipe'] })\\n//          with timeoutMs: 10, timeoutGraceMs: 1\\n// child dies at ~10ms from SIGTERM (exitCode===null, signalCode==='SIGTERM'),\\n// stdio drains slowly, kill timer fires at ~11ms before close,\\n// exitCode===null passes the guard → SIGKILL sent to dead child\"\n}\n```",
+      "stop_reason": "end_turn",
+      "session_id": "403bf4e4-f0b0-4fe4-80e8-167a1924ea62",
+      "total_cost_usd": 0.20510389999999998,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 338,
+        "cache_read_input_tokens": 6183,
+        "output_tokens": 13359,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 338,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 13359,
+            "cache_read_input_tokens": 6183,
+            "cache_creation_input_tokens": 338,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 338
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 752,
+          "outputTokens": 15,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0008269999999999999,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 13359,
+          "cacheReadInputTokens": 6183,
+          "cacheCreationInputTokens": 338,
+          "webSearchRequests": 0,
+          "costUSD": 0.20427689999999998,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "3ed14b70-d3fd-4a16-8f4e-bbc01cf6997d"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 224.558,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

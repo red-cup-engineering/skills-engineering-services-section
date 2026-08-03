@@ -1,0 +1,190 @@
+{
+  "id": "exchange-20260719-055625-f40e26",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design deterministic repository observation and context selection so workers can navigate a huge unfamiliar repository without dumping the whole tree into prompts.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "component",
+          "absentMechanism",
+          "design",
+          "firstVerticalSlice",
+          "failureModes",
+          "successMetric"
+        ],
+        "properties": {
+          "component": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "absentMechanism": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 700
+          },
+          "design": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            }
+          },
+          "firstVerticalSlice": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 7,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 400
+            }
+          },
+          "failureModes": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 300
+            }
+          },
+          "successMetric": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 400
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"component\":\"repo-nav-index: Repository Navigation Index and Context Budget Enforcer\",\"absentMechanism\":\"The current seed has a context assembly step but no structured repository index. Workers cannot answer \\\"where is symbol X defined?\\\" without a full-tree dump. Context assembly is non-deterministic: different workers on the same task read different files in different orders. There is no token budget enforcement, so workers on large repos either truncate arbitrarily or exceed model limits. The resolver knows the task but cannot navigate an unfamiliar codebase without full-tree dumps, which defeats scaling.\",\"design\":[\"repo-indexer runs as a deterministic side-effect of every git commit event. It writes repo-index.json keyed by commit SHA. Schema per file: { exported_symbols: [{name, kind, line}], imports: [relative_file_path], size_bytes, file_sha, parse_error: bool }. Built by tree-sitter; parser version recorded in index metadata for cross-machine reproducibility.\",\"search_symbols(query, kind_filter?) -> [(file, line, name, kind)]: grep over the index only, zero file reads. Ranked by edit-distance to query. Mandatory first tool call in every worker navigation sequence; workers are not permitted to call read_chunk without a prior search_symbols result in their trace.\",\"get_imports(file) -> [file] and get_dependents(file) -> [file]: graph traversal over import edges in the index. Enforces a visited-set and hard depth cap of 3 hops to prevent cycle hangs. Workers use these to expand context to direct neighbors only, not arbitrary subtrees.\",\"read_chunk(file, start_line, end_line) -> str: the only file-read tool available to workers. Workers must supply bounds derived from a prior search_symbols result. The harness validates this provenance before serving the read; open-ended read_file does not exist.\",\"context_budget is a hard integer token ceiling (default 8192) on every worker dispatch, covering all read_chunk results accumulated before the model call. Overflow emits CONTEXT_OVERFLOW result code instead of silently truncating. CONTEXT_OVERFLOW routes to a decomposition step that narrows scope.\",\"get_manifest(path_prefix) -> {dirs, files: [{path, size_bytes, symbol_count}]}: the only directory-listing tool. Returns a flat summary with no file contents so workers can orient spatially before drilling in. Recursive tree dumps and raw glob expansions are not available to workers.\",\"Workers record their full navigation trace (ordered tool calls and arguments) in the append-only job log alongside model output. This trace is the audit artifact for context reproducibility and the input to future failure-pattern consolidation.\",\"Index staleness is detected per read_chunk call: harness checks live file SHA against index file_sha and rejects mismatched reads with STALE_INDEX, forcing a re-index run before the task resumes. This prevents silent line-shift bugs.\"],\"firstVerticalSlice\":[\"Select one real Python or TypeScript repository with >= 500 files and a known bug. Run tree-sitter over a single pinned commit SHA and write repo-index.json with file->symbols and file->imports. No model involved.\",\"Implement search_symbols, get_imports, and read_chunk as three standalone CLI tools (stdin/stdout JSON) reading only repo-index.json and files on disk. Wire them to the existing harness tool-dispatch table.\",\"Write a deterministic integration test: given a known symbol name, assert search_symbols returns correct file and line; call read_chunk on that result and assert the definition text appears in output. Gate must be green before any model is involved.\",\"Dispatch a single worker with the real bug description, permitted only search_symbols, get_imports, and read_chunk. Log the full navigation trace. Confirm the worker reaches the relevant file without a directory dump.\",\"Dispatch a second independent worker with identical task and same repo-index.json. Assert the two navigation traces name the same file set (order-insensitive). Assert combined read_chunk bytes are under the declared budget ceiling.\"],\"failureModes\":[\"tree-sitter parse fails on a file: index records parse_error: true and omits its symbols. Worker gets zero hits for symbols in that file with no explanation. Mitigation: search_symbols response envelope must include a parse_error_files count.\",\"Import graph has cycles: get_dependents loops until OOM if visited-set is not enforced. Mitigation: visited-set is mandatory; depth cap of 3 is hard-coded and not overridable by worker configuration.\",\"Context budget forces CONTEXT_OVERFLOW before worker finds relevant code and no escalation path is wired: task stalls permanently. Mitigation: CONTEXT_OVERFLOW is a first-class result code routed to decomposition, not retried with the same budget.\",\"Index is stale by one commit: line numbers no longer match live files; read_chunk returns wrong code silently if SHA check is absent. Mitigation: per-file SHA check on every read_chunk call is mandatory and cannot be disabled.\",\"Two files export the same symbol name: search_symbols returns both hits; worker has no disambiguation rule, producing non-deterministic file selection. Mitigation: results include fully-qualified module path; worker must use get_imports to confirm reachability from the task entry point.\"],\"successMetric\":\"Two independent workers dispatched with identical task description and identical repo-index.json produce navigation traces that name the same file set (order-insensitive) in >= 18 of 20 trial runs across five distinct tasks, and zero trials produce a read_chunk byte total that exceeds the declared context_budget ceiling.\"}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 88115,
+      "duration_api_ms": 89066,
+      "ttft_ms": 43923,
+      "ttft_stream_ms": 1037,
+      "time_to_request_ms": 42,
+      "num_turns": 3,
+      "result": "{\"component\":\"repo-nav-index: Repository Navigation Index and Context Budget Enforcer\",\"absentMechanism\":\"The current seed has a context assembly step but no structured repository index. Workers cannot answer \\\"where is symbol X defined?\\\" without a full-tree dump. Context assembly is non-deterministic: different workers on the same task read different files in different orders. There is no token budget enforcement, so workers on large repos either truncate arbitrarily or exceed model limits. The resolver knows the task but cannot navigate an unfamiliar codebase without full-tree dumps, which defeats scaling.\",\"design\":[\"repo-indexer runs as a deterministic side-effect of every git commit event. It writes repo-index.json keyed by commit SHA. Schema per file: { exported_symbols: [{name, kind, line}], imports: [relative_file_path], size_bytes, file_sha, parse_error: bool }. Built by tree-sitter; parser version recorded in index metadata for cross-machine reproducibility.\",\"search_symbols(query, kind_filter?) -> [(file, line, name, kind)]: grep over the index only, zero file reads. Ranked by edit-distance to query. Mandatory first tool call in every worker navigation sequence; workers are not permitted to call read_chunk without a prior search_symbols result in their trace.\",\"get_imports(file) -> [file] and get_dependents(file) -> [file]: graph traversal over import edges in the index. Enforces a visited-set and hard depth cap of 3 hops to prevent cycle hangs. Workers use these to expand context to direct neighbors only, not arbitrary subtrees.\",\"read_chunk(file, start_line, end_line) -> str: the only file-read tool available to workers. Workers must supply bounds derived from a prior search_symbols result. The harness validates this provenance before serving the read; open-ended read_file does not exist.\",\"context_budget is a hard integer token ceiling (default 8192) on every worker dispatch, covering all read_chunk results accumulated before the model call. Overflow emits CONTEXT_OVERFLOW result code instead of silently truncating. CONTEXT_OVERFLOW routes to a decomposition step that narrows scope.\",\"get_manifest(path_prefix) -> {dirs, files: [{path, size_bytes, symbol_count}]}: the only directory-listing tool. Returns a flat summary with no file contents so workers can orient spatially before drilling in. Recursive tree dumps and raw glob expansions are not available to workers.\",\"Workers record their full navigation trace (ordered tool calls and arguments) in the append-only job log alongside model output. This trace is the audit artifact for context reproducibility and the input to future failure-pattern consolidation.\",\"Index staleness is detected per read_chunk call: harness checks live file SHA against index file_sha and rejects mismatched reads with STALE_INDEX, forcing a re-index run before the task resumes. This prevents silent line-shift bugs.\"],\"firstVerticalSlice\":[\"Select one real Python or TypeScript repository with >= 500 files and a known bug. Run tree-sitter over a single pinned commit SHA and write repo-index.json with file->symbols and file->imports. No model involved.\",\"Implement search_symbols, get_imports, and read_chunk as three standalone CLI tools (stdin/stdout JSON) reading only repo-index.json and files on disk. Wire them to the existing harness tool-dispatch table.\",\"Write a deterministic integration test: given a known symbol name, assert search_symbols returns correct file and line; call read_chunk on that result and assert the definition text appears in output. Gate must be green before any model is involved.\",\"Dispatch a single worker with the real bug description, permitted only search_symbols, get_imports, and read_chunk. Log the full navigation trace. Confirm the worker reaches the relevant file without a directory dump.\",\"Dispatch a second independent worker with identical task and same repo-index.json. Assert the two navigation traces name the same file set (order-insensitive). Assert combined read_chunk bytes are under the declared budget ceiling.\"],\"failureModes\":[\"tree-sitter parse fails on a file: index records parse_error: true and omits its symbols. Worker gets zero hits for symbols in that file with no explanation. Mitigation: search_symbols response envelope must include a parse_error_files count.\",\"Import graph has cycles: get_dependents loops until OOM if visited-set is not enforced. Mitigation: visited-set is mandatory; depth cap of 3 is hard-coded and not overridable by worker configuration.\",\"Context budget forces CONTEXT_OVERFLOW before worker finds relevant code and no escalation path is wired: task stalls permanently. Mitigation: CONTEXT_OVERFLOW is a first-class result code routed to decomposition, not retried with the same budget.\",\"Index is stale by one commit: line numbers no longer match live files; read_chunk returns wrong code silently if SHA check is absent. Mitigation: per-file SHA check on every read_chunk call is mandatory and cannot be disabled.\",\"Two files export the same symbol name: search_symbols returns both hits; worker has no disambiguation rule, producing non-deterministic file selection. Mitigation: results include fully-qualified module path; worker must use get_imports to confirm reachability from the task entry point.\"],\"successMetric\":\"Two independent workers dispatched with identical task description and identical repo-index.json produce navigation traces that name the same file set (order-insensitive) in >= 18 of 20 trial runs across five distinct tasks, and zero trials produce a read_chunk byte total that exceeds the declared context_budget ceiling.\"}",
+      "stop_reason": "tool_use",
+      "session_id": "74591d9b-6e1f-4225-8ec9-b3a05ac51b1a",
+      "total_cost_usd": 0.1489203,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 11433,
+        "cache_read_input_tokens": 7601,
+        "output_tokens": 5139,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 11433,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 1392,
+            "cache_read_input_tokens": 7601,
+            "cache_creation_input_tokens": 3832,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 3832
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 865,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000945,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 4,
+          "outputTokens": 5139,
+          "cacheReadInputTokens": 7601,
+          "cacheCreationInputTokens": 11433,
+          "webSearchRequests": 0,
+          "costUSD": 0.14797529999999998,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "component": "repo-nav-index: Repository Navigation Index and Context Budget Enforcer",
+        "absentMechanism": "The current seed has a context assembly step but no structured repository index. Workers cannot answer \"where is symbol X defined?\" without a full-tree dump. Context assembly is non-deterministic: different workers on the same task read different files in different orders. There is no token budget enforcement, so workers on large repos either truncate arbitrarily or exceed model limits. The resolver knows the task but cannot navigate an unfamiliar codebase without full-tree dumps, which defeats scaling.",
+        "design": [
+          "repo-indexer runs as a deterministic side-effect of every git commit event. It writes repo-index.json keyed by commit SHA. Schema per file: { exported_symbols: [{name, kind, line}], imports: [relative_file_path], size_bytes, file_sha, parse_error: bool }. Built by tree-sitter; parser version recorded in index metadata for cross-machine reproducibility.",
+          "search_symbols(query, kind_filter?) -> [(file, line, name, kind)]: grep over the index only, zero file reads. Ranked by edit-distance to query. Mandatory first tool call in every worker navigation sequence; workers are not permitted to call read_chunk without a prior search_symbols result in their trace.",
+          "get_imports(file) -> [file] and get_dependents(file) -> [file]: graph traversal over import edges in the index. Enforces a visited-set and hard depth cap of 3 hops to prevent cycle hangs. Workers use these to expand context to direct neighbors only, not arbitrary subtrees.",
+          "read_chunk(file, start_line, end_line) -> str: the only file-read tool available to workers. Workers must supply bounds derived from a prior search_symbols result. The harness validates this provenance before serving the read; open-ended read_file does not exist.",
+          "context_budget is a hard integer token ceiling (default 8192) on every worker dispatch, covering all read_chunk results accumulated before the model call. Overflow emits CONTEXT_OVERFLOW result code instead of silently truncating. CONTEXT_OVERFLOW routes to a decomposition step that narrows scope.",
+          "get_manifest(path_prefix) -> {dirs, files: [{path, size_bytes, symbol_count}]}: the only directory-listing tool. Returns a flat summary with no file contents so workers can orient spatially before drilling in. Recursive tree dumps and raw glob expansions are not available to workers.",
+          "Workers record their full navigation trace (ordered tool calls and arguments) in the append-only job log alongside model output. This trace is the audit artifact for context reproducibility and the input to future failure-pattern consolidation.",
+          "Index staleness is detected per read_chunk call: harness checks live file SHA against index file_sha and rejects mismatched reads with STALE_INDEX, forcing a re-index run before the task resumes. This prevents silent line-shift bugs."
+        ],
+        "firstVerticalSlice": [
+          "Select one real Python or TypeScript repository with >= 500 files and a known bug. Run tree-sitter over a single pinned commit SHA and write repo-index.json with file->symbols and file->imports. No model involved.",
+          "Implement search_symbols, get_imports, and read_chunk as three standalone CLI tools (stdin/stdout JSON) reading only repo-index.json and files on disk. Wire them to the existing harness tool-dispatch table.",
+          "Write a deterministic integration test: given a known symbol name, assert search_symbols returns correct file and line; call read_chunk on that result and assert the definition text appears in output. Gate must be green before any model is involved.",
+          "Dispatch a single worker with the real bug description, permitted only search_symbols, get_imports, and read_chunk. Log the full navigation trace. Confirm the worker reaches the relevant file without a directory dump.",
+          "Dispatch a second independent worker with identical task and same repo-index.json. Assert the two navigation traces name the same file set (order-insensitive). Assert combined read_chunk bytes are under the declared budget ceiling."
+        ],
+        "failureModes": [
+          "tree-sitter parse fails on a file: index records parse_error: true and omits its symbols. Worker gets zero hits for symbols in that file with no explanation. Mitigation: search_symbols response envelope must include a parse_error_files count.",
+          "Import graph has cycles: get_dependents loops until OOM if visited-set is not enforced. Mitigation: visited-set is mandatory; depth cap of 3 is hard-coded and not overridable by worker configuration.",
+          "Context budget forces CONTEXT_OVERFLOW before worker finds relevant code and no escalation path is wired: task stalls permanently. Mitigation: CONTEXT_OVERFLOW is a first-class result code routed to decomposition, not retried with the same budget.",
+          "Index is stale by one commit: line numbers no longer match live files; read_chunk returns wrong code silently if SHA check is absent. Mitigation: per-file SHA check on every read_chunk call is mandatory and cannot be disabled.",
+          "Two files export the same symbol name: search_symbols returns both hits; worker has no disambiguation rule, producing non-deterministic file selection. Mitigation: results include fully-qualified module path; worker must use get_imports to confirm reachability from the task entry point."
+        ],
+        "successMetric": "Two independent workers dispatched with identical task description and identical repo-index.json produce navigation traces that name the same file set (order-insensitive) in >= 18 of 20 trial runs across five distinct tasks, and zero trials produce a read_chunk byte total that exceeds the declared context_budget ceiling."
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "2dae3b18-aec7-4ed9-889e-a4ee20e31305"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 100.201,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

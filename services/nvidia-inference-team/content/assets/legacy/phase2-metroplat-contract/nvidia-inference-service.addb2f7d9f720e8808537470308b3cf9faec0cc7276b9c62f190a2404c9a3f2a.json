@@ -1,0 +1,84 @@
+{
+  "kind": "metroplat.contract",
+  "id": "nvidia-inference-service",
+  "material": {
+    "id": "nvidia-inference-exchange-material",
+    "loci": ["consuming-micro-enterprise", "nvidia-inference-unit", "nvidia-nim-chat-completions-surface"],
+    "incidence": [
+      "consuming-micro-enterprise--sends-context-packet-over-a2a-to--nvidia-inference-unit",
+      "nvidia-inference-unit--drives--nvidia-nim-chat-completions-surface-via-bearer-authenticated-http",
+      "nvidia-inference-unit--returns-completion-or-refusal-over-a2a-to--consuming-micro-enterprise"
+    ],
+    "fibers": ["context-packet", "completion-record", "refusal-record", "exchange-record"],
+    "valueAlgebra": "boolean",
+    "constraints": [
+      "exactly-one-chat-completion-request-per-packet-model-and-messages-named-by-the-caller",
+      "the-nvidia-nim-dependency-sits-on-this-units-own-books-never-the-consumers",
+      "this-units-contract-is-the-intended-future-contractee-for-the-nvidia-calls-presently-hand-duplicated-in-drafting-a-term-js-drafting-a-requirement-js-judging-a-context-packet-js-koios-workshop-mjs-and-turntide-steward-mts-migrating-those-five-call-sites-is-a-separate-larger-cross-settlement-effort-not-performed-by-standing-up-this-unit",
+      "no-retry-or-fallback-model-substitution-happens-inside-this-units-move-a-refusal-is-returned-rather-than-silently-trying-a-different-model"
+    ],
+    "closure": ["an-exchange-closes-on-exactly-one-of-completion-or-refusal-never-left-open"],
+    "boundary": ["the-context-packet-received-over-a2a-from-a-consuming-micro-enterprise-is-where-untyped-external-request-data-enters"]
+  },
+  "precondition": {
+    "id": "context-packet-received",
+    "description": "A consuming micro-enterprise, over A2A, has sent a typed context packet naming: model (a NVIDIA NIM model id), messages (a non-empty array of {role, content} chat turns), and optionally max-tokens and a params object for provider-specific fields."
+  },
+  "move": {
+    "id": "realize-the-exchange",
+    "description": "The unit issues one Bearer-authenticated HTTPS POST to https://integrate.api.nvidia.com/v1/chat/completions with the packet's model and messages, within a bounded fuel budget, and settles to exactly one of the two typed outcomes.",
+    "domain": "context-packet",
+    "codomain": "completion-or-refusal",
+    "partial": false,
+    "deterministic": false,
+    "effects": ["material", "boundary", "evidence"]
+  },
+  "postcondition": {
+    "id": "exchange-settled",
+    "description": "An exchange record exists in the unit's own content/exchanges/ pool whose .outcome is exactly 'completion' (carrying the served model, response text, and finish reason) or 'refusal' (a structured refusal record stating grounds) — settled within the bounded fuel budget, never a hang and never an untyped failure.",
+    "entails": ["context-packet-received"]
+  },
+  "phase": {
+    "id": "nvidia-inference-exchange-phase",
+    "closureDepth": "finite", "finality": "normal-form", "recurrence": "none",
+    "mobility": "fixed", "coherence": "total", "contradiction": "reject",
+    "coordinationCost": "evidenced", "observability": "boundary-only", "energy": "costed"
+  },
+  "lens": {
+    "id": "nvidia-inference-exchange-lens",
+    "domain": "context-packet",
+    "boundary": "a2a-exchange-boundary-between-consuming-micro-enterprise-and-nvidia-inference-unit",
+    "preserves": ["the-consumers-requested-model-and-messages", "the-totality-of-outcome-completion-xor-refusal-never-a-hang"],
+    "hides": ["the-nvidia-api-key-and-bearer-header-construction", "nvidia-nims-own-rate-limiting-and-retry-behavior", "nvidia-account-and-billing-state"],
+    "output": "completion-or-refusal-record",
+    "evidenceRequired": true
+  },
+  "evidencePolicy": {
+    "id": "nvidia-inference-exchange-evidence-policy",
+    "required": true,
+    "records": [
+      "an-exchange-record-in-content-exchanges-with-outcome-completion-or-refusal",
+      "the-completion-records-served-model-and-response-text-when-outcome-is-completion",
+      "the-refusal-records-stated-grounds-when-outcome-is-refusal",
+      "the-exchanges-cost-figure-for-the-chief-financial-officers-books"
+    ],
+    "time": "interval", "caller": "required", "boundaryObject": "full"
+  },
+  "marketSignal": "Solicitation offers contain a provider-authored InferenceServiceBid. Local bounded-pilot admission may be unavailable when the exchange count reaches its provider-local cap. Account capacity, remaining slots, period, current monetary price, and customer usefulness remain unknown.",
+  "energetics": [{
+    "kind": "metroplat.energetic-obligation",
+    "id": "bounded-fuel",
+    "law": "total-correctness-under-a-fuel-bound",
+    "behavior": "Every exchange terminates — as completion or as refusal — inside a bounded wall-clock fuel budget; it never hangs, and it never returns an untyped failure.",
+    "source": "context-packet-received", "target": "exchange-settled",
+    "invariant": "fuel-consumed-by-an-exchange-is-bounded-and-recorded",
+    "measure": "HTTP requests made and wall-clock seconds consumed per exchange, recorded on the exchange record",
+    "evidenceRequired": true
+  }],
+  "refinements": [{
+    "id": "http-fetch-client-realizes-the-move",
+    "implementation": "lib/emsenn/services/561-group/services/red-cup-engineering/services/logical-inference-service-section/services/nvidia-inference-team/run-one-exchange.mjs (Node built-in fetch, Bearer NVIDIA_API_KEY, no vendored client)",
+    "refines": "tool",
+    "preserves": ["the-completion-xor-refusal-totality", "the-membrane-rule-keeping-the-nvidia-dependency-on-this-units-own-books-rather-than-the-consumers"]
+  }]
+}

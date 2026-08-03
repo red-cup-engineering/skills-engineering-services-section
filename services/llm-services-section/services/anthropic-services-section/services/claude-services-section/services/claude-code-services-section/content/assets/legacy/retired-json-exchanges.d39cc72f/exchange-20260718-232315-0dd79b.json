@@ -1,0 +1,96 @@
+{
+  "id": "exchange-20260718-232315-0dd79b",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Perform a rigorous source-only code review of this concurrent dispatcher excerpt. Return exactly JSON {\"verdict\":\"safe\"|\"defect\",\"raceOrInvariant\":string,\"executionTrace\":[string,string,string],\"minimalRegressionTest\":string}. Identify one real issue if present; otherwise state the strongest invariant. Do not propose broad redesigns.\n\nconst waiters = [];\nconst notify = () => { for (const resolve of waiters.splice(0)) resolve(); };\nconst waitForRelease = () => new Promise((resolve) => waiters.push(resolve));\nasync function jobRun(job) {\n  const candidates = quotes.plan.map((quote) => ({ quote, endpoint: endpoints.find((endpoint) => endpoint.id === quote.endpoint) }));\n  while (candidates.length && attempts.length < attemptsMax) {\n    const candidate = candidates.find(({ endpoint }) => state.get(endpoint.id).inFlight < (endpoint.concurrency ?? 1));\n    if (!candidate) { await waitForRelease(); continue; }\n    const { endpoint } = candidate, s = state.get(endpoint.id);\n    s.inFlight += 1;\n    try { await invokeEndpoint(endpoint, job); }\n    finally { s.inFlight -= 1; notify(); }\n  }\n}\nawait Promise.all(Array.from({ length: global }, async () => { while (index < queue.length) { const job = queue[index++]; const record = await jobRun(job); records.push(record); await options.onRecord?.(record); } }));"
+      }
+    ],
+    "max-tokens": 420
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "Reading the code carefully to trace concurrency behavior at each `await` boundary.\n\nThe `inFlight` check-and-increment is safe (no `await` between `candidates.find` and `s.inFlight += 1`), and `waiters.push(resolve)` executes synchronously inside the `Promise` constructor before the first yield, so the check-then-wait sequence has no race window in V8's cooperative scheduler.\n\nThe real defect is structural: `candidates` is populated once and **never mutated**. After `invokeEndpoint` resolves and `finally` decrements `inFlight` back below the concurrency threshold, the loop iterates again, `candidates.find` re-selects the same endpoint (now available again), and the job is dispatched a second time. `candidates.length` is a permanently-truthy guard; actual termination depends entirely on `attempts.length >= attemptsMax`, which means a job with `attemptsMax > 1` and a responsive endpoint gets double-dispatched.\n\n```json\n{\n  \"verdict\": \"defect\",\n  \"raceOrInvariant\": \"candidates is built once and never spliced; after invokeEndpoint resolves and inFlight is decremented in finally, the same candidate is immediately re-selected on the next iteration, causing a single job to be dispatched to the same endpoint multiple times until attempts.length reaches attemptsMax—the candidates.length guard is permanently truthy and provides no termination signal\",\n  \"executionTrace\": [\n    \"Setup: quotes.plan=[{endpoint:'e1'}], attemptsMax=2, endpoint E1 concurrency=1, inFlight=0; candidates built (length=1, never mutated)\",\n    \"Iteration 1: candidate {endpoint:E1} found (inFlight 0<1); inFlight→1; await invokeEndpoint(E1, job) resolves; finally: inFlight→0, notify()\",\n    \"Iteration 2: candidates still length=1 (unmodified); same candidate re-selected (inFlight=0<1 again); invokeEndpoint(E1, job) called a second time for the identical job—double dispatch\"\n  ],\n  \"minimalRegressionTest\": \"test('job dispatched exactly once with one candidate and attemptsMax=2', async () => { let calls = 0; invokeEndpoint = async () => { calls++; attempts.push(1); }; attemptsMax = 2; quotes.plan = [{ endpoint: 'e1' }]; endpoints = [{ id: 'e1', concurrency: 1 }]; state.set('e1', { inFlight: 0 }); await jobRun(job); assert.strictEqual(calls, 1, `expected 1 invocation, got ${calls}`); });\"\n}\n```\n\nThe fix is a single-line change: after a successful dispatch, either `candidates.splice(candidates.indexOf(candidate), 1)` to remove the used candidate, or `break` if the intent is one-shot dispatch per job rather than fan-out retry.",
+    "finish-reason": "end_turn",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 157861,
+      "duration_api_ms": 159099,
+      "ttft_ms": 148263,
+      "ttft_stream_ms": 1604,
+      "time_to_request_ms": 49,
+      "num_turns": 1,
+      "result": "Reading the code carefully to trace concurrency behavior at each `await` boundary.\n\nThe `inFlight` check-and-increment is safe (no `await` between `candidates.find` and `s.inFlight += 1`), and `waiters.push(resolve)` executes synchronously inside the `Promise` constructor before the first yield, so the check-then-wait sequence has no race window in V8's cooperative scheduler.\n\nThe real defect is structural: `candidates` is populated once and **never mutated**. After `invokeEndpoint` resolves and `finally` decrements `inFlight` back below the concurrency threshold, the loop iterates again, `candidates.find` re-selects the same endpoint (now available again), and the job is dispatched a second time. `candidates.length` is a permanently-truthy guard; actual termination depends entirely on `attempts.length >= attemptsMax`, which means a job with `attemptsMax > 1` and a responsive endpoint gets double-dispatched.\n\n```json\n{\n  \"verdict\": \"defect\",\n  \"raceOrInvariant\": \"candidates is built once and never spliced; after invokeEndpoint resolves and inFlight is decremented in finally, the same candidate is immediately re-selected on the next iteration, causing a single job to be dispatched to the same endpoint multiple times until attempts.length reaches attemptsMax—the candidates.length guard is permanently truthy and provides no termination signal\",\n  \"executionTrace\": [\n    \"Setup: quotes.plan=[{endpoint:'e1'}], attemptsMax=2, endpoint E1 concurrency=1, inFlight=0; candidates built (length=1, never mutated)\",\n    \"Iteration 1: candidate {endpoint:E1} found (inFlight 0<1); inFlight→1; await invokeEndpoint(E1, job) resolves; finally: inFlight→0, notify()\",\n    \"Iteration 2: candidates still length=1 (unmodified); same candidate re-selected (inFlight=0<1 again); invokeEndpoint(E1, job) called a second time for the identical job—double dispatch\"\n  ],\n  \"minimalRegressionTest\": \"test('job dispatched exactly once with one candidate and attemptsMax=2', async () => { let calls = 0; invokeEndpoint = async () => { calls++; attempts.push(1); }; attemptsMax = 2; quotes.plan = [{ endpoint: 'e1' }]; endpoints = [{ id: 'e1', concurrency: 1 }]; state.set('e1', { inFlight: 0 }); await jobRun(job); assert.strictEqual(calls, 1, `expected 1 invocation, got ${calls}`); });\"\n}\n```\n\nThe fix is a single-line change: after a successful dispatch, either `candidates.splice(candidates.indexOf(candidate), 1)` to remove the used candidate, or `break` if the intent is one-shot dispatch per job rather than fan-out retry.",
+      "stop_reason": "end_turn",
+      "session_id": "2f08ad0f-fbde-4747-b0cd-84faaede7881",
+      "total_cost_usd": 0.1648417,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 6659,
+        "output_tokens": 10792,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 10792,
+            "cache_read_input_tokens": 6659,
+            "cache_creation_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 890,
+          "outputTokens": 13,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0009549999999999999,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 10792,
+          "cacheReadInputTokens": 6659,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.1638867,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "20164cd3-b183-4935-a380-1aa30b3fb3e7"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 174.433,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

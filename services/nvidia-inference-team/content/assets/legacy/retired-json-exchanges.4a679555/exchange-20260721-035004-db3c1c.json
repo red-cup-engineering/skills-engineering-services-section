@@ -1,0 +1,70 @@
+{
+  "id": "exchange-20260721-035004-db3c1c",
+  "packet": {
+    "model": "meta/llama-3.1-8b-instruct",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"assignments\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"faculty\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"},\"owner\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"}},\"required\":[\"faculty\",\"owner\"],\"type\":\"object\"},\"maxItems\":5,\"minItems\":1,\"type\":\"array\"}},\"required\":[\"assignments\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"context\":{\"messages\":[{\"content\":\"Assign each missing faculty to the sovereign kind that should own it, without inventing a global orchestrator. Return only the contracted JSON.\",\"role\":\"system\"},{\"content\":\"Existing sovereign variants: free-compute-dev has a durable mission queue, parallel isolated actors, competing planners, verification/integration, trajectory recall, and resolver-promotion readouts, but no live worker and no A2A service ingress. SDSS separately has customer tenders and guarded MAPE-K. inference-work-lot-service compares typed provider offers. Clockkeeper only delivers exact pulses. Recursive circuit synthesis/fabrication plus RMN/WIT/RWIL assays are live. Cloud Groq/NVIDIA/Gemini/Claude providers are live; local NPU execution is unavailable. No global queue, central scheduler, umbrella runtime, or primary implementation is allowed. Existing software-production enterprises must compete. Economics must descend frontier -> small model -> induced script, never small failure -> expensive model. Operation must continue without Codex.\",\"role\":\"user\"}],\"purpose\":\"Produce one candidate for independent free-compute-dev assay and bounded tool execution.\",\"supplierExclusions\":[\"urn:ame:bare-cedar-fog-npu-inference-team\",\"urn:ame:gemini-inference-team\",\"urn:ame:groq-inference-team\",\"urn:ame:claude-code-inference-team\"]},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"assignments\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"faculty\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"},\"owner\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"}},\"required\":[\"faculty\",\"owner\"],\"type\":\"object\"},\"maxItems\":5,\"minItems\":1,\"type\":\"array\"}},\"required\":[\"assignments\"],\"type\":\"object\"}},\"residue\":{\"customerAcceptanceRequired\":true,\"reason\":\"no deterministic resolver covered the next context-complete work move\",\"type\":\"TypedWorkInferenceResidue\",\"workLot\":\"urn:work-lot:distributed-rsi:ownership:v1\"},\"workLot\":{\"id\":\"urn:work-lot:distributed-rsi:ownership:v1\",\"producer\":\"urn:ame:free-compute-dev\"}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "meta/llama-3.1-8b-instruct",
+    "text": "{\"assignments\":[{\"faculty\":\"free-compute-dev\",\"owner\":\"free-compute-dev\"}]}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-b8320f4f-b834-4719-95dd-e108f6ee2785",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "content": "{\"assignments\":[{\"faculty\":\"free-compute-dev\",\"owner\":\"free-compute-dev\"}]}",
+            "role": "assistant",
+            "reasoning_content": null
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "created": 1784605803,
+      "model": "meta/llama-3.1-8b-instruct",
+      "object": "chat.completion",
+      "usage": {
+        "prompt_tokens": 616,
+        "completion_tokens": 19,
+        "total_tokens": 635,
+        "prompt_tokens_details": {
+          "audio_tokens": null,
+          "cached_tokens": 16
+        }
+      },
+      "nvext": {
+        "worker_id": {
+          "prefill_worker_id": 7587896227968170000,
+          "prefill_dp_rank": 0,
+          "decode_worker_id": 7587896227968170000,
+          "decode_dp_rank": 0
+        },
+        "timing": {
+          "request_received_ms": 1784605803463,
+          "prefill_wait_time_ms": 1.477431,
+          "prefill_time_ms": 29.239637,
+          "ttft_ms": 30.717068,
+          "total_time_ms": 138.70766600000002,
+          "kv_hit_rate": 0,
+          "router_queue_depth": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.702018805,
+    "denomination": "nvidia-nim-api-requests"
+  }
+}

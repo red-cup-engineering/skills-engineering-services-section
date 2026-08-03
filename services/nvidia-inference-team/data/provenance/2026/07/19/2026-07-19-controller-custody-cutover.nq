@@ -1,0 +1,4 @@
+<urn:ame:nvidia-inference-team> <urn:emsenn:evm:retired-controller-artifact> <ni:///sha-256;dEJEHerTJyaL4q16lnOpxXMDnNfEcDUTpT-CJo0Afig> <urn:ame:nvidia-inference-team:controller-custody-cutover:eip155-31337> .
+<ni:///sha-256;dEJEHerTJyaL4q16lnOpxXMDnNfEcDUTpT-CJo0Afig> <urn:emsenn:evm:retired-path> "data/evm/controller-eip155-31337.env" <urn:ame:nvidia-inference-team:controller-custody-cutover:eip155-31337> .
+<urn:ame:nvidia-inference-team> <urn:emsenn:evm:controller-keystore-format> "Ethereum Secret Storage v3" <urn:ame:nvidia-inference-team:controller-custody-cutover:eip155-31337> .
+<urn:ame:nvidia-inference-team> <urn:emsenn:evm:controller-chain> <eip155:31337> <urn:ame:nvidia-inference-team:controller-custody-cutover:eip155-31337> .

@@ -1,0 +1,100 @@
+{
+  "id": "exchange-20260722-013435-b0eca4",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"findings\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"evidence\":{\"maxLength\":600,\"type\":\"string\"},\"problem\":{\"maxLength\":600,\"type\":\"string\"},\"recommendation\":{\"maxLength\":600,\"type\":\"string\"},\"severity\":{\"enum\":[\"critical\",\"high\",\"medium\",\"low\"],\"type\":\"string\"}},\"required\":[\"severity\",\"problem\",\"evidence\",\"recommendation\"],\"type\":\"object\"},\"maxItems\":5,\"type\":\"array\"},\"summary\":{\"maxLength\":1200,\"minLength\":10,\"type\":\"string\"}},\"required\":[\"accepted\",\"summary\",\"findings\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:union:review:nvidia-kernel-slot:2026-07-21:closure\",\"producer\":\"urn:codex:project-session\"},\"context\":{\"objective\":\"Closure review of the exact standard kernel-slot and semantic-review floor fixes. Accept if the prior findings are materially resolved; report only concrete remaining defects.\",\"suppliedContext\":\"NVIDIA uses util-linux flock with --exclusive --no-fork --wait. The flock process execs the Node network adapter, so that process itself holds the kernel lease. spawnSync timeout kills the lease-owning process; kernel releases on normal exit, signal, or OOM. No stale-file removal exists. Provider policy and signed offer both declare maximumConcurrentLots=1; policy drift refuses. A real test starts a detached flock owner, proves a second no-wait acquisition fails, SIGKILLs the entire owner process group, and proves immediate reacquisition. Provider verify 6/6.\\n\\nThe stateless adapter writes no ledger. A restarted live market-selected NVIDIA act returned schema-assayed {ready:true}, produced one typed settlement, left content/exchanges empty, and released the lease. 58 old JSON records remain only in a digest-bound retired carrier.\\n\\nSemantic review now throws before dispatch unless minimumReviews is an integer >=1 and maximumReviews is an integer >= minimumReviews. A zero-review vector proves no market call occurs. Review suite 10/10. Protected composition intentionally uses one prior review plus one fresh evidence-bound acceptance plus exact red-on-baseline oracle evidence.\",\"desiredUse\":\"Final customer inspection and acceptance of the infrastructure slice; advisory only.\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:union:review:nvidia-kernel-slot:2026-07-21:closure\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"code-review\",\"executionBounds\":{\"maximumOutputTokens\":850,\"sourceMeasures\":{\"words\":165,\"characters\":1207}},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"findings\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"evidence\":{\"maxLength\":600,\"type\":\"string\"},\"problem\":{\"maxLength\":600,\"type\":\"string\"},\"recommendation\":{\"maxLength\":600,\"type\":\"string\"},\"severity\":{\"enum\":[\"critical\",\"high\",\"medium\",\"low\"],\"type\":\"string\"}},\"required\":[\"severity\",\"problem\",\"evidence\",\"recommendation\"],\"type\":\"object\"},\"maxItems\":5,\"type\":\"array\"},\"summary\":{\"maxLength\":1200,\"minLength\":10,\"type\":\"string\"}},\"required\":[\"accepted\",\"summary\",\"findings\"],\"type\":\"object\"}}}"
+      }
+    ],
+    "max-tokens": 4000
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"accepted\":true,\"summary\":\"Prior critical findings are materially resolved. The flock lease-lifecycle is verified end-to-end: exec-into-adapter, timeout-kill releases cleanly, and immediate reacquisition after SIGKILL of the entire process group is proven by real test. Policy drift guard enforces maximumConcurrentLots=1 consistently. Semantic-review guard throws before dispatch on invalid review-count parameters and the zero-review vector confirms no market call escapes. Review suite 10/10 and provider verify 6/6 close the structural gap. Three lower-severity observations remain for customer disposition.\",\"findings\":[{\"severity\":\"medium\",\"problem\":\"Restarted live market-selected act left content/exchanges empty after producing one typed settlement.\",\"evidence\":\"Supplied context states the adapter is stateless and the restarted act returned {ready:true}, produced one typed settlement, but left content/exchanges empty.\",\"recommendation\":\"Confirm whether empty content/exchanges is the intended stateless contract for a restart (no mid-flight recovery) or an unintended data-loss path. If recovery is expected, add an explicit assertion or fixture that proves post-restart content is populated or provably absent by design.\"},{\"severity\":\"low\",\"problem\":\"No stale lock-file removal exists after lease release.\",\"evidence\":\"Context explicitly notes no stale-file removal. The lock file persists on disk after normal exit, signal, or OOM release.\",\"recommendation\":\"Evaluate whether accumulating lock files create operational confusion or disk pressure over time. If the file path is fixed and single-instance, document that the stale file is harmless; otherwise add a best-effort unlink in the exit path.\"},{\"severity\":\"low\",\"problem\":\"58 old JSON records remain in a digest-bound retired carrier with no stated expiry or scrub path.\",\"evidence\":\"Context states 58 old JSON records remain only in the retired carrier; no cleanup timeline or archival policy is described.\",\"recommendation\":\"Document the retention policy for the retired carrier. If records are permanently sequestered and inaccessible to potential paths, confirm that in a comment or policy note. If they will eventually need purging, add a tracked issue for the scrub path.\"}]}",
+    "finish-reason": "end_turn",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 29280,
+      "duration_api_ms": 30599,
+      "ttft_ms": 17381,
+      "ttft_stream_ms": 1085,
+      "time_to_request_ms": 49,
+      "num_turns": 1,
+      "result": "{\"accepted\":true,\"summary\":\"Prior critical findings are materially resolved. The flock lease-lifecycle is verified end-to-end: exec-into-adapter, timeout-kill releases cleanly, and immediate reacquisition after SIGKILL of the entire process group is proven by real test. Policy drift guard enforces maximumConcurrentLots=1 consistently. Semantic-review guard throws before dispatch on invalid review-count parameters and the zero-review vector confirms no market call escapes. Review suite 10/10 and provider verify 6/6 close the structural gap. Three lower-severity observations remain for customer disposition.\",\"findings\":[{\"severity\":\"medium\",\"problem\":\"Restarted live market-selected act left content/exchanges empty after producing one typed settlement.\",\"evidence\":\"Supplied context states the adapter is stateless and the restarted act returned {ready:true}, produced one typed settlement, but left content/exchanges empty.\",\"recommendation\":\"Confirm whether empty content/exchanges is the intended stateless contract for a restart (no mid-flight recovery) or an unintended data-loss path. If recovery is expected, add an explicit assertion or fixture that proves post-restart content is populated or provably absent by design.\"},{\"severity\":\"low\",\"problem\":\"No stale lock-file removal exists after lease release.\",\"evidence\":\"Context explicitly notes no stale-file removal. The lock file persists on disk after normal exit, signal, or OOM release.\",\"recommendation\":\"Evaluate whether accumulating lock files create operational confusion or disk pressure over time. If the file path is fixed and single-instance, document that the stale file is harmless; otherwise add a best-effort unlink in the exit path.\"},{\"severity\":\"low\",\"problem\":\"58 old JSON records remain in a digest-bound retired carrier with no stated expiry or scrub path.\",\"evidence\":\"Context states 58 old JSON records remain only in the retired carrier; no cleanup timeline or archival policy is described.\",\"recommendation\":\"Document the retention policy for the retired carrier. If records are permanently sequestered and inaccessible to potential paths, confirm that in a comment or policy note. If they will eventually need purging, add a tracked issue for the scrub path.\"}]}",
+      "stop_reason": "end_turn",
+      "session_id": "9fc08347-0fc5-499a-99b1-ca7c1be4b795",
+      "total_cost_usd": 0.0517524,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 4822,
+        "cache_read_input_tokens": 2308,
+        "output_tokens": 1388,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 4822,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 3,
+            "output_tokens": 1388,
+            "cache_read_input_tokens": 2308,
+            "cache_creation_input_tokens": 4822,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 4822
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1214,
+          "outputTokens": 17,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.001299,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 3,
+          "outputTokens": 1388,
+          "cacheReadInputTokens": 2308,
+          "cacheCreationInputTokens": 4822,
+          "webSearchRequests": 0,
+          "costUSD": 0.050453399999999995,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "18d35fa7-813d-4805-b146-f88bc2cda5a9"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 31.999111728999996,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

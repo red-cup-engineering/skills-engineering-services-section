@@ -1,0 +1,13 @@
+# Customer admission plate for the inference-work-lot market.
+# One quad per admitted customer actor: the actor, the admitted-customer
+# predicate, the admitting market actor, and the customer-admissions graph.
+# Admission is this market's own local act; a customer absent from this
+# plate receives a typed refusal, never silent service.
+# Leader authorization 2026-07-27: the leader-movement-team and the
+# bare-cedar-fog-claude customer enterprise join the codex enterprise as
+# admitted customers so leader-speech classification can drain by market
+# hire rather than conversation-side simulation.
+<urn:ame:bare-cedar-fog-codex> <urn:inference-market:admitted-customer> <urn:ame:inference-work-lot-service> <urn:ame:inference-work-lot-service:customer-admissions> .
+<urn:ame:leader-movement-team> <urn:inference-market:admitted-customer> <urn:ame:inference-work-lot-service> <urn:ame:inference-work-lot-service:customer-admissions> .
+<urn:ame:bare-cedar-fog-claude> <urn:inference-market:admitted-customer> <urn:ame:inference-work-lot-service> <urn:ame:inference-work-lot-service:customer-admissions> .
+<urn:ame:modeled-union-dimension> <urn:inference-market:admitted-customer> <urn:ame:inference-work-lot-service> <urn:ame:inference-work-lot-service:customer-admissions> .

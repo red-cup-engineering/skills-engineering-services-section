@@ -1,0 +1,53 @@
+{
+  "type": "MeteredInferenceTollboothProductionRuntimeAdmission",
+  "version": 1,
+  "settlement": "metered-inference-tollbooth",
+  "publicBoundary": {
+    "method": "POST",
+    "path": "/inference",
+    "contentType": "application/activity+json",
+    "paymentProtocol": "x402-v2-exact-evm"
+  },
+  "requiredEnvironment": [
+    "X402_NETWORK",
+    "X402_PAY_TO",
+    "X402_FACILITATOR",
+    "X402_FACILITATOR_PROVIDER",
+    "X402_PRICE",
+    "CDP_API_KEY_ID",
+    "CDP_API_KEY_SECRET",
+    "RMN_CONFORMANCE_AGENT",
+    "WIT_TRANSITION_ASSAY_AGENT",
+    "WITNESS_JOURNAL_RDF_AGENT",
+    "PORT"
+  ],
+  "requiredProperties": {
+    "X402_NETWORK": "explicit EVM CAIP-2 network",
+    "X402_PAY_TO": "this settlement's real ERC-4337 smart-account address on X402_NETWORK",
+    "X402_FACILITATOR": "contracted real x402 facilitator URL; test doubles and simulated settlement are refused",
+    "X402_FACILITATOR_PROVIDER": "cdp for Base-mainnet production and Coinbase Bazaar indexing",
+    "X402_PRICE": "explicit positive dollar price",
+    "CDP_API_KEY_ID": "runtime-only Coinbase Developer Platform facilitator credential",
+    "CDP_API_KEY_SECRET": "runtime-only Coinbase Developer Platform facilitator credential",
+    "RMN_CONFORMANCE_AGENT": "hired signed RMN semantic-conformance provider Agent Card",
+    "WIT_TRANSITION_ASSAY_AGENT": "hired signed WIT transition-assay provider Agent Card",
+    "WITNESS_JOURNAL_RDF_AGENT": "hired signed witness-journal RDF provider Agent Card",
+    "PORT": "owner-selected local listener port behind an independently admitted public ingress"
+  },
+  "admissionCommand": "npm run check-runtime-admission",
+  "refusal": [
+    "missing required environment",
+    "EOA-shaped or malformed payee",
+    "implicit network, facilitator, price, provider, or ingress",
+    "testnet or simulation claimed as a paid production receipt",
+    "central provider registry or fallback provider selection",
+    "unwitnessed settlement"
+  ],
+  "afterAdmission": [
+    "start the owner-local systemd unit",
+    "obtain one anonymous 402 challenge from the public ingress",
+    "submit one customer-selected settled contract",
+    "verify the settlement's WitnessJournal named-graph receipt",
+    "admit the exact public service listing through x402-services-section"
+  ]
+}

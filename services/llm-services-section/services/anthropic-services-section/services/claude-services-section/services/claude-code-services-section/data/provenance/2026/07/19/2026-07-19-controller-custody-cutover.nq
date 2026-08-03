@@ -1,0 +1,4 @@
+<urn:ame:claude-code-inference-team> <urn:emsenn:evm:retired-controller-artifact> <ni:///sha-256;KkEaeSlepJJhp1JXY-kIaGbn1lMFGEJUcGu2jE5sol8> <urn:ame:claude-code-inference-team:controller-custody-cutover:eip155-31337> .
+<ni:///sha-256;KkEaeSlepJJhp1JXY-kIaGbn1lMFGEJUcGu2jE5sol8> <urn:emsenn:evm:retired-path> "data/evm/controller-eip155-31337.env" <urn:ame:claude-code-inference-team:controller-custody-cutover:eip155-31337> .
+<urn:ame:claude-code-inference-team> <urn:emsenn:evm:controller-keystore-format> "Ethereum Secret Storage v3" <urn:ame:claude-code-inference-team:controller-custody-cutover:eip155-31337> .
+<urn:ame:claude-code-inference-team> <urn:emsenn:evm:controller-chain> <eip155:31337> <urn:ame:claude-code-inference-team:controller-custody-cutover:eip155-31337> .

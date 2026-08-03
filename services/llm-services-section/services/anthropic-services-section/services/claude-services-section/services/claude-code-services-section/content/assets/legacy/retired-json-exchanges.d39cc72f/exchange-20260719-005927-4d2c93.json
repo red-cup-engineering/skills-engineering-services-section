@@ -1,0 +1,186 @@
+{
+  "id": "exchange-20260719-005927-4d2c93",
+  "packet": {
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only the contracted JSON. Adversarially review whether this proposal-development bid's semantic terms are sufficient to implement a lawful reusable SDSS accepted-delivery receiver, without deciding award or admission. Bid urn:sha256:9dc7eb0d63554f25c0cf33240c921d9fd5f0b13491143c4b8626f06990fb5f88 exactly snapshots lot urn:sha256:4a163a732d6057dece55f9ab1e0d4af52c28483e8bb18868179608fb22eec97f. It requires exactly separate operations: stage-accepted-software-delivery and review-and-admit-staged-software-delivery. Staging consumes exact locally recorded product, accepting decision and decision receipt IDs; verifies content/artifact/path/receiver/target/replay/expiry/create-only conditions; writes only service-owned SDSS staging; appends receipt with staged-tree digest. Admission consumes exact staging receipt/tree digest, service identity, contract, SDSS target root and distinct one-use expiring receiver grant; revalidates tree and mesh scope; creates only absent exact target; appends separate admission receipt. Product contract requires staging receipt bindings for product and artifact digests, decision/receipt, service/contract/root, staged tree, capability/expiry/time, and admission bindings for staging receipt/tree, service/contract/root, grant/time. Prohibited: ambientPath,globalRoster,overwrite,customerMutation,foreignMutation,network,spend,credentials,git,ttiMutation. Validation proves accepted alone creates nothing; staging needs exact accepted records and verifies every byte/path, capability one-use/expiry/replay, create-only, tree digest; staged alone creates no admission; admission needs distinct grant, revalidates tree/service/contract/target/mesh, create-only, receipt bindings; refusals leave target and receipts unchanged. Delivery is proposal-only and neither staging nor admission is authorized by the bid. Check specifically TOCTOU, symlink/path traversal, partial-write atomicity, receipt lookup authority, mesh revalidation, replay, and whether acceptance can be confused with admission."
+      }
+    ],
+    "max-tokens": 800,
+    "params": {
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "reviewTarget",
+          "verdict",
+          "stateSeparationSufficient",
+          "pathAndMeshSafetySufficient",
+          "replayAndAtomicitySufficient",
+          "blockingIssues",
+          "nonclaims"
+        ],
+        "properties": {
+          "reviewTarget": {
+            "const": "urn:sha256:9dc7eb0d63554f25c0cf33240c921d9fd5f0b13491143c4b8626f06990fb5f88"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "terms-sufficient-for-award-decision",
+              "needs-repair",
+              "refuse"
+            ]
+          },
+          "stateSeparationSufficient": {
+            "type": "boolean"
+          },
+          "pathAndMeshSafetySufficient": {
+            "type": "boolean"
+          },
+          "replayAndAtomicitySufficient": {
+            "type": "boolean"
+          },
+          "blockingIssues": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 220
+            }
+          },
+          "nonclaims": {
+            "type": "array",
+            "minItems": 5,
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "enum": [
+                "award-decision",
+                "implementation-exists",
+                "customer-acceptance",
+                "staging-authority",
+                "admission-authority",
+                "receiver-installation",
+                "tti-authority",
+                "external-effects"
+              ]
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "claude-sonnet-4-6",
+    "text": "{\"reviewTarget\":\"urn:sha256:9dc7eb0d63554f25c0cf33240c921d9fd5f0b13491143c4b8626f06990fb5f88\",\"verdict\":\"needs-repair\",\"stateSeparationSufficient\":true,\"pathAndMeshSafetySufficient\":false,\"replayAndAtomicitySufficient\":false,\"blockingIssues\":[\"TOCTOU: path/target/replay/expiry/create-only checks are not required to be atomic with the subsequent write; a scheduling gap permits race-condition substitution of staging-area contents or path targets.\",\"Symlink/traversal: ambientPath prohibition does not require canonical resolution before path comparison; a symlink at any component redirects a verified path to an unverified target without violating stated terms.\",\"Partial-write atomicity: staging-area writes and both receipt-appends carry no atomicity requirement; a partial write leaves inconsistent state not covered by the refusal-leaves-unchanged invariant.\",\"Receipt lookup authority: 'locally recorded' acceptance records have no integrity or authentication requirement; a substituted acceptance-decision or receipt ID can authorize staging of never-accepted content.\",\"Mesh scope undefined: admission revalidation names 'tree and mesh scope' but defines no scope boundary; the obligation is vacuous and cannot be evaluated for conformance.\",\"Staging replay mechanism unspecified: replay-verification for stage-accepted-software-delivery names no detection method (seen-digest registry, nonce consumption); the prohibition is unenforceable.\",\"Receipt-type distinguishability unspecified: staging and admission receipts require no distinct type markers; admission could consume a prior admission receipt as a staging receipt, enabling repeat-admission.\"],\"nonclaims\":[\"award-decision\",\"implementation-exists\",\"customer-acceptance\",\"staging-authority\",\"admission-authority\",\"receiver-installation\",\"tti-authority\",\"external-effects\"]}",
+    "finish-reason": "tool_use",
+    "raw": {
+      "type": "result",
+      "subtype": "success",
+      "is_error": false,
+      "api_error_status": null,
+      "duration_ms": 75276,
+      "duration_api_ms": 76327,
+      "ttft_ms": 54644,
+      "ttft_stream_ms": 2411,
+      "time_to_request_ms": 33,
+      "num_turns": 4,
+      "result": "{\"reviewTarget\":\"urn:sha256:9dc7eb0d63554f25c0cf33240c921d9fd5f0b13491143c4b8626f06990fb5f88\",\"verdict\":\"needs-repair\",\"stateSeparationSufficient\":true,\"pathAndMeshSafetySufficient\":false,\"replayAndAtomicitySufficient\":false,\"blockingIssues\":[\"TOCTOU: path/target/replay/expiry/create-only checks are not required to be atomic with the subsequent write; a scheduling gap permits race-condition substitution of staging-area contents or path targets.\",\"Symlink/traversal: ambientPath prohibition does not require canonical resolution before path comparison; a symlink at any component redirects a verified path to an unverified target without violating stated terms.\",\"Partial-write atomicity: staging-area writes and both receipt-appends carry no atomicity requirement; a partial write leaves inconsistent state not covered by the refusal-leaves-unchanged invariant.\",\"Receipt lookup authority: 'locally recorded' acceptance records have no integrity or authentication requirement; a substituted acceptance-decision or receipt ID can authorize staging of never-accepted content.\",\"Mesh scope undefined: admission revalidation names 'tree and mesh scope' but defines no scope boundary; the obligation is vacuous and cannot be evaluated for conformance.\",\"Staging replay mechanism unspecified: replay-verification for stage-accepted-software-delivery names no detection method (seen-digest registry, nonce consumption); the prohibition is unenforceable.\",\"Receipt-type distinguishability unspecified: staging and admission receipts require no distinct type markers; admission could consume a prior admission receipt as a staging receipt, enabling repeat-admission.\"],\"nonclaims\":[\"award-decision\",\"implementation-exists\",\"customer-acceptance\",\"staging-authority\",\"admission-authority\",\"receiver-installation\",\"tti-authority\",\"external-effects\"]}",
+      "stop_reason": "tool_use",
+      "session_id": "2b50c568-8a53-4df8-84f5-9bb56f10c4a9",
+      "total_cost_usd": 0.1631891,
+      "usage": {
+        "input_tokens": 5,
+        "cache_creation_input_tokens": 12724,
+        "cache_read_input_tokens": 19877,
+        "output_tokens": 5318,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 12724,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 1,
+            "output_tokens": 564,
+            "cache_read_input_tokens": 12113,
+            "cache_creation_input_tokens": 611,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 611
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1017,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0010969999999999999,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        },
+        "claude-sonnet-4-6": {
+          "inputTokens": 5,
+          "outputTokens": 5318,
+          "cacheReadInputTokens": 19877,
+          "cacheCreationInputTokens": 12724,
+          "webSearchRequests": 0,
+          "costUSD": 0.1620921,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000
+        }
+      },
+      "permission_denials": [],
+      "structured_output": {
+        "reviewTarget": "urn:sha256:9dc7eb0d63554f25c0cf33240c921d9fd5f0b13491143c4b8626f06990fb5f88",
+        "verdict": "needs-repair",
+        "stateSeparationSufficient": true,
+        "pathAndMeshSafetySufficient": false,
+        "replayAndAtomicitySufficient": false,
+        "blockingIssues": [
+          "TOCTOU: path/target/replay/expiry/create-only checks are not required to be atomic with the subsequent write; a scheduling gap permits race-condition substitution of staging-area contents or path targets.",
+          "Symlink/traversal: ambientPath prohibition does not require canonical resolution before path comparison; a symlink at any component redirects a verified path to an unverified target without violating stated terms.",
+          "Partial-write atomicity: staging-area writes and both receipt-appends carry no atomicity requirement; a partial write leaves inconsistent state not covered by the refusal-leaves-unchanged invariant.",
+          "Receipt lookup authority: 'locally recorded' acceptance records have no integrity or authentication requirement; a substituted acceptance-decision or receipt ID can authorize staging of never-accepted content.",
+          "Mesh scope undefined: admission revalidation names 'tree and mesh scope' but defines no scope boundary; the obligation is vacuous and cannot be evaluated for conformance.",
+          "Staging replay mechanism unspecified: replay-verification for stage-accepted-software-delivery names no detection method (seen-digest registry, nonce consumption); the prohibition is unenforceable.",
+          "Receipt-type distinguishability unspecified: staging and admission receipts require no distinct type markers; admission could consume a prior admission receipt as a staging receipt, enabling repeat-admission."
+        ],
+        "nonclaims": [
+          "award-decision",
+          "implementation-exists",
+          "customer-acceptance",
+          "staging-authority",
+          "admission-authority",
+          "receiver-installation",
+          "tti-authority",
+          "external-effects"
+        ]
+      },
+      "terminal_reason": "completed",
+      "fast_mode_state": "off",
+      "uuid": "d1846711-aad0-4e63-a516-a8f4752f754a"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 82.757,
+    "denomination": "claude-code-cli-invocations"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulated Goo Medicine"
+  short_description: "Practice systemic care across Union scales."
+  default_prompt: "Use $practicing-simulated-goo-medicine to diagnose and repair this Union-system condition."

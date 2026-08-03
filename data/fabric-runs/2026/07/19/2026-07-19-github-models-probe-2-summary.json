@@ -1,0 +1,45 @@
+{
+  "type": "InferenceFabricDispatchSummary",
+  "startedAt": "2026-07-19T05:35:08.375Z",
+  "finishedAt": "2026-07-19T05:35:09.477Z",
+  "dryRun": false,
+  "input": {
+    "digest": "sha256:16ae55965141370bf0f48e998ab0355f1ced28e4ccaebcb2cdd12411236bd1a8",
+    "jobs": 1,
+    "skippedByResume": 0
+  },
+  "history": null,
+  "registryDigest": "sha256:e54de8eca0340e27324191d3bf4fc2260ea03a36f6a04d8485ebdd93e9c06100",
+  "output": {
+    "recordsAppended": 1
+  },
+  "throughput": {
+    "elapsedMs": 1101,
+    "terminalJobsPerMinute": 54.49591280653951,
+    "usefulJobsPerMinute": 0,
+    "schemaVerifiedJobsPerMinute": 0,
+    "completed": 0,
+    "schemaVerifiedCompleted": 0,
+    "usefulYield": 0,
+    "schemaVerifiedYield": 0,
+    "refused": 1,
+    "attempts": 1,
+    "fallbackCompletions": 0,
+    "verificationFailures": 0,
+    "quotedAttemptConsiderationByUnit": {
+      "relative-resolution-cost-v1": 0.923076923076923
+    },
+    "realizedResourcesByDenomination": {},
+    "p50LatencyMs": 1099,
+    "p95LatencyMs": 1099,
+    "byEndpoint": {
+      "github-models-gpt-4o-mini-probe": {
+        "attempts": 1,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 1,
+        "verificationFailures": 0
+      }
+    }
+  }
+}

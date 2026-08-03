@@ -1,0 +1,66 @@
+{
+  "type": "InferenceFabricDispatchSummary",
+  "startedAt": "2026-07-19T05:33:52.266Z",
+  "finishedAt": "2026-07-19T05:33:56.281Z",
+  "dryRun": true,
+  "input": {
+    "digest": "sha256:095d8b70ea1a8c234d5df3f4bc2510e266ec1503d559311dcbeec38f99eae71f",
+    "jobs": 2,
+    "skippedByResume": 0
+  },
+  "history": null,
+  "registryDigest": "sha256:aed3ff0773f7f93bddc8731a2d4af28aefc044cd6a4fd5b5b0c673ca6325b80e",
+  "output": {
+    "recordsAppended": 2
+  },
+  "throughput": {
+    "elapsedMs": 4011,
+    "terminalJobsPerMinute": 29.917726252804787,
+    "usefulJobsPerMinute": 0,
+    "schemaVerifiedJobsPerMinute": 0,
+    "completed": 0,
+    "schemaVerifiedCompleted": 0,
+    "usefulYield": 0,
+    "schemaVerifiedYield": 0,
+    "refused": 0,
+    "attempts": 2,
+    "fallbackCompletions": 0,
+    "verificationFailures": 0,
+    "quotedAttemptConsiderationByUnit": {
+      "relative-resolution-cost-v1": 3.2795031055900625
+    },
+    "realizedResourcesByDenomination": {},
+    "p50LatencyMs": 5,
+    "p95LatencyMs": 5,
+    "byEndpoint": {
+      "groq-llama-3.1-8b-instant": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "gemini-3.1-flash-lite": {
+        "attempts": 2,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "openrouter-llama-3.3-70b-free": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "claude-code-claude-sonnet-4-6": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      }
+    }
+  }
+}

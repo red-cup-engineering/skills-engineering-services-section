@@ -1,0 +1,82 @@
+{
+  "type": "InferenceFabricDispatchSummary",
+  "startedAt": "2026-07-19T05:56:12.714Z",
+  "finishedAt": "2026-07-19T06:15:48.419Z",
+  "dryRun": false,
+  "input": {
+    "digest": "sha256:ca66d03c32a91ae59e350b82502c6e111471d7a3206629cc292a165b12809c00",
+    "jobs": 12,
+    "skippedByResume": 0
+  },
+  "history": {
+    "digest": "sha256:53a825536237a69ca318cac5778664a3a502c9395f38f65117562e9870106485",
+    "records": 24
+  },
+  "registryDigest": "sha256:45bcf1a0a2284efd8802febcd5f73a2e81ad103a520a98fb17e0eec2c6b61239",
+  "output": {
+    "recordsAppended": 12
+  },
+  "throughput": {
+    "elapsedMs": 1175703,
+    "terminalJobsPerMinute": 0.6123995600929827,
+    "usefulJobsPerMinute": 0.6123995600929827,
+    "schemaVerifiedJobsPerMinute": 0.6123995600929827,
+    "completed": 12,
+    "schemaVerifiedCompleted": 12,
+    "usefulYield": 1,
+    "schemaVerifiedYield": 1,
+    "refused": 0,
+    "attempts": 48,
+    "fallbackCompletions": 12,
+    "verificationFailures": 24,
+    "quotedAttemptConsiderationByUnit": {
+      "relative-resolution-cost-v1": 270.7461888486918
+    },
+    "realizedResourcesByDenomination": {
+      "claude-code-cli-invocations": {
+        "fuelConsumed": 12,
+        "wallTimeSeconds": 1162.382,
+        "completions": 12
+      }
+    },
+    "p50LatencyMs": 205209,
+    "p95LatencyMs": 977021,
+    "byEndpoint": {
+      "groq-llama-3.1-8b-instant": {
+        "attempts": 0,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "gemini-3.1-flash-lite": {
+        "attempts": 12,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 12,
+        "verificationFailures": 12
+      },
+      "openrouter-llama-3.3-70b-free": {
+        "attempts": 12,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 12,
+        "verificationFailures": 0
+      },
+      "claude-code-claude-sonnet-4-6": {
+        "attempts": 12,
+        "completed": 12,
+        "schemaVerifiedCompleted": 12,
+        "refused": 0,
+        "verificationFailures": 0
+      },
+      "github-models-gpt-4o-mini": {
+        "attempts": 12,
+        "completed": 0,
+        "schemaVerifiedCompleted": 0,
+        "refused": 12,
+        "verificationFailures": 12
+      }
+    }
+  }
+}

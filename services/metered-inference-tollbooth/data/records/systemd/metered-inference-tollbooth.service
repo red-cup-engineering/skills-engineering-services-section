@@ -1,0 +1,21 @@
+[Unit]
+Description=Metered RMN Inference Tollbooth
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=%h/.config/emsenn/metered-inference-tollbooth.env
+
+[Service]
+Type=simple
+WorkingDirectory=/home/emsenn/info/lib/emsenn/services/561-group/services/red-cup-engineering/services/metered-inference-tollbooth
+EnvironmentFile=%h/.config/emsenn/metered-inference-tollbooth.env
+ExecStartPre=/usr/bin/env npm run check-runtime-admission
+ExecStart=/usr/bin/env npm run start
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=read-only
+ReadWritePaths=/home/emsenn/info/lib/emsenn/services/561-group/services/red-cup-engineering/services/metered-inference-tollbooth/data
+
+[Install]
+WantedBy=default.target

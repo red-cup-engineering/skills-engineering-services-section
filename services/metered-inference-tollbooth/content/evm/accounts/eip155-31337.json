@@ -1,0 +1,28 @@
+{
+  "profile": "org.emsenn.evm.sovereign-enterprise-account.v3",
+  "enterprise": {
+    "nodeId": "metered-inference-tollbooth",
+    "urn": "urn:ame:metered-inference-tollbooth",
+    "enterpriseId": "0x583466aaf70f69fcc805016c6573530b8a77fb65609131330c1dd3aea0788c93"
+  },
+  "chain": {
+    "chainId": 31337,
+    "caip2": "eip155:31337"
+  },
+  "account": {
+    "address": "0x9b4f7fddb64aaffdd5af25b547b8b13949b97832",
+    "caip10": "eip155:31337:0x9b4f7fddb64aaffdd5af25b547b8b13949b97832"
+  },
+  "factory": {
+    "address": "0x7bf3cf1176c4a037d3ea2a5ff3d480359ac65ecd",
+    "userSalt": "0x648751cf46653a232dddf1be6a8cf4ce1a3a41a6eda14e53b3747e161857fa0b"
+  },
+  "policy": {
+    "signer": "0x4628adec8901d8a4b97738a354ab5773e878ab96",
+    "custody": "settlement-private"
+  },
+  "deployment": {
+    "transaction": "0x3b2ae5d43c3b4fdfec25884351498f07a22ab700106f3bfaced75f2962a695c7",
+    "block": 1395
+  }
+}
