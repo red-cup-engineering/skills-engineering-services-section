@@ -32,7 +32,7 @@ const TEST_ENV = { X402_NETWORK: "eip155:84532", X402_PAY_TO: ACCOUNT.split(":")
 
 async function freePort() { const server = createNetServer(); await new Promise((ok) => server.listen(0, "127.0.0.1", ok)); const port = server.address().port; await new Promise((ok) => server.close(ok)); return port; }
 async function startA2a({ port, baseUrl, env, card, executor }) {
-  const service = resolve(ROOT, "../../../../../web-services-section/services/a2a-services-section/services/a2a-contracted-agent-service");
+  const service = resolve(ROOT, "../../../../../web-services-section/services/web-protocol-services-section/services/a2a-services-section/services/a2a-contracted-agent-service");
   const server = spawn(process.execPath, [resolve(service, "src/serve-contracted-agent.mjs"), "--port", String(port), "--host", "127.0.0.1", "--base-url", baseUrl,
     "--agent-card", card, "--executor", process.execPath,
     "--executor-arg", executor, "--timeout-ms", "10000"], { cwd: ROOT, env, stdio: ["ignore", "pipe", "pipe"] });
@@ -85,7 +85,7 @@ test("settled handler composes tollbooth RMN directly to the selected signed pro
   const { privateKey, publicKey } = generateKeyPairSync("ed25519"), signingKey = resolve(signingData, "agent-card-signing-key.pem"), signingJwks = resolve(signingData, "agent-card-jwks.json"), signingKid = "tollbooth-integration-test-ed25519";
   writeFileSync(signingKey, privateKey.export({ format: "pem", type: "pkcs8" }), { mode: 0o600 }); writeFileSync(signingJwks, JSON.stringify({ keys: [{ ...publicKey.export({ format: "jwk" }), kid: signingKid, alg: "EdDSA", use: "sig" }] }));
   Object.assign(process.env, { AGENT_CARD_SIGNING_KEY: signingKey, AGENT_CARD_JWKS: signingJwks, AGENT_CARD_SIGNING_KID: signingKid, RMN_CONFORMANCE_AGENT: `${rmnBaseUrl}/.well-known/agent-card.json`, WITNESS_JOURNAL_RDF_AGENT: `${witnessJournalBaseUrl}/.well-known/agent-card.json`, WIT_TRANSITION_ASSAY_AGENT: `${witBaseUrl}/.well-known/agent-card.json`, GEMINI_WITNESS_JOURNAL_ROOT: providerData });
-  const service = resolve(ROOT, "../../../../../web-services-section/services/a2a-services-section/services/a2a-contracted-agent-service");
+  const service = resolve(ROOT, "../../../../../web-services-section/services/web-protocol-services-section/services/a2a-services-section/services/a2a-contracted-agent-service");
   const rmnServer = await startA2a({ port: rmnPort, baseUrl: rmnBaseUrl, env: process.env,
     card: resolve(RMN_ROOT, "content/agent-cards/rmn-semantic-conformance.json"), executor: resolve(RMN_ROOT, "scripts/execute-a2a-task.mjs") });
   const witnessJournalServer = await startA2a({ port: witnessJournalPort, baseUrl: witnessJournalBaseUrl, env: process.env,
