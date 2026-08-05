@@ -6,7 +6,6 @@
   "private": true,
   "dependencies": {
     "@red-cup-engineering/a2a-contracted-agent-service": "2.0.5",
-    "@red-cup-engineering/relation-model-notation-runtime": "7.0.0",
     "@red-cup-engineering/relation-model-notation-conformance": "7.0.0",
     "@red-cup-engineering/witness-journal-rdf-projection-service": "1.1.0",
     "@lenticule-science/wit-transition-assay": "1.0.1"

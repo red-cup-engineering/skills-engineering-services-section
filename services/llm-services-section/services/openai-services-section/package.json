@@ -5,9 +5,6 @@
   "scripts": {
     "check": "node --check scripts/run-one-exchange.mjs"
   },
-  "dependencies": {
-    "@red-cup-engineering/relation-model-notation-runtime": "7.0.0"
-  },
   "engines": {
     "node": ">=18"
   },
