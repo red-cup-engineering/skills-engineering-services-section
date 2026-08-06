@@ -1,2 +1,0 @@
-<urn:ame:rmn-semantic-conformance> <urn:union:service-role:rmn-conformance> <https://rmn-semantic-conformance-a2d7mjqbfa-uc.a.run.app/.well-known/agent-card.json> <urn:ame:inference-work-lot-service:service-admissions> .
-<urn:ame:witness-journal-rdf-projection-service> <urn:union:service-role:witness-journal-rdf> <https://rwil-rdf-projection-service-a2d7mjqbfa-uc.a.run.app/.well-known/agent-card.json> <urn:ame:inference-work-lot-service:service-admissions> .

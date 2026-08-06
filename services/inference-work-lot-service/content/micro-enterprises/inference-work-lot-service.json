@@ -1,9 +1,0 @@
-{
-  "id": "inference-work-lot-service",
-  "name": "Inference Work Lot Service",
-  "kind": "market",
-  "faces": "the sovereign caller account holder procuring bounded typed inference work from admitted providers",
-  "bundle": "inference-work-lot-market",
-  "package": "@red-cup-engineering/inference-work-lot-service",
-  "contracts": ["inference-work-lot-market"]
-}
