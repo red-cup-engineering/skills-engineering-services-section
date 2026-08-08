@@ -19,3 +19,7 @@
 [submodule "services/openrouter-inference-team"]
 	path = services/openrouter-inference-team
 	url = https://github.com/red-cup-engineering/openrouter-inference-team.git
+[submodule "services/agent-services-section/services/context-packet-services-section"]
+	path = services/agent-services-section/services/context-packet-services-section
+	url = https://github.com/red-cup-engineering/context-packet-services-section.git
+	branch = main
