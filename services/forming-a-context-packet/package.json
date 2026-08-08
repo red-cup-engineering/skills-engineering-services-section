@@ -1,0 +1,25 @@
+{
+  "name": "@harmonious-union/forming-a-context-packet",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Forms one deterministic, content-addressed context packet without judging or trading it.",
+  "exports": {
+    ".": "./src/forming-a-context-packet.mjs",
+    "./carriers": "./src/carriers.mjs"
+  },
+  "files": [
+    "src/",
+    "schemas/",
+    "README.md"
+  ],
+  "scripts": {
+    "check": "node --check src/forming-a-context-packet.mjs && node --check src/carriers.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test && npm pack --dry-run"
+  },
+  "dependencies": {
+    "@red-cup-engineering/json-schema-services-section": "0.1.2",
+    "@red-cup-engineering/ni-uri-services-section": "0.1.1"
+  }
+}

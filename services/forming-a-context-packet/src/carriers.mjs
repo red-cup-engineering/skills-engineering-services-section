@@ -1,0 +1,16 @@
+import { readFileSync } from "node:fs";
+import { createSchema, validateInstance } from "@red-cup-engineering/json-schema-services-section";
+
+const schema = (name) => createSchema(JSON.parse(readFileSync(new URL(`../schemas/${name}.schema.json`, import.meta.url), "utf8"))).schema;
+export const FORM_CONTEXT_PACKET_REQUEST_SCHEMA = schema("request");
+export const FORM_CONTEXT_PACKET_RESULT_SCHEMA = schema("result");
+export const FORM_CONTEXT_PACKET_REFUSAL_SCHEMA = schema("refusal");
+export const FORM_CONTEXT_PACKET_EAVT = Object.freeze({
+  entity: "$.id",
+  attributes: Object.freeze({ "$.profile": "urn:attribute:context-packet:profile", "$.objective": "urn:attribute:context-packet:objective", "$.createdBy": "urn:attribute:context-packet:created-by", "$.segments[*].ni": "urn:attribute:context-packet:segment", "$.knowledge[*].relation": "urn:attribute:context-packet:knowledge-relation" }),
+  derived: true,
+});
+function admit(value, contract, label) { const result = validateInstance(value, contract); if (!result.ok) throw new TypeError(`${label} failed schema validation: ${JSON.stringify(result.errors)}`); return value; }
+export const admitFormContextPacketRequest = (value) => admit(value, FORM_CONTEXT_PACKET_REQUEST_SCHEMA, "context packet request");
+export const admitFormContextPacketResult = (value) => admit(value, FORM_CONTEXT_PACKET_RESULT_SCHEMA, "context packet result");
+export const admitFormContextPacketRefusal = (value) => admit(value, FORM_CONTEXT_PACKET_REFUSAL_SCHEMA, "context packet refusal");

@@ -1,0 +1,12 @@
+{
+  "name": "@harmonious-union/context-packet-services-section",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Working-services arena for independently forming, judging, and bilaterally reconciling context packets.",
+  "scripts": {
+    "check": "node --check src/route-a-service.js && npm --prefix services/forming-a-context-packet run check && npm --prefix services/reconciling-a-context-trade run check && npm --prefix services/judging-a-context-packet run check",
+    "test": "npm --prefix services/forming-a-context-packet test && npm --prefix services/reconciling-a-context-trade test",
+    "verify": "npm run check && npm test"
+  }
+}
