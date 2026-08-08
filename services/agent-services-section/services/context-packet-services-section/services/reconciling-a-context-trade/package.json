@@ -1,0 +1,16 @@
+{
+  "name": "@harmonious-union/reconciling-a-context-trade",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reconciles exactly matched release and admission WITs for one priced context packet trade.",
+  "exports": "./src/reconciling-a-context-trade.mjs",
+  "scripts": {
+    "check": "node --check src/reconciling-a-context-trade.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "dependencies": {
+    "@red-cup-engineering/semantic-content-identify-service": "0.1.10"
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emsenn/schema/packet-verdict",
+  "title": "Packet Verdict",
+  "description": "A verdict scoring a context packet against the five criteria the distribution pilot's test two proved discriminable at the nano tier: self-containment, machine-checkable goal conditions, lane boundaries, resolvable citations, output contract. Produced by judging-a-context-packet; never a seating record and never a routing decision — a verdict says how a packet scored, not what becomes of it.",
+  "$comment": "Seated per decision record rejudge-the-distribution-pilot (option 3, continue narrowly) and requirement route-work-by-measured-complexity-across-inference-tiers, cell skill:judging-a-context-packet-is-a-fueled-inquiry. total and verdict are computed by the actuating script from the five criteria scores (total = their sum; verdict = a threshold band over total) and are NOT enforced as consistent with criteria by this schema — JSON Schema has no keyword for 'field X equals a function of fields Y', and this pool's validator implements a stated subset of 2020-12 rather than a private extension, so no custom keyword is invented here. A hand-built record bypassing the actuating script could carry a total/verdict inconsistent with its criteria and still validate; the invariant is held by the script that assembles the record, named here so the gap is on the record rather than silently assumed closed.",
+  "type": "object",
+  "required": [
+    "packet-label",
+    "criteria",
+    "total",
+    "verdict"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "packet-label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Caller-given (--label) or derived from the packet's own id/name/slug; never silently defaulted onto disk — the actuating script refuses to write a verdict under the untitled-packet fallback to --verdict-dir, to avoid two unlabeled packets overwriting one another."
+    },
+    "criteria": {
+      "type": "object",
+      "description": "Exactly the five criteria test two proved discriminable. A sixth key is refused, not ignored.",
+      "required": [
+        "self-containment",
+        "machine-checkable-goal-conditions",
+        "lane-boundaries",
+        "resolvable-citations",
+        "output-contract"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "self-containment": {
+          "type": "object",
+          "required": [
+            "score",
+            "reason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "score": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        },
+        "machine-checkable-goal-conditions": {
+          "type": "object",
+          "required": [
+            "score",
+            "reason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "score": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        },
+        "lane-boundaries": {
+          "type": "object",
+          "required": [
+            "score",
+            "reason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "score": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        },
+        "resolvable-citations": {
+          "type": "object",
+          "required": [
+            "score",
+            "reason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "score": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        },
+        "output-contract": {
+          "type": "object",
+          "required": [
+            "score",
+            "reason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "score": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        }
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Computed by the actuating script as the sum of the five criteria scores; never requested from the model."
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "strong",
+        "adequate",
+        "deficient"
+      ],
+      "$comment": "PROVISIONAL, UNEVIDENCED band cutoffs, computed by the actuating script from total: total >= 8 -> strong, 4 <= total <= 7 -> adequate, total <= 3 -> deficient (a missing or non-numeric score yields a NaN total, which fails both >= comparisons and falls through to deficient by construction). The distribution pilot's test two (2026-07-16) produced only total = 10 (the real packet, all five scores 2) and total = 0 (the deficient control, all five scores 0); it never exercised the middle band or these exact cutoffs. Revise once production packets accumulate evidence for where the bands should actually sit."
+    }
+  },
+  "x-provenance": {
+    "recorded-by": "claude/module-developer",
+    "recorded-on": "2026-07-16"
+  }
+}
