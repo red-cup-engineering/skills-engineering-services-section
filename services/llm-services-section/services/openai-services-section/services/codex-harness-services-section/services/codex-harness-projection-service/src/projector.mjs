@@ -45,4 +45,3 @@ export function projectOfficeContext({ agencyRoot, office, target }) {
   finally { rmSync(temporary, { force: true }); }
   return Object.freeze({ office, target, duties: duties.length, skills: skills.length, sources });
 }
-
