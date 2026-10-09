@@ -15,4 +15,4 @@ nor a machine actor is a competing harness implementation.
 
 | Actor | Operation | Boundary |
 | --- | --- | --- |
-| `codex-harness-projection-service` | `project-codex-harness <configuration> <output>` | One machine actor configuration to an explicit disposable runtime output; never an implicit project or user `.codex` tree |
+| `codex-harness-projection-service` | `project-office-context <project-office.json>` | Source-owned office/duties/skill closure to one generated repository-local context; no copied skill corpus, template configuration or authority grant |
