@@ -1,0 +1,31 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { projectOfficeContext } from "../src/projector.mjs";
+
+test("source office changes reach the next projection; incomplete closure leaves prior context intact", t => {
+  const root = mkdtempSync(join(tmpdir(), "office-projection-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const agencyRoot = join(root, "agency"), target = join(root, ".codex/office-context.md");
+  for (const p of ["offices", "duties", "skills/receive"]) mkdirSync(join(agencyRoot, p), { recursive: true });
+  const office = join(agencyRoot, "offices/cto.json"), method = join(agencyRoot, "skills/receive/SKILL.md");
+  writeFileSync(office, JSON.stringify({ id: "cto", "bears-duty": ["firm/duty/receiving"], "provides-skill": ["receive"] }));
+  writeFileSync(join(agencyRoot, "duties/receiving.json"), JSON.stringify({ id: "receiving", skills: ["receive"], "receiver-condition": "actual consumer use" }));
+  writeFileSync(method, "# Receive\nRead original outcome.");
+  const first = projectOfficeContext({ agencyRoot, office: "cto", target });
+  assert.equal(first.skills, 1); assert.equal(first.duties, 1);
+  assert.match(readFileSync(target, "utf8"), /actual consumer use/);
+  writeFileSync(method, "# Receive\nVerify the independently returned exact bytes.");
+  const next = projectOfficeContext({ agencyRoot, office: "cto", target });
+  assert.notDeepEqual(first.sources, next.sources);
+  const received = readFileSync(target, "utf8");
+  assert.match(received, /independently returned exact bytes/);
+  assert.doesNotMatch(received, /Read original outcome/);
+  assert.equal(existsSync(join(root, ".codex/skills")), false);
+  rmSync(method);
+  assert.throws(() => projectOfficeContext({ agencyRoot, office: "cto", target }), /skill needs one source/);
+  assert.equal(readFileSync(target, "utf8"), received);
+  assert.throws(() => projectOfficeContext({ agencyRoot, office: "../elsewhere", target }), /canonical office/);
+});
