@@ -1,0 +1,38 @@
+{
+  "id": "exchange-20260726-035801-804913",
+  "recordedAt": "2026-07-26T03:58:01.973Z",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Reason as needed, then conclude with one JSON value matching the exact customer schema. The customer deterministically separates that candidate from your reasoning and performs the authoritative schema assay. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"falsifiers\":{\"items\":{\"type\":\"string\"},\"maxItems\":8,\"minItems\":2,\"type\":\"array\"},\"strategySource\":{\"maxLength\":64000,\"minLength\":32,\"type\":\"string\"}},\"required\":[\"strategySource\",\"falsifiers\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:union:strategy-program-synthesis:ddddddddddddddddddddddddddddddddddddddddddd:0\",\"producer\":\"urn:ame:brokerage-strategy-program-foundry\"},\"context\":{\"objective\":\"Generate one novel pure ECMAScript strategy decision module and at least two falsifiers. The module must literally export synchronous function decide(input), may use only supplied input, deterministic Number/Object/Array operations, and deterministic Math functions, and must emit scores or weights. Never use Math.random or Date. Do not import, fetch, trade, allocate custody, claim profitability, or access ambient state.\",\"suppliedContext\":\"{\\\"contextProduct\\\":\\\"ni:///sha-256;ddddddddddddddddddddddddddddddddddddddddddd\\\",\\\"incumbentProgram\\\":\\\"ni:///sha-256;eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\\",\\\"acceptanceSuite\\\":\\\"ni:///sha-256;fffffffffffffffffffffffffffffffffffffffffff\\\",\\\"abi\\\":\\\"export function decide(input) -> plain JSON target scores or weights\\\",\\\"evidenceFacts\\\":[\\\"Momentum is a permitted feature; transaction costs and drawdown remain mandatory falsifiers.\\\"],\\\"allowedFeatureDependencies\\\":[\\\"momentum\\\"],\\\"failureHistory\\\":[],\\\"generation\\\":2,\\\"diversityInstruction\\\":\\\"population-member-0: seek a materially distinct causal hypothesis and implementation\\\",\\\"exactOutput\\\":\\\"Return only strategySource and falsifiers. Deterministic assays derive tests, dependencies, effects, and fitness downstream.\\\"}\",\"desiredUse\":\"Untrusted candidate source for static assay, deterministic sandbox replay, purged multi-regime tournament, and review.\",\"routingProfile\":\"extended\",\"extendedRoutingRationale\":\"Executable strategy synthesis needs enough bounded output for source, tests, assumptions, and falsifiers; every candidate remains untrusted and independently sandboxed.\",\"boundary\":\"This inference compact confers no receiver mutation, execution, integration, truth, or acceptance authority.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:union:strategy-program-synthesis:ddddddddddddddddddddddddddddddddddddddddddd:0\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"software-engineering\",\"taskClass\":\"software-engineering\",\"executionBounds\":{\"maximumOutputTokens\":2048,\"sourceMeasures\":{\"words\":42,\"characters\":753},\"outputBoundSource\":\"customer-limit\"},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"falsifiers\":{\"items\":{\"type\":\"string\"},\"maxItems\":8,\"minItems\":2,\"type\":\"array\"},\"strategySource\":{\"maxLength\":64000,\"minLength\":32,\"type\":\"string\"}},\"required\":[\"strategySource\",\"falsifiers\"],\"type\":\"object\"}}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"falsifiers\": [\n    \"The strategy fails to account for transaction costs when momentum indicates a rapid sequence of opposing trades.\",\n    \"The drawdown metric exceeds acceptable risk thresholds during high-volatility regimes.\",\n    \"The implementation exhibits non-deterministic behavior when processing extreme input values.\",\n    \"The momentum-based weight calculation does not converge within the designated observation window.\"\n  ],\n  \"strategySource\": \"export function decide(input) { const { prices } = input; if (!Array.isArray(prices) || prices.length < 2) return { score: 0 }; const delta = prices[prices.length - 1] - prices[0]; const momentum = delta / prices[0]; const volatility = prices.reduce((acc, val, i, arr) => i > 0 ? acc + Math.abs(val - arr[i - 1]) : 0, 0) / (prices.length - 1); const score = volatility === 0 ? 0 : momentum / volatility; return { score: Math.max(-1, Math.min(1, score)) }; }\"\n}",
+    "finish-reason": "STOP"
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.5708746200000006,
+    "denomination": "google-ai-studio-api-requests"
+  },
+  "usage": {
+    "input": {
+      "quantity": 761,
+      "denomination": "google-ai-studio-tokens-in"
+    },
+    "output": {
+      "quantity": 243,
+      "denomination": "google-ai-studio-tokens-out"
+    }
+  }
+}

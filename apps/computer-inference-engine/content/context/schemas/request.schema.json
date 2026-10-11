@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:harmonious-union:schema:form-context-packet-request:1",
+  "type": "object",
+  "required": ["objective", "createdBy", "segments", "knowledge"],
+  "properties": {
+    "objective": {"type": "string", "minLength": 1},
+    "createdBy": {"type": "string", "minLength": 1},
+    "segments": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["mediaType", "content"], "properties": {"ni": {"type": "string"}, "mediaType": {"type": "string", "minLength": 1}, "content": {"type": "string", "minLength": 1}, "source": {"type": "string", "minLength": 1}, "compaction": {"type": "object", "required": ["eligibility"], "properties": {"eligibility": {"const": "tool-output"}, "isError": {"type": "boolean"}, "exitCode": {"type": "integer"}}, "additionalProperties": false}}, "additionalProperties": false}},
+    "knowledge": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["ni", "relation"], "properties": {"ni": {"type": "string"}, "relation": {"type": "string", "minLength": 1}}, "additionalProperties": false}}
+  },
+  "additionalProperties": false
+}

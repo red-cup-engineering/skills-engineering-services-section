@@ -1,0 +1,59 @@
+{
+  "id": "exchange-20260719-173847-3b6dbf",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return only JSON matching the schema. Examine category boundaries: deterministic derivation versus model inference, provider output versus customer assay, and EVM commitment versus truth."
+      },
+      {
+        "role": "user",
+        "content": "Given this mechanism: witnessed token/claim work and capability lots; FCA derives deterministic-service cover; compatible positive-integer ActivityStreams offers are ranked; an EVM Chu-Hoare seam binds the selected provider actor; provider returns a result; a customer-owned assayer independently accepts or withholds it; an effect receipt commits the customer assay; only typed no-cover residue can reach a language model, whose output remains pending customer assay. Finance and keccak256 both close through scripts with zero model calls, and repeated Finance runs assign a witnessed amortization claim to the work-class token. JSON is a replay projection, not authority. State whether the boundaries are preserved and list up to three residual risks. Do not suggest global orchestration or model-first dispatch."
+      }
+    ],
+    "max-tokens": 700,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"boundary_integrity\": \"Preserved\",\n  \"residual_risks\": [\n    \"Asymmetric verification latency between the EVM seam and the off-chain assayer leading to state divergence.\",\n    \"Oracle failure or censorship in the customer-owned assayer resulting in premature liquidation of amortization claims.\",\n    \"Data leakage through side-channel patterns in the no-cover residue submitted to the language model.\"\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"boundary_integrity\": \"Preserved\",\n  \"residual_risks\": [\n    \"Asymmetric verification latency between the EVM seam and the off-chain assayer leading to state divergence.\",\n    \"Oracle failure or censorship in the customer-owned assayer resulting in premature liquidation of amortization claims.\",\n    \"Data leakage through side-channel patterns in the no-cover residue submitted to the language model.\"\n  ]\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPOU777Z6dQ2nFFCXUXDclJ4FmVsMfhtMYe99bkB0YbBSooxF/qohC1RFAS4Xb"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784482727,
+      "id": "pgtdaqPFNcXF-sAPq5WW-AQ",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 94,
+        "prompt_tokens": 187,
+        "total_tokens": 281
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.115,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

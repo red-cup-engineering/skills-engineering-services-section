@@ -1,0 +1,128 @@
+{
+  "kind": "metroplat.contract",
+  "id": "openrouter-inference-service",
+  "material": {
+    "id": "openrouter-inference-exchange-material",
+    "loci": [
+      "consuming-micro-enterprise",
+      "openrouter-inference-unit",
+      "openrouter-chat-completions-surface"
+    ],
+    "incidence": [
+      "consuming-micro-enterprise--sends-context-packet-over-a2a-to--openrouter-inference-unit",
+      "openrouter-inference-unit--drives--openrouter-chat-completions-surface-via-bearer-authenticated-http",
+      "openrouter-inference-unit--returns-completion-or-refusal-over-a2a-to--consuming-micro-enterprise"
+    ],
+    "fibers": [
+      "context-packet",
+      "completion-record",
+      "refusal-record",
+      "exchange-record"
+    ],
+    "valueAlgebra": "boolean",
+    "constraints": [
+      "exactly-one-chat-completion-request-per-packet-model-and-messages-named-by-the-caller",
+      "auth-material-is-client-supplied-at-invocation-from-the-clients-own-custody-and-is-never-seated-in-any-record",
+      "for-the-firms-own-provider-accounts-the-key-custodian-is-the-leader-movement-team",
+      "no-key-account-or-project-rotation-to-evade-a-provider-limit-suspension-price-or-free-tier-boundary",
+      "the-providers-free-tier-claims-are-leader-supplied-and-unverified-until-exercised-against-a-real-authorized-account",
+      "no-retry-or-fallback-model-substitution-happens-inside-this-units-move"
+    ],
+    "closure": [
+      "an-exchange-closes-on-exactly-one-of-completion-or-refusal-never-left-open"
+    ],
+    "boundary": [
+      "the-context-packet-received-over-a2a-from-a-consuming-micro-enterprise-is-where-untyped-external-request-data-enters",
+      "the-clients-key-enters-only-as-environment-at-invocation-and-exits-with-the-process"
+    ]
+  },
+  "precondition": {
+    "id": "context-packet-and-client-key-received",
+    "description": "A consuming micro-enterprise, over A2A, has sent a typed context packet naming: model (a OpenRouter model id), messages (a non-empty array of {role, content} chat turns), and optionally max-tokens and a params object for provider-specific fields — and has supplied, from its own custody, auth material as environment at invocation. Accepted aliases in precedence order are OPENROUTER_API_KEY and API_KEY_OPENROUTER; values are never recorded."
+  },
+  "move": {
+    "id": "realize-the-exchange",
+    "description": "The unit issues one Bearer-authenticated HTTPS POST to https://openrouter.ai/api/v1/chat/completions with the packet's model and messages, within a bounded fuel budget, and settles to exactly one of the two typed outcomes.",
+    "domain": "context-packet",
+    "codomain": "completion-or-refusal",
+    "partial": false,
+    "deterministic": false,
+    "effects": [
+      "material",
+      "boundary",
+      "evidence"
+    ]
+  },
+  "postcondition": {
+    "id": "exchange-settled",
+    "description": "An exchange record exists in the unit's own content/exchanges/ pool whose .outcome is exactly 'completion' (carrying the served model, response text, and finish reason) or 'refusal' (a structured refusal record stating grounds) — settled within the bounded fuel budget, never a hang and never an untyped failure, and never carrying the client's credential.",
+    "entails": [
+      "context-packet-and-client-key-received"
+    ]
+  },
+  "phase": {
+    "id": "openrouter-inference-exchange-phase",
+    "closureDepth": "finite",
+    "finality": "normal-form",
+    "recurrence": "none",
+    "mobility": "fixed",
+    "coherence": "total",
+    "contradiction": "reject",
+    "coordinationCost": "evidenced",
+    "observability": "boundary-only",
+    "energy": "costed"
+  },
+  "lens": {
+    "id": "openrouter-inference-exchange-lens",
+    "domain": "context-packet",
+    "boundary": "a2a-exchange-boundary-between-consuming-micro-enterprise-and-openrouter-inference-unit",
+    "preserves": [
+      "the-consumers-requested-model-and-messages",
+      "the-totality-of-outcome-completion-xor-refusal-never-a-hang"
+    ],
+    "hides": [
+      "the-client-supplied-api-key-and-bearer-header-construction",
+      "openrouters-own-rate-limiting-and-retry-behavior",
+      "provider-account-and-billing-state-which-remain-in-the-key-custodians-hands"
+    ],
+    "output": "completion-or-refusal-record",
+    "evidenceRequired": true
+  },
+  "evidencePolicy": {
+    "id": "openrouter-inference-exchange-evidence-policy",
+    "required": true,
+    "records": [
+      "an-exchange-record-in-content-exchanges-with-outcome-completion-or-refusal",
+      "the-completion-records-served-model-and-response-text-when-outcome-is-completion",
+      "the-refusal-records-stated-grounds-when-outcome-is-refusal",
+      "the-exchanges-cost-figure-for-the-chief-financial-officers-books"
+    ],
+    "time": "interval",
+    "caller": "required",
+    "boundaryObject": "full"
+  },
+  "energetics": [
+    {
+      "kind": "metroplat.energetic-obligation",
+      "id": "bounded-fuel",
+      "law": "total-correctness-under-a-fuel-bound",
+      "behavior": "Every exchange terminates — as completion or as refusal — inside a bounded wall-clock fuel budget; it never hangs, and it never returns an untyped failure.",
+      "source": "context-packet-and-client-key-received",
+      "target": "exchange-settled",
+      "invariant": "fuel-consumed-by-an-exchange-is-bounded-and-recorded",
+      "measure": "HTTP requests made and wall-clock seconds consumed per exchange, recorded on the exchange record",
+      "evidenceRequired": true
+    }
+  ],
+  "refinements": [
+    {
+      "id": "http-fetch-client-realizes-the-move",
+      "implementation": "lib/emsenn/services/561-group/services/red-cup-engineering/services/logical-inference-service-section/services/openrouter-inference-team/run-one-exchange.mjs (Node built-in fetch, Bearer aliases OPENROUTER_API_KEY/API_KEY_OPENROUTER, no vendored client)",
+      "refines": "tool",
+      "preserves": [
+        "the-completion-xor-refusal-totality",
+        "the-client-key-custody-rule-keeping-auth-material-in-the-contracting-clients-hands-and-out-of-every-record"
+      ]
+    }
+  ]
+}

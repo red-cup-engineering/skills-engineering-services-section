@@ -1,0 +1,55 @@
+{
+  "id": "exchange-20260719-013823-c6e0cc",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON with keys boundary,risks,protocol,tests. Design the smallest safe Unix-domain-socket carrier over an existing long-lived NDJSON inference broker. Facts: one process must own the sole shared scheduler and append-only journal; jobs are JSON objects with globally unique IDs; results settle asynchronously; durable completed IDs replay without provider spend; queue/seen sets are bounded; EOF/SIGTERM currently drains; malformed lines are contained; one process lock excludes another journal owner. Multiple autonomous colony clients must connect without launching the broker. The socket must remain host-local, preserve per-client result isolation, survive client disconnect after admission, prevent an untrusted client from shutting down the broker, and bound line bytes/connections/write buffers. Specify the minimal wire protocol and the four highest-risk acceptance tests. Do not propose HTTP, a global work pool, or per-client schedulers."
+      }
+    ],
+    "max-tokens": 320,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"boundary\": \"The socket acts as an IPC proxy layer, mediating requests between local client file descriptors and the central broker's journal loop, restricted to a single host filesystem path.\",\n  \"risks\": [\n    \"Resource exhaustion via unbounded client connection backlog\",\n    \"Buffer overflow from oversized NDJSON payloads\",\n    \"Denial of service through socket blocking during journal I/O stalls\",\n    \"Unauthorized client escalation if socket permissions are incorrectly scoped\"\n  ],\n  \"protocol\": {\n    \"handshake\": \"Client sends AUTH_TOKEN; Broker responds with ACK or ERR\",\n    \"frame\": \"Length-prefixed NDJSON payload: [4-byte uint32 LE length][JSON payload]\",\n    \"header\": \"Each frame must include a 'client_id' field for isolated result routing\",\n    \"limit\": \"Max 64KB per NDJSON frame; max 10 concurrent connections\"\n  },\n  \"tests\": [\n    \"Verify broker remains operational when a client attempts to flood the socket with malformed NDJSON\",\n    \"Verify result isolation by confirming client A cannot read results belonging to client B\",\n    \"Verify graceful recovery when a client disconnects unexpectedly mid-write\",\n    \"Verify bounded resource usage by asserting memory stability during connection saturation\"\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"boundary\": \"The socket acts as an IPC proxy layer, mediating requests between local client file descriptors and the central broker's journal loop, restricted to a single host filesystem path.\",\n  \"risks\": [\n    \"Resource exhaustion via unbounded client connection backlog\",\n    \"Buffer overflow from oversized NDJSON payloads\",\n    \"Denial of service through socket blocking during journal I/O stalls\",\n    \"Unauthorized client escalation if socket permissions are incorrectly scoped\"\n  ],\n  \"protocol\": {\n    \"handshake\": \"Client sends AUTH_TOKEN; Broker responds with ACK or ERR\",\n    \"frame\": \"Length-prefixed NDJSON payload: [4-byte uint32 LE length][JSON payload]\",\n    \"header\": \"Each frame must include a 'client_id' field for isolated result routing\",\n    \"limit\": \"Max 64KB per NDJSON frame; max 10 concurrent connections\"\n  },\n  \"tests\": [\n    \"Verify broker remains operational when a client attempts to flood the socket with malformed NDJSON\",\n    \"Verify result isolation by confirming client A cannot read results belonging to client B\",\n    \"Verify graceful recovery when a client disconnects unexpectedly mid-write\",\n    \"Verify bounded resource usage by asserting memory stability during connection saturation\"\n  ]\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPwREpONDcbLOiApS1DWKuvO/iZIGAlqdHEIJt1s0RS4UTEo9QidC20x0i0KcK"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784425106,
+      "id": "kSpcas78Fe6U_uMPvI-EsAM",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 284,
+        "prompt_tokens": 185,
+        "total_tokens": 469
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.77,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

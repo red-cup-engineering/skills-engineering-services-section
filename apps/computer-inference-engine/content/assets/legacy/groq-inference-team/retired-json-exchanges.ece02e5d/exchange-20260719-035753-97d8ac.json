@@ -1,0 +1,64 @@
+{
+  "id": "exchange-20260719-035753-97d8ac",
+  "packet": {
+    "model": "llama-3.3-70b-versatile",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You output ONLY edit blocks, nothing else. Each edit block is EXACTLY:\n<<<<<<< SEARCH\n(exact existing lines, copied verbatim)\n=======\n(replacement lines)\n>>>>>>> REPLACE\nThe SEARCH text must match the file byte-for-byte. Include ONLY the exact lines you are changing plus minimal surrounding context — NEVER whole files, NEVER unchanged import lines. The REPLACE must not duplicate any line that already exists outside the SEARCH region."
+      },
+      {
+        "role": "user",
+        "content": "Bounty #2845\nregisterUser access token can reference a different user id\n## Bug\n\n`registerUser()` currently builds the returned `id` and the JWT `sub` with two separate `Date.now()` calls. If time advances between those calls, the API can return one user id while signing an access token for a different subject. Downstream authenticated requests would then identify a different user than the one returned by registration.\n\n## Expected fix\n\nGenerate the new user id once, return that id, and sign the access token with the same id as `sub`. Add a regression test that forces the timestamp to advance between calls and verifies the token subject matches the returned id.\n\n## Scope\n\nThis issue is limited to the registration response/token subject mismatch in `apps/api/src/services/authService.js` plus focused API service test coverage.\n\nThis issue is limited only to the creator of this issue. This means that only the issue author can attempt to solve this issue. If you would like to work on it, please create another issue with the same contents and refer to issue #743 for more information.\n\nReferences #743.\n\nFile apps/api/src/services/authService.js:\nimport { signAccessToken } from \"../utils/jwt.js\";\n\nexport async function registerUser(payload) {\n  // TODO: persist new user via Prisma\n  return {\n    id: `usr_${Date.now()}`,\n    email: payload.email,\n    role: payload.role,\n    token: signAccessToken({ sub: `usr_${Date.now()}`, role: payload.role })\n  };\n}\n\nexport async function loginUser(payload) {\n  // TODO: verify password hash against stored user record\n  return {\n    email: payload.email,\n    token: signAccessToken({ sub: \"usr_existing\", role: \"client\" })\n  };\n}\n\nexport async function refreshToken() {\n  return { token: signAccessToken({ sub: \"usr_existing\", role: \"client\" }) };\n}\n"
+      }
+    ],
+    "max-tokens": 900,
+    "params": {
+      "provider": "groq-inference-team"
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.3-70b-versatile",
+    "text": "<<<<<<< SEARCH\n  return {\n    id: `usr_${Date.now()}`,\n    email: payload.email,\n    role: payload.role,\n    token: signAccessToken({ sub: `usr_${Date.now()}`, role: payload.role })\n  };\n>>>>>>> REPLACE\n=======\n\n  const newUserId = `usr_${Date.now()}`;\n  return {\n    id: newUserId,\n    email: payload.email,\n    role: payload.role,\n    token: signAccessToken({ sub: newUserId, role: payload.role })\n  };\n>>>>>>> REPLACE",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-2cd10550-dbfd-42e6-a9a5-3c13cea0d3f8",
+      "object": "chat.completion",
+      "created": 1784433475,
+      "model": "llama-3.3-70b-versatile",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "<<<<<<< SEARCH\n  return {\n    id: `usr_${Date.now()}`,\n    email: payload.email,\n    role: payload.role,\n    token: signAccessToken({ sub: `usr_${Date.now()}`, role: payload.role })\n  };\n>>>>>>> REPLACE\n=======\n\n  const newUserId = `usr_${Date.now()}`;\n  return {\n    id: newUserId,\n    email: payload.email,\n    role: payload.role,\n    token: signAccessToken({ sub: newUserId, role: payload.role })\n  };\n>>>>>>> REPLACE"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.00832861,
+        "prompt_tokens": 510,
+        "prompt_time": 0.030116344,
+        "completion_tokens": 109,
+        "completion_time": 0.227237046,
+        "total_tokens": 619,
+        "total_time": 0.25735339
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_43d97c5965",
+      "x_groq": {
+        "id": "req_01kxw8bz8hf1nb2a8npt2q25bf",
+        "seed": 1647515518
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.401,
+    "denomination": "groq-api-requests"
+  }
+}

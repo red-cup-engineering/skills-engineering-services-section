@@ -1,0 +1,93 @@
+{
+  "id": "exchange-20260725-170622-f013aa",
+  "recordedAt": "2026-07-25T17:07:21.150Z",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You classify short excerpts of messages sent by 'the Leader' of an organization to an AI assistant.\nFor EACH input message, decide whether it contains one or more standing DEMANDS: an actionable instruction, correction, or requirement the Leader wants acted on — not idle conversation, not a question answered elsewhere, not praise.\nA single message may contain zero, one, or several distinct demands.\nRespond with ONLY a JSON object of the exact shape:\n{\"results\":[{\"i\":<input index>,\"candidates\":[{\"isDemand\":true,\"demand\":\"<concise imperative restatement, quoting key phrases where useful>\",\"class\":\"repair|verify|define|deploy|policy\",\"target\":\"<the system/thing/process the demand targets, or null>\"}]}]}\nInclude one entry in \"results\" for every input index, in order, even when \"candidates\" is an empty array.\nclass must be exactly one of: repair (fix something broken), verify (check/confirm/test something), define (specify/design/document something), deploy (ship/install/turn something on), policy (establish a standing rule or process).\nNever include any key other than isDemand, demand, class, target on a candidate object. Never wrap the JSON in prose or code fences."
+      },
+      {
+        "role": "user",
+        "content": "{\"messages\":[{\"i\":0,\"text\":\"I need an AI engineer's explanation of how you were able to fail at your assigned tasks in this repository so phenomenally, please, and a suggestion for whiat needs to be changed to prevent this from recurring the next time someone asks you to write research. We literally paid $5k for that markdown file that you almost didn't even write, and I bet? when you did write it? it still has a bunch of shit missing that you already paid to learn\"},{\"i\":1,\"text\":\"TAKE WHAT CONTEXT IS IN YOUR HEAD AND PUT IT INTO A MARKDOWN FILE FORMATTED LIKE A FUCKING RESEARCH PAPER.\\n\\nDO NOTHING LESS.\"},{\"i\":2,\"text\":\"OH MMY GOD\\n\\nNO\\n\\nTAKE THE CONTEXT YOU HAVE\\n\\nPUT IT IN THE NOTE YOU HAVE\\n\\nCONTEXT YOU HAVE\\n\\nNOTE YOU HAVE\\n\\nNO INVENTION\\n\\nDO IT NOW\"},{\"i\":3,\"text\":\"NOT RANDOM BIBLIOGRTAPHICALJDFKS:KFSDJK:L CRAP\\n\\nREAD THE NOTE\\n\\nWHAT IS IN YOUR CONTEXT ABOUT *****OUR****** MATH AND CONCEPTS THAT IS NOT IN THE NOTE?\\n\\nLIST NOW IN CHAT ALL MISSING THINGS THATA RE IN YOUR CONTEXT WIONDOW\"},{\"i\":4,\"text\":\"THAT IS EXACTLY WHAT NEEDS TO BE IN THE FUCKING NOTE.\\n\\nALL  OF IT\\n\\nNOT ANYTHING LESS THAN ALL OF IT\\n\\nTHAT IS LITERALLY WHAT I KEEP SAYING EVERY FUCKING PROMTP\"},{\"i\":5,\"text\":\"I want you to find all our prior reearch deep in the repo on openclaw and other agentic platforms and produce a new note synthesizing them into one note for today please\"},{\"i\":6,\"text\":\"In this session our goal is to act as the White Army of the Union, doing wahtever forceful action is necssary to get us into Harmony.\\n\\nGo study the notes today about allosteric governance and other notes from today, to see what we mean by harmony.\"},{\"i\":7,\"text\":\"resume sorry\"},{\"i\":8,\"text\":\"THIS WHOLE CODEBASE IS EARLY ALPHA AND EXPERIMENTAL AND YOU NEED TO DO WHAT I SAY TO REPAIR IT BECEAUSE IT IS BROKEN OKAY!?\"},{\"i\":9,\"text\":\"delete all empty dir in repo, or at least the ones that are obviously just traash\"},{\"i\":10,\"text\":\"so much shit is in the wrong spot. okay?\\n\\nand named bad\\n\\nand built tbh bad\\n\\ngiant megapackages that are hyperfocused on proving one capability and not doing anything smart\\n\\nlib/emsenn/services/561-group/services/assay-cloudflare-ingress\\n\\nthis\\n\\nneeds to be disambiguated into the actual capabilities it is\\n\\n\\nprobably here somewhere?\\n\\nlib/emsenn/services/561-group/services/red-cup-engineering/services/software-services-section/web-services-section/services\\n\\nbut also renamed to be less stupid like\\n\\ncloudflare-services-section ???\\n\\nI dunno cause i can't tell based on the current name\\n\\nand we might nee dto break it up into more modular of sections\"},{\"i\":11,\"text\":\"Read the notes from today and what we're doing is we're stabilizing on the idea of \\\"CapabilityCells\\\" being the thing that we're carrying acrsos activitypub and blockchain\\n\\nThe concepts are hella high level and non metaphoric so really take your time with it please.\"}]}"
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "text": "{\"results\":[{\"i\":0,\"candidates\":[{\"isDemand\":true,\"demand\":\"Provide an AI engineer's explanation of failures in assigned tasks and suggest changes to prevent recurrence\",\"class\":\"define\",\"target\":\"task performance documentation\"},{\"isDemand\":true,\"demand\":\"List missing content in the markdown file that should be included\",\"class\":\"verify\",\"target\":\"markdown file completeness\"}]},{\"i\":1,\"candidates\":[{\"isDemand\":true,\"demand\":\"Put all context into a markdown file formatted like a research paper\",\"class\":\"deploy\",\"target\":\"markdown file formatting\"}]},{\"i\":2,\"candidates\":[{\"isDemand\":true,\"demand\":\"Take context from your head and put it in the note you have, do it now\",\"class\":\"deploy\",\"target\":\"note content\"}]},{\"i\":3,\"candidates\":[{\"isDemand\":true,\"demand\":\"Read the note and list what in your context about our math and concepts is not in the note\",\"class\":\"verify\",\"target\":\"note completeness for math and concepts\"}]},{\"i\":4,\"candidates\":[{\"isDemand\":true,\"demand\":\"Put all of the missing things into the fucking note, nothing less than all of it\",\"class\":\"repair\",\"target\":\"note completeness\"}]},{\"i\":5,\"candidates\":[{\"isDemand\":true,\"demand\":\"Find all prior research on openclaw and other agentic platforms and produce a new synthesized note\",\"class\":\"deploy\",\"target\":\"synthesized research note\"}]},{\"i\":6,\"candidates\":[{\"isDemand\":true,\"demand\":\"Study the notes today about allosteric governance to understand what we mean by harmony\",\"class\":\"verify\",\"target\":\"understanding of allosteric governance notes\"}]},{\"i\":7,\"candidates\":[]},{\"i\":8,\"candidates\":[{\"isDemand\":true,\"demand\":\"Do what I say to repair the codebase because it is broken\",\"class\":\"repair\",\"target\":\"codebase\"}]},{\"i\":9,\"candidates\":[{\"isDemand\":true,\"demand\":\"Delete all empty directories in the repo that are obviously trash\",\"class\":\"repair\",\"target\":\"empty directories\"}]},{\"i\":10,\"candidates\":[{\"isDemand\":true,\"demand\":\"Disambiguate and rename the hyperfocused megapackage into smaller modular sections\",\"class\":\"repair\",\"target\":\"package organization and naming\"}]},{\"i\":11,\"candidates\":[{\"isDemand\":true,\"demand\":\"Read the notes about allosteric governance and CapabilityCells to stabilize on those concepts\",\"class\":\"define\",\"target\":\"CapabilityCells concept understanding\"}]}]}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "gen-1784999184-bVUPwO2W3HwTOW1L5puv",
+      "object": "chat.completion",
+      "created": 1784999184,
+      "model": "poolside/laguna-xs-2.1:free",
+      "provider": "Poolside",
+      "system_fingerprint": null,
+      "service_tier": null,
+      "choices": [
+        {
+          "index": 0,
+          "logprobs": null,
+          "finish_reason": "stop",
+          "native_finish_reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": "{\"results\":[{\"i\":0,\"candidates\":[{\"isDemand\":true,\"demand\":\"Provide an AI engineer's explanation of failures in assigned tasks and suggest changes to prevent recurrence\",\"class\":\"define\",\"target\":\"task performance documentation\"},{\"isDemand\":true,\"demand\":\"List missing content in the markdown file that should be included\",\"class\":\"verify\",\"target\":\"markdown file completeness\"}]},{\"i\":1,\"candidates\":[{\"isDemand\":true,\"demand\":\"Put all context into a markdown file formatted like a research paper\",\"class\":\"deploy\",\"target\":\"markdown file formatting\"}]},{\"i\":2,\"candidates\":[{\"isDemand\":true,\"demand\":\"Take context from your head and put it in the note you have, do it now\",\"class\":\"deploy\",\"target\":\"note content\"}]},{\"i\":3,\"candidates\":[{\"isDemand\":true,\"demand\":\"Read the note and list what in your context about our math and concepts is not in the note\",\"class\":\"verify\",\"target\":\"note completeness for math and concepts\"}]},{\"i\":4,\"candidates\":[{\"isDemand\":true,\"demand\":\"Put all of the missing things into the fucking note, nothing less than all of it\",\"class\":\"repair\",\"target\":\"note completeness\"}]},{\"i\":5,\"candidates\":[{\"isDemand\":true,\"demand\":\"Find all prior research on openclaw and other agentic platforms and produce a new synthesized note\",\"class\":\"deploy\",\"target\":\"synthesized research note\"}]},{\"i\":6,\"candidates\":[{\"isDemand\":true,\"demand\":\"Study the notes today about allosteric governance to understand what we mean by harmony\",\"class\":\"verify\",\"target\":\"understanding of allosteric governance notes\"}]},{\"i\":7,\"candidates\":[]},{\"i\":8,\"candidates\":[{\"isDemand\":true,\"demand\":\"Do what I say to repair the codebase because it is broken\",\"class\":\"repair\",\"target\":\"codebase\"}]},{\"i\":9,\"candidates\":[{\"isDemand\":true,\"demand\":\"Delete all empty directories in the repo that are obviously trash\",\"class\":\"repair\",\"target\":\"empty directories\"}]},{\"i\":10,\"candidates\":[{\"isDemand\":true,\"demand\":\"Disambiguate and rename the hyperfocused megapackage into smaller modular sections\",\"class\":\"repair\",\"target\":\"package organization and naming\"}]},{\"i\":11,\"candidates\":[{\"isDemand\":true,\"demand\":\"Read the notes about allosteric governance and CapabilityCells to stabilize on those concepts\",\"class\":\"define\",\"target\":\"CapabilityCells concept understanding\"}]}]}",
+            "refusal": null,
+            "reasoning": "Let me analyze each message to determine if it contains standing demands.\n\nMessage i:0 - This is a demand. The leader is asking for an explanation of failures and suggestions for changes. It's an actionable instruction about what needs to be done to prevent recurring failures.\n\nMessage i:1 - This is clearly a demand. \"TAKE WHAT CONTEXT IS IN YOUR HEAD AND PUT IT INTO A MARKDOWN FILE FORMATTED LIKE A FUCKING RESEARCH PAPER. DO NOTHING LESS.\" This is an imperative instruction to create a markdown file.\n\nMessage i:2 - This is a demand. \"TAKE THE CONTEXT YOU HAVE... PUT IT IN THE NOTE YOU HAVE... DO IT NOW\" - imperative instructions to put context into a note.\n\nMessage i:3 - This is a demand. Asking to read a note and list missing things from context. It's asking for specific information to be provided.\n\nMessage i:4 - This is a demand. \"ALL OF IT. NOT ANYTHING LESS THAN ALL OF IT\" - reiterating what should be in the note.\n\nMessage i:5 - This is a demand. \"I want you to find all our prior research... and produce a new note synthesizing them\" - asking for research and synthesis.\n\nMessage i:6 - This is a demand. \"Go study the notes today about allosteric governance\" - asking to study specific notes.\n\nMessage i:7 - \"resume sorry\" - This appears to be a response or continuation, not a demand.\n\nMessage i:8 - This is a demand. \"YOU NEED TO DO WHAT I SAY TO REPAIR IT\" - imperative instruction to fix the codebase.\n\nMessage i:9 - This is a demand. \"delete all empty dir in repo\" - specific instruction to delete directories.\n\nMessage i:10 - This is a demand. Asking to disambiguate and rename packages - specific organizational tasks.\n\nMessage i:11 - This is a demand. \"Read the notes from today and what we're doing is we're stabilizing on the idea of 'CapabilityCells'\" - instructing to read and understand concepts.\n\n\nI'll categorize the demands based on their specific actions and requirements. The demands span various tasks from file creation to research synthesis, each representing a clear instruction from the leader.\n\nThe verification demand focuses on comparing contextual information between different sources, requiring a systematic comparison of existing materials. This involves examining notes and identifying any discrepancies or missing elements in the current documentation.\n\nThe policy demand suggests establishing a structured approach to knowledge management and information sharing, emphasizing the importance of comprehensive documentation and precise communication protocols.\n\nThe deployment and repair demands highlight the need for immediate action to resolve existing codebase issues, indicating a proactive approach to maintaining system integrity and functionality.",
+            "reasoning_details": [
+              {
+                "type": "reasoning.text",
+                "text": "Let me analyze each message to determine if it contains standing demands.\n\nMessage i:0 - This is a demand. The leader is asking for an explanation of failures and suggestions for changes. It's an actionable instruction about what needs to be done to prevent recurring failures.\n\nMessage i:1 - This is clearly a demand. \"TAKE WHAT CONTEXT IS IN YOUR HEAD AND PUT IT INTO A MARKDOWN FILE FORMATTED LIKE A FUCKING RESEARCH PAPER. DO NOTHING LESS.\" This is an imperative instruction to create a markdown file.\n\nMessage i:2 - This is a demand. \"TAKE THE CONTEXT YOU HAVE... PUT IT IN THE NOTE YOU HAVE... DO IT NOW\" - imperative instructions to put context into a note.\n\nMessage i:3 - This is a demand. Asking to read a note and list missing things from context. It's asking for specific information to be provided.\n\nMessage i:4 - This is a demand. \"ALL OF IT. NOT ANYTHING LESS THAN ALL OF IT\" - reiterating what should be in the note.\n\nMessage i:5 - This is a demand. \"I want you to find all our prior research... and produce a new note synthesizing them\" - asking for research and synthesis.\n\nMessage i:6 - This is a demand. \"Go study the notes today about allosteric governance\" - asking to study specific notes.\n\nMessage i:7 - \"resume sorry\" - This appears to be a response or continuation, not a demand.\n\nMessage i:8 - This is a demand. \"YOU NEED TO DO WHAT I SAY TO REPAIR IT\" - imperative instruction to fix the codebase.\n\nMessage i:9 - This is a demand. \"delete all empty dir in repo\" - specific instruction to delete directories.\n\nMessage i:10 - This is a demand. Asking to disambiguate and rename packages - specific organizational tasks.\n\nMessage i:11 - This is a demand. \"Read the notes from today and what we're doing is we're stabilizing on the idea of 'CapabilityCells'\" - instructing to read and understand concepts.\n\n\nI'll categorize the demands based on their specific actions and requirements. The demands span various tasks from file creation to research synthesis, each representing a clear instruction from the leader.\n\nThe verification demand focuses on comparing contextual information between different sources, requiring a systematic comparison of existing materials. This involves examining notes and identifying any discrepancies or missing elements in the current documentation.\n\nThe policy demand suggests establishing a structured approach to knowledge management and information sharing, emphasizing the importance of comprehensive documentation and precise communication protocols.\n\nThe deployment and repair demands highlight the need for immediate action to resolve existing codebase issues, indicating a proactive approach to maintaining system integrity and functionality.",
+                "format": "unknown",
+                "index": 0
+              }
+            ]
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1040,
+        "completion_tokens": 1089,
+        "total_tokens": 2129,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 570,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.773718629,
+    "denomination": "openrouter-api-requests"
+  },
+  "usage": {
+    "input": {
+      "quantity": 1040,
+      "denomination": "openrouter-tokens-in"
+    },
+    "output": {
+      "quantity": 1089,
+      "denomination": "openrouter-tokens-out"
+    }
+  }
+}

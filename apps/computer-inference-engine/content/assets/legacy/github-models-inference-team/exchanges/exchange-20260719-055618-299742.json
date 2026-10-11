@@ -1,0 +1,133 @@
+{
+  "id": "exchange-20260719-055618-299742",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design deterministic repository observation and context selection so workers can navigate a huge unfamiliar repository without dumping the whole tree into prompts.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gpt-4o-mini-2024-07-18",
+    "text": "{\n  \"absentFeatures\": [\n    \"Autonomous intake and decomposition of repository structures\",\n    \"Dynamic tool navigation and isolation\",\n    \"Integration of feedback and context switching for unfamiliar repositories\",\n    \"Memory-based contextual learning across sessions\"\n  ],\n  \"design\": {\n    \"deterministicObservation\": {\n      \"repositoryScan\": {\n        \"parameters\": {\n          \"maxDepth\": 3,\n          \"fileTypes\": [\"code\", \"documentation\", \"configuration\"],\n          \"excludePatterns\": [\"test\", \"build\"]\n        },\n        \"output\": \"structuredRepresentation\"\n      },\n      \"contextSelection\": {\n        \"selectionCriteria\": {\n          \"relevanceScore\": {\n            \"function\": \"calculateRelevance\",\n            \"parameters\": {\n              \"userIntent\": \"input\",\n              \"repositoryMetadata\": \"repositoryScan.output\"\n            }\n          },\n          \"threshold\": 0.5\n        },\n        \"output\": \"selectedContexts\"\n      }\n    },\n    \"workerNavigation\": {\n      \"contextRetrieval\": {\n        \"mechanism\": \"fetch\",\n        \"parameters\": {\n          \"selectedContexts\": \"contextSelection.output\"\n        },\n        \"output\": \"contextualPrompt\"\n      },\n      \"executionFlow\": {\n        \"steps\": [\n          \"executeToolSelection\",\n          \"applyContextToTool\",\n          \"performAction\",\n          \"collectFeedback\"\n        ],\n        \"feedbackIncorporation\": {\n          \"mechanism\": \"mapFeedbackToContext\",\n          \"parameters\": {\n            \"feedback\": \"userInput\",\n            \"context\": \"contextualPrompt\"\n          }\n        }\n      }\n    }\n  },\n  \"stateTransitions\": {\n    \"initialScan\": \"repositoryScan -> structuredRepresentation\",\n    \"contextRank\": \"repositoryScan.output -> calculateRelevance -> selectedContexts\",\n    \"contextPrompt\": \"selectedContexts -> fetch -> contextualPrompt\",\n    \"executeAction\": \"contextualPrompt -> executeFlow -> collectFeedback\"\n  },\n  \"verificationRules\": {\n    \"contextValidity\": {\n      \"condition\": \"if relevanceScore > threshold\",\n      \"output\": \"context is valid for navigation\"\n    },\n    \"executionIntegrity\": {\n      \"condition\": \"if feedback incorporated successfully\",\n      \"output\": \"action confirmed and context updated\"\n    }\n  },\n  \"verticalSlice\": {\n    \"task\": \"navigate unfamiliar repository\",\n    \"path\": [\n      \"repositoryScan\",\n      \"contextSelection\",\n      \"contextRetrieval\",\n      \"executionFlow\"\n    ],\n    \"output\": \"validated actions within repository context\"\n  }\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "annotations": [],
+            "content": "{\n  \"absentFeatures\": [\n    \"Autonomous intake and decomposition of repository structures\",\n    \"Dynamic tool navigation and isolation\",\n    \"Integration of feedback and context switching for unfamiliar repositories\",\n    \"Memory-based contextual learning across sessions\"\n  ],\n  \"design\": {\n    \"deterministicObservation\": {\n      \"repositoryScan\": {\n        \"parameters\": {\n          \"maxDepth\": 3,\n          \"fileTypes\": [\"code\", \"documentation\", \"configuration\"],\n          \"excludePatterns\": [\"test\", \"build\"]\n        },\n        \"output\": \"structuredRepresentation\"\n      },\n      \"contextSelection\": {\n        \"selectionCriteria\": {\n          \"relevanceScore\": {\n            \"function\": \"calculateRelevance\",\n            \"parameters\": {\n              \"userIntent\": \"input\",\n              \"repositoryMetadata\": \"repositoryScan.output\"\n            }\n          },\n          \"threshold\": 0.5\n        },\n        \"output\": \"selectedContexts\"\n      }\n    },\n    \"workerNavigation\": {\n      \"contextRetrieval\": {\n        \"mechanism\": \"fetch\",\n        \"parameters\": {\n          \"selectedContexts\": \"contextSelection.output\"\n        },\n        \"output\": \"contextualPrompt\"\n      },\n      \"executionFlow\": {\n        \"steps\": [\n          \"executeToolSelection\",\n          \"applyContextToTool\",\n          \"performAction\",\n          \"collectFeedback\"\n        ],\n        \"feedbackIncorporation\": {\n          \"mechanism\": \"mapFeedbackToContext\",\n          \"parameters\": {\n            \"feedback\": \"userInput\",\n            \"context\": \"contextualPrompt\"\n          }\n        }\n      }\n    }\n  },\n  \"stateTransitions\": {\n    \"initialScan\": \"repositoryScan -> structuredRepresentation\",\n    \"contextRank\": \"repositoryScan.output -> calculateRelevance -> selectedContexts\",\n    \"contextPrompt\": \"selectedContexts -> fetch -> contextualPrompt\",\n    \"executeAction\": \"contextualPrompt -> executeFlow -> collectFeedback\"\n  },\n  \"verificationRules\": {\n    \"contextValidity\": {\n      \"condition\": \"if relevanceScore > threshold\",\n      \"output\": \"context is valid for navigation\"\n    },\n    \"executionIntegrity\": {\n      \"condition\": \"if feedback incorporated successfully\",\n      \"output\": \"action confirmed and context updated\"\n    }\n  },\n  \"verticalSlice\": {\n    \"task\": \"navigate unfamiliar repository\",\n    \"path\": [\n      \"repositoryScan\",\n      \"contextSelection\",\n      \"contextRetrieval\",\n      \"executionFlow\"\n    ],\n    \"output\": \"validated actions within repository context\"\n  }\n}",
+            "refusal": null,
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784440581,
+      "id": "chatcmpl-E3EndbhfcFyXPw2Sr7M1EgMJg6YqS",
+      "model": "gpt-4o-mini-2024-07-18",
+      "object": "chat.completion",
+      "prompt_filter_results": [
+        {
+          "prompt_index": 0,
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          }
+        }
+      ],
+      "service_tier": "default",
+      "system_fingerprint": "fp_965c8b9ecf",
+      "usage": {
+        "completion_tokens": 525,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "latency_checkpoint": {
+          "engine_tbt_ms": 9,
+          "engine_ttft_ms": 43,
+          "engine_ttlt_ms": 4655,
+          "pre_inference_ms": 102,
+          "service_tbt_ms": 9,
+          "service_ttft_ms": 768,
+          "service_ttlt_ms": 5386,
+          "total_duration_ms": 5328,
+          "user_visible_ttft_ms": 667
+        },
+        "prompt_tokens": 354,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 879
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 5.898,
+    "denomination": "github-models-api-requests"
+  }
+}

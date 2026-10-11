@@ -1,0 +1,43 @@
+{
+  "type": "InferenceProviderDependencyDeploymentReceipt",
+  "profile": "org.emsenn.inference-provider-dependency-deployment-receipt.v1",
+  "recordedAt": "2026-08-29T21:40:00.000Z",
+  "customer": "urn:ame:bare-cedar-fog-codex",
+  "provider": "urn:ame:gemini-inference-team",
+  "settlement": "eip155:5615610:0x3ffa8ce2459902f2d07cd046359c69dff7841f23",
+  "dependencies": {
+    "rmnSemanticConformance": {
+      "url": "https://rmn-semantic-conformance-a2d7mjqbfa-uc.a.run.app/.well-known/agent-card.json",
+      "deployedContractMajor": 6
+    },
+    "witTransitionAssay": {
+      "url": "https://wit-transition-assay-a2d7mjqbfa-uc.a.run.app/.well-known/agent-card.json"
+    },
+    "rwilRdfProjection": {
+      "url": "https://rwil-rdf-services-a2d7mjqbfa-uc.a.run.app/.well-known/agent-card.json",
+      "service": "rwil-rdf-services",
+      "region": "us-central1",
+      "revision": "rwil-rdf-services-00008-ljb",
+      "imageDigest": "sha256:0ebec240eb3e344a782a6d92e939f99149c5e07135aede3c009c73c48c504260",
+      "trafficPercent": 100,
+      "taskStore": "/tmp/rwil-rdf/a2a/tasks"
+    }
+  },
+  "assay": {
+    "kind": "schema-bounded-live-mcp-assay",
+    "providerModel": "gemini-3.1-flash-lite",
+    "outcome": "candidate-pending-codex-acceptance",
+    "receipt": "ni:///sha-256;dcaCXYhRL1N0F-3CVZo7CaTsot_OQl3fSfRI0BhFRgs",
+    "expectedCandidate": {
+      "classification": "evidence-limit"
+    },
+    "observedCandidate": {
+      "classification": "evidence-limit"
+    }
+  },
+  "evidenceLimits": [
+    "The assay proves one bounded end-to-end settlement at the recorded time; it does not prove future free-tier capacity.",
+    "The RWIL revision is a compatibility carrier for the deployed public-A2A inference fleet, not the target ActivityPub-membrane architecture.",
+    "The provider candidate remains subject to explicit Codex receiver acceptance."
+  ]
+}

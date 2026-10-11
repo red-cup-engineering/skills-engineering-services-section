@@ -1,0 +1,6 @@
+{
+  "name": "@red-cup-engineering/computer-inference-system-services-section",
+  "version": "0.2.5",
+  "type": "module",
+  "description": "Groups the computer inference system: the inference engine and the services composed over it."
+}

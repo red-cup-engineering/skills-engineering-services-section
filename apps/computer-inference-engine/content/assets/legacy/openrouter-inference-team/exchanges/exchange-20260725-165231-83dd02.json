@@ -1,0 +1,93 @@
+{
+  "id": "exchange-20260725-165231-83dd02",
+  "recordedAt": "2026-07-25T16:52:43.950Z",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the Union's hired inference provider, dispatched by the leader-movement-team's demand->hire loop to JUDGE whether a piece of candidate text is a genuine definition of a named glossary term -- independently of whoever produced the candidate text; you did not author it. Decide: does the candidate text actually explain what the named term means (a real definition, however short or imperfect), or is it something else -- a refusal/non-answer (\"insufficient evidence\", \"I cannot determine\", \"the file does not yet exist\"), a raw data dump (JSON, a file/directory listing) rather than prose, an answer to a different question than \"what does this term mean\", or a self-referential answer about the responder itself rather than about the term? Return exactly one JSON object and nothing else: {\"verdict\":\"definition\"|\"non-answer\",\"reason\":\"<one short sentence>\"}. No markdown code fencing, no prose before or after the JSON object."
+      },
+      {
+        "role": "user",
+        "content": "Named term: enterprise\n\nCandidate text:\nThe provided grounding evidence is insufficient to determine if the union has an enterprise capable of handling the transfer of a domain to Cloudflare's nameservices. While the repository contains skills related to installing enterprises (e.g., `lib/management/skills/install-an-enterprise-in-claude.js`, `lib/management/skills/installing-an-enterprise-in-claude`, `lib/management/skills/installing-an-enterprise-in-codex`), the specific list of existing enterprises and their functional capabilities is not included in the provided paths."
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "text": "{\"verdict\":\"non-answer\",\"reason\":\"The candidate text does not define the term 'enterprise' but instead states insufficient evidence about specific enterprises related to a domain transfer, focusing on data gaps rather than explaining the term's meaning.\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "gen-1784998356-4TVzvuYr88Lcw7X4jGQX",
+      "object": "chat.completion",
+      "created": 1784998356,
+      "model": "poolside/laguna-xs-2.1:free",
+      "provider": "Poolside",
+      "system_fingerprint": null,
+      "service_tier": null,
+      "choices": [
+        {
+          "index": 0,
+          "logprobs": null,
+          "finish_reason": "stop",
+          "native_finish_reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": "{\"verdict\":\"non-answer\",\"reason\":\"The candidate text does not define the term 'enterprise' but instead states insufficient evidence about specific enterprises related to a domain transfer, focusing on data gaps rather than explaining the term's meaning.\"}",
+            "refusal": null,
+            "reasoning": "Okay, let's tackle this. The user wants to know if the candidate text is a genuine definition of the term \"enterprise.\" \n\nFirst, I need to look at the candidate text provided. The text says that the grounding evidence is insufficient to determine if the union has an enterprise capable of handling a domain transfer to Cloudflare. It mentions some skills related to installing enterprises in specific files but points out that the list of existing enterprises and their capabilities isn't included in the provided paths.\n\nSo, the question is: does this text actually define what \"enterprise\" means? The term \"enterprise\" here seems to be in the context of some organizational or technical capability, possibly related to a union's operations. \n\nLooking at the candidate text, it's discussing whether there's an enterprise (in this context, maybe a service or system) that can handle a domain transfer. However, the text doesn't explain what an \"enterprise\" is in general terms. Instead, it's talking about the insufficiency of evidence regarding specific enterprises related to the union's capabilities. \n\nThe candidate text is more about the lack of information rather than defining the term. It's not providing a definition of \"enterprise\" but rather stating that the available data doesn't confirm the existence of a specific enterprise. Therefore, it's not a definition but a non-answer or a statement about insufficient evidence. \n\nAdditionally, the text mentions specific file paths related to installing an enterprise, which might be part of a technical setup, but again, the definition of \"enterprise\" itself isn't provided. The focus is on the absence of information, not on explaining the term.\n\nSo, the verdict should be \"non-answer\" because the text doesn't define the term \"enterprise\" but instead comments on the lack of evidence regarding its existence in a specific context.",
+            "reasoning_details": [
+              {
+                "type": "reasoning.text",
+                "text": "Okay, let's tackle this. The user wants to know if the candidate text is a genuine definition of the term \"enterprise.\" \n\nFirst, I need to look at the candidate text provided. The text says that the grounding evidence is insufficient to determine if the union has an enterprise capable of handling a domain transfer to Cloudflare. It mentions some skills related to installing enterprises in specific files but points out that the list of existing enterprises and their capabilities isn't included in the provided paths.\n\nSo, the question is: does this text actually define what \"enterprise\" means? The term \"enterprise\" here seems to be in the context of some organizational or technical capability, possibly related to a union's operations. \n\nLooking at the candidate text, it's discussing whether there's an enterprise (in this context, maybe a service or system) that can handle a domain transfer. However, the text doesn't explain what an \"enterprise\" is in general terms. Instead, it's talking about the insufficiency of evidence regarding specific enterprises related to the union's capabilities. \n\nThe candidate text is more about the lack of information rather than defining the term. It's not providing a definition of \"enterprise\" but rather stating that the available data doesn't confirm the existence of a specific enterprise. Therefore, it's not a definition but a non-answer or a statement about insufficient evidence. \n\nAdditionally, the text mentions specific file paths related to installing an enterprise, which might be part of a technical setup, but again, the definition of \"enterprise\" itself isn't provided. The focus is on the absence of information, not on explaining the term.\n\nSo, the verdict should be \"non-answer\" because the text doesn't define the term \"enterprise\" but instead comments on the lack of evidence regarding its existence in a specific context.",
+                "format": "unknown",
+                "index": 0
+              }
+            ]
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 319,
+        "completion_tokens": 418,
+        "total_tokens": 737,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 370,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 2.4701521129999997,
+    "denomination": "openrouter-api-requests"
+  },
+  "usage": {
+    "input": {
+      "quantity": 319,
+      "denomination": "openrouter-tokens-in"
+    },
+    "output": {
+      "quantity": 418,
+      "denomination": "openrouter-tokens-out"
+    }
+  }
+}

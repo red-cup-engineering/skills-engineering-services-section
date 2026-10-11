@@ -1,0 +1,82 @@
+{
+  "id": "exchange-20260722-063722-7743a4",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"status\":{\"enum\":[\"ok\"],\"type\":\"string\"}},\"required\":[\"status\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:work-lot:lmt-cycle-5-v4-a2a-consideration-close-canary-unqualified\",\"producer\":\"urn:ame:inference-work-lot-service\"},\"context\":{\"objective\":\"Return exactly one JSON object whose status field is the string ok.\",\"suppliedContext\":\"Live post-cutover economic-close canary. Return only JSON matching the supplied schema: {\\\"status\\\":\\\"ok\\\"}.\",\"desiredUse\":\"customer-side validation of automatic post-assay consideration closure\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:work-lot:lmt-cycle-5-v4-a2a-consideration-close-canary-unqualified\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"inquiry\",\"executionBounds\":{\"maximumOutputTokens\":64,\"sourceMeasures\":{\"words\":12,\"characters\":104}},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"status\":{\"enum\":[\"ok\"],\"type\":\"string\"}},\"required\":[\"status\"],\"type\":\"object\"}}}"
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "text": "{\"status\":\"ok\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "gen-1784702240-8MUqVQ389XXz1ex7r62t",
+      "object": "chat.completion",
+      "created": 1784702240,
+      "model": "poolside/laguna-xs-2.1:free",
+      "provider": "Poolside",
+      "system_fingerprint": null,
+      "service_tier": null,
+      "choices": [
+        {
+          "index": 0,
+          "logprobs": null,
+          "finish_reason": "stop",
+          "native_finish_reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": "{\"status\":\"ok\"}",
+            "refusal": null,
+            "reasoning": "Alright, let me try to figure this out. The user provided a bunch of data, and the main task is to return exactly one JSON object with the status \"ok\". The schema they want is simple: {\"status\": \"ok\"}, and nothing else. \n\nFirst, I need to check if there are any other constraints or requirements. The context mentions a \"live post-cutover economic-close canary\" and that the output should be only JSON matching the supplied schema. The boundary conditions say not to claim truth or customer acceptance, so I should just stick to the schema.\n\nThe residue mentions it's a CodexBoundedInferenceWorkResidue, but that might not affect the output directly. The key is to ensure the JSON is valid and matches the schema exactly. Since the schema allows only the \"status\" field with the value \"ok\", I need to make sure there are no extra fields or typos.\n\nI should also consider the maximum output tokens, but since the example is short, it's within the 64 limit. So the correct response is simply {\"status\":\"ok\"}. I need to present this as a JSON object without any additional text or formatting. Let me double-check that there are no other properties required and that the \"status\" is indeed in the enum [\"ok\"]. Once confirmed, output that JSON.",
+            "reasoning_details": [
+              {
+                "type": "reasoning.text",
+                "text": "Alright, let me try to figure this out. The user provided a bunch of data, and the main task is to return exactly one JSON object with the status \"ok\". The schema they want is simple: {\"status\": \"ok\"}, and nothing else. \n\nFirst, I need to check if there are any other constraints or requirements. The context mentions a \"live post-cutover economic-close canary\" and that the output should be only JSON matching the supplied schema. The boundary conditions say not to claim truth or customer acceptance, so I should just stick to the schema.\n\nThe residue mentions it's a CodexBoundedInferenceWorkResidue, but that might not affect the output directly. The key is to ensure the JSON is valid and matches the schema exactly. Since the schema allows only the \"status\" field with the value \"ok\", I need to make sure there are no extra fields or typos.\n\nI should also consider the maximum output tokens, but since the example is short, it's within the 64 limit. So the correct response is simply {\"status\":\"ok\"}. I need to present this as a JSON object without any additional text or formatting. Let me double-check that there are no other properties required and that the \"status\" is indeed in the enum [\"ok\"]. Once confirmed, output that JSON.",
+                "format": "unknown",
+                "index": 0
+              }
+            ]
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 344,
+        "completion_tokens": 276,
+        "total_tokens": 620,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 270,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 6.7001516080000005,
+    "denomination": "openrouter-api-requests"
+  }
+}

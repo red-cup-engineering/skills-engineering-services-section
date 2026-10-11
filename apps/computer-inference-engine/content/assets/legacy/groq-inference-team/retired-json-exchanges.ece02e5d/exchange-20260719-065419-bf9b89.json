@@ -1,0 +1,66 @@
+{
+  "id": "exchange-20260719-065419-bf9b89",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an autonomous software worker operating an isolated copy of one admitted territory. Invoke exactly one tool per response using the contracted JSON. Available actions:\nlist_files {path?,max?}; search {query,path?}; read {path,startLine?,endLine?}; edit {path,blocks}; command {name}; test {}; finish {summary?}.\nInclude only the arguments used by the selected action. For edit, blocks must be exact SEARCH/REPLACE blocks: <<<<<<< SEARCH, exact old text, =======, replacement, >>>>>>> REPLACE. You have no shell. Inspect before editing. Make the smallest correct change. The host automatically runs the declared verification after every edit. Never claim success without a passing verification result."
+      },
+      {
+        "role": "user",
+        "content": "OBJECTIVE: Add a deterministic regression test proving that runMission stops contracting later inference waves as soon as minVerifiedCandidates is satisfied. The test must use an injected dispatch function, produce one verification-passing edit, configure more maximum rounds than are needed, and assert the actual wave count or dispatch count so unnecessary future inference spending is detected.\n\nCONSTRAINTS: Change tests only; the early-quorum implementation already exists.; Do not weaken or remove existing assertions.; Keep the test deterministic and provider-free by using an injected dispatch function.; Assert that no inference wave after the first verified candidate is dispatched.\n\nDECLARED VERIFICATION: node --test test/mission-runtime.test.mjs\n\nOBJECTIVE ACCEPTANCE: node --test test/mission-runtime.test.mjs\n\nNo commands beyond test/acceptance are admitted.\n\nTERRITORY FILES (complete): README.md, bin/run-mission.mjs, bin/run-program.mjs, bin/run-worker.mjs, bin/submit-mission.mjs, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum.json, data/mission-queue/workers/worker-2.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json, data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl, package.json, src/agent-tools.mjs, src/context.mjs, src/edits.mjs, src/escalate.mjs, src/executor.mjs, src/fabric-client.mjs, src/inference.mjs, src/mission-queue.mjs, src/mission-runtime.mjs, src/program-runtime.mjs, src/resolvers.mjs, src/solve-loop.mjs, src/trajectory-memory.mjs, test/agent-tools.test.mjs, test/edits.test.mjs, test/executor.test.mjs, test/mission-queue.test.mjs, test/mission-runtime.test.mjs, test/program-runtime.test.mjs, test/solve-loop.test.mjs\n\nRECALLED VERIFIED TRAJECTORIES: [{\"similarity\":0.11805626722019105,\"objective\":\"Repair the real resource leak demonstrated by the failing executor test: applyUnifiedDiff must retire every temporary patch directory on both successful and refused git-apply paths without changing its public return contract.\",\"changedPaths\":[\"src/executor.mjs\"],\"rounds\":8,\"usefulCompletions\":17,\"summary\":\"actor 2 produced a verification-passing candidate\",\"taskClass\":\"temporary-resource-lifecycle-repair\",\"trajectoryFingerprint\":\"9a8150d384d12bc76f8fa1b5155dda2582f5b3efa7ab2431e2aeb06dd0729881\",\"verifiedActions\":[{\"action\":\"list_files\",\"args\":{\"path\":\"src\"},\"reason\":\"provider selected this next tool move\"},{\"action\":\"read\",\"args\":{\"path\":\"src/executor.mjs\"},\"reason\":\"provider selected this next tool move\"},{\"action\":\"edit\",\"args\":{\"path\":\"src/executor.mjs\",\"blocks\":[{\"search\":\"import { writeFileSync, mkdtempSync } from \\\"node:fs\\\";\\nimport { tmpdir } from \\\"node:os\\\";\",\"replace\":\"import { writeFileSync, mkdtempSync, rmSync } from \\\"node:fs\\\";\\nimport { tmpdir } from \\\"node:os\\\";\"},{\"search\":\"  const res = spawnSync(\\\"git\\\", [\\\"-C\\\", workdir, \\\"apply\\\", \\\"--3way\\\", \\\"--whitespace=nowarn\\\", patchFile], { encoding: \\\"utf8\\\" });\\n  if (res.status === 0) return { ok: true };\\n  return { ok: false, error: (res.stderr || res.stdout || `git apply exited ${res.status}`).trim() };\\n}\",\"replace\":\"  const res = spawnSync(\\\"git\\\", [\\\"-C\\\", workdir, \\\"apply\\\", \\\"--3way\\\", \\\"--whitespace=nowarn\\\", patchFile], { encoding: \\\"utf8\\\" });\\n  rmSync(dir, { recursive: true, force: true });\\n  if (res.status === 0) return { ok: true };\\n  return { ok: false, error: (res.stderr || res.stdout || `git apply exited ${res.status}`).trim() };\\n}\"}]},\"reason\":\"provider selected this next tool move\"}]}]\n\nObservation 1: {\"error\":\"path escapes the admitted territory\"}"
+      }
+    ],
+    "max-tokens": 1000,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"action\": \"search\",\n   \"query\": \"injection dispatch function\",\n   \"path\": \"src/mission-runtime.mjs\"\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-088d4feb-da84-4336-bf7f-777c8e10e217",
+      "object": "chat.completion",
+      "created": 1784444060,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"action\": \"search\",\n   \"query\": \"injection dispatch function\",\n   \"path\": \"src/mission-runtime.mjs\"\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.007615518,
+        "prompt_tokens": 1212,
+        "prompt_time": 0.122406795,
+        "completion_tokens": 31,
+        "completion_time": 0.068814549,
+        "total_tokens": 1243,
+        "total_time": 0.191221344
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01kxwjf0mde6es5pkjv1e29q0r",
+        "seed": 1747187526
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.324,
+    "denomination": "groq-api-requests"
+  }
+}

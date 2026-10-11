@@ -1,0 +1,133 @@
+{
+  "id": "exchange-20260719-173851-9871c0",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return only JSON matching the schema. Examine category boundaries: deterministic derivation versus model inference, provider output versus customer assay, and EVM commitment versus truth."
+      },
+      {
+        "role": "user",
+        "content": "Given this mechanism: witnessed token/claim work and capability lots; FCA derives deterministic-service cover; compatible positive-integer ActivityStreams offers are ranked; an EVM Chu-Hoare seam binds the selected provider actor; provider returns a result; a customer-owned assayer independently accepts or withholds it; an effect receipt commits the customer assay; only typed no-cover residue can reach a language model, whose output remains pending customer assay. Finance and keccak256 both close through scripts with zero model calls, and repeated Finance runs assign a witnessed amortization claim to the work-class token. JSON is a replay projection, not authority. State whether the boundaries are preserved and list up to three residual risks. Do not suggest global orchestration or model-first dispatch."
+      }
+    ],
+    "max-tokens": 700,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gpt-4o-mini-2024-07-18",
+    "text": "{\n  \"boundariesPreserved\": true,\n  \"residualRisks\": [\n    {\n      \"risk\": \"Incorrect acceptance or withholding of results by the customer-owned assayer, leading to disputes or misinterpretations of the claimed outcomes.\"\n    },\n    {\n      \"risk\": \"Potential misalignment between the deterministic-service cover derived by FCA and the actual service provided by the selected provider actor, resulting in coverage gaps.\"\n    },\n    {\n      \"risk\": \"Possible failure of the typed no-cover residue to accurately represent the true state of the model output, impacting decision-making based on this derived data.\"\n    }\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "annotations": [],
+            "content": "{\n  \"boundariesPreserved\": true,\n  \"residualRisks\": [\n    {\n      \"risk\": \"Incorrect acceptance or withholding of results by the customer-owned assayer, leading to disputes or misinterpretations of the claimed outcomes.\"\n    },\n    {\n      \"risk\": \"Potential misalignment between the deterministic-service cover derived by FCA and the actual service provided by the selected provider actor, resulting in coverage gaps.\"\n    },\n    {\n      \"risk\": \"Possible failure of the typed no-cover residue to accurately represent the true state of the model output, impacting decision-making based on this derived data.\"\n    }\n  ]\n}",
+            "refusal": null,
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784482730,
+      "id": "chatcmpl-E3PlSNUV1FOwdfCJj3HjWAGBcu0KC",
+      "model": "gpt-4o-mini-2024-07-18",
+      "object": "chat.completion",
+      "prompt_filter_results": [
+        {
+          "prompt_index": 0,
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          }
+        }
+      ],
+      "service_tier": "default",
+      "system_fingerprint": "fp_965c8b9ecf",
+      "usage": {
+        "completion_tokens": 129,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "latency_checkpoint": {
+          "engine_tbt_ms": 8,
+          "engine_ttft_ms": 30,
+          "engine_ttlt_ms": 1106,
+          "pre_inference_ms": 177,
+          "service_tbt_ms": 10,
+          "service_ttft_ms": 516,
+          "service_ttlt_ms": 1647,
+          "total_duration_ms": 1617,
+          "user_visible_ttft_ms": 339
+        },
+        "prompt_tokens": 192,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 321
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 2.939,
+    "denomination": "github-models-api-requests"
+  }
+}

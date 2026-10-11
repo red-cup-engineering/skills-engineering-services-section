@@ -1,0 +1,76 @@
+{
+  "id": "exchange-20260719-054535-f5f049",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Classify the supplied work item as finance, software, or operations. Return only JSON matching the supplied schema."
+      },
+      {
+        "role": "user",
+        "content": "The API handler returns the wrong status code when validation rejects an empty payload."
+      }
+    ],
+    "max-tokens": 32,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "const": "software"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\"label\": \"software\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\"label\": \"software\"}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPViIZMrNOOwLu0DIH0Uf1UfudXno1Alku3o1kB8Q0lJNc1qauWbqBS1EmAyKK"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784439938,
+      "id": "gmRcapm9G9Sc1MkP7MeR0Qo",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 39,
+        "total_tokens": 45
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.68,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

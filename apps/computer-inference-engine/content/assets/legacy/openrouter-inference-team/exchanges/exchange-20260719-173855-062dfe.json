@@ -1,0 +1,34 @@
+{
+  "id": "exchange-20260719-173855-062dfe",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return only JSON matching the schema. Examine category boundaries: deterministic derivation versus model inference, provider output versus customer assay, and EVM commitment versus truth."
+      },
+      {
+        "role": "user",
+        "content": "Given this mechanism: witnessed token/claim work and capability lots; FCA derives deterministic-service cover; compatible positive-integer ActivityStreams offers are ranked; an EVM Chu-Hoare seam binds the selected provider actor; provider returns a result; a customer-owned assayer independently accepts or withholds it; an effect receipt commits the customer assay; only typed no-cover residue can reach a language model, whose output remains pending customer assay. Finance and keccak256 both close through scripts with zero model calls, and repeated Finance runs assign a witnessed amortization claim to the work-class token. JSON is a replay projection, not authority. State whether the boundaries are preserved and list up to three residual risks. Do not suggest global orchestration or model-first dispatch."
+      }
+    ],
+    "max-tokens": 700,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 404 Not Found: {\"error\":{\"message\":\"This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct\",\"code\":404},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:404"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.324,
+    "denomination": "openrouter-api-requests"
+  }
+}

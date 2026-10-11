@@ -1,25 +1,4 @@
-[submodule "services/gemini-services-section"]
-	path = services/gemini-services-section
-	url = https://github.com/red-cup-engineering/gemini-inference-team.git
-[submodule "services/github-models-inference-team"]
-	path = services/github-models-inference-team
-	url = https://github.com/red-cup-engineering/github-models-inference-team.git
-[submodule "services/groq-inference-team"]
-	path = services/groq-inference-team
-	url = https://github.com/red-cup-engineering/groq-inference-team.git
-[submodule "services/inference-work-lot-service"]
-	path = services/inference-work-lot-service
-	url = https://github.com/red-cup-engineering/inference-work-lot-service.git
-[submodule "services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section/lib/legacy"]
-	path = services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section/lib/legacy
-	url = https://github.com/red-cup-engineering/claude-code-services-section-legacy.git
-[submodule "services/llm-services-section/services/llm-cost-optimization-services-section"]
-	path = services/llm-services-section/services/llm-cost-optimization-services-section
-	url = https://github.com/red-cup-engineering/llm-cost-optimization-services-section.git
-[submodule "services/openrouter-inference-team"]
-	path = services/openrouter-inference-team
-	url = https://github.com/red-cup-engineering/openrouter-inference-team.git
-[submodule "services/agent-services-section/services/context-packet-services-section"]
-	path = services/agent-services-section/services/context-packet-services-section
-	url = https://github.com/red-cup-engineering/context-packet-services-section.git
+[submodule "services/gemini-services-section/services/gemini-notebook-services-section"]
+	path = services/gemini-services-section/services/gemini-notebook-services-section
+	url = https://github.com/red-cup-engineering/gemini-notebook-services-section.git
 	branch = main

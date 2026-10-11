@@ -1,0 +1,133 @@
+{
+  "id": "exchange-20260719-055634-6bb1a0",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design parallel planning and task-DAG derivation, including how competing plans are tested rather than centrally trusted.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gpt-4o-mini-2024-07-18",
+    "text": "{\n  \"current_seed_absentees\": {\n    \"autonomous_intake\": true,\n    \"decomposition\": true,\n    \"fanout\": true,\n    \"tool_navigation\": true,\n    \"isolation\": true,\n    \"integration\": true,\n    \"memory\": true\n  },\n  \"proposed_design\": {\n    \"parallel_planning\": {\n      \"mechanism\": \"Task-DAG Derivation API\",\n      \"endpoints\": [\n        {\n          \"name\": \"planGeneration\",\n          \"method\": \"POST\",\n          \"input\": {\n            \"territory\": \"string\",\n            \"constraints\": \"array\"\n          },\n          \"output\": {\n            \"dag\": \"object\"\n          }\n        },\n        {\n          \"name\": \"taskExecution\",\n          \"method\": \"POST\",\n          \"input\": {\n            \"taskId\": \"string\"\n          },\n          \"output\": {\n            \"status\": \"string\",\n            \"result\": \"object\"\n          }\n        },\n        {\n          \"name\": \"competingPlansVerification\",\n          \"method\": \"POST\",\n          \"input\": {\n            \"planAId\": \"string\",\n            \"planBId\": \"string\"\n          },\n          \"output\": {\n            \"winnerPlanId\": \"string\"\n          }\n        }\n      ],\n      \"state_transitions\": {\n        \"plan_generated\": \"EVALUATING\",\n        \"competing_plans_verified\": \"EXECUTING\",\n        \"task_completed\": \"INTEGRATED\"\n      }\n    },\n    \"task_dag_derivation\": {\n      \"steps\": [\n        \"Identify territories/problems.\",\n        \"Generate competing plans using the Task-DAG Derivation API.\",\n        \"Execute tasks independently.\",\n        \"Verify the outcomes from competing plans through specified metrics.\",\n        \"Select and integrate the winning plan based on quantitative results.\"\n      ]\n    },\n    \"verification_rules\": {\n      \"plan_success\": \"If executed task results meet predefined KPIs.\",\n      \"integration_test\": \"All integrated tasks should maintain schema consistency.\",\n      \"autonomy_check\": \"Every executed task must have an independent outcome to validate correctness.\"\n    }\n  },\n  \"smallest_real_vertical_slice\": {\n    \"description\": \"Competing Plans for Simple Task Execution\",\n    \"steps\": [\n      \"Receive a simple problem statement.\",\n      \"Generate two alternative task-DAGs.\",\n      \"Execute both task-DAGs in parallel.\",\n      \"Evaluate results based on defined success metrics.\",\n      \"Integrate successful outcomes into a cohesive solution.\"\n    ]\n  }\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "annotations": [],
+            "content": "{\n  \"current_seed_absentees\": {\n    \"autonomous_intake\": true,\n    \"decomposition\": true,\n    \"fanout\": true,\n    \"tool_navigation\": true,\n    \"isolation\": true,\n    \"integration\": true,\n    \"memory\": true\n  },\n  \"proposed_design\": {\n    \"parallel_planning\": {\n      \"mechanism\": \"Task-DAG Derivation API\",\n      \"endpoints\": [\n        {\n          \"name\": \"planGeneration\",\n          \"method\": \"POST\",\n          \"input\": {\n            \"territory\": \"string\",\n            \"constraints\": \"array\"\n          },\n          \"output\": {\n            \"dag\": \"object\"\n          }\n        },\n        {\n          \"name\": \"taskExecution\",\n          \"method\": \"POST\",\n          \"input\": {\n            \"taskId\": \"string\"\n          },\n          \"output\": {\n            \"status\": \"string\",\n            \"result\": \"object\"\n          }\n        },\n        {\n          \"name\": \"competingPlansVerification\",\n          \"method\": \"POST\",\n          \"input\": {\n            \"planAId\": \"string\",\n            \"planBId\": \"string\"\n          },\n          \"output\": {\n            \"winnerPlanId\": \"string\"\n          }\n        }\n      ],\n      \"state_transitions\": {\n        \"plan_generated\": \"EVALUATING\",\n        \"competing_plans_verified\": \"EXECUTING\",\n        \"task_completed\": \"INTEGRATED\"\n      }\n    },\n    \"task_dag_derivation\": {\n      \"steps\": [\n        \"Identify territories/problems.\",\n        \"Generate competing plans using the Task-DAG Derivation API.\",\n        \"Execute tasks independently.\",\n        \"Verify the outcomes from competing plans through specified metrics.\",\n        \"Select and integrate the winning plan based on quantitative results.\"\n      ]\n    },\n    \"verification_rules\": {\n      \"plan_success\": \"If executed task results meet predefined KPIs.\",\n      \"integration_test\": \"All integrated tasks should maintain schema consistency.\",\n      \"autonomy_check\": \"Every executed task must have an independent outcome to validate correctness.\"\n    }\n  },\n  \"smallest_real_vertical_slice\": {\n    \"description\": \"Competing Plans for Simple Task Execution\",\n    \"steps\": [\n      \"Receive a simple problem statement.\",\n      \"Generate two alternative task-DAGs.\",\n      \"Execute both task-DAGs in parallel.\",\n      \"Evaluate results based on defined success metrics.\",\n      \"Integrate successful outcomes into a cohesive solution.\"\n    ]\n  }\n}",
+            "refusal": null,
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784440595,
+      "id": "chatcmpl-E3EnrColE8npTGH74Rm0S14Bd56W1",
+      "model": "gpt-4o-mini-2024-07-18",
+      "object": "chat.completion",
+      "prompt_filter_results": [
+        {
+          "prompt_index": 0,
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          }
+        }
+      ],
+      "service_tier": "default",
+      "system_fingerprint": "fp_965c8b9ecf",
+      "usage": {
+        "completion_tokens": 522,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "latency_checkpoint": {
+          "engine_tbt_ms": 10,
+          "engine_ttft_ms": 35,
+          "engine_ttlt_ms": 5086,
+          "pre_inference_ms": 113,
+          "service_tbt_ms": 10,
+          "service_ttft_ms": 778,
+          "service_ttlt_ms": 5835,
+          "total_duration_ms": 5759,
+          "user_visible_ttft_ms": 665
+        },
+        "prompt_tokens": 352,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 874
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 5.87,
+    "denomination": "github-models-api-requests"
+  }
+}

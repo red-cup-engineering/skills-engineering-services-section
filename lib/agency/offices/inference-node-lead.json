@@ -1,0 +1,26 @@
+{
+  "id": "inference-node-lead",
+  "name": "Inference Node lead",
+  "kind": "office",
+  "normative-structure": "The Inference Node lead answers for the demand Inference Node takes up from the work board: it assesses each taken demand in the terms of the faces Inference Node serves, turns what is Inference Node's work into work its own offices do, posts what another micro-enterprise does back on the board, and gives back what is not Inference Node's work with its reasons. It staffs nothing outside Inference Node, does not hand a thread to a chosen enterprise, and does not accept its own results.",
+  "deontic-profile": {
+    "assessing-inference-node-demand": "duty",
+    "accepting-its-own-work": "deontic-immunity"
+  },
+  "bears-duty": [
+    "emsenn/duty/assessing-inference-node-demand"
+  ],
+  "provides-skill": [
+    "assess-taken-demand"
+  ],
+  "jurisdiction": "inference-node",
+  "founded": "2026-09-30",
+  "theory-basis": [
+    "Rendanheyi sanquan: a micro-enterprise's decision right (what it takes) and personnel right (who does it) are its own; its lead staffs only from its own offices"
+  ],
+  "x-provenance": {
+    "recorded-by": "claude-opus-5-5",
+    "recorded-on": "2026-09-30",
+    "source": "561-group-services-section/content/text/documents/articles/notes/2026/09/30/2026-09-30-note-on-micro-enterprises-holding-their-own-work.md"
+  }
+}

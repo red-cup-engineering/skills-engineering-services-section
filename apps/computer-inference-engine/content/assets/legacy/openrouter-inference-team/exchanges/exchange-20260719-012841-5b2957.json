@@ -1,0 +1,30 @@
+{
+  "id": "exchange-20260719-012841-5b2957",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON matching the supplied schema. Synthesize a production decision packet for the Platform Node Inducer's first external paid induction. Treat every fact below as bounded evidence, not authority to contact anyone, publish, activate payment, spend, or mutate another settlement. Settlement law: root is a seller micro-enterprise, not a central runtime; every border crossing requires a declared contract; customer territory is sovereign; root must be absent after delivery. Active proof goal: one independently controlled non-Union customer pays under a root-owned priced offer and exact bilateral contract; a bounded territory becomes a sovereign Agentic Metro-Enterprise able to operate, refuse, transact, attest, amend, and improve; preserve digest-linked offer, assent, delivery, customer outcome, payment receipt, and seller book entry; pass refusal, replay, idempotency, resource-ceiling, and refund/rollback tests; second sovereign settlement validates seller-local fixture. Current state: root owns no product implementation yet. SDSS returned an exact refusal because its implementation bundle did not bind the awarded bid; authoring/registering that provider-local bundle awaits an explicit Leader grant. Change Services enterprise-induction-team owns the six-step semantics: discover, determine minimal machinery, install locally, exercise, certify, withdraw, but is chartered and not built. General Counsel office has contract-forming authority but lacks an executable contract service and bilateral register. Stripe Payment Acceptance Enterprise is a separate rail; it cannot own seller offer, fulfillment, entitlement, customer relationship, or books; live catalog, price, tax/refund, payout/dispute authority require Leader decisions. Finance may discover a border price from seller ask plus buyer bid but may not select it. Current Stripe evidence: domestic online cards 2.9% plus $0.30; ACH debit 0.8% capped at $5; international cards add 1.5%, currency conversion adds 1%; original processing fees are generally not returned on refunds; webhooks require raw-body signature verification and may duplicate; POST idempotency keys and event-ID deduplication are required; refund/dispute races can duplicate customer credits. Minnesota Revenue says custom software made for a particular customer after consultation and analysis is generally not taxable, while prewritten software is taxable; a mixed reusable/custom induction needs professional classification before sale. FTC guidance supports minimizing sensitive data and putting vendor security, use, retention, deletion, and verification duties in contracts. Market evidence is broad: Upwork reports AI engineering roughly $25 to over $100/hour and custom business automation around $6,000 starting; Clutch reports many reviewed development projects at $10,000 to $49,000; one FY26 specialist consulting schedule lists $235 to $325/hour senior roles. These are comparables only, not a selected price. Required recommendation constraints: sell the full bounded pilot induction, not readiness alone; a paid readiness assay may be credited to the full service; do not assert a defensible production amount before provider cost evidence and an independent buyer bid; require exact two-party promises and formation/acceptance/cure/discharge terms; qualify independence without collecting unnecessary identity data; outreach service is presently absent; second validator must be sovereign and separately contracted. Produce concise recommendations, exact gates, nondelegable Leader choices, and limitations. Do not claim legal or tax advice and do not invent an existing provider or completed proof."
+      }
+    ],
+    "max-tokens": 1800,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 429 Too Many Requests: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"meta-llama/llama-3.3-70b-instruct:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Venice\",\"is_byok\":false,\"retry_after_seconds\":18,\"retry_after_seconds_raw\":17.93,\"headers\":{\"Retry-After\":\"18\"}}},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:429"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.64,
+    "denomination": "openrouter-api-requests"
+  }
+}

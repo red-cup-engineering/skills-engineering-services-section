@@ -1,0 +1,62 @@
+{
+  "type": "ActiveSessionFreeInferenceAssay",
+  "recordedAt": "2026-08-29T23:43:19Z",
+  "package": "@red-cup-engineering/inference-work-lot-service@4.2.13-dev.0",
+  "command": "contract-codex-inference-work --input /tmp/561-gap-prioritization-request.json --output /tmp/561-gap-prioritization-candidate.json",
+  "operationalCommand": "contract-codex-inference-work --input REQUEST.json --output CANDIDATE.json --pricing-service http://127.0.0.1:8800",
+  "purpose": "Use admitted free-cloud inference for bounded advisory work during a Codex task that began before the repository MCP registration was loaded.",
+  "provider": {
+    "actor": "urn:ame:gemini-inference-team",
+    "model": "gemini-3.1-flash-lite",
+    "providerSettlementAttempts": 1,
+    "frontierInferenceCalls": 1,
+    "counterMeaning": "The field is the market's historical generic inference-call counter. This event used Gemini Flash-Lite and did not fall back to a Codex or frontier model."
+  },
+  "exchange": {
+    "workLot": "urn:work-lot:inference:TquKJDTQ-RjjkkmpM6BMkrzlEG3Y5HLej2oZ1eRbIa8",
+    "compact": "ni:///sha-256;ytX0QSXP6juwpRlH5dT_ZNibhqNuHmU1pwA65-68ifM",
+    "selectedOffer": "ni:///sha-256;5r6maDb9XK1-y6W9xgkO22dVp3QWtGXHVNm79UuwKRM",
+    "initialReceipt": "ni:///sha-256;m2kp0DkTzbpFuL1jnpW1-9XVUbg493oWvfjTNIG6QlQ",
+    "schemaAssay": "ni:///sha-256;wBxzfzuppaTbwpgL4-tue8rBvvklZLffYdmrUfUj2WY",
+    "considerationClose": "ni:///sha-256;DB63COrATc6DKCWDJ8iFmQU5ujj55XIDufznFrjjauk",
+    "consideration": "35 relative-resolution milliquanta credit",
+    "deliveryOutcome": "candidate-pending-codex-acceptance"
+  },
+  "candidate": {
+    "recommendedGap": 7,
+    "domain": "economy",
+    "rationale": "Stripe flow observability is the most actionable gap because it relies on event-driven hooks already configured within standard financial pipelines, allowing for immediate ingestion without requiring the deployment of invasive hardware-level metrics or complex cross-chain ledger synchronization.",
+    "firstEvidenceReceipt": "Stripe webhook event log entry"
+  },
+  "receiverAssayId": "ni:///sha-256;4LM5bcplZbmFZ9xyBTyJzjxqSiCvSi3R3Wg915hZmYY",
+  "deliveryRegistration": "urn:sha256:2e1e4ef039dfad0cbea26fae786394107c95fe626dbf70ac562e3323451a271b",
+  "receiverOutcomeObservation": "urn:sha256:cede824383da2cac1165d118a9e3c93ec388ac1942bb5ec71b730b428e4f94c4",
+  "assayFinding": "The first CLI call omitted the pricing observer, so delivery completed but was not registered for a later receiver disposition. The delivery was explicitly registered before the refusal was appended. The CLI now requires --pricing-service and the repository MCP configuration injects the same observer URL.",
+  "receiverAssay": {
+    "type": "CodexInferenceReceiverAssay",
+    "assayedAt": "2026-08-29T23:43:19Z",
+    "receiver": "urn:ame:bare-cedar-fog-codex",
+    "workLot": "urn:work-lot:inference:TquKJDTQ-RjjkkmpM6BMkrzlEG3Y5HLej2oZ1eRbIa8",
+    "outcome": "refused",
+    "rationale": "The recommendation is directionally grounded in an existing Stripe webhook ingestion and journal path, but the provider's claim that live hooks are already configured is false. The current activation record says liveActivation is not-configured and names the public endpoint, credentials, webhook secret, merchant decisions, and settlement contract as still required.",
+    "evidence": [
+      "stripe-services-section/src/service.mjs#ingestWebhook",
+      "stripe-services-section/content/config/activation.json"
+    ]
+  },
+  "sessionState": {
+    "nativeMcpConfigured": true,
+    "nativeMcpExposedToThisTask": false,
+    "reloadRequiredForNativeTools": true,
+    "activeTaskCliAvailable": true,
+    "pricingObserver": "http://127.0.0.1:8800",
+    "openRouterAvailable": false,
+    "geminiAvailable": true
+  },
+  "limits": [
+    "Provider output was an untrusted schema-valid candidate and was not accepted as operational truth.",
+    "The CLI does not grant ambient repository access and received only seven aggregate gap descriptions.",
+    "This event proves one Gemini delivery through the CLI path, not continuous availability, automatic routing, or a live Stripe deployment.",
+    "The append-only market logs remain runtime evidence and are not included in this Git commit."
+  ]
+}

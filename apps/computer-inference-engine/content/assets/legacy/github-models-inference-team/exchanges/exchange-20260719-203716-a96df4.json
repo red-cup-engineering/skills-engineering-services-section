@@ -1,0 +1,30 @@
+{
+  "id": "exchange-20260719-203716-a96df4",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return exactly this JSON object and no other text: {\"route\":\"union-local-npu\",\"settled\":true}"
+      }
+    ],
+    "max-tokens": 64,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "GitHub Models responded with HTTP 401 Unauthorized: Unauthorized\n",
+    "unmet": [
+      "http-failure:401"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.37,
+    "denomination": "github-models-api-requests"
+  }
+}

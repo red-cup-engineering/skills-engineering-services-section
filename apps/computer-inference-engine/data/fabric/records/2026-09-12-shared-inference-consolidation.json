@@ -1,0 +1,510 @@
+{
+  "schema": "corpus-normalization/legacy-disposition/v1",
+  "recordedAt": "2026-09-12",
+  "family": "@emsenn/logical-inference-service-section",
+  "owner": "@red-cup-engineering/computer-inference-system-services-section",
+  "ownerVersion": "0.2.1",
+  "transportOwner": "@red-cup-engineering/openai-compatible-chat-completion-service@0.5.5",
+  "migration": {
+    "retiredSourceFiles": 82,
+    "canonicalSourceFiles": 17,
+    "netProductionFilesRemoved": 65,
+    "approximateNetProductionBytesRemoved": 600866,
+    "byteMeasurement": "First 32 files use captured working bytes; remaining 50 use Git originals before import relocation. Excludes tests, docs, manifests, locks and provider CLI consolidation."
+  },
+  "dispositions": [
+    {
+      "destination": "scripts/admit-private-worker.mjs",
+      "sha256": "0ae8e2d038426c54a11edffd6216759fb8c6aa4fcbc17cf6fc3eaedbfde949f7",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/admit-private-worker.mjs",
+          "sha256": "b0674f0c02780a34189591be066ce2e31c85a2614c23ee5a39b2bd8f4acbdfb0"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/admit-private-worker.mjs",
+          "sha256": "b0674f0c02780a34189591be066ce2e31c85a2614c23ee5a39b2bd8f4acbdfb0"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/contract-inference-fabric.mjs",
+      "sha256": "686197956f49b30f8ebb5d4a7c1dd0d800f908b563f4064865f4a27ebdc38561",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/contract-inference-fabric.mjs",
+          "sha256": "57e2bfa5fcb097ff2fd04498fe35dee4e9ed1f0e182fa2684fb3254e16216720"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/contract-inference-fabric.mjs",
+          "sha256": "57e2bfa5fcb097ff2fd04498fe35dee4e9ed1f0e182fa2684fb3254e16216720"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/contract-routed-inference.mjs",
+      "sha256": "3673cab9a1a3c74aa42022e8c2c1b2bcc7165bc7d6e8a9ba636452e9ea743f82",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/contract-routed-inference.js",
+          "sha256": "2083d4fabd2ff9f10bdf6cb8bb2e8a68524e992f43ab0f5306c3533d34bbd93f"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/contract-routed-inference.js",
+          "sha256": "2083d4fabd2ff9f10bdf6cb8bb2e8a68524e992f43ab0f5306c3533d34bbd93f"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/contract-routed-inference.js",
+          "sha256": "2083d4fabd2ff9f10bdf6cb8bb2e8a68524e992f43ab0f5306c3533d34bbd93f"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/contract-routed-inference.js",
+          "sha256": "2083d4fabd2ff9f10bdf6cb8bb2e8a68524e992f43ab0f5306c3533d34bbd93f"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/contract-routed-inference.js",
+          "sha256": "2083d4fabd2ff9f10bdf6cb8bb2e8a68524e992f43ab0f5306c3533d34bbd93f"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/contract-routed-inference.js",
+          "sha256": "2083d4fabd2ff9f10bdf6cb8bb2e8a68524e992f43ab0f5306c3533d34bbd93f"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/dispatch-jsonl.mjs",
+      "sha256": "9a2b7330d8cdc2eed6cd6ba7d959f7288d323dfeea706fa0eff4518866eb0c1a",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/dispatch-jsonl.mjs",
+          "sha256": "0c19235412707e95fed4209911cb81a2e84af38e0860857ec205bb7323b5be22"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/dispatch-jsonl.mjs",
+          "sha256": "0c19235412707e95fed4209911cb81a2e84af38e0860857ec205bb7323b5be22"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/dispatch-jsonl.mjs",
+          "sha256": "0c19235412707e95fed4209911cb81a2e84af38e0860857ec205bb7323b5be22"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/dispatch-jsonl.mjs",
+          "sha256": "0c19235412707e95fed4209911cb81a2e84af38e0860857ec205bb7323b5be22"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/dispatch-jsonl.mjs",
+          "sha256": "6ea8146ba96412ec977a319789fbe31451dad627338a13d5acd3cbd10e835c83"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/dispatch-jsonl.mjs",
+          "sha256": "6ea8146ba96412ec977a319789fbe31451dad627338a13d5acd3cbd10e835c83"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/legacy-fabric-bridge.mjs",
+      "sha256": "18efec3685015f4f5b6e9f560743dc69ceb66cc46cf64cd3da225e1b1039a3a5",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/legacy-fabric-bridge.mjs",
+          "sha256": "3161c2871644176dd10bc8f7bff480a967db43390da18338a95d818074eb7ba4"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/legacy-fabric-bridge.mjs",
+          "sha256": "3161c2871644176dd10bc8f7bff480a967db43390da18338a95d818074eb7ba4"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/prepare-code-review-job.mjs",
+      "sha256": "fd4be222e6e45d42bd0bf5560599985a400a05f2c914a12947a5a806ca5e8c5b",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/prepare-code-review-job.mjs",
+          "sha256": "0de6a2eba3cd643a888fdfb4efe97ece83ad7f1071f1d2efdd8edcad6b9f743c"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/prepare-code-review-job.mjs",
+          "sha256": "0de6a2eba3cd643a888fdfb4efe97ece83ad7f1071f1d2efdd8edcad6b9f743c"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/prepare-code-review-job.mjs",
+          "sha256": "0de6a2eba3cd643a888fdfb4efe97ece83ad7f1071f1d2efdd8edcad6b9f743c"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/prepare-code-review-job.mjs",
+          "sha256": "0de6a2eba3cd643a888fdfb4efe97ece83ad7f1071f1d2efdd8edcad6b9f743c"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/prepare-code-review-job.mjs",
+          "sha256": "0de6a2eba3cd643a888fdfb4efe97ece83ad7f1071f1d2efdd8edcad6b9f743c"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/prepare-code-review-job.mjs",
+          "sha256": "0de6a2eba3cd643a888fdfb4efe97ece83ad7f1071f1d2efdd8edcad6b9f743c"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/prepare-private-worker.mjs",
+      "sha256": "8ccb41c100325936e91e2d0b680521cefeb31cf497bc790b2dc12539b236a49f",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/prepare-private-worker.mjs",
+          "sha256": "529fa416ab491318bc610447169b3b3023d858103c8b5348787d4d190a203e6f"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/prepare-private-worker.mjs",
+          "sha256": "529fa416ab491318bc610447169b3b3023d858103c8b5348787d4d190a203e6f"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/prepare-private-worker.mjs",
+          "sha256": "529fa416ab491318bc610447169b3b3023d858103c8b5348787d4d190a203e6f"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/prepare-private-worker.mjs",
+          "sha256": "529fa416ab491318bc610447169b3b3023d858103c8b5348787d4d190a203e6f"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/prepare-private-worker.mjs",
+          "sha256": "546edf819713ffba7c49a94deb5ff9e9b66101c778c80487c11644c581233ec9"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/prepare-private-worker.mjs",
+          "sha256": "546edf819713ffba7c49a94deb5ff9e9b66101c778c80487c11644c581233ec9"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/prepare-throughput-benchmark.mjs",
+      "sha256": "e738442b05cbb2cec68f5fa2c87294ead124edd383449540bb6ecd417a103fc3",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/prepare-throughput-benchmark.mjs",
+          "sha256": "e738442b05cbb2cec68f5fa2c87294ead124edd383449540bb6ecd417a103fc3"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/prepare-throughput-benchmark.mjs",
+          "sha256": "e738442b05cbb2cec68f5fa2c87294ead124edd383449540bb6ecd417a103fc3"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/probe-openai-endpoint.mjs",
+      "sha256": "f7fbf3e506812cc216efe25374c5105697dd5d1e08daf4f38057a566e31afe23",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/probe-openai-endpoint.mjs",
+          "sha256": "fb83476a810c5102d3557e75f8b30fc526738601fd7841ac786d6591d1a38260"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/probe-openai-endpoint.mjs",
+          "sha256": "fb83476a810c5102d3557e75f8b30fc526738601fd7841ac786d6591d1a38260"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/probe-openai-endpoint.mjs",
+          "sha256": "fb83476a810c5102d3557e75f8b30fc526738601fd7841ac786d6591d1a38260"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/probe-openai-endpoint.mjs",
+          "sha256": "fb83476a810c5102d3557e75f8b30fc526738601fd7841ac786d6591d1a38260"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/probe-openai-endpoint.mjs",
+          "sha256": "d6781486997a6eb333d5adf791affaaa22d276f18eeb019ad09b9463bbf827ad"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/probe-openai-endpoint.mjs",
+          "sha256": "d6781486997a6eb333d5adf791affaaa22d276f18eeb019ad09b9463bbf827ad"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/request-inference-socket.mjs",
+      "sha256": "af4ce600ae8c881807f3d1285916d9cf06f64b0e3a79949dd6b15404aea9da1a",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/request-inference-socket.mjs",
+          "sha256": "9fb73aa11f842311d432e8d8bd2afbc37cbfb31934dbbe1b3b801636a65a72b8"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/request-inference-socket.mjs",
+          "sha256": "9fb73aa11f842311d432e8d8bd2afbc37cbfb31934dbbe1b3b801636a65a72b8"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/request-inference-socket.mjs",
+          "sha256": "9fb73aa11f842311d432e8d8bd2afbc37cbfb31934dbbe1b3b801636a65a72b8"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/request-inference-socket.mjs",
+          "sha256": "9fb73aa11f842311d432e8d8bd2afbc37cbfb31934dbbe1b3b801636a65a72b8"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/request-inference-socket.mjs",
+          "sha256": "94147311f92e17a8260ed25f474009c27ea7ab09f99ef67491df7fb9bb8c0294"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/request-inference-socket.mjs",
+          "sha256": "94147311f92e17a8260ed25f474009c27ea7ab09f99ef67491df7fb9bb8c0294"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/serve-inference-jsonl.mjs",
+      "sha256": "3ce5a07fb80260ad4bbf0a3a3f2e5a98b550ed6e968663092e89dc8e7a7ff2db",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/serve-inference-jsonl.mjs",
+          "sha256": "77da074a7685cbe3248dce3c227f0d7460d595b397642b88ff3a91f00f06cd80"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/serve-inference-jsonl.mjs",
+          "sha256": "77da074a7685cbe3248dce3c227f0d7460d595b397642b88ff3a91f00f06cd80"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/serve-inference-jsonl.mjs",
+          "sha256": "77da074a7685cbe3248dce3c227f0d7460d595b397642b88ff3a91f00f06cd80"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/serve-inference-jsonl.mjs",
+          "sha256": "77da074a7685cbe3248dce3c227f0d7460d595b397642b88ff3a91f00f06cd80"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/serve-inference-jsonl.mjs",
+          "sha256": "827b710a1758b9e400830653f1180dda4abd728d3c6d01fe7b1ad8ac005f7fba"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/serve-inference-jsonl.mjs",
+          "sha256": "827b710a1758b9e400830653f1180dda4abd728d3c6d01fe7b1ad8ac005f7fba"
+        }
+      ]
+    },
+    {
+      "destination": "scripts/serve-inference-socket.mjs",
+      "sha256": "571bf76550256fde15fd735ec6ad2a56f252055f584392c9e61ca725cc84cf65",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/serve-inference-socket.mjs",
+          "sha256": "20c55fbfc05534da65cba0ae26da6714edc6c71ff72fc88fff12bcc8900c59ef"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/serve-inference-socket.mjs",
+          "sha256": "20c55fbfc05534da65cba0ae26da6714edc6c71ff72fc88fff12bcc8900c59ef"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/serve-inference-socket.mjs",
+          "sha256": "20c55fbfc05534da65cba0ae26da6714edc6c71ff72fc88fff12bcc8900c59ef"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/serve-inference-socket.mjs",
+          "sha256": "20c55fbfc05534da65cba0ae26da6714edc6c71ff72fc88fff12bcc8900c59ef"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/serve-inference-socket.mjs",
+          "sha256": "2a0595706c7c9625ed7dc747bf6254f93c56efe9a8a78531ad5324f742611804"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/serve-inference-socket.mjs",
+          "sha256": "2a0595706c7c9625ed7dc747bf6254f93c56efe9a8a78531ad5324f742611804"
+        }
+      ]
+    },
+    {
+      "destination": "src/inference-activitystreams.mjs",
+      "sha256": "dd5b8824799a22015acc7539a7ef601fe7c188c4eeadf9196e55757831f97f3e",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/inference-activitystreams.mjs",
+          "sha256": "dd5b8824799a22015acc7539a7ef601fe7c188c4eeadf9196e55757831f97f3e"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/inference-activitystreams.mjs",
+          "sha256": "dd5b8824799a22015acc7539a7ef601fe7c188c4eeadf9196e55757831f97f3e"
+        }
+      ]
+    },
+    {
+      "destination": "src/inference-broker.mjs",
+      "sha256": "48d9e3f6617444eae683dd2c2c32f975f550cb5d90084e7964bd5cf48118926c",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/inference-broker.mjs",
+          "sha256": "29734642bc5007de69c65e323ab4247c36ab8baae3dc47b66fd3e0a9a5e2cb83"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/inference-broker.mjs",
+          "sha256": "29734642bc5007de69c65e323ab4247c36ab8baae3dc47b66fd3e0a9a5e2cb83"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/inference-broker.mjs",
+          "sha256": "29734642bc5007de69c65e323ab4247c36ab8baae3dc47b66fd3e0a9a5e2cb83"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/inference-broker.mjs",
+          "sha256": "29734642bc5007de69c65e323ab4247c36ab8baae3dc47b66fd3e0a9a5e2cb83"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/inference-broker.mjs",
+          "sha256": "78d9e85fe5219e978b33cf64cd9a535c7294efee844ef6189f7be8f0e6117440"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/inference-broker.mjs",
+          "sha256": "78d9e85fe5219e978b33cf64cd9a535c7294efee844ef6189f7be8f0e6117440"
+        }
+      ]
+    },
+    {
+      "destination": "src/inference-fabric.mjs",
+      "sha256": "8a2c653d1dd3517ddff1d5546ef91607f1480ba973b1fce0240c226843b8a317",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/inference-fabric.mjs",
+          "sha256": "a79addcdb8d30975b44a358b119d4a9fe39704d781790647eebbaafd55ece86c"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/inference-fabric.mjs",
+          "sha256": "a79addcdb8d30975b44a358b119d4a9fe39704d781790647eebbaafd55ece86c"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/inference-fabric.mjs",
+          "sha256": "a79addcdb8d30975b44a358b119d4a9fe39704d781790647eebbaafd55ece86c"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/inference-fabric.mjs",
+          "sha256": "a79addcdb8d30975b44a358b119d4a9fe39704d781790647eebbaafd55ece86c"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/inference-fabric.mjs",
+          "sha256": "c2892667f52d4e7da1edf75b83872ae4171f0095fbdaee1678cd9b9cc4de3839"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/inference-fabric.mjs",
+          "sha256": "c2892667f52d4e7da1edf75b83872ae4171f0095fbdaee1678cd9b9cc4de3839"
+        }
+      ]
+    },
+    {
+      "destination": "src/inference-jsonl-session.mjs",
+      "sha256": "c5f5927fe671154111438d268e0cdec773d2d88545345c52a0d09dd0c957062f",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/inference-jsonl-session.mjs",
+          "sha256": "57630a1233b99b28cc865ae98db7905781e5af3b98aaf93e21881728bea64be2"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/inference-jsonl-session.mjs",
+          "sha256": "57630a1233b99b28cc865ae98db7905781e5af3b98aaf93e21881728bea64be2"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/inference-jsonl-session.mjs",
+          "sha256": "57630a1233b99b28cc865ae98db7905781e5af3b98aaf93e21881728bea64be2"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/inference-jsonl-session.mjs",
+          "sha256": "57630a1233b99b28cc865ae98db7905781e5af3b98aaf93e21881728bea64be2"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/inference-jsonl-session.mjs",
+          "sha256": "c5f5927fe671154111438d268e0cdec773d2d88545345c52a0d09dd0c957062f"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/inference-jsonl-session.mjs",
+          "sha256": "c5f5927fe671154111438d268e0cdec773d2d88545345c52a0d09dd0c957062f"
+        }
+      ]
+    },
+    {
+      "destination": "src/routing-law.mjs",
+      "sha256": "3a05d99b0475d7eda33b01f39569fcf05483d9b5254c67e6b1cc85f969b5ea12",
+      "disposition": "consolidated-shared-implementation",
+      "sources": [
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-claude-exchange/src/routing-law.mjs",
+          "sha256": "3a05d99b0475d7eda33b01f39569fcf05483d9b5254c67e6b1cc85f969b5ea12"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-groq-exchange/src/routing-law.mjs",
+          "sha256": "3a05d99b0475d7eda33b01f39569fcf05483d9b5254c67e6b1cc85f969b5ea12"
+        },
+        {
+          "source": "lib/legacy/2026-07-18-logical-inference-service-section-provider-journals/src/routing-law.mjs",
+          "sha256": "3a05d99b0475d7eda33b01f39569fcf05483d9b5254c67e6b1cc85f969b5ea12"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-late-claude-exchanges/src/routing-law.mjs",
+          "sha256": "3a05d99b0475d7eda33b01f39569fcf05483d9b5254c67e6b1cc85f969b5ea12"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v2/src/routing-law.mjs",
+          "sha256": "3a05d99b0475d7eda33b01f39569fcf05483d9b5254c67e6b1cc85f969b5ea12"
+        },
+        {
+          "source": "lib/legacy/2026-07-19-logical-inference-service-section-runtime-v3/src/routing-law.mjs",
+          "sha256": "3a05d99b0475d7eda33b01f39569fcf05483d9b5254c67e6b1cc85f969b5ea12"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "runtimeTests": 27,
+    "sharedTransportTests": 53,
+    "installedCodemodTests": 113,
+    "dedupOwnerTests": 47,
+    "fixtureEndpointCount": 8,
+    "liveInstalledRoundtable": {
+      "packageVersion": "0.2.0",
+      "endpoints": 4,
+      "completed": 3,
+      "refused": 1,
+      "refusal": {
+        "providerId": "openrouter-poolside",
+        "status": 429
+      },
+      "completedCloudCost": 0,
+      "resultDigest": "sha256:2e699b30c64c4d833ecaaf8bb01953ff1eab68237be93b8be75f486977774968"
+    },
+    "resumeCorrection": "0.2.1 checks the shared broker job fingerprint and execution mode and retains refusal exit status",
+    "githubRecovery": {
+      "monorepoRevision": "40e578502409bad5052f7c292a47480de22c16c2",
+      "legacyRuntimeV3Present": true,
+      "separateMetroplatInferenceFiles": 16,
+      "separateMetroplatInferenceFilesMissingLocally": 0
+    },
+    "providerSuiteLimitations": [
+      "Missing historical systemd fixtures",
+      "Settlement-account imports require EVM_RPC_URL",
+      "Gemini malformed-RMN failures"
+    ],
+    "installedCliRegression": {
+      "packageVersion": "0.2.1",
+      "passed": true,
+      "checks": [
+        "provider selection",
+        "roundtable expansion",
+        "resume fingerprint and execution mode",
+        "changed-payload refusal",
+        "resumed-refusal exit status",
+        "lock cleanup"
+      ]
+    },
+    "installedRuntimeConsumers": 6,
+    "installedTransportConsumers": 9,
+    "ownerIntegrity": "sha512-ZA6z0ssj3rhJ6OB2vViyc4ktlnQRzB9VesuclgAaDV6qIGXsHhUc8cD6lEKGDBaV9De9lJyp+m3t4Bhjg6mdkw=="
+  }
+}

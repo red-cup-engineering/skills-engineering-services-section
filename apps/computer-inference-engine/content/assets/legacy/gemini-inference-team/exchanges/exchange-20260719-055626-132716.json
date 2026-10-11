@@ -1,0 +1,59 @@
+{
+  "id": "exchange-20260719-055626-132716",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design parallel planning and task-DAG derivation, including how competing plans are tested rather than centrally trusted.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"absent_components\": [\n    \"multi-agent consensus protocol for plan selection\",\n    \"DAG-based dependency resolution graph\",\n    \"isolated execution sandbox per branch\",\n    \"stochastic trial-and-error comparator (A/B testing for logic)\",\n    \"merkle-tree state continuity for multi-model integration\"\n  ],\n  \"parallel_design\": {\n    \"dag_derivation\": {\n      \"input_interface\": \"TaskManifest\",\n      \"decomposition_strategy\": \"Recursive-Reasoning-Split\",\n      \"nodes\": \"AtomicMutationSteps\",\n      \"edges\": \"DependencyConstraintVector\"\n    },\n    \"competing_plans\": {\n      \"mechanism\": \"Simulation-In-Shadow-Space\",\n      \"verification_logic\": \"DeterministicTestHarness\",\n      \"resolution\": \"Winner-Take-All-By-Validation-Metric\",\n      \"metric\": \"SuccessRatio-Latency-Cost-Ratio\"\n    },\n    \"state_transition\": {\n      \"state_A\": \"DECOMPOSED\",\n      \"trigger\": \"PlanCandidateGenerated\",\n      \"state_B\": \"SHADOW_EXECUTING\",\n      \"validation\": \"OutputSchemaCompliance\"\n    }\n  },\n  \"smallest_vertical_slice\": {\n    \"name\": \"Branch-A-B-Test-Runner\",\n    \"description\": \"Fork a task into two distinct prompt-strategies, execute both in ephemeral memory spaces, and select the output that passes a baseline test-suite integration check.\",\n    \"stack\": [\n      \"TaskSplitter\",\n      \"ShadowContextSpace\",\n      \"ComparatorService\",\n      \"MergeProtocol\"\n    ]\n  }\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"absent_components\": [\n    \"multi-agent consensus protocol for plan selection\",\n    \"DAG-based dependency resolution graph\",\n    \"isolated execution sandbox per branch\",\n    \"stochastic trial-and-error comparator (A/B testing for logic)\",\n    \"merkle-tree state continuity for multi-model integration\"\n  ],\n  \"parallel_design\": {\n    \"dag_derivation\": {\n      \"input_interface\": \"TaskManifest\",\n      \"decomposition_strategy\": \"Recursive-Reasoning-Split\",\n      \"nodes\": \"AtomicMutationSteps\",\n      \"edges\": \"DependencyConstraintVector\"\n    },\n    \"competing_plans\": {\n      \"mechanism\": \"Simulation-In-Shadow-Space\",\n      \"verification_logic\": \"DeterministicTestHarness\",\n      \"resolution\": \"Winner-Take-All-By-Validation-Metric\",\n      \"metric\": \"SuccessRatio-Latency-Cost-Ratio\"\n    },\n    \"state_transition\": {\n      \"state_A\": \"DECOMPOSED\",\n      \"trigger\": \"PlanCandidateGenerated\",\n      \"state_B\": \"SHADOW_EXECUTING\",\n      \"validation\": \"OutputSchemaCompliance\"\n    }\n  },\n  \"smallest_vertical_slice\": {\n    \"name\": \"Branch-A-B-Test-Runner\",\n    \"description\": \"Fork a task into two distinct prompt-strategies, execute both in ephemeral memory spaces, and select the output that passes a baseline test-suite integration check.\",\n    \"stack\": [\n      \"TaskSplitter\",\n      \"ShadowContextSpace\",\n      \"ComparatorService\",\n      \"MergeProtocol\"\n    ]\n  }\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPMS6zZr/9QYmOlNSgaLFpYR4JR+kQCur+pW+5NVEgQqjpA78ng5gWJIXbnOAf"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784440591,
+      "id": "DWdcatHUNaXh-sAPyJauyAU",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 379,
+        "prompt_tokens": 362,
+        "total_tokens": 741
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.734,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

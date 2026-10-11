@@ -1,0 +1,55 @@
+{
+  "id": "exchange-20260719-031614-8e89b0",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON with keys receiptFields,races,tests. Review this bounded extension to a host-local Unix-socket inference broker. Existing behavior: raw NDJSON jobs return final results; one broker owns the scheduler, duplicate-ID set, journal, and replay index; admitted jobs survive disconnect; the journal is appended before final delivery. Proposed behavior: a client may send {type:'InferenceSubmission',delivery:'receipt-only',job:<existing job>}; broker synchronously validates and attempts scheduler admission; server immediately returns one typed receipt saying admitted, refused, or already-settled; admitted settlement continues without holding the socket session open and is later queryable by job ID. Raw jobs retain current final-result behavior. Specify the minimum receipt fields, the three most important admission/settlement races, and exactly four acceptance tests. Do not propose polling, HTTP, cancellation-on-disconnect, per-client schedulers, or holding receipt-only clients until inference completes."
+      }
+    ],
+    "max-tokens": 300,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"receiptFields\": [\n    \"job_id\",\n    \"status\",\n    \"timestamp\",\n    \"checksum\"\n  ],\n  \"races\": [\n    \"Race between a non-receipt job completion and an admission query for the same job ID resulting in stale or missing status\",\n    \"Race between incoming synchronous admission validation and a journal replay process causing duplicate ID rejection\",\n    \"Race between a terminal state write to the journal and a client query arriving at the broker during the transition window\"\n  ],\n  \"tests\": [\n    \"Verify that receipt-only submissions return an immediate 'admitted' status before inference begins\",\n    \"Verify that an existing job ID with a settled state returns 'already-settled' rather than re-admitting the job\",\n    \"Verify that a query for an admitted job returns the correct terminal status once the asynchronous inference process completes\",\n    \"Verify that malformed inference jobs are rejected synchronously with a 'refused' status before any journal modification\"\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"receiptFields\": [\n    \"job_id\",\n    \"status\",\n    \"timestamp\",\n    \"checksum\"\n  ],\n  \"races\": [\n    \"Race between a non-receipt job completion and an admission query for the same job ID resulting in stale or missing status\",\n    \"Race between incoming synchronous admission validation and a journal replay process causing duplicate ID rejection\",\n    \"Race between a terminal state write to the journal and a client query arriving at the broker during the transition window\"\n  ],\n  \"tests\": [\n    \"Verify that receipt-only submissions return an immediate 'admitted' status before inference begins\",\n    \"Verify that an existing job ID with a settled state returns 'already-settled' rather than re-admitting the job\",\n    \"Verify that a query for an admitted job returns the correct terminal status once the asynchronous inference process completes\",\n    \"Verify that malformed inference jobs are rejected synchronously with a 'refused' status before any journal modification\"\n  ]\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPqszuGvel2yZcIXt97WxF0pOAj0Shcj9RwYTXsT7Gtb+CzY6QajX45sSmcl4g"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784430976,
+      "id": "f0FcavrRLc7TjMcP0_rE8QQ",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 222,
+        "prompt_tokens": 199,
+        "total_tokens": 421
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.491,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

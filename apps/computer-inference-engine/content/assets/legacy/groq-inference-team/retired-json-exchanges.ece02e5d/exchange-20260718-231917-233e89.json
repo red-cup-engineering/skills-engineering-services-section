@@ -1,0 +1,57 @@
+{
+  "id": "exchange-20260718-231917-233e89",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Extract the harness invocation contract from this exact code. Return exactly JSON {\"packetFields\":[...],\"successFields\":[...],\"refusalField\":string,\"cleanup\":string}. Do not infer fields not shown.\n\nexport async function invokeHarness(endpoint, job, options = {}) {\n const dir = mkdtempSync(join(tmpdir(), \"inference-fabric-\"));\n const packet = join(dir, \"packet.json\");\n writeFileSync(packet, JSON.stringify({ model: endpoint.model, messages: job.messages, ...(job.maxTokens ? { \"max-tokens\": job.maxTokens } : {}) }));\n try { /* child invocation */ const record = JSON.parse(Buffer.concat(out).toString());\n if (record.outcome === \"refusal\") throw new Error(record.refusal?.grounds ?? \"harness refusal\");\n return { text: record.completion?.text ?? \"\", usage: record.completion?.usage ?? null, cost: record.cost ?? null };\n } finally { rmSync(dir, { recursive: true, force: true }); }\n}"
+      }
+    ],
+    "max-tokens": 220
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "```json\n{\"packetFields\":[\"model\",\"messages\",\"max-tokens\"],\"successFields\":[\"text\",\"usage\",\"cost\"],\"refusalField\":\"refusal?.grounds\",\"cleanup\":\"rmSync(dir, { recursive: true, force: true })\"}\n```",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-38a24a66-bf50-4898-ae9d-551b2eb4a2fd",
+      "object": "chat.completion",
+      "created": 1784416761,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "```json\n{\"packetFields\":[\"model\",\"messages\",\"max-tokens\"],\"successFields\":[\"text\",\"usage\",\"cost\"],\"refusalField\":\"refusal?.grounds\",\"cleanup\":\"rmSync(dir, { recursive: true, force: true })\"}\n```"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.006394509,
+        "prompt_tokens": 239,
+        "prompt_time": 0.021053992,
+        "completion_tokens": 51,
+        "completion_time": 0.062411181,
+        "total_tokens": 290,
+        "total_time": 0.083465173
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01kxvrdx8ve8sagz4ev0cfjw2s",
+        "seed": 1800877592
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.306,
+    "denomination": "groq-api-requests"
+  }
+}

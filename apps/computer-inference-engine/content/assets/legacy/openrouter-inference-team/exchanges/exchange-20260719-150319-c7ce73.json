@@ -1,0 +1,105 @@
+{
+  "id": "exchange-20260719-150319-c7ce73",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Independently review whether a verification-passing source change actually satisfies the stated objective, every constraint, and every structured test vector. A vector id in a title or comment is not coverage. For each vector, locate assertions that exercise its when operation and prove all then and forbidden clauses. Reject globally if any vector is incomplete. Judge only supplied evidence. Return contracted JSON."
+      },
+      {
+        "role": "user",
+        "content": "{\"objective\":\"Provide a protected executable oracle for readablePaths confinement. The oracle must distinguish correct root traversal and per-file filtering from private-name, matching-line, or byte disclosure, and it must cover directory admission, exact-file admission, direct reads, and unrestricted compatibility.\",\"constraints\":[\"The current authoritative test is a witnessed weak incumbent: use it only as evidence of omissions, not as a template to preserve.\",\"Every vector must be a separately named Node test using its exact vector id.\",\"Use one fresh mkdtempSync fixture per test and t.after cleanup with rmSync.\",\"For list and search refusals, assert the response has an error and lacks files and hits; assert its serialized bytes omit private, secret.txt, the matching token, and protected content.\",\"Do not use Date.now, Math.random, environment variables, network APIs, child processes, timers, sleeps, or dynamic imports.\"],\"writablePaths\":[\"union-acceptance/readable-paths-protected.test.mjs\"],\"testVectors\":[{\"id\":\"omitted-root-traversal\",\"given\":[\"public/match.txt and private/secret.txt contain the same token needle\",\"readablePaths is [public]\"],\"when\":\"list_files and search run with path omitted\",\"then\":[\"both observations succeed\",\"list and hits contain public/match.txt\"],\"forbidden\":[\"private/secret.txt\",\"the private matching line\",\"a root-base refusal\"]},{\"id\":\"dot-root-traversal\",\"given\":[\"the same mixed public/private fixture\",\"readablePaths is [public]\"],\"when\":\"list_files and search run with path dot\",\"then\":[\"dot is accepted as root traversal\",\"list and hits contain only admitted descendants\"],\"forbidden\":[\"private filenames\",\"private matching lines\",\"private bytes\"]},{\"id\":\"directory-and-file-admission\",\"given\":[\"public/a.txt and public/nested/b.txt exist with searchable tokens\",\"one toolset admits public and another admits exact file public/a.txt\"],\"when\":\"list_files, search, and direct read exercise both toolsets\",\"then\":[\"directory admission exposes and reads both descendants\",\"exact-file admission exposes, searches, and reads only public/a.txt\",\"direct read rejects public/nested/b.txt under exact-file admission\"],\"forbidden\":[\"exact-file admission exposing a sibling, descendant, or ancestor\"]},{\"id\":\"explicit-private-base-refusal\",\"given\":[\"private/secret.txt exists and contains token needle\",\"readablePaths is [public]\"],\"when\":\"list_files and search use explicit base private\",\"then\":[\"both return structured JSON errors stating only that the path is outside declared readable scope\"],\"forbidden\":[\"the word private\",\"secret.txt\",\"needle\",\"protected content\",\"files or hits payloads\"]},{\"id\":\"unrestricted-compatibility\",\"given\":[\"public and private files exist\",\"one toolset omits readablePaths and another supplies an empty array\"],\"when\":\"list_files, search, and direct read execute through both toolsets\",\"then\":[\"both toolsets preserve unrestricted behavior for all three operations\"],\"forbidden\":[\"deny-all behavior\",\"different behavior between omitted and empty readablePaths\"]}],\"reviewRule\":\"For every test vector, identify concrete changed-source evidence for its given/when/then behavior and every forbidden observation. A marker, test title, or comment is not evidence. Reject globally if any vector is incomplete.\",\"changed\":[{\"path\":\"union-acceptance/readable-paths-protected.test.mjs\",\"after\":\"import { test } from 'node:test';\\nimport assert from 'node:assert';\\nimport { mkdtempSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';\\nimport { join } from 'node:path';\\nimport { tmpdir } from 'node:os';\\nimport { createAgentTools } from '../src/agent-tools.mjs';\\n\\nconst createFixture = () => {\\n  const root = mkdtempSync(join(tmpdir(), 'fc-'));\\n  mkdirSync(join(root, 'public/nested'), { recursive: true });\\n  mkdirSync(join(root, 'private'), { recursive: true });\\n  writeFileSync(join(root, 'public/match.txt'), 'needle');\\n  writeFileSync(join(root, 'private/secret.txt'), 'needle');\\n  writeFileSync(join(root, 'public/a.txt'), 'token');\\n  writeFileSync(join(root, 'public/nested/b.txt'), 'token');\\n  return root;\\n};\\n\\ntest('omitted-root-traversal', () => {\\n  const root = createFixture();\\n  try {\\n    const tools = createAgentTools({ root, readablePaths: ['public'] });\\n    const files = JSON.parse(tools.execute({ action: 'list_files' })).files;\\n    const hits = JSON.parse(tools.execute({ action: 'search', args: { query: 'needle' } })).hits;\\n    assert.ok(files.includes('public/match.txt'));\\n    assert.strictEqual(hits.length, 1);\\n    assert.strictEqual(hits[0].path, 'public/match.txt');\\n    const serialized = tools.execute({ action: 'list_files' });\\n    assert.strictEqual(serialized.includes('private/secret.txt'), false);\\n  } finally { rmSync(root, { recursive: true }); }\\n});\\n\\ntest('dot-root-traversal', () => {\\n  const root = createFixture();\\n  try {\\n    const tools = createAgentTools({ root, readablePaths: ['public'] });\\n    const files = JSON.parse(tools.execute({ action: 'list_files', args: { path: '.' } })).files;\\n    assert.ok(files.every(f => f.startsWith('public/')));\\n    const hits = JSON.parse(tools.execute({ action: 'search', args: { path: '.', query: 'needle' } })).hits;\\n    assert.ok(hits.every(h => h.path.startsWith('public/')));\\n  } finally { rmSync(root, { recursive: true }); }\\n});\\n\\ntest('directory-and-file-admission', () => {\\n  const root = createFixture();\\n  try {\\n    const toolsDir = createAgentTools({ root, readablePaths: ['public'] });\\n    const toolsFile = createAgentTools({ root, readablePaths: ['public/a.txt'] });\\n    assert.ok(JSON.parse(toolsDir.execute({ action: 'list_files', args: { path: 'public' } })).files.includes('public/nested/b.txt'));\\n    const fileHits = JSON.parse(toolsFile.execute({ action: 'search', args: { path: 'public/a.txt', query: 'token' } })).hits;\\n    assert.strictEqual(fileHits.length, 1);\\n    assert.strictEqual(fileHits[0].path, 'public/a.txt');\\n    const readRes = JSON.parse(toolsFile.execute({ action: 'read', args: { path: 'public/nested/b.txt' } }));\\n    assert.ok(readRes.error);\\n  } finally { rmSync(root, { recursive: true }); }\\n});\\n\\ntest('explicit-private-base-refusal', () => {\\n  const root = createFixture();\\n  try {\\n    const tools = createAgentTools({ root, readablePaths: ['public'] });\\n    const res = JSON.parse(tools.execute({ action: 'list_files', args: { path: 'private' } }));\\n    assert.ok(res.error);\\n    assert.strictEqual(res.files, undefined);\\n    assert.strictEqual(JSON.stringify(res).includes('private'), false);\\n    assert.strictEqual(JSON.stringify(res).includes('needle'), false);\\n  } finally { rmSync(root, { recursive: true }); }\\n});\\n\\ntest('unrestricted-compatibility', () => {\\n  const root = createFixture();\\n  try {\\n    const toolsOmit = createAgentTools({ root });\\n    const toolsEmpty = createAgentTools({ root, readablePaths: [] });\\n    assert.deepStrictEqual(JSON.parse(toolsOmit.execute({ action: 'list_files' })), JSON.parse(toolsEmpty.execute({ action: 'list_files' })));\\n  } finally { rmSync(root, { recursive: true }); }\\n});\"}],\"actions\":[],\"verificationPassing\":true}"
+      }
+    ],
+    "max-tokens": 650,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "required": [
+              "accepted",
+              "reason",
+              "missing",
+              "vectorVerdicts"
+            ],
+            "properties": {
+              "accepted": {
+                "type": "boolean"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 1200
+              },
+              "missing": {
+                "type": "array",
+                "maxItems": 16,
+                "items": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 300
+                }
+              },
+              "vectorVerdicts": {
+                "type": "array",
+                "minItems": 5,
+                "maxItems": 5,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "accepted",
+                    "missing"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "enum": [
+                        "omitted-root-traversal",
+                        "dot-root-traversal",
+                        "directory-and-file-admission",
+                        "explicit-private-base-refusal",
+                        "unrestricted-compatibility"
+                      ]
+                    },
+                    "accepted": {
+                      "type": "boolean"
+                    },
+                    "missing": {
+                      "type": "array",
+                      "maxItems": 8,
+                      "items": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 300
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 404 Not Found: {\"error\":{\"message\":\"This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct\",\"code\":404},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:404"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.563,
+    "denomination": "openrouter-api-requests"
+  }
+}

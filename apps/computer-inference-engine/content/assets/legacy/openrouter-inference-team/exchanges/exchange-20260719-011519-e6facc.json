@@ -1,0 +1,107 @@
+{
+  "id": "exchange-20260719-011519-e6facc",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON matching the contract. Review one proposed provider-side tender precondition; do not decide any award, customer usefulness, price, priority, or admission. Existing Node ESM function missingTenderTerms checks content-addressed lot identity, purpose-owning customer, requested changes, productContract shape (type plus unique nonempty required/prohibited/binding/validation arrays), roots, source digests, replay commands, ceilings, authority, effects, and valueAgreement. It currently Offered a historical bad lot: valueAgreement explicitly set staging=false, admission=false, installation=false, but productContract.type was AcceptedSoftwareDeliveryStagingReceipt+SoftwareDeliveryAdmissionReceipt and requiredFields were staging.type, staging.proposedProduct, staging.stagedTreeDigest, admission.type, admission.stagingReceipt, admission.grantDigest, etc. Human review found that contract described future receiver runtime receipts rather than the proposal-only receiver-service artifacts being developed. The corrected good lot retains staging=false/admission=false/installation=false but productContract.type is AcceptedSoftwareDeliveryReceiverServiceProduct; requiredFields are type, serviceIdentity, serviceRoot, operations, artifacts, artifactSetDigest, verificationEntrypoint, selfTestEntrypoint, nonclaims, resourceReceipt; prohibitedFields include stagingCapability, stagingReceipt, admissionGrant, admissionReceipt, installationReceipt; developmentProduct.type exactly matches productContract.type, serviceRoot is the sole ownedTargetRoot, installationState=proposed-only, selfBootstrapInstallationProhibited=true, receiverOwnedAdmissionRequired=true. Candidate gate: return conflicts separately from missing terms; normalize camelCase/dotted field tokens and flag a productContract type or required-field root that positively names staging, admission, or installation when the same valueAgreement boolean is exactly false; additionally, when developmentProduct exists, require its type to equal productContract.type, its serviceRoot to be one ownedTargetRoot, and proposed-only/self-bootstrap fields to agree with false installation terms. Evaluate mechanical fidelity and false-positive risk. Recommend the smallest safer checks that reject the exact bad lot and preserve the exact good lot. Human semantics must remain outside the gate."
+      }
+    ],
+    "max-tokens": 900,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "required": [
+              "verdict",
+              "badLotDetected",
+              "goodLotPreserved",
+              "recommendedChecks",
+              "unsafeChecks",
+              "principalRisk",
+              "humanJudgmentRetained"
+            ],
+            "properties": {
+              "verdict": {
+                "type": "string",
+                "enum": [
+                  "adopt-bounded-gate",
+                  "narrow-gate",
+                  "do-not-mechanize"
+                ]
+              },
+              "badLotDetected": {
+                "type": "boolean"
+              },
+              "goodLotPreserved": {
+                "type": "boolean"
+              },
+              "recommendedChecks": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 300
+                }
+              },
+              "unsafeChecks": {
+                "type": "array",
+                "maxItems": 8,
+                "items": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 300
+                }
+              },
+              "principalRisk": {
+                "type": "string",
+                "minLength": 20,
+                "maxLength": 500
+              },
+              "humanJudgmentRetained": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "award",
+                    "customer-usefulness",
+                    "price",
+                    "budget",
+                    "priority",
+                    "exception",
+                    "staging-authority",
+                    "admission-authority",
+                    "installation-authority",
+                    "deployment"
+                  ]
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 429 Too Many Requests: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"meta-llama/llama-3.3-70b-instruct:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Venice\",\"is_byok\":false,\"retry_after_seconds\":9,\"retry_after_seconds_raw\":8.966,\"headers\":{\"Retry-After\":\"9\"}}},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:429"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.683,
+    "denomination": "openrouter-api-requests"
+  }
+}

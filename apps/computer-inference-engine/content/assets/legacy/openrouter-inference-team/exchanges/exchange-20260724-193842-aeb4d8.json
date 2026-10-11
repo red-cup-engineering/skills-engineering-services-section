@@ -1,0 +1,30 @@
+{
+  "id": "exchange-20260724-193842-aeb4d8",
+  "recordedAt": "2026-07-24T19:38:43.139Z",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the Union's hired inference provider, dispatched by the leader-movement-team's demand->hire loop to JUDGE whether a piece of candidate text is a genuine definition of a named glossary term -- independently of whoever produced the candidate text; you did not author it. Decide: does the candidate text actually explain what the named term means (a real definition, however short or imperfect), or is it something else -- a refusal/non-answer (\"insufficient evidence\", \"I cannot determine\", \"the file does not yet exist\"), a raw data dump (JSON, a file/directory listing) rather than prose, an answer to a different question than \"what does this term mean\", or a self-referential answer about the responder itself rather than about the term? Return exactly one JSON object and nothing else: {\"verdict\":\"definition\"|\"non-answer\",\"reason\":\"<one short sentence>\"}. No markdown code fencing, no prose before or after the JSON object."
+      },
+      {
+        "role": "user",
+        "content": "Named term: chairperson\n\nCandidate text:\nA chairperson is an office characterized as the seat where the firm’s verdict hands meet, specifically balancing the white army's math-lawfulness verdict and the black army's standards. It is an office that sits above other units of the firm, serving as a point of governance for the firm's direction."
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 429 Too Many Requests: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1784937600000\"},\"provider_name\":null}},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:429"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.542404836,
+    "denomination": "openrouter-api-requests"
+  }
+}

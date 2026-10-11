@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:harmonious-union:schema:form-context-packet-result:1",
+  "type": "object",
+  "required": ["id", "profile", "objective", "createdBy", "segments", "knowledge"],
+  "properties": {"id": {"type": "string"}, "profile": {"const": "org.harmonious-union.context-packet.v1"}, "objective": {"type": "string"}, "createdBy": {"type": "string"}, "segments": {"type": "array"}, "knowledge": {"type": "array"}},
+  "additionalProperties": false
+}

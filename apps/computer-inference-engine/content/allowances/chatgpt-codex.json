@@ -1,0 +1,24 @@
+{
+  "id": "chatgpt-codex",
+  "account": "urn:ame:561-group-chatgpt-account",
+  "product": "codex",
+  "carries": [
+    "gpt-"
+  ],
+  "unit": "percent-of-window",
+  "draws": "every",
+  "admits": "open",
+  "because": "The ChatGPT Pro plan carries Codex usage under rate-limit windows the CLI states on every turn (its token_count event's rate_limits: the primary window of 10080 minutes, used_percent and resets_at, observed 2026-10-03). Work is admitted while a window is not exhausted. Every Codex session on this account draws on it, the work rail's and the desktop app's alike, so its level is read from the statement and never summed from the house's own sessions. A session's share of the window is not stated; readings against sessions teach it.",
+  "meters": [
+    {
+      "id": "primary",
+      "law": "stated",
+      "hours": 168,
+      "budget": 100,
+      "because": "the weekly window Codex states as primary (window_minutes 10080)"
+    }
+  ],
+  "costs": {
+    "session": null
+  }
+}

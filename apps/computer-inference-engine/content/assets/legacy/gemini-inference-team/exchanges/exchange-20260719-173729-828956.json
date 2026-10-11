@@ -1,0 +1,59 @@
+{
+  "id": "exchange-20260719-173729-828956",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return only JSON matching the schema. Examine category boundaries: deterministic derivation versus model inference, provider output versus customer assay, and EVM commitment versus truth."
+      },
+      {
+        "role": "user",
+        "content": "Given this mechanism: witnessed token/claim work and capability lots; FCA derives deterministic-service cover; compatible positive-integer ActivityStreams offers are ranked; an EVM Chu-Hoare seam binds the selected provider actor; provider returns a result; a customer-owned assayer independently accepts or withholds it; an effect receipt commits the customer assay; only typed no-cover residue can reach a language model, whose output remains pending customer assay. Finance and keccak256 both close through scripts with zero model calls, and repeated Finance runs assign a witnessed amortization claim to the work-class token. JSON is a replay projection, not authority. State whether the boundaries are preserved and list up to three residual risks. Do not suggest global orchestration or model-first dispatch."
+      }
+    ],
+    "max-tokens": 700,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"boundary_preservation\": {\n    \"deterministic_versus_inference\": \"Preserved\",\n    \"provider_versus_customer_assay\": \"Preserved\",\n    \"evm_commitment_versus_truth\": \"Preserved\"\n  },\n  \"residual_risks\": [\n    \"Oracle failure: discrepancy between off-chain result and customer-owned assayer logic creates state divergence\",\n    \"Gas-exhaustion: repeated Finance amortization scripts may fail during re-entry, leading to claim-token orphan states\",\n    \"Semantic drift: high-entropy model output outside the no-cover residue may inadvertently influence downstream assayer validation\"\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"boundary_preservation\": {\n    \"deterministic_versus_inference\": \"Preserved\",\n    \"provider_versus_customer_assay\": \"Preserved\",\n    \"evm_commitment_versus_truth\": \"Preserved\"\n  },\n  \"residual_risks\": [\n    \"Oracle failure: discrepancy between off-chain result and customer-owned assayer logic creates state divergence\",\n    \"Gas-exhaustion: repeated Finance amortization scripts may fail during re-entry, leading to claim-token orphan states\",\n    \"Semantic drift: high-entropy model output outside the no-cover residue may inadvertently influence downstream assayer validation\"\n  ]\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPb/s8zPw85seofa9SD4apicOFn4YVtwwHSXkofCs6Q1r31oThMeh+EypgUuwg"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784482650,
+      "id": "WQtdav7wJ_zE-sAP3syBuAY",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 146,
+        "prompt_tokens": 187,
+        "total_tokens": 333
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.247,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

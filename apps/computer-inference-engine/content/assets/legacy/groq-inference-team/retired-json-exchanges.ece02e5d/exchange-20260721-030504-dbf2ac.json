@@ -1,0 +1,60 @@
+{
+  "id": "exchange-20260721-030504-dbf2ac",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"basis\":{\"minLength\":8,\"type\":\"string\"}},\"required\":[\"accepted\",\"basis\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"context\":{\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\",\"desiredUse\":\"Return one advisory candidate for independent Codex inspection, testing, and acceptance.\",\"objective\":\"State whether a schema-conformant inference candidate is already customer acceptance, and give the governing reason.\",\"suppliedContext\":\"The provider returns an advisory candidate. The customer-side service validates only the candidate JSON against a customer-owned schema. The Codex customer still owns source inspection, tests, semantic judgment, and integration.\"},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"basis\":{\"minLength\":8,\"type\":\"string\"}},\"required\":[\"accepted\",\"basis\"],\"type\":\"object\"}},\"residue\":{\"customerAcceptanceRequired\":true,\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:work-lot:codex:cc5827e0-0a70-44af-b0ff-d8c26275cd63\"},\"workLot\":{\"id\":\"urn:work-lot:codex:cc5827e0-0a70-44af-b0ff-d8c26275cd63\",\"producer\":\"urn:codex:project-session\"}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\"accepted\": false, \"basis\": \"Insufficient deterministic resolver\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-608376ed-3646-4e86-b43c-57b4c1345992",
+      "object": "chat.completion",
+      "created": 1784603104,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\"accepted\": false, \"basis\": \"Insufficient deterministic resolver\"}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.006240756,
+        "prompt_tokens": 387,
+        "prompt_time": 0.034271146,
+        "completion_tokens": 15,
+        "completion_time": 0.03603428,
+        "total_tokens": 402,
+        "total_time": 0.070305426
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_e2c608b1d6",
+      "x_groq": {
+        "id": "req_01ky1a4my9ec6r9zvdw3n4vveq",
+        "seed": 734702443
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.34687757799999996,
+    "denomination": "groq-api-requests"
+  }
+}

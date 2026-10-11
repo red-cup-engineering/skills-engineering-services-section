@@ -18,7 +18,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@red-cup-engineering/skills-services-section": "0.1.0"
+    "@red-cup-engineering/skills-services-section": "workspace:*"
   },
   "engines": {
     "node": ">=22"

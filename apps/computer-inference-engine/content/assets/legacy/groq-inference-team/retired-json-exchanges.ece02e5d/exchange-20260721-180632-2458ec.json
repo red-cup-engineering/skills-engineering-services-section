@@ -1,0 +1,60 @@
+{
+  "id": "exchange-20260721-180632-2458ec",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"properties\":{\"boardPins\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"boundaries\":{\"items\":{\"properties\":{\"faculty\":{\"type\":\"string\"},\"hires\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"id\":{\"type\":\"string\"},\"owns\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"}},\"required\":[\"id\",\"faculty\",\"owns\",\"hires\"],\"type\":\"object\"},\"type\":\"array\"},\"delete\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"}},\"required\":[\"boundaries\",\"boardPins\",\"delete\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:work-lot:codex:791307aa-0efd-46cb-bb16-bed54fbc91fb\",\"producer\":\"urn:ame:algora-recovery-pilot\"},\"context\":{\"objective\":\"Derive the minimal complete sovereign die decomposition and typed board pin sequence for the measured Algora software-work circuit. Do not propose wrappers, certification, compatibility, or duplicated provider faculties.\",\"suppliedContext\":\"Constitution: one enterprise is one sovereign faculty/die; a board is a circuit of hired dies. Cross-membrane use is explicit contract/A2A, never direct source import. Existing providers own inference market, RMN conformance, and RWIL/RDF. Current groups: monitor fetch/parse/reputation/trust; analyze qualification; decision Bayesian scoring/allocation; solver repo read/locate/inference/edit/static check with illegal free-compute imports; execute GitHub API/Actions/local execution with illegal imports/raw token/unsafe-local; prepare/post attempt and GitHub posting; witness RWIL/cost; root planner/orchestrator/CLI. Every operation needs one owner and complete parent pin order. Identify deletions.\",\"desiredUse\":\"Return one advisory candidate for independent Codex inspection, testing, and acceptance.\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:work-lot:codex:791307aa-0efd-46cb-bb16-bed54fbc91fb\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"properties\":{\"boardPins\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"boundaries\":{\"items\":{\"properties\":{\"faculty\":{\"type\":\"string\"},\"hires\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"id\":{\"type\":\"string\"},\"owns\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"}},\"required\":[\"id\",\"faculty\",\"owns\",\"hires\"],\"type\":\"object\"},\"type\":\"array\"},\"delete\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"}},\"required\":[\"boundaries\",\"boardPins\",\"delete\"],\"type\":\"object\"}}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"boardPins\": [],\n  \"boundaries\": [\n    {\n      \"id\": \"urn:work-lot:codex:791307aa-0efd-46cb-bb16-bed54fbc91fb\",\n      \"faculty\": \"urn:ame:algora-recovery-pilot\",\n      \"owns\": [\"urn:ame:algora-recovery-pilot\"],\n      \"hires\": []\n    }\n  ],\n  \"delete\": []\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-4865d2aa-e498-4291-81ec-a8a2501432d2",
+      "object": "chat.completion",
+      "created": 1784657193,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"boardPins\": [],\n  \"boundaries\": [\n    {\n      \"id\": \"urn:work-lot:codex:791307aa-0efd-46cb-bb16-bed54fbc91fb\",\n      \"faculty\": \"urn:ame:algora-recovery-pilot\",\n      \"owns\": [\"urn:ame:algora-recovery-pilot\"],\n      \"hires\": []\n    }\n  ],\n  \"delete\": []\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.012775437,
+        "prompt_tokens": 653,
+        "prompt_time": 0.063827689,
+        "completion_tokens": 100,
+        "completion_time": 0.15209457,
+        "total_tokens": 753,
+        "total_time": 0.215922259
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01ky2xqa6vfdethxrqw8qvfxa8",
+        "seed": 1736244488
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.800186383,
+    "denomination": "groq-api-requests"
+  }
+}

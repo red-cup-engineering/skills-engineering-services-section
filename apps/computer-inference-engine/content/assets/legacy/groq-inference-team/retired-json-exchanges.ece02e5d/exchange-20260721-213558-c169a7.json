@@ -1,0 +1,60 @@
+{
+  "id": "exchange-20260721-213558-c169a7",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"missing\":{\"items\":{\"maxLength\":300,\"minLength\":2,\"type\":\"string\"},\"maxItems\":16,\"type\":\"array\"},\"reason\":{\"maxLength\":1200,\"minLength\":5,\"type\":\"string\"}},\"required\":[\"accepted\",\"reason\",\"missing\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:test:live-semantic-review:semantic-review:1:57936f0a-3858-41e3-a148-4f328c9d65e5\",\"producer\":\"urn:ame:semantic-candidate-review-service\"},\"context\":{\"objective\":\"Independently review software candidate urn:test:live-semantic-review:semantic-review:1:57936f0a-3858-41e3-a148-4f328c9d65e5\",\"suppliedContext\":\"{\\\"messages\\\":[{\\\"role\\\":\\\"system\\\",\\\"content\\\":\\\"Independently review whether a verification-passing source change actually satisfies the stated objective, every constraint, and every structured test vector. A vector id in a title or comment is not coverage. For each vector, locate assertions that exercise its when operation and prove all then and forbidden clauses. Reject globally if any vector is incomplete. Judge only supplied evidence. Return contracted JSON.\\\"},{\\\"role\\\":\\\"user\\\",\\\"content\\\":\\\"{\\\\\\\"objective\\\\\\\":\\\\\\\"Verify that the candidate exports the Boolean constant exact with value true.\\\\\\\",\\\\\\\"constraints\\\\\\\":[],\\\\\\\"writablePaths\\\\\\\":[\\\\\\\"source.mjs\\\\\\\"],\\\\\\\"testVectors\\\\\\\":[],\\\\\\\"reviewRule\\\\\\\":\\\\\\\"For every test vector, identify concrete changed-source evidence for its given/when/then behavior and every forbidden observation. A marker, test title, or comment is not evidence. Reject globally if any vector is incomplete.\\\\\\\",\\\\\\\"changed\\\\\\\":[{\\\\\\\"path\\\\\\\":\\\\\\\"source.mjs\\\\\\\",\\\\\\\"after\\\\\\\":\\\\\\\"export const exact = true;\\\\\\\"}],\\\\\\\"actions\\\\\\\":[{\\\\\\\"action\\\\\\\":\\\\\\\"edit\\\\\\\",\\\\\\\"args\\\\\\\":{\\\\\\\"path\\\\\\\":\\\\\\\"source.mjs\\\\\\\"}}],\\\\\\\"verificationPassing\\\\\\\":true}\\\"}],\\\"boundary\\\":\\\"Return one advisory review; do not claim customer acceptance.\\\"}\",\"desiredUse\":\"Supply one evidence-bound semantic verdict for a customer-owned quorum.\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:test:live-semantic-review:semantic-review:1:57936f0a-3858-41e3-a148-4f328c9d65e5\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"accepted\":{\"type\":\"boolean\"},\"missing\":{\"items\":{\"maxLength\":300,\"minLength\":2,\"type\":\"string\"},\"maxItems\":16,\"type\":\"array\"},\"reason\":{\"maxLength\":1200,\"minLength\":5,\"type\":\"string\"}},\"required\":[\"accepted\",\"reason\",\"missing\"],\"type\":\"object\"}}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\"accepted\":false,\"missing\":[\"No customer-local resolver covered this context-complete bounded derivation\"],\"reason\":\"No deterministic customer-local resolver covered this context-complete bounded derivation\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-627a53af-b4da-4497-9174-6ecc448908aa",
+      "object": "chat.completion",
+      "created": 1784669758,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\"accepted\":false,\"missing\":[\"No customer-local resolver covered this context-complete bounded derivation\"],\"reason\":\"No deterministic customer-local resolver covered this context-complete bounded derivation\"}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.085097485,
+        "prompt_tokens": 742,
+        "prompt_time": 0.093587885,
+        "completion_tokens": 33,
+        "completion_time": 0.10669409,
+        "total_tokens": 775,
+        "total_time": 0.200281975
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01ky39ps7kese98te8y0393tqx",
+        "seed": 191152461
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.523630137,
+    "denomination": "groq-api-requests"
+  }
+}

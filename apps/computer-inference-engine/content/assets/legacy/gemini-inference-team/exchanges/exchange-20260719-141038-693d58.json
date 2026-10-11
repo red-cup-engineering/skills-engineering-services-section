@@ -1,0 +1,107 @@
+{
+  "id": "exchange-20260719-141038-693d58",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Review an autonomous coding context packet against territory boundaries and local-to-global engineering correctness. Return only the contracted JSON."
+      },
+      {
+        "role": "user",
+        "content": "Repository prior art says a context packet must be self-contained, have machine-checkable goals, lane boundaries, resolvable citations, and an output contract. Settlement law says do not collapse protected borders; the gyrobifastigial audit separates territory, local claims, evaluation, traversal, transport, defect, constitution, and market rather than treating them as one carrier. The coding packet will preload exact focus source/test bytes and local instruction/interface artifacts, name read/write boundaries and machine checks, report baseline failure residue, and keep inference output to one tool action while the host computes digests/tests. Critique whether this carries enough local law and interface evidence without importing unrelated enterprise doctrine into a bounded code repair."
+      }
+    ],
+    "max-tokens": 1400,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "required": [
+              "requiredInPacket",
+              "mustRemainHostComputed",
+              "borderRisks",
+              "acceptanceTests"
+            ],
+            "properties": {
+              "requiredInPacket": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2,
+                "maxItems": 10
+              },
+              "mustRemainHostComputed": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2,
+                "maxItems": 10
+              },
+              "borderRisks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "maxItems": 8
+              },
+              "acceptanceTests": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 3,
+                "maxItems": 10
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"requiredInPacket\": [\n    \"source_manifest\",\n    \"test_vectors\",\n    \"interface_definition\",\n    \"machine_check_goals\",\n    \"output_contract\"\n  ],\n  \"mustRemainHostComputed\": [\n    \"integrity_digests\",\n    \"test_suite_execution\",\n    \"baseline_residue_analysis\",\n    \"boundary_validation\"\n  ],\n  \"borderRisks\": [\n    \"unauthorized_dependency_injection\",\n    \"context_pollution\",\n    \"non_deterministic_inference_leakage\"\n  ],\n  \"acceptanceTests\": [\n    \"verify_self_containment_of_source\",\n    \"validate_interface_boundary_adherence\",\n    \"confirm_single_tool_output_action\",\n    \"verify_machine_check_predicate_resolution\",\n    \"audit_separation_of_territory_claims\"\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"requiredInPacket\": [\n    \"source_manifest\",\n    \"test_vectors\",\n    \"interface_definition\",\n    \"machine_check_goals\",\n    \"output_contract\"\n  ],\n  \"mustRemainHostComputed\": [\n    \"integrity_digests\",\n    \"test_suite_execution\",\n    \"baseline_residue_analysis\",\n    \"boundary_validation\"\n  ],\n  \"borderRisks\": [\n    \"unauthorized_dependency_injection\",\n    \"context_pollution\",\n    \"non_deterministic_inference_leakage\"\n  ],\n  \"acceptanceTests\": [\n    \"verify_self_containment_of_source\",\n    \"validate_interface_boundary_adherence\",\n    \"confirm_single_tool_output_action\",\n    \"verify_machine_check_predicate_resolution\",\n    \"audit_separation_of_territory_claims\"\n  ]\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPweBSfpUOh0y6IzPwbz2c0dqj34vIi81yaaz6rz6DsxSvG0li5vM+bKwq7JW1"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784470239,
+      "id": "3tpcaovZD5n3jrEPo8CwqQ8",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 213,
+        "prompt_tokens": 169,
+        "total_tokens": 382
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.456,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

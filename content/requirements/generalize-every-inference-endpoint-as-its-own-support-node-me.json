@@ -1,0 +1,36 @@
+{
+  "id": "generalize-every-inference-endpoint-as-its-own-support-node-me",
+  "name": "generalize every inference endpoint as its own support node me",
+  "kind": "requirement",
+  "raised-by": "emsenn",
+  "asks": "The idea Chairperson Sennhauser has, that motivates this, is the better establisment of an ability for there to be an Internal Market between nodes such that nodes can hire our new NotebookLM Support Node ME for when they want to use it for their inference; as part fo a general transition toward making each type of inference endpoint or software we use that requires specialized software for being its own Support Node that can be communicated with via its own ActivityPub inbox, and communicate back via the same. There is significant prior research on doing just this within MetroPlex and agential-relationality, which I guess suggests an idea to stand those up as services that can provide two different forms of API, but I think that is probably a bad idea. [emsenn, session of 2026-07-16, multi-idea prompt on Rendanheyi EMC formalization]",
+  "from-idea": "emsenn/idea/generalize-every-inference-endpoint-as-its-own-support-node-me",
+  "met-when": [
+    {
+      "cell": "generalize-every-inference-endpoint-as-its-own-support-node-me:conditions-stated",
+      "target": "held"
+    }
+  ],
+  "x-provenance": {
+    "recorded-by": "561-group capture session (claude session 017x7ZhpkZQAx5VZSv2Hz5Q9)",
+    "recorded-on": "2026-10-10",
+    "sources": [
+      {
+        "words": "The idea Chairperson Sennhauser has, that motivates this, is the better establisment of an ability for there to be an Internal Market between nodes such that nodes can hire our new NotebookLM Support Node ME for when they want to use it for their inference; as part fo a general transition toward making each type of inference endpoint or software we use that requires specialized software for being its own Support Node that can be communicated with via its own ActivityPub inbox, and communicate back via the same. There is significant prior research on doing just this within MetroPlex and agential-relationality, which I guess suggests an idea to stand those up as services that can provide two different forms of API, but I think that is probably a bad idea. [emsenn, session of 2026-07-16, multi-idea prompt on Rendanheyi EMC formalization]",
+        "at": "2026-07-17",
+        "locator": "lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/lib/legacy/restored-from-main/2026-09-13-ccf2d7a/services/561-group-enterprise-services-section/services/561-group-board-of-directors/lib/legacy/2026-08-03-executive-office/data/records/ideas/ideas/generalize-every-inference-endpoint-as-its-own-support-node-me.json"
+      }
+    ],
+    "carried-from-idea-record": "lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/lib/legacy/restored-from-main/2026-09-13-ccf2d7a/services/561-group-enterprise-services-section/services/561-group-board-of-directors/lib/legacy/2026-08-03-executive-office/data/records/ideas/ideas/generalize-every-inference-endpoint-as-its-own-support-node-me.json",
+    "pending-conditions": "Carried from the 2026-07 executive office's idea record under ideas-dispose-through-the-requirement-term; no met-when that exercises this idea's capability has been stated yet. The owning section states it.",
+    "linked-carriers": [],
+    "coverage": "lib/emsenn/services/561-group/services/public-services-section/services/personal-services-section/services/emsenn-services-section/data/records/leader-utterances/coverage/executive-office-ideas-2026-07.md",
+    "idea-record-fields": {
+      "prompted-by": "emsenn/idea/notebooklm-as-a-micro-enterprise"
+    },
+    "sign-cell": {
+      "type": "emsenn/schema/requirement",
+      "mark": "ni:///sha-256;5Schr9-HrVx0YMavQPcNENucVWD67q_VLr-DaevBYXw"
+    }
+  }
+}

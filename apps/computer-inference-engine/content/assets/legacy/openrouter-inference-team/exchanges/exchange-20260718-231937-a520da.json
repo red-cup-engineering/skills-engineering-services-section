@@ -1,0 +1,25 @@
+{
+  "id": "exchange-20260718-231937-a520da",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Perform a rigorous source-only code review of this concurrent dispatcher excerpt. Return exactly JSON {\"verdict\":\"safe\"|\"defect\",\"raceOrInvariant\":string,\"executionTrace\":[string,string,string],\"minimalRegressionTest\":string}. Identify one real issue if present; otherwise state the strongest invariant. Do not propose broad redesigns.\n\nconst waiters = [];\nconst notify = () => { for (const resolve of waiters.splice(0)) resolve(); };\nconst waitForRelease = () => new Promise((resolve) => waiters.push(resolve));\nasync function jobRun(job) {\n  const candidates = quotes.plan.map((quote) => ({ quote, endpoint: endpoints.find((endpoint) => endpoint.id === quote.endpoint) }));\n  while (candidates.length && attempts.length < attemptsMax) {\n    const candidate = candidates.find(({ endpoint }) => state.get(endpoint.id).inFlight < (endpoint.concurrency ?? 1));\n    if (!candidate) { await waitForRelease(); continue; }\n    const { endpoint } = candidate, s = state.get(endpoint.id);\n    s.inFlight += 1;\n    try { await invokeEndpoint(endpoint, job); }\n    finally { s.inFlight -= 1; notify(); }\n  }\n}\nawait Promise.all(Array.from({ length: global }, async () => { while (index < queue.length) { const job = queue[index++]; const record = await jobRun(job); records.push(record); await options.onRecord?.(record); } }));"
+      }
+    ],
+    "max-tokens": 420
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 429 Too Many Requests: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"meta-llama/llama-3.3-70b-instruct:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Venice\",\"is_byok\":false,\"retry_after_seconds\":13,\"retry_after_seconds_raw\":12.919,\"headers\":{\"Retry-After\":\"13\"}}},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:429"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.373,
+    "denomination": "openrouter-api-requests"
+  }
+}

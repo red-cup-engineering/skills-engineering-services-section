@@ -1,0 +1,50 @@
+{
+  "id": "exchange-20260718-231926-f78553",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Answer this source-grounded inquiry: how can historical outcome records alter later endpoint choice? Return exactly JSON {\"key\":string,\"attemptsEffect\":string,\"successEffect\":string,\"routeEffect\":string}. Each value must reference an identifier or formula fragment from the excerpt.\n\nconst observation = observationFor(observations, endpoint.id, job.workType);\nconst smoothedPrior = observation ? (observation.successes + basePrior * 2) / (observation.attempts + 2) : basePrior;\nconst pSuccess = clamp(smoothedPrior * (1 - difficulty.difficulty * difficultyPenalty), 0.01, 0.999);\nconst totalAttemptCost = componentCost + latencyShadowCost;\nexpectedResolutionCost: totalAttemptCost / pSuccess\nconst ordered = selected.sort((a, b) => a.expectedResolutionCost - b.expectedResolutionCost || a.endpoint.localeCompare(b.endpoint));"
+      }
+    ],
+    "max-tokens": 260
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\"key\":\"historical outcome records\",\"attemptsEffect\":\"observation.attempts + 2\",\"successEffect\":\"observation.successes + basePrior * 2\",\"routeEffect\":\"a.expectedResolutionCost - b.expectedResolutionCost\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\"key\":\"historical outcome records\",\"attemptsEffect\":\"observation.attempts + 2\",\"successEffect\":\"observation.successes + basePrior * 2\",\"routeEffect\":\"a.expectedResolutionCost - b.expectedResolutionCost\"}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPEjB2q86N+498U8tWEY8PWhp9Was+zQJAS0j0N6IHBzxQX77Hai7QDlLTHfl3"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784416766,
+      "id": "_glcauSTILzejrEP45rIwAg",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 46,
+        "prompt_tokens": 198,
+        "total_tokens": 244
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.687,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

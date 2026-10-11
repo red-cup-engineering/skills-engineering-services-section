@@ -1,0 +1,34 @@
+{
+  "id": "exchange-20260719-173228-2d11ac",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an independent architecture examiner. Return only JSON matching the supplied schema. Distinguish commitment/authority from truth, provider output from customer assay, deterministic service derivation from language-model inference, and protocol records from authoritative semantic claims."
+      },
+      {
+        "role": "user",
+        "content": "Review this bounded implementation design for category errors. A customer authors a witnessed token/claim work lot committing its context. Witnessed ServiceCapabilityClaim lots assign provider/contract tokens to typed capabilities with availability=unknown and targetAcceptanceRequired=true. PyMetroLogic FCA derives the extent covering intent plus execution-class:deterministic-service. Only candidates in that extent receive ActivityStreams solicitations; comparable positive-integer offers are ranked by price. A Chu-Hoare effect cell must name the selected service-token actor as provider. Both enterprises sign off-chain EIP-712 authority, then separately sign and close a HolonomySeamLedger entry; execution independently reads isClosed. The selected provider returns a result. A customer-supplied assayer function, not provider output, emits CustomerResultAssay{assay,accepted,basis}; the effect receipt commits those customer assay bytes. Finance uses a customer-recomputed commodity-lot assay. Cryptographic keccak256 uses a customer-owned published-vector comparison. Both spend zero model calls. If FCA has no extent or no live comparable offer, a typed UnresolvedTokenClaimResidue alone may be offered to LISS; model output remains candidate-pending-customer-assay. JSON/Node are replayable projections; EVM binds the traversal but does not prove truth. Identify any remaining category error or authority leak in this design, without proposing a global registry or model-first dispatcher."
+      }
+    ],
+    "max-tokens": 900,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 404 Not Found: {\"error\":{\"message\":\"This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct\",\"code\":404},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:404"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.47,
+    "denomination": "openrouter-api-requests"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "exchange-20260718-235554-7d97bc",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return JSON {\"paths\":[string]}. Extract path segments from `content/exchanges/locator.json`."
+      }
+    ],
+    "max-tokens": 90,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"paths\": [\n      \"content\",\n      \"exchanges\",\n      \"locator.json\"\n   ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-7881e752-106a-4527-a89b-9120d4627870",
+      "object": "chat.completion",
+      "created": 1784418957,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"paths\": [\n      \"content\",\n      \"exchanges\",\n      \"locator.json\"\n   ]\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.005323336,
+        "prompt_tokens": 71,
+        "prompt_time": 0.004542891,
+        "completion_tokens": 43,
+        "completion_time": 0.078364933,
+        "total_tokens": 114,
+        "total_time": 0.082907824
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01kxvtgybnf3y97tmfgwd8wsnv",
+        "seed": 1880777064
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.34,
+    "denomination": "groq-api-requests"
+  }
+}

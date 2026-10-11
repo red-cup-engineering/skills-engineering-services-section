@@ -1,0 +1,62 @@
+{
+  "id": "exchange-20260718-235559-f09d20",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return JSON {\"summary\":string}. Summarize: observations count attempts and nonempty completion texts as successes."
+      }
+    ],
+    "max-tokens": 100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"summary\": \"Observed {count} successes out of {attempts} attempts.\"\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-d20c3e4d-8333-4b44-a702-e658d4a20b26",
+      "object": "chat.completion",
+      "created": 1784418959,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"summary\": \"Observed {count} successes out of {attempts} attempts.\"\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.005698086,
+        "prompt_tokens": 73,
+        "prompt_time": 0.00420359,
+        "completion_tokens": 21,
+        "completion_time": 0.03080628,
+        "total_tokens": 94,
+        "total_time": 0.03500987
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_e2c608b1d6",
+      "x_groq": {
+        "id": "req_01kxvth0eyf40s8vsd43m76788",
+        "seed": 582843190
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.283,
+    "denomination": "groq-api-requests"
+  }
+}

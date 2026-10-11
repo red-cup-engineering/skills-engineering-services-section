@@ -1,0 +1,76 @@
+{
+  "id": "exchange-20260719-045503-df7c0a",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Classify the supplied work item as finance, software, or operations. Return only JSON matching the supplied schema."
+      },
+      {
+        "role": "user",
+        "content": "The invoice total is due on the fifteenth and must be reconciled against the purchase order."
+      }
+    ],
+    "max-tokens": 32,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "const": "finance"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"label\": \"finance\"\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"label\": \"finance\"\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPZLrw5/ooZT5FtZgE8pNK8RFJJqE/y90B4AKRmhcbU/b/5e7y5gWqrUgbePkI"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784436906,
+      "id": "qlhcaqmCE9utjrEPx7n44AM",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 11,
+        "prompt_tokens": 41,
+        "total_tokens": 52
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.675,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

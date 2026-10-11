@@ -1,0 +1,60 @@
+{
+  "id": "exchange-20260721-034210-cba729",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"antiPatterns\":{\"items\":{\"type\":\"string\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"firstDistributedProof\":{\"items\":{\"type\":\"string\"},\"maxItems\":10,\"minItems\":4,\"type\":\"array\"},\"missingSeams\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"carrier\":{\"type\":\"string\"},\"seam\":{\"type\":\"string\"},\"why\":{\"type\":\"string\"}},\"required\":[\"seam\",\"why\",\"carrier\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"ownership\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"faculty\":{\"type\":\"string\"},\"owner\":{\"type\":\"string\"}},\"required\":[\"faculty\",\"owner\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"}},\"required\":[\"missingSeams\",\"ownership\",\"firstDistributedProof\",\"antiPatterns\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"context\":{\"messages\":[{\"content\":\"Identify the smallest protocol seams that turn these existing sovereign variants into distributed recursive improvement. Do not propose a global orchestrator.\",\"role\":\"system\"},{\"content\":\"Observed existing sovereign variants:\\n1. free-compute-dev: persistent mission queue, parallel isolated actors, competing cloud planners, customer verification/integration, trajectory recall, resolver promotion. It has no installed/running worker and no ActivityStreams/A2A service ingress. Its pipeline currently escalates failed cheap rounds to difficulty 0.72 and learns to bypass base rounds.\\n2. Software Development Services Section: customer tenders, provider-authored bundles, exact capabilities, customer acceptance, provider-local MAPE-K mutation guard. It is a separate enterprise and may not be its own customer.\\n3. inference-work-lot-service: customer-side typed provider offer comparison and direct selected-provider A2A settlement.\\n4. Clockkeeper: live exact-operation pulse delivery only; never owns work.\\n5. recursive observation circuit synthesis/fabrication and RMN/WIT/RWIL assays are live sovereign providers.\\n6. Cloud Groq/NVIDIA/Gemini/Claude providers are live. Local NPU provider is advertised but its Lemonade endpoint is unavailable.\\nConstraints: no global queue, central scheduler, umbrella runtime, or primary implementation. Existing software-production enterprises must compete. Target economics are frontier model -> smaller models -> induced deterministic scripts, never cheap failure -> expensive model. Autonomous operation must continue with no Codex sessions.\",\"role\":\"user\"}],\"purpose\":\"Produce one candidate for independent free-compute-dev assay and bounded tool execution.\",\"supplierExclusions\":[\"urn:ame:bare-cedar-fog-npu-inference-team\",\"urn:ame:gemini-inference-team\",\"urn:ame:nvidia-inference-team\",\"urn:ame:claude-code-inference-team\"]},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"antiPatterns\":{\"items\":{\"type\":\"string\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"firstDistributedProof\":{\"items\":{\"type\":\"string\"},\"maxItems\":10,\"minItems\":4,\"type\":\"array\"},\"missingSeams\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"carrier\":{\"type\":\"string\"},\"seam\":{\"type\":\"string\"},\"why\":{\"type\":\"string\"}},\"required\":[\"seam\",\"why\",\"carrier\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"},\"ownership\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"faculty\":{\"type\":\"string\"},\"owner\":{\"type\":\"string\"}},\"required\":[\"faculty\",\"owner\"],\"type\":\"object\"},\"maxItems\":8,\"minItems\":3,\"type\":\"array\"}},\"required\":[\"missingSeams\",\"ownership\",\"firstDistributedProof\",\"antiPatterns\"],\"type\":\"object\"}},\"residue\":{\"customerAcceptanceRequired\":true,\"reason\":\"no deterministic resolver covered the next context-complete work move\",\"type\":\"TypedWorkInferenceResidue\",\"workLot\":\"urn:work-lot:distributed-rsi-seam-audit:groq:v2\"},\"workLot\":{\"id\":\"urn:work-lot:distributed-rsi-seam-audit:groq:v2\",\"producer\":\"urn:ame:free-compute-dev\"}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"antiPatterns\": [],\n  \"firstDistributedProof\": [\n    \"persistent mission queue\",\n    \"parallel isolated actors\",\n    \"competing cloud planners\",\n    \"customer verification/integration\",\n    \"trajectory recall\",\n    \"resolver promotion\",\n    \"customer-side typed provider offer comparison\",\n    \"direct selected-provider A2A settlement\"\n  ],\n  \"missingSeams\": [\n    {\n      \"carrier\": \"free-compute-dev\",\n      \"seam\": \"exact-operation pulse delivery\",\n      \"why\": \"independent operation\"\n    },\n    {\n      \"carrier\": \"Software Development Services Section\",\n      \"seam\": \"direct selected-provider A2A settlement\",\n      \"why\": \"separate enterprise\"\n    },\n    {\n      \"carrier\": \"inference-work-lot-service\",\n      \"seam\": \"customer acceptance\",\n      \"why\": \"provider-local MAPE-K mutation guard\"\n    }\n  ],\n  \"ownership\": [\n    {\n      \"faculty\": \"free-compute-dev\",\n      \"owner\": \"free-compute-dev\"\n    },\n    {\n      \"faculty\": \"Software Development Services Section\",\n      \"owner\": \"Software Development Services Section\"\n    },\n    {\n      \"faculty\": \"inference-work-lot-service\",\n      \"owner\": \"inference-work-lot-service\"\n    }\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-a090598a-9480-44c3-9bde-6094adbdb88d",
+      "object": "chat.completion",
+      "created": 1784605330,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"antiPatterns\": [],\n  \"firstDistributedProof\": [\n    \"persistent mission queue\",\n    \"parallel isolated actors\",\n    \"competing cloud planners\",\n    \"customer verification/integration\",\n    \"trajectory recall\",\n    \"resolver promotion\",\n    \"customer-side typed provider offer comparison\",\n    \"direct selected-provider A2A settlement\"\n  ],\n  \"missingSeams\": [\n    {\n      \"carrier\": \"free-compute-dev\",\n      \"seam\": \"exact-operation pulse delivery\",\n      \"why\": \"independent operation\"\n    },\n    {\n      \"carrier\": \"Software Development Services Section\",\n      \"seam\": \"direct selected-provider A2A settlement\",\n      \"why\": \"separate enterprise\"\n    },\n    {\n      \"carrier\": \"inference-work-lot-service\",\n      \"seam\": \"customer acceptance\",\n      \"why\": \"provider-local MAPE-K mutation guard\"\n    }\n  ],\n  \"ownership\": [\n    {\n      \"faculty\": \"free-compute-dev\",\n      \"owner\": \"free-compute-dev\"\n    },\n    {\n      \"faculty\": \"Software Development Services Section\",\n      \"owner\": \"Software Development Services Section\"\n    },\n    {\n      \"faculty\": \"inference-work-lot-service\",\n      \"owner\": \"inference-work-lot-service\"\n    }\n  ]\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.137542943,
+        "prompt_tokens": 931,
+        "prompt_time": 0.063215357,
+        "completion_tokens": 275,
+        "completion_time": 0.295541306,
+        "total_tokens": 1206,
+        "total_time": 0.358756663
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_4848f70c04",
+      "x_groq": {
+        "id": "req_01ky1c8jftfemb5f8qg3nx0t25",
+        "seed": 1193807625
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.756939386,
+    "denomination": "groq-api-requests"
+  }
+}

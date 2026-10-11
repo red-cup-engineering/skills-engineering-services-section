@@ -1,0 +1,29 @@
+{
+  "id": "exchange-20260724-154658-30dd3b",
+  "recordedAt": "2026-07-24T15:46:58.269Z",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Reply with exactly the word: PONG"
+      },
+      {
+        "role": "user",
+        "content": "ping"
+      }
+    ]
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "typed inference input must be one JSON value",
+    "unmet": [
+      "gemini-sdk-refusal"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.0018612090000000307,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

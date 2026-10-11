@@ -1,0 +1,563 @@
+{
+  "kind": "inference-dispatch.direct-endpoint-provider-admissions",
+  "version": 3,
+  "note": "Provider endpoint and credential facts derive from the shared chat-completion catalog. This file supplies market identities, model pins, capabilities, resource bounds and consideration. Missing credentials or endpoint variables skip a descriptor; runtime resource reservations and zero-cash admission remain required. Historical provider assays remain in data/records.",
+  "providers": [
+    {
+      "providerId": "ollama-local",
+      "actor": "urn:ame:bare-cedar-fog-npu-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "local": true
+      },
+      "auth": {
+        "mode": "none"
+      },
+      "model": "llama3.2:3b",
+      "capabilities": [
+        "chat",
+        "tool-calling",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "json-output",
+        "text-output"
+      ],
+      "qualityTiers": [
+        "local"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 1,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ],
+      "typedInferenceBounds": {
+        "workTypes": [
+          "classification",
+          "extraction",
+          "summarization",
+          "inquiry",
+          "software-engineering"
+        ],
+        "maximumSourceWords": 1500,
+        "maximumSourceCharacters": 12000,
+        "maximumRequestCharacters": 30000,
+        "maximumOutputTokens": 700,
+        "note": "The local NPU provider's admission bounds for typed requests (the model is this admission's own); admitBoundedTypedInference checks a typed request against them."
+      }
+    },
+    {
+      "providerId": "groq",
+      "actor": "urn:ame:groq-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden"
+      },
+      "model": "qwen/qwen3.8-27b",
+      "capabilities": [
+        "chat",
+        "reasoning",
+        "long-context",
+        "code",
+        "Chinese-language",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "software-engineering",
+        "code-review",
+        "json-output",
+        "json-schema-output",
+        "text-output",
+        "tool-calling"
+      ],
+      "qualityTiers": [
+        "frontier-hosted"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 4,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "openrouter-cohere-north-free",
+      "actor": "urn:ame:openrouter-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "modelSuffix": ":free"
+      },
+      "capabilities": [
+        "chat",
+        "long-context",
+        "code",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "software-engineering",
+        "code-review",
+        "json-output",
+        "text-output",
+        "tool-calling"
+      ],
+      "qualityTiers": [
+        "frontier-hosted"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 4,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "gemini",
+      "actor": "urn:ame:gemini-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden"
+      },
+      "model": "gemma-4-31b-it",
+      "capabilityModels": {
+        "text-to-speech": [
+          "gemini-3.8-flash-tts",
+          "gemini-3.1-flash-tts-preview",
+          "gemini-2.5-flash-preview-tts",
+          "gemini-3.8-flash-lite-tts",
+          "gemini-2.5-pro-preview-tts"
+        ]
+      },
+      "capabilities": [
+        "chat",
+        "long-context",
+        "code",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "software-engineering",
+        "code-review",
+        "json-output",
+        "text-output"
+      ],
+      "qualityTiers": [
+        "frontier-hosted"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 2,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "nvidia-nim",
+      "actor": "urn:ame:nvidia-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden"
+      },
+      "endpoint": "https://integrate.api.nvidia.com/v1/chat/completions",
+      "auth": {
+        "mode": "bearer"
+      },
+      "apiKeyEnv": "API_KEY_INFERENCE_NVIDIA",
+      "model": "meta/llama-3.2-11b-vision-instruct",
+      "capabilities": [
+        "chat",
+        "long-context",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "json-output",
+        "text-output"
+      ],
+      "qualityTiers": [
+        "frontier-hosted"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 4,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "cloudflare-workers-ai",
+      "actor": "urn:ame:cloudflare-workers-ai-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden"
+      },
+      "endpoint": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1/chat/completions",
+      "auth": {
+        "mode": "bearer"
+      },
+      "apiKeyEnv": "API_KEY_CLOUDFLARE_WORKERS_AI",
+      "model": "@cf/meta/llama-4-scout-17b-16e-instruct",
+      "capabilityModels": {
+        "text-to-speech": [
+          "@cf/myshell-ai/melotts"
+        ]
+      },
+      "capabilities": [
+        "chat",
+        "long-context",
+        "text-to-speech",
+        "image-generation",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "json-output",
+        "text-output",
+        "tool-calling"
+      ],
+      "qualityTiers": [
+        "frontier-hosted"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 4,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "cloudflare-workers-ai-gpt-oss",
+      "actor": "urn:ame:cloudflare-workers-ai-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "models": [
+          "@cf/openai/gpt-oss-120b"
+        ]
+      },
+      "endpoint": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1/chat/completions",
+      "auth": {
+        "mode": "bearer"
+      },
+      "apiKeyEnv": "API_KEY_CLOUDFLARE_WORKERS_AI",
+      "model": "@cf/openai/gpt-oss-120b",
+      "capabilityModels": {
+        "text-to-speech": [
+          "@cf/myshell-ai/melotts"
+        ]
+      },
+      "capabilities": [
+        "chat",
+        "tool-calling",
+        "reasoning",
+        "long-context",
+        "code",
+        "json-output",
+        "text-output"
+      ],
+      "qualityTiers": [
+        "frontier-hosted"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 4,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "codex",
+      "actor": "urn:ame:bare-cedar-fog-codex-inference-team",
+      "zeroCashPolicy": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "local": true
+      },
+      "auth": {
+        "mode": "none"
+      },
+      "model": "default",
+      "endpointClass": "local-command-inference",
+      "capabilities": [
+        "chat",
+        "reasoning",
+        "long-context",
+        "json-output",
+        "json-schema-output",
+        "code",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "software-engineering",
+        "code-review",
+        "text-output",
+        "tool-calling"
+      ],
+      "qualityTiers": [
+        "frontier-subscription"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 1,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "antigravity",
+      "actor": "urn:ame:bare-cedar-fog-antigravity-inference-team",
+      "auth": {
+        "mode": "none"
+      },
+      "model": "default",
+      "endpointClass": "local-command-inference",
+      "capabilities": [
+        "chat",
+        "reasoning",
+        "long-context",
+        "json-output",
+        "json-schema-output",
+        "code",
+        "classification",
+        "extraction",
+        "summarization",
+        "writing",
+        "inquiry",
+        "software-engineering",
+        "code-review",
+        "text-output",
+        "tool-calling"
+      ],
+      "qualityTiers": [
+        "frontier-subscription"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 1,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ]
+    },
+    {
+      "providerId": "ai-horde-anonymous",
+      "actor": "urn:ame:ai-horde-anonymous-inference-team",
+      "model": "google/gemma-4-31b",
+      "endpointClass": "direct-openai-compatible-endpoint",
+      "capabilities": [
+        "chat",
+        "tool-calling",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "text-output"
+      ],
+      "qualityTiers": [
+        "community-volunteer"
+      ],
+      "authorityScopes": [
+        "urn:scope:bounded-inference-candidate"
+      ],
+      "effects": [
+        "read-only"
+      ],
+      "idempotence": [
+        "idempotent"
+      ],
+      "availableCapacity": 1,
+      "considerationKind": "credit",
+      "considerationAsset": "urn:union:consideration:provider-invocation",
+      "considerationUnit": "provider-invocation",
+      "considerationNumerator": "1",
+      "considerationDenominator": "1",
+      "declaredResources": [
+        {
+          "resource": "provider-attention",
+          "unit": "bounded-lot",
+          "amount": {
+            "numerator": "1",
+            "denominator": "1"
+          }
+        }
+      ],
+      "maximumOutputTokens": 4096
+    }
+  ]
+}
