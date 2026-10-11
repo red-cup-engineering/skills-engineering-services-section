@@ -1,10 +1,15 @@
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { appendFileSync, mkdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { dataArtifactFiles } from "@red-cup-engineering/eavt-services-section/data-artifact-listing";
+import { journalPath } from "@red-cup-engineering/eavt-services-section/journal-path";
 import { ACTIVITYSTREAMS_CONTEXT } from "@red-cup-engineering/activitypub-services-section/activitystreams";
 import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
 
 export const INFERENCE_ACTOR = "urn:ame:logical-inference-service-section";
 export const INFERENCE_ACTIVITYSTREAMS_CONTRACT = "inference-fabric-activitystreams-service";
+
+/** The log-tier feed the provider's ActivityStreams exchanges are admitted into. */
+const ACTIVITYSTREAMS_FEED = "logical-inference-service-section-activitystreams";
 
 const plainObject = (value) => Boolean(value) && typeof value === "object" && !Array.isArray(value);
 const response = (type, source, object) => ({
@@ -17,23 +22,11 @@ const response = (type, source, object) => ({
   object
 });
 
-function safeFiles(root, maximum) {
-  if (!existsSync(root)) return [];
-  const found = [], visit = (path) => {
-    for (const entry of readdirSync(path, { withFileTypes: true })) {
-      const child = join(path, entry.name);
-      if (entry.isDirectory()) visit(child);
-      else if (entry.isFile() && entry.name.endsWith(".jsonl")) found.push(child);
-      if (found.length > maximum) throw new Error(`ActivityStreams journal exceeds ${maximum} files`);
-    }
-  };
-  visit(root);
-  return found.sort();
-}
-
 function replayJournal(root, maximumRecords) {
   const records = [];
-  for (const path of safeFiles(root, maximumRecords)) {
+  const files = dataArtifactFiles(root, "log", { subject: ACTIVITYSTREAMS_FEED, match: (filename) => filename.endsWith(".jsonl") }).map((file) => file.path);
+  if (files.length > maximumRecords) throw new Error(`ActivityStreams journal exceeds ${maximumRecords} files`);
+  for (const path of files) {
     if (statSync(path).size > 128 * 1024 * 1024) throw new Error("ActivityStreams journal file exceeds 128 MiB");
     const text = readFileSync(path, "utf8").trim();
     if (!text) continue;
@@ -46,8 +39,7 @@ function replayJournal(root, maximumRecords) {
 }
 
 function datedJournal(root, at) {
-  const day = at.slice(0, 10), [year, month, date] = day.split("-");
-  return join(root, "journals", "activitystreams", year, month, date, `${day}-logical-inference-service-section-activitystreams.jsonl`);
+  return journalPath({ root, feed: ACTIVITYSTREAMS_FEED, at });
 }
 
 function appendExchange(root, record, at) {
@@ -108,7 +100,7 @@ export function createInferenceActivityStreams({ broker, dataRoot, now = () => n
   if (!broker?.admit || !broker?.replay || !broker?.quote || !broker?.ready?.registryDigest) throw new Error("ActivityStreams adapter requires a quoteable persistent inference broker");
   const root = resolve(dataRoot), issuedOffers = new Map(), inboundDigests = new Map(), contractResponses = new Map(), ownership = new Map();
 
-  for (const record of replayJournal(join(root, "journals", "activitystreams"), maxReplayRecords)) {
+  for (const record of replayJournal(root, maxReplayRecords)) {
     const priorDigest = record?.inbound?.id ? inboundDigests.get(record.inbound.id) : null;
     if (priorDigest && priorDigest !== record.inboundDigest && record.kind !== "refusal") throw new Error("ActivityStreams journal contains conflicting accepted activity ids");
     if (record?.inbound?.id && record.inboundDigest && !priorDigest) inboundDigests.set(record.inbound.id, record.inboundDigest);
