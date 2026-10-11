@@ -6,7 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import { appendJsonl, createInferenceScheduler, readJsonl } from "../../src/fabric/inference-fabric.mjs";
 import { canonicalJsonValue as canonical } from "@red-cup-engineering/json-services-section/canonical-json";
 import { writeFileTextSync } from "@red-cup-engineering/computer-file-engineering-services-section/write-file";
-import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 
 const valued = new Set(["offer", "probe", "base-registry", "ledger", "ledger-root", "output-registry"]), booleans = new Set(["reproject", "recover-stale-lock", "help"]);
 function parse(argv) { const out = {}; for (let index = 0; index < argv.length; index += 1) { const raw = argv[index]; if (!raw.startsWith("--")) throw new Error(`unexpected argument ${raw}`); const key = raw.slice(2); if (booleans.has(key)) out[key] = true; else if (valued.has(key)) { const value = argv[++index]; if (!value || value.startsWith("--")) throw new Error(`missing value for --${key}`); out[key] = value; } else throw new Error(`unknown flag --${key}`); } return out; }

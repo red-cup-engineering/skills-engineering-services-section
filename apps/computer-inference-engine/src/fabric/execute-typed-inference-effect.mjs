@@ -19,7 +19,7 @@
 import { randomUUID } from "node:crypto";
 import { ty, tm } from "@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation";
 import { effectBundle, effectBundleType } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/runtime";
-import { decodeSemantic } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { decodeSemantic } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { conformTerm, conformTermBytes } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/conformance";
 import { assayWitTransition } from "@red-cup-engineering/computer-inference-engine/fabric/effect-assay";
 import { recordWitnessJournalBatch, relationalWitnessJournalDocument } from "@red-cup-engineering/witness-journal-document-service";

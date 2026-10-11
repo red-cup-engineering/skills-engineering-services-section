@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { ACTIVITYSTREAMS_CONTEXT } from "@red-cup-engineering/activitypub-services-section/activitystreams";
-import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 
 export const INFERENCE_ACTOR = "urn:ame:logical-inference-service-section";
 export const INFERENCE_ACTIVITYSTREAMS_CONTRACT = "inference-fabric-activitystreams-service";

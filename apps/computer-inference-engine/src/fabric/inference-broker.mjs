@@ -1,7 +1,7 @@
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { appendJsonl, createInferenceScheduler, observationsFromRecords, readJsonl } from "./inference-fabric.mjs";
-import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { sha256Hex } from "@red-cup-engineering/cryptographic-computer-data-engineering-services-section/integrity";
 
 export const safeRefusal = (id, type) => ({ id: typeof id === "string" && id ? id : null, attempts: [], refusal: { type }, latencyMs: 0, scheduler: { admitted: false } });

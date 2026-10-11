@@ -11,14 +11,14 @@ import {
   admitJsonSemanticContent,
   EMPTY_WITNESS_ROOT,
   identifyJsonSemanticContent,
-} from "@red-cup-engineering/computer-content-engineering-services-section/semantic-content-identity";
+} from "@red-cup-engineering/computer-content-address-engineering-services-section/semantic-content-identity";
 import {
   effectTerm,
 } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/runtime";
 import {
   inferTerm,
 } from "@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/typing";
-import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { conformTerm } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/conformance";
 import { a2aResultParts, ROLE_AGENT, ROLE_USER } from "@red-cup-engineering/a2a-services-section/a2a-client";
 import { createA2aServer } from "@red-cup-engineering/a2a-services-section/a2a-server";
