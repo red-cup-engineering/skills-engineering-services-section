@@ -18,10 +18,10 @@
     "README.md"
   ],
   "dependencies": {
-    "@red-cup-engineering/skills-services-section": "0.1.0"
+    "@red-cup-engineering/skills-services-section": "workspace:*"
   },
   "devDependencies": {
-    "@red-cup-engineering/project-skill-to-path-service": "0.1.0"
+    "@red-cup-engineering/project-skill-to-path-service": "workspace:*"
   },
   "engines": {
     "node": ">=22"
