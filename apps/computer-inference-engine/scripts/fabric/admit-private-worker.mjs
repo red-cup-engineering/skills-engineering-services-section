@@ -16,7 +16,7 @@ const environmentName = (value, name) => { if (!/^[A-Z][A-Z0-9_]{0,127}$/.test(v
 const positiveInteger = (value, name, maximum = 100000) => { if (!Number.isInteger(value) || value < 1 || value > maximum) throw new Error(`${name} must be an integer from 1 to ${maximum}`); return value; };
 const readBoundedJson = (path, name) => { const target = resolve(path); if (statSync(target).size > 1024 * 1024) throw new Error(`${name} exceeds 1 MiB`); return JSON.parse(readFileSync(target, "utf8")); };
 const pidAlive = (pid) => { try { process.kill(pid, 0); return true; } catch { return false; } };
-const datedLedger = (root, now = new Date()) => { const year = String(now.getFullYear()), month = String(now.getMonth() + 1).padStart(2, "0"), day = String(now.getDate()).padStart(2, "0"), date = `${year}-${month}-${day}`; return join(root, year, month, day, `${date}-logical-inference-service-section-supplier-admissions.jsonl`); };
+const datedLedger = (root, now = new Date()) => { const year = String(now.getFullYear()), month = String(now.getMonth() + 1).padStart(2, "0"), day = String(now.getDate()).padStart(2, "0"), date = `${year}-${month}-${day}`; return join(root, `${date}-logical-inference-service-section-supplier-admissions.jsonl`); };
 function ledgerFiles(root) { if (!existsSync(root)) return []; const found = []; const visit = (directory) => { for (const entry of readdirSync(directory, { withFileTypes: true })) { const path = join(directory, entry.name); if (entry.isDirectory()) visit(path); else if (entry.isFile() && entry.name.endsWith(".jsonl")) found.push(path); } }; visit(root); return found.sort(); }
 
 function validateCost(cost) {
