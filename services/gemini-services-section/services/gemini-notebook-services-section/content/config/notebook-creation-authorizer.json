@@ -1,8 +1,0 @@
-{
-  "type": "NotebookCreationAuthorizerPolicy",
-  "version": 1,
-  "provider": "urn:ame:notebook-creation-authorization-service",
-  "verificationLaw": "ni:///sha-256;pWItFtRqVtOR3F7UGj7KTlSW1rbTX1ZIiS8esIoqB-c",
-  "extensionProfile": "org.emsenn.notebook-creation-authorization-verification.v1",
-  "requireSignedAgentCard": true
-}
