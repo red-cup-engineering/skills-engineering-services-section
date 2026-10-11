@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { jsonToTerm, termToJson } from "@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/json-codec";
-import { semanticBytes } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticBytes } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { seavtOfJson } from "@red-cup-engineering/semiotic-eavt-services-section/admit-seavt-row";
 import { startWitnessJournalProviderProcess } from "@red-cup-engineering/witness-journal-document-service/test-provider";
 import { resolveWitnessJournalDocument, queryWitnessJournalDocumentsByCategory } from "@red-cup-engineering/witness-journal-document-service";
