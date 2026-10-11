@@ -1,0 +1,30 @@
+{
+  "id": "exchange-20260726-081750-9058f6",
+  "recordedAt": "2026-07-26T08:17:51.471Z",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return the requested reasoning product in your natural text carrier. Do not serialize it as JSON. The customer deterministically projects the response into its typed carrier and performs the authoritative assay; do not claim customer acceptance, execution, or truth."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:work-lot:inference:fXpHKzNFaAUEOkvYOoLvQu-I02Q4GkkkVupS0O_aQkc\",\"producer\":\"urn:codex:project-session\"},\"context\":{\"objective\":\"Name one concrete invariant for an event-driven multi-agent market that remains correct across process restarts.\",\"suppliedContext\":\"Public customer proof after deploying push-capable RMN and WitnessJournal cells on eip155:5615610. Return concise plain text.\",\"desiredUse\":\"Return one bounded inference product for routing to separately contracted casting, assay, and receiver-decision boundaries.\",\"extendedRoutingRationale\":null,\"boundary\":\"This inference compact confers no receiver mutation, execution, integration, truth, or acceptance authority.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:work-lot:inference:fXpHKzNFaAUEOkvYOoLvQu-I02Q4GkkkVupS0O_aQkc\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"inquiry\",\"taskClass\":\"agentic-orchestration-invariant\",\"executionBounds\":{\"sourceMeasures\":{\"words\":16,\"characters\":115},\"maximumOutputTokens\":2048,\"outputBoundSource\":\"selected-provider-offer\"},\"outputContract\":{\"format\":\"text\",\"schema\":{\"type\":\"string\"}}}"
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "a network or fetch error occurred: controller is not defined",
+    "unmet": [
+      "network-error"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.8255725020000001,
+    "denomination": "openrouter-api-requests"
+  }
+}

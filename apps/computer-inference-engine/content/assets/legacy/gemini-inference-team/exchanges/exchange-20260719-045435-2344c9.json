@@ -1,0 +1,76 @@
+{
+  "id": "exchange-20260719-045435-2344c9",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Classify the supplied work item as finance, software, or operations. Return only JSON matching the supplied schema."
+      },
+      {
+        "role": "user",
+        "content": "The API handler returns the wrong status code when validation rejects an empty payload."
+      }
+    ],
+    "max-tokens": 32,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "const": "software"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"label\": \"software\"\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"label\": \"software\"\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPvyjK0L9L2qwIXiy5pINLPFy7/InABo/AKzMNywM1OOpdE/FPoDotnMdai2A0"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784436875,
+      "id": "i1hcavOzHb601MkPvJjBaA",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 11,
+        "prompt_tokens": 39,
+        "total_tokens": 50
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.699,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

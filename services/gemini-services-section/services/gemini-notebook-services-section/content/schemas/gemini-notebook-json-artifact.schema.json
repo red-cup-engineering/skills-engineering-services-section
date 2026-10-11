@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emsenn/schema/gemini-notebook-json-artifact",
+  "title": "gemini-notebook-json-artifact",
+  "type": "object",
+  "required": ["format", "resultSchema", "data", "summary", "assayRequired"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "json" },
+    "resultSchema": { "type": "string", "pattern": "^emsenn/schema/[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "data": {},
+    "summary": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+    "assayRequired": { "const": true }
+  }
+}

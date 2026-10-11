@@ -1,0 +1,197 @@
+{
+  "id": "exchange-20260719-144128-b1374c",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Review a software-agent acceptance-boundary design. Be adversarial and concrete. Return only contracted JSON."
+      },
+      {
+        "role": "user",
+        "content": "FAILURE EVIDENCE: autonomous implementation actors were allowed to write both source and the acceptance test. They made their weak test pass, named all five requested vectors, and two semantic reviewers accepted it. A later audit found search, exact-file admission, direct read, and non-disclosure were not actually tested. The route was then made non-promotable.\n\nPROPOSED MECHANISM: procure acceptance as a separate append-only capsule before implementation. A text-only acceptance supplier receives exact API source, local law, structured test vectors, and a target test path. It returns test artifact bytes under a schema. The host materializes them only in an isolated territory copy, requires the acceptance command to fail against the incumbent (red witness), and obtains independent per-vector semantic reviews. The accepted capsule records artifact bytes/digests, vectors, command, red-witness output/digest, and reviews in dated data. A later implementation mission references the capsule. The host injects capsule artifacts into every actor workspace at paths excluded from writablePaths, runs verification and capsule acceptance after edits, excludes capsule files from candidate changes, and only integrates implementation changes. After protected-border checks, the host copies authoritative source to a fresh workspace, injects the same capsule by digest, and reruns acceptance before recognizing integration. Only such trajectories may become promotable memory.\n\nAssess whether this faithfully prevents candidate-authored oracle capture without making the acceptance supplier an unchecked oracle. Identify required invariants, missing failure modes, and exact bad-incumbent tests."
+      }
+    ],
+    "max-tokens": 1400,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "required": [
+              "verdict",
+              "strengths",
+              "risks",
+              "requiredMechanisms",
+              "badIncumbentTests"
+            ],
+            "properties": {
+              "verdict": {
+                "type": "string",
+                "enum": [
+                  "sound-with-required-changes",
+                  "unsound"
+                ]
+              },
+              "strengths": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                "items": {
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 400
+                }
+              },
+              "risks": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 500
+                }
+              },
+              "requiredMechanisms": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 500
+                }
+              },
+              "badIncumbentTests": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 500
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gpt-4o-mini-2024-07-18",
+    "text": "{\"badIncumbentTests\":[\"Test for acceptance against a non-representative or outdated version of the red witness.\",\"Test failures not traced back to untested acceptance vectors, leading to overlooked vulnerabilities.\",\"Acceptance tests that do not cover edge cases or unexpected inputs, allowing adversarial exploitation.\"],\"requiredMechanisms\":[\"Independent and auditable review process to evaluate acceptance supplier's artifacts and tests before implementations are deployed.\",\"Verification of the legitimacy and integrity of the acceptance capsule through cryptographic means to ensure it cannot be tampered with.\",\"Detailed logging of the acceptance process, including changes made to the acceptance artifacts and tests, ensuring that any changes are transparent and accountable.\"],\"risks\":[\"The acceptance supplier could still inadvertently produce biased tests if the reviewers are not adequately independent or stringent.\",\"If the acceptance capsule process itself is flawed or manipulated, it could lead to a false sense of security in the acceptance process.\",\"Implementation actors may still find ways to indirectly influence or bypass the intended isolation of acceptance testing.\"],\"strengths\":[\"Decoupling acceptance tests from implementation actors significantly reduces the risk of oracle capture.\",\"The append-only nature of the acceptance record provides a trusted historical reference that can be relied upon during audits or dispute resolutions.\",\"Independent per-vector reviews enhance the quality and reliability of acceptance tests and highlight potential oversights before implementation.\"],\"verdict\":\"sound-with-required-changes\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "annotations": [],
+            "content": "{\"badIncumbentTests\":[\"Test for acceptance against a non-representative or outdated version of the red witness.\",\"Test failures not traced back to untested acceptance vectors, leading to overlooked vulnerabilities.\",\"Acceptance tests that do not cover edge cases or unexpected inputs, allowing adversarial exploitation.\"],\"requiredMechanisms\":[\"Independent and auditable review process to evaluate acceptance supplier's artifacts and tests before implementations are deployed.\",\"Verification of the legitimacy and integrity of the acceptance capsule through cryptographic means to ensure it cannot be tampered with.\",\"Detailed logging of the acceptance process, including changes made to the acceptance artifacts and tests, ensuring that any changes are transparent and accountable.\"],\"risks\":[\"The acceptance supplier could still inadvertently produce biased tests if the reviewers are not adequately independent or stringent.\",\"If the acceptance capsule process itself is flawed or manipulated, it could lead to a false sense of security in the acceptance process.\",\"Implementation actors may still find ways to indirectly influence or bypass the intended isolation of acceptance testing.\"],\"strengths\":[\"Decoupling acceptance tests from implementation actors significantly reduces the risk of oracle capture.\",\"The append-only nature of the acceptance record provides a trusted historical reference that can be relied upon during audits or dispute resolutions.\",\"Independent per-vector reviews enhance the quality and reliability of acceptance tests and highlight potential oversights before implementation.\"],\"verdict\":\"sound-with-required-changes\"}",
+            "refusal": null,
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784472088,
+      "id": "chatcmpl-E3MzoG7Pv70EXBYjWEqdiZGd9s38D",
+      "model": "gpt-4o-mini-2024-07-18",
+      "object": "chat.completion",
+      "prompt_filter_results": [
+        {
+          "prompt_index": 0,
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          }
+        }
+      ],
+      "service_tier": "default",
+      "system_fingerprint": "fp_965c8b9ecf",
+      "usage": {
+        "completion_tokens": 271,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "latency_checkpoint": {
+          "engine_tbt_ms": 12,
+          "engine_ttft_ms": 46,
+          "engine_ttlt_ms": 3332,
+          "pre_inference_ms": 132,
+          "service_tbt_ms": 12,
+          "service_ttft_ms": 486,
+          "service_ttlt_ms": 3719,
+          "total_duration_ms": 3598,
+          "user_visible_ttft_ms": 354
+        },
+        "prompt_tokens": 436,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 707
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 6.188,
+    "denomination": "github-models-api-requests"
+  }
+}

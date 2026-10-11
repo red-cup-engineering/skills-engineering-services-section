@@ -1,0 +1,30 @@
+{
+  "id": "exchange-20260719-005900-da1c99",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON with keys nextArtifact,probe,admission,refusal. We have a disabled OpenAI-compatible registry template addressed by TAILSCALE_VLLM_BASE_URL and optional API key, plus a probe that checks URL safety, model response shape, latency and bounded output without exposing auth. Remote people have agreed to install software and offer their CPU/GPU through Tailscale, but no endpoint is presently configured. Name the smallest software artifact that turns one volunteer host into a safely discoverable contractable worker, the exact probe evidence needed before enabling it, the admission mutation, and a fail-closed refusal. Avoid governance work."
+      }
+    ],
+    "max-tokens": 280,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 429 Too Many Requests: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"meta-llama/llama-3.3-70b-instruct:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Venice\",\"is_byok\":false,\"retry_after_seconds\":28,\"retry_after_seconds_raw\":27.159,\"headers\":{\"Retry-After\":\"28\"}}},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:429"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.308,
+    "denomination": "openrouter-api-requests"
+  }
+}

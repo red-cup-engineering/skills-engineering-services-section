@@ -1,0 +1,133 @@
+{
+  "name": "NotebookLM Inference Team",
+  "description": "Reads the authenticated notebook library and produces source-grounded code artifacts without transferring provider credentials.",
+  "supportedInterfaces": [
+    {
+      "url": "${BASE_URL}/actors/notebooklm-inference-team/inbox",
+      "protocolBinding": "HTTP+JSON",
+      "tenant": "",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "provider": {
+    "url": "https://emsenn.net/",
+    "organization": "NotebookLM Inference Team via A2A Services Section"
+  },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "ni:///sha-256;TSQ_qLpeSrSZVNEzAjvbwy3spG8byLDKJUTSXCpgYpQ",
+        "description": "The provider's source-grounded artifact contract is carried as A2A RMN inside its ActivityPub inbox.",
+        "required": true,
+        "params": {
+          "transport": "ActivityPub",
+          "carrier": "CloudEvents",
+          "operationProtocol": "A2A",
+          "actor": "${BASE_URL}/actors/notebooklm-inference-team",
+          "artifactTypes": "code",
+          "codeCarrier": "json-code-bundle",
+          "consideration": {
+            "fixedFee": null,
+            "markup": "0",
+            "monetaryConversion": "none-without-an-observed-cost-oracle",
+            "meters": [
+              "notebooklm-provider-calls",
+              "source-bytes-egressed",
+              "provider-wall-time",
+              "studio-quota-consumed"
+            ],
+            "requires": [
+              "resource-budget-authorization",
+              "observed-cost-settlement"
+            ]
+          }
+        }
+      }
+    ],
+    "extendedAgentCard": false
+  },
+  "securitySchemes": {},
+  "securityRequirements": [],
+  "defaultInputModes": [
+    "application/rmn+cbor"
+  ],
+  "defaultOutputModes": [
+    "application/rmn+cbor"
+  ],
+  "skills": [
+    {
+      "id": "code-artifact-operation",
+      "name": "Source-grounded code artifact",
+      "description": "Solicits and accepts the provider-authored NotebookLM code contract, executes it only in an ephemeral digest-bound corpus, and returns a validated JSON code bundle with concrete per-file byte lengths and content digests.",
+      "tags": [
+        "notebooklm",
+        "software-engineering",
+        "code-review",
+        "json-code-bundle"
+      ],
+      "examples": [],
+      "inputModes": [
+        "application/rmn+cbor"
+      ],
+      "outputModes": [
+        "application/rmn+cbor"
+      ],
+      "securityRequirements": []
+    },
+    {
+      "id": "live-question",
+      "name": "Ask a notebook question",
+      "description": "Read the authenticated notebook library under its existing operator authorization.",
+      "tags": [
+        "notebooklm",
+        "library"
+      ],
+      "examples": [],
+      "inputModes": [
+        "application/rmn+cbor"
+      ],
+      "outputModes": [
+        "application/rmn+cbor"
+      ],
+      "securityRequirements": []
+    },
+    {
+      "id": "live-studio-observation",
+      "name": "Observe existing Studio artifacts",
+      "description": "Read the authenticated notebook library under its existing operator authorization.",
+      "tags": [
+        "notebooklm",
+        "library"
+      ],
+      "examples": [],
+      "inputModes": [
+        "application/rmn+cbor"
+      ],
+      "outputModes": [
+        "application/rmn+cbor"
+      ],
+      "securityRequirements": []
+    },
+    {
+      "id": "live-studio-report-read",
+      "name": "Read an existing Studio report",
+      "description": "Read the authenticated notebook library under its existing operator authorization.",
+      "tags": [
+        "notebooklm",
+        "library"
+      ],
+      "examples": [],
+      "inputModes": [
+        "application/rmn+cbor"
+      ],
+      "outputModes": [
+        "application/rmn+cbor"
+      ],
+      "securityRequirements": []
+    }
+  ],
+  "signatures": []
+}

@@ -1,0 +1,38 @@
+# NotebookLM source projection
+
+Title: @561-group/math/type-theory/README
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/type-theory/README.md
+Original-Digest: sha256:c53dfe7894e887fb23edc5154653047d61d7a73d9a009107e45523c2d0d11ca1
+Disclosure: repository-source
+
+# @561-group/math/type-theory
+
+**The theory of terms, types, functions, and programs — over the 561-group math floor.**
+
+`type-theory` collects the foundational notions the rest of the repository's Curry–Howard typing presupposes — what a **term**, a **type**, a **function**, and a **program** are.
+Where [`@561-group/math/bilattice`](../bilattice) is the four-valued predication floor and [`@561-group/math/chu`](../chu) is the Chu-space layer over it, `type-theory` is the metatheory that names the objects those layers are *about*.
+
+> **Scaffold.** The concept definitions live in [`docs/`](docs) (`term`, `function`, `program`), seeded from the typed-resource-catalog's `composting/typing` holding area.
+> The implementation — `src/` morphisms and a `test/` law suite — is **not yet written**; this package is staged on the [`@561-group/math/chu`](../chu) model so the implementation drops straight in, delegating to bilattice morphisms rather than re-deriving any logic.
+
+## Install
+
+A private workspace package (Node ≥ 20, ESM only).
+From the repo root:
+
+```sh
+pnpm install
+```
+
+## Layout
+
+- [`docs/term.md`](docs/term.md) — a **term**: an element of the free algebra T(Σ, X) over a signature.
+- [`docs/function.md`](docs/function.md) — a **function**: a rule assigning each element of one set exactly one element of another.
+- [`docs/program.md`](docs/program.md) — a **program**.
+- `src/` — the implementation barrel (`index.mjs` / `index.d.ts`); empty until the morphisms land.
+
+## Status
+
+Scaffold, `0.0.x` unreleased.
+No API is exported yet — `import … from "@561-group/math/type-theory"` resolves to an empty module by design.
+Tracked in [`CHANGELOG.md`](CHANGELOG.md).

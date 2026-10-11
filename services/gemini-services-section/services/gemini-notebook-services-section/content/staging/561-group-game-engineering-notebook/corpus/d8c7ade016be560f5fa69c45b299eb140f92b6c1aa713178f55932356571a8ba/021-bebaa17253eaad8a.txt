@@ -1,0 +1,189 @@
+# NotebookLM source projection
+
+Title: solitaire-service/README
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/solitaire-service/README.md
+Original-Digest: sha256:bca395676f7643edbd4a4480bf957d228872b35869f454f5110e6b8415c73a54
+Disclosure: repository-source
+
+# solitaire-service
+
+One rules engine, variant rules as data. Klondike (draw 1 / draw 3), FreeCell, and Spider (1/2/4
+suit) are all interpreted from the same declarative `VariantSpec` by the same `engine.mts` — no
+module in this package ever branches on a variant's name. See `DESIGN.md` for the full rationale
+(the tessellation-ladder / `PaymentProvider` precedent, and the honest scoping of what a solver
+can and can't promise per variant).
+
+```
+src/
+  cards.mts        deck, suits/ranks, deterministic seeded shuffle (mulberry32)
+  cards.test.mts
+  engine.mts        the one rules engine: VariantSpec data, deal, legality, move application,
+                     undo/redo + replay, win/auto-finish detection
+  engine.test.mts
+  solver.mts        FreeCell solver (weighted-A*) + solver-backed deal generator
+  solver.test.mts
+  daily.mts         UTC-date-derived shared daily seed
+  daily.test.mts
+web/
+  index.html         landing page: variant picker, daily-deal card, "play a specific seed" form
+  table.html          the game screen (toolbar, board, win banner, keymap overlay)
+  server.mjs          zero-dep node:http static server; serves *.mts through node:module's
+                       stripTypeScriptTypes so the browser loads the real src/*.mts unmodified
+  css/style.css        theme via CSS custom properties (light/dark toggle, prefers-reduced-motion)
+  js/
+    kernel.mjs          re-exports src/cards.mts + src/engine.mts + src/daily.mts unchanged —
+                         the client's only import of game rules, never a reimplementation
+    cards-svg.mjs        inline-SVG card faces/backs, themed via --suit-*/--card-back-* properties
+    project.mjs           TableState -> DOM-projectable view model (pure)
+    render-dom.mjs         view model -> DOM, plus the CSS-only win celebration
+    game-controller.mjs     click/drag/keyboard input, selection state, KEYMAP table
+    app.mjs                table.html's bootstrap: wires controller+renderer to the DOM,
+                            move-log export/download, theme toggle, URL seed/variant/daily params
+    landing.mjs             index.html's bootstrap: variant grid, daily-deal link, seed form
+  test/
+    smoke.test.mts          scripted 50-move FreeCell playthrough asserting the projection
+                             (project.mjs) stays consistent with the kernel state after every move;
+                             KEYMAP-covers-every-move-kind check; card-svg well-formedness check
+package.json
+README.md
+DESIGN.md
+```
+
+Run it: `npm run serve` (or `node web/server.mjs [port]`, default 8787), then open
+`http://localhost:8787/web/index.html`. The document root is the package directory (parent of
+`web/`), not `web/` itself — this lets browser-relative imports like `../../src/engine.mts` from
+`web/js/kernel.mjs` resolve straight to the real `src/engine.mts` on disk, so the client runs the
+identical rules module Node runs in `src/*.test.mts`, never a duplicate. One consequence of that
+root choice: request the bare `/` and you get `web/index.html`'s bytes at the wrong path, which
+breaks its page-relative links (`css/style.css`, `table.html`, ...) — always enter through
+`/web/index.html` (what `server.mjs` prints on startup), not `/`.
+
+## The `VariantSpec` data format
+
+A variant is entirely described by a `VariantSpec` value (`engine.mts`) — nothing about it lives
+in code outside that record:
+
+```ts
+interface PileSpec {
+  id: string;                                              // e.g. "tableau-3", "foundation-0"
+  kind: 'stock' | 'waste' | 'foundation' | 'tableau' | 'freecell';
+  dealFaceUp: number;    // cards dealt face-up when this pile is initially filled
+  dealFaceDown: number;  // cards dealt face-down beneath them
+}
+
+interface BuildRule {
+  order: 'descending' | 'ascending' | 'any';
+  color: 'alternating' | 'same-suit' | 'any';
+  base: 'any-rank' | 'king-only' | 'ace-only' | 'empty-accepts-any'; // what an EMPTY pile accepts
+}
+
+interface VariantSpec {
+  id: string;
+  name: string;
+  decks: 1 | 2;
+  suitsInPlay: 1 | 2 | 4;
+  piles: readonly PileSpec[];
+  dealOrder: readonly string[];       // pile ids, dealt round-robin in this order
+  tableauBuild: BuildRule;            // what a single card may be DROPPED on
+  runBuild?: BuildRule;               // what a GROUP may be picked up as (defaults to tableauBuild)
+  foundationBuild: BuildRule;
+  sequenceMove: 'single-card' | 'any-legal-run' | 'supermove';
+  redeal: { stockRecycles: number | 'unlimited' } | null;
+  win: 'all-foundations-full' | 'all-thirteen-sequences-cleared';
+  drawCount?: number;                 // Klondike only: cards drawn from stock to waste per draw
+}
+```
+
+**How dealing works**: `dealTable(seed, variant)` shuffles `variant.decks * 52` cards
+deterministically from `seed`, then round-robins them into every pile named in `dealOrder`
+according to each pile's `dealFaceDown + dealFaceUp` total (Klondike's triangular tableau — piles
+of 1, 2, 3... 7 cards — is just seven `PileSpec`s with `dealFaceDown: 0..6, dealFaceUp: 1`, no
+special-cased deal loop). Any pile of `kind: 'stock'` absorbs whatever cards are left over after
+`dealOrder` is satisfied, face down. A variant with no `stock` pile (FreeCell) simply has nothing
+left over — its `dealOrder` totals sum to the whole deck.
+
+**Two additions beyond the `VariantSpec` sketch in `DESIGN.md`**, both documented in
+`engine.mts`'s module doc comment:
+
+- **`runBuild`** — separates "what a single card may be dropped on" from "what a group of cards
+  must look like to be picked up together." Klondike/FreeCell don't need this (a run is just an
+  alternating-descending sequence, same shape as any legal single drop). Spider genuinely does:
+  any card may be dropped on any next-higher rank regardless of suit (`tableauBuild.color: "any"`),
+  but only a same-suit run may be picked up as a group (`runBuild.color: "same-suit"`) — real
+  Spider rules that a single `BuildRule` field can't express without either breaking loose-suit
+  single-card drops or accepting mixed-suit group pickups.
+- **`drawCount`** — Klondike's draw-1-vs-draw-3 knob, read only by the structural
+  "does this variant have a `waste` pile" branch in `drawFromStock`.
+
+**Adding a variant** is adding a `VariantSpec` value and nothing else. There is no per-variant
+`if` anywhere in `engine.mts`; a table-driven test in `engine.test.mts` runs against every entry
+in `VARIANT_LIST`, so a new variant is test-covered by being added to that list.
+
+## Move-log = undo/redo backing = replay source
+
+Every applied action (`applyMove`, `drawFromStock`, `redealStock`) appends one `LogEntry` and
+returns a new `GameState`; nothing mutates. `undo`/`redo` are pure pointer movement — both are
+implemented as `replayTo(seed, variant, fullLog, cursor)`, which rebuilds state by replaying the
+log from a fresh `dealTable` call up to `cursor`. `replay(seed, variant, log)` is the same
+function at `cursor = log.length`: the seed plus the log is sufficient to independently
+re-derive the exact final state from nothing.
+
+## Solver
+
+`solver.mts` is a from-scratch weighted-A* search (own compact integer board representation, a
+transposition table keyed by a canonicalized state, forced safe-autoplay canonicalization before
+each state is scored) over FreeCell — see the file's module doc for what was tried and measured
+before landing on the current heuristic. `solveFreecell(seed, options)` returns
+`{ solvable, moves?, statesExplored, timeMs }`; `moves` is only present when `solvable`, and only
+after the solution has been **independently replayed** through `engine.mts`'s real
+`legalTargets`/`applyMove` (a different code path from the search itself) and confirmed to reach
+`checkWin`. `generateSolvableSeed(seeds, options)` tries candidate seeds in order and returns the
+first one the solver certifies — this is the "deal generator that rejects unsolvable FreeCell
+seeds."
+
+Measured timings (this build, `node --test`, single machine — see `src/solver.test.mts`):
+
+| what | result |
+|---|---|
+| 30 ordinary seeds (`fc-batch-0..29`) | 30/30 solved, states explored 35–69k worst case, most under 1s |
+| "deal #164" (this codebase's own seed numbering — see `solver.test.mts`'s module doc) | solved |
+| 10 random accepted seeds, each independently re-verified | all solved, full test ~2.4–2.8s |
+
+An unsolved search reports `solvable: false`, never a guess — "not certified within this budget,"
+not "unwinnable."
+
+## Testing
+
+```
+npm run check    # node --check src/*.mts web/js/*.mjs web/server.mjs web/test/*.test.mts
+npm test         # node --test src/*.test.mts web/test/*.test.mts
+npm run verify   # both
+```
+
+58 tests, 0 failures, ~3–7s total (the solver tests dominate wall time). Coverage per
+`DESIGN.md`'s test plan: rule legality per variant (fixture-based known-legal/known-illegal move
+tables), seeded-deal determinism including a pinned exact-layout snapshot, undo/redo invariants
+(round-trip, no-op past the ends, redo-tail truncation on a fresh move), move-log replay
+equivalence, solver soundness (independent replay verification) and timing ceiling, auto-finish
+correctness at fixture boards just below/above the safe-autoplay threshold, a 1000-random-
+legal-move fuzz per variant asserting card-count conservation and log/cursor consistency
+throughout, plus the web layer's own three: a scripted 50-move playthrough keeping the DOM
+projection consistent with the kernel, a static check that `KEYMAP` binds a key to every
+`engine` move kind, and a card-SVG well-formedness check.
+
+## Web client
+
+`web/` is the playable face over the same `src/*.mts` kernel — no game logic is reimplemented in
+the browser. `web/js/kernel.mjs` re-exports `cards.mts`/`engine.mts`/`daily.mts` directly, and
+`web/server.mjs` serves `.mts` files by running them through `node:module`'s
+`stripTypeScriptTypes` before sending them to the browser, so the client `import`s the literal
+kernel source. Covers all six variants (Klondike draw-1/draw-3 toggle, FreeCell, Spider 1/2/4-suit);
+click-to-select-and-place, drag, and a full keyboard mode (arrow keys + Enter/Space, `U`/`Ctrl+Z`
+undo, `Shift+U`/`Ctrl+Y` redo, `A` auto-finish, `N` new game, `?` keymap overlay — see
+`game-controller.mjs`'s `KEYMAP`); undo/redo/auto-finish buttons wired straight to the kernel's
+move-log; a CSS-only win celebration that honors `prefers-reduced-motion`; SVG cards themed via
+`--suit-*`/`--card-back-*` CSS custom properties with a light/dark toggle; a daily-deal mode
+(`table.html?variant=<id>&daily=1`) that reads `dailySeed`; seed sharing via URL (`?seed=...`);
+and a move-log export panel (view + download as JSON) — the same log `DESIGN.md` designates as
+the future proof-of-play artifact for the ZBD rails, produced here with no extra plumbing since
+it's already the undo/redo backing.

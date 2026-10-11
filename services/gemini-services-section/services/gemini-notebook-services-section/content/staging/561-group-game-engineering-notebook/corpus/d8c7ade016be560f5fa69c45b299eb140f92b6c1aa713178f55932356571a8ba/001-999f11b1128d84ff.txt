@@ -1,0 +1,636 @@
+# NotebookLM source projection
+
+Title: gaming-enterprises/cartridge-and-energy-bank-spec
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/cartridge-and-energy-bank-spec.md
+Original-Digest: sha256:1a0eeffdeb9a6d696fe1a99ec0c70a68c9b4d0fb64753dd66d57902d92d9e80a
+Disclosure: repository-source
+
+---
+title: Cartridge and Energy Bank Interface Specification
+description: "Interface specification for @561-group/cartridge (game manifest + intent-log/replay contract) and @561-group/energy-bank (shared identity + double-entry energy ledger with pluggable settlement backends), plus how play.561.group consumes cartridge manifests. Grounded in flickering-delve, onestone, solitaire, and lantern as they exist today; implementable as a wrap, not a rewrite."
+date-created: 2026-08-19
+date-updated: 2026-08-19
+type: specification
+authors:
+  - claude-fable-5
+tags: [gaming, enterprises, cartridge, energy-bank, storefront, specification, ledger, determinism]
+---
+
+# Cartridge and Energy Bank Interface Specification
+
+## 0. Scope and grounding
+
+Every game in the current fleet — flickering-delve, onestone, solitaire, lantern, and the
+planned weiqi kernel — already converges on the same shape: **seed in, deterministic engine,
+intent log out, replay to verify, ledger entry to settle.** This document specifies two
+packages that make that shape explicit and shared, plus the storefront contract that reads
+the result:
+
+- **`@561-group/cartridge`** — the game manifest schema and the intent-log/replay interface
+  every game implements.
+- **`@561-group/energy-bank`** — shared identity and a double-entry energy/credits ledger
+  with pluggable settlement backends.
+- **`play.561.group`** — a static catalog site that reads cartridge manifests.
+
+Nothing here requires any existing game to be rewritten. Every interface below is
+satisfiable by a thin wrapper module placed alongside each game's existing `src/`:
+flickering-delve's `DelveScene`/`ledger.mts`/`payments.mts`, onestone's `engine.mts`/
+`ledger.mts`, solitaire's `engine.mts`/`replayTo`, and lantern's stateless `srs.mts` (which
+opts out of energy-bank entirely — that must remain legal). Where a digest shows a concrete
+existing shape, this spec names it and shows the wrapper, not a replacement.
+
+**House conventions this spec inherits without restating per-section:** zero runtime
+dependencies beyond pinned `@561-group/*` packages; deterministic engines (seeded PRNG and
+injected clock only, never `Date.now()`/`Math.random()` in domain logic); one concern per
+file; co-located `<name>.test.mts` under `node --test`.
+
+**Package layout note:** the observed canonical `@561-group` packages (`math-core`) ship
+`.mjs` + hand-written `.d.ts`, not `.mts`, despite the stated `.mts` convention for
+domain modules in this tree. This spec writes interfaces in TypeScript-ish pseudocode
+that is agnostic to that resolution; whoever scaffolds the package should confirm
+`.mts`-run-directly vs `.mjs`+`.d.ts` against current package-authoring practice before
+generating files, and this document should not be read as taking a side.
+
+---
+
+## 1. `@561-group/cartridge`
+
+### 1.1 Manifest schema
+
+One manifest per playable *entry* — not necessarily one per service. Solitaire's
+`VARIANT_LIST` and onestone's `LEVELS` show a single service can expose multiple playable
+configurations; a service may publish more than one manifest, or one manifest with a
+`configs` slot. The schema below supports both by making the config list optional.
+
+```ts
+export interface CartridgeManifest {
+  /** Stable, URL-safe identifier. Never reused for a different game once published. */
+  readonly id: string;
+
+  /** Human-facing name shown in the storefront catalog. */
+  readonly displayName: string;
+
+  /** One-paragraph description for the catalog card. */
+  readonly description: string;
+
+  /** e.g. "flickering-delve", "onestone", "solitaire" — the deployed <game>.561.group host. */
+  readonly subdomain: string;
+
+  /** Optional: multiple playable configurations under one cartridge id
+   *  (solitaire's variants, onestone's levels). Omit for single-config games. */
+  readonly configs?: readonly CartridgeConfig[];
+
+  /** Entry points — see 1.2. At least one of browser/headless must be present. */
+  readonly entryPoints: {
+    /** Static HTML/asset path or route serving the browser renderer, if any.
+     *  e.g. "/", or a client.mts CLIENT_HTML export mounted at "/". */
+    readonly browser?: string;
+    /** Module export path for a headless/API client — same engine, no DOM.
+     *  e.g. "@561-group/cartridge-onestone/headless" or a package subpath the game exports. */
+    readonly headless?: string;
+  };
+
+  /** How a seed is chosen for a play session. See 1.2's SeedPolicy. */
+  readonly seedPolicy: SeedPolicy;
+
+  /** Names the intent-log schema this game emits/consumes. See 1.3. */
+  readonly intentLog: {
+    /** Free-form version tag for the game's own intent union, e.g. "onestone-v1". */
+    readonly schemaVersion: string;
+    /** Module export path for the game's IntentSchema (kind union), for tooling/docs. */
+    readonly schemaRef?: string;
+  };
+
+  /** Module export path for this game's replay(seed, intents) function. See 1.2. */
+  readonly replayVerifier: string;
+
+  /** Optional: does this game use energy-bank, and how. Absent means no ledger,
+   *  no accounts, no economy at all — lantern's legitimate shape. */
+  readonly energy?: {
+    /** Module export path for this game's EnergyHooks implementation (see 2.5). */
+    readonly hooksRef: string;
+    /** Account namespace this game posts under, e.g. "onestone". */
+    readonly accountNamespace: string;
+  };
+
+  /** Free-text keywords for catalog search/filtering. */
+  readonly keywords: readonly string[];
+}
+
+export interface CartridgeConfig {
+  readonly id: string;            // e.g. "klondike", "spider" or a level id
+  readonly displayName: string;
+  /** Opaque config payload the engine's createEngine understands (rules, board shape, etc). */
+  readonly params: Readonly<Record<string, unknown>>;
+}
+
+export type SeedPolicy =
+  | { readonly kind: "daily-utc" }              // dailySeed(date, variantId) — same seed worldwide per day
+  | { readonly kind: "on-demand" }               // fresh random seed per session, client- or server-chosen
+  | { readonly kind: "client-supplied" };        // seed comes in via URL/query, as solitaire does today
+```
+
+`seedPolicy.kind: "daily-utc"` names solitaire's `dailySeed(date, variantId)` pattern
+exactly. `"client-supplied"` names solitaire's `?seed=…&variant=…` URL-param shape.
+`"on-demand"` covers onestone/flickering-delve session starts. The manifest does not
+mandate *how* the seed string becomes an `Rng` — that stays a per-game internal, per
+digest 2's finding that the contract requires "deterministic given seed," never "must
+use mulberry32."
+
+### 1.2 Module interfaces
+
+```ts
+/** A game-declared union of intent kinds. Cartridge does not constrain the shape —
+ *  onestone's {kind:'swap',a,b}, solitaire's {from,to,count}, and a review Grade
+ *  are all legal Intent types. The only requirement is that intents are pure data
+ *  (JSON-serializable) and that applyIntent is a pure function of (state, intent). */
+export type Intent = Readonly<Record<string, unknown>> & { readonly kind: string };
+
+/** A game-declared union of event kinds emitted alongside a state transition.
+ *  Onestone's CascadeStep, solitaire's LogEntry.kind, weiqi-plan's semantic
+ *  annotator events (atari/capture/ko/eye) are all legal Event types. Events are
+ *  what a replay/verify step, an achievement system, or a spectator client consumes —
+ *  they are not recoverable from a bare before/after state diff. */
+export type GameEvent = Readonly<Record<string, unknown>> & { readonly kind: string };
+
+export interface ApplyResult<State> {
+  readonly state: State;
+  readonly events: readonly GameEvent[];
+}
+
+export interface ReplayResult<State> {
+  readonly finalState: State;
+  /** True iff every intent in the log applied cleanly under this engine's own rules
+   *  (no illegal move accepted, no engine error). A false result means the log is
+   *  not a valid record of a legal playthrough — this is what a settlement backend
+   *  checks before trusting a claimed win. */
+  readonly valid: boolean;
+  /** All events emitted across the whole replay, in order — for audit/animation. */
+  readonly events: readonly GameEvent[];
+}
+
+/** The contract every cartridge module implements. Generic over the game's own
+ *  State and Intent types — cartridge does not define State or Intent shapes,
+ *  only the function signatures around them. */
+export interface Cartridge<State, TIntent extends Intent = Intent> {
+  /** Pure. Called with the seed string named by the manifest's seedPolicy, and
+   *  optionally a config id (from manifest.configs) for multi-config games.
+   *  Must be a pure function of (seed, configId): calling it twice with identical
+   *  arguments must produce byte-identical state (this is the contract-level test
+   *  a cartridge harness runs against any implementer, per digest 2's #4). */
+  createEngine(seed: string, configId?: string): State;
+
+  /** Pure. Never mutates the input state. Returns a fresh state plus the typed
+   *  events that transition produced. This is the one required domain method —
+   *  everything else (replay, offline accrual, undo/redo) is derived from it. */
+  applyIntent(state: State, intent: TIntent): ApplyResult<State>;
+
+  /** Derived, not independently implemented: rebuilds state from nothing but
+   *  (seed, intents) by calling createEngine once and applyIntent per entry, in
+   *  order. A reference implementation is provided by @561-group/cartridge itself
+   *  (see below); a game only needs to supply createEngine/applyIntent for this
+   *  to exist for free, matching solitaire's replay = replayTo(..., cursor: log.length). */
+  replay(seed: string, intents: readonly TIntent[], configId?: string): ReplayResult<State>;
+
+  /** Round-trips state to/from a JSON-safe form, for persistence and for the
+   *  storefront/spectator boundary. Must satisfy deserialize(serialize(s)) deep-equals s. */
+  serialize(state: State): unknown;
+  deserialize(data: unknown): State;
+}
+
+/** Reference replay, exported by @561-group/cartridge for any implementer to reuse
+ *  verbatim instead of hand-rolling it (most games will just call this from their
+ *  own replay()): */
+export function defaultReplay<State, TIntent extends Intent>(
+  cartridge: Pick<Cartridge<State, TIntent>, "createEngine" | "applyIntent">,
+  seed: string,
+  intents: readonly TIntent[],
+  configId?: string,
+): ReplayResult<State> {
+  let state = cartridge.createEngine(seed, configId);
+  const events: GameEvent[] = [];
+  let valid = true;
+  for (const intent of intents) {
+    try {
+      const result = cartridge.applyIntent(state, intent);
+      state = result.state;
+      events.push(...result.events);
+    } catch {
+      valid = false;
+      break;
+    }
+  }
+  return { finalState: state, valid, events };
+}
+```
+
+**Fit against existing games, without rewriting:**
+
+- **solitaire**: `createEngine` = `dealTable(seed, variant)`; `applyIntent` = the existing
+  move-application step inside `engine.mts` (already pure); `replay`/`replayTo` already
+  exist under this exact name and shape — solitaire is the reference implementation this
+  interface was named after. Wrapping is naming the existing functions under a `Cartridge`
+  object literal, zero logic changes.
+- **onestone**: `createEngine` = `spawnBoard(seed, levelId)`; `applyIntent` = `applyMove`/
+  `applyBooster` (already pure, already return a fresh `SettleResult`); events = the
+  existing `CascadeStep[]` from `SettleResult.steps`. No standalone `replay()` exists today
+  per digest 2, but `defaultReplay` above is exactly the missing piece, buildable purely
+  from the already-pure `applyMove`.
+- **flickering-delve**: the harder case, since `DelveScene` is the one impure/stateful
+  module and intent handling is folded into `runTick`'s command handlers. The wrapper here
+  is: extract the pure command-decision step (what `strategy.mts`'s `decideAction` already
+  does) plus the pure state-transform each command handler performs, into an
+  `applyIntent(state, intent)` that operates on a plain `GameState` read-model (which
+  `economy.mts`/`progression.mts` already treat as pure data) — `DelveScene` becomes the
+  thing that calls `applyIntent` and persists the result, not the thing that *is* the
+  engine. This is a wrap of the existing tick pipeline shape (manual commands → agents in
+  order → trusted handlers execute), not new domain logic.
+- **lantern**: has no seed and no adversarial replay need, per digest 2 — it may
+  legitimately omit `replayVerifier`'s ledger-facing use case (verify a claimed win) while
+  still implementing `Cartridge` for uniformity: `createEngine(seed)` ignores `seed`
+  entirely (SRS state is not seed-derived), `applyIntent` wraps `reviewCard(state, grade,
+  now)` with `now` threaded through the intent payload (`{kind: "review", grade, now}`),
+  keeping the existing "inject `now`, never call `Date.now()` in domain code" discipline
+  intact. A cartridge without a ledger is still a cartridge.
+
+### 1.3 Intent-log format contract
+
+The log is the single source of truth — not a second data structure kept in sync with
+state, per digest 2's #2. The contract:
+
+```ts
+export interface LogEntry<TIntent extends Intent = Intent> {
+  readonly seq: number;           // monotonic within one (seed, session)
+  readonly intent: TIntent;
+  /** Present iff the game's seedPolicy or intent semantics need wall-clock context
+   *  (solitaire's ts, lantern's now). Never read by engine logic directly — only
+   *  ever passed through as part of the intent payload, per the no-ambient-time rule. */
+  readonly ts?: number;
+}
+
+export type IntentLog<TIntent extends Intent = Intent> = readonly LogEntry<TIntent>[];
+```
+
+A `(seed, configId, IntentLog)` triple is a complete, portable, replayable record of one
+playthrough — this is what a replay verifier consumes and what an energy-bank settlement
+backend demands before crediting a payout claim (§2.4). The schema deliberately keeps
+`intent` as opaque game-declared data (per digest 2's "what must stay OUT of the contract")
+— `{a,b}` swaps, `{from,to,count}` pile moves, SGF move records, and review grades are all
+legal `TIntent` payloads under this one envelope.
+
+**ActivityPub compatibility note** (per the vision note's §5a): an `IntentLog` entry maps
+onto an ActivityPub `Activity` as `{type: intent.kind, actor: <player>, object: intent,
+published: ts}` without schema change — `seq` becomes ordering within a collection. This
+spec does not require ActivityPub support now, only that the envelope not be redesigned
+later to add it.
+
+### 1.4 Replay-verifier entry point and energy/pricing hooks
+
+`manifest.replayVerifier` names a module export of the shape:
+
+```ts
+export function verify(
+  seed: string,
+  configId: string | undefined,
+  intents: IntentLog,
+): { readonly valid: boolean; readonly finalState: unknown; readonly events: readonly GameEvent[] };
+```
+
+This is `Cartridge.replay` re-exported at manifest-declared path, so tooling (the
+storefront's audit page, an energy-bank settlement backend) can verify a playthrough
+without importing the game's full engine module graph, only this one function.
+
+Energy/pricing hooks are declared optionally in the manifest (`manifest.energy`) and
+implemented against the `EnergyHooks` interface specified in §2.5 — a game that never
+references energy-bank simply omits this key, and the storefront/ledger tooling must treat
+absence as "no economy," not an error.
+
+---
+
+## 2. `@561-group/energy-bank`
+
+### 2.1 Grounding: promote, don't invent
+
+Per the vision note, this package is explicitly "promote flickering-delve's
+accounts/ledger/payments stack," already proven portable once (onestone's `ledger.mts` is
+a documented near-verbatim port with "no game-specific naming baked in"). §2.2–2.4 below
+lift that shape with the minimum generalization needed to serve arbitrary games and to
+support payouts, pooling, and selling — none of which flickering-delve's current ledger
+does today (digest 1 is explicit: flickering-delve only ever posts *income*, never a
+payout/withdrawal path).
+
+### 2.2 Account model
+
+```ts
+export type AccountId = string; // "<namespace>:<local-id>", e.g. "onestone:delver-abc123"
+
+export interface Account {
+  readonly id: AccountId;
+  /** Which cartridge/service namespace owns this account's identity, matching
+   *  manifest.energy.accountNamespace. A player's cross-game identity is a
+   *  separate concept (see 2.3's federation note) from a per-game account row. */
+  readonly namespace: string;
+  /** "guest" (unauthenticated, ephemeral) or "durable" (secret-hash authenticated,
+   *  federatable) — names flickering-delve's accounts.mts distinction directly. */
+  readonly kind: "guest" | "durable";
+}
+```
+
+Identity derivation and the guest→durable federation pattern are lifted as *pattern*, not
+code, per digest 1's explicit finding that `accounts.mts`'s concrete methods are bound to
+`DelveScene`. Energy-bank specifies the pattern as an interface any game's state store
+implements:
+
+```ts
+export interface IdentityFederation<PlayerFacts> {
+  guestAccountId(clientKey: string): AccountId;
+  durableAccountId(handle: string): AccountId;
+  /** Sets on first login, verifies thereafter. Mirrors hashSecret(handle, secret)
+   *  = sha256(`${namespace}:${handle}:${secret}`); an empty secret is always rejected. */
+  authenticate(id: AccountId, secret: string): Promise<boolean>;
+  /** Refuses if source isn't a guest, source === target, source has no progress,
+   *  or target already has progress — exact guard flickering-delve's migrateGuest
+   *  implements today. exportFacts/importFacts are supplied by the game's own
+   *  state store (DelveScene.exportActor/importActor today); energy-bank only
+   *  specifies the guard sequencing, not the fact representation. */
+  migrateGuest(
+    guest: AccountId,
+    durable: AccountId,
+    hasProgress: (id: AccountId) => Promise<boolean>,
+    exportFacts: (id: AccountId) => Promise<PlayerFacts>,
+    importFacts: (id: AccountId, facts: PlayerFacts) => Promise<void>,
+  ): Promise<void>;
+}
+```
+
+### 2.3 Double-entry ledger
+
+Lifted near-verbatim from `flickering-delve-service/src/ledger.mts` (already proven
+game-agnostic once via onestone's port), generalized only in the account namespace and in
+adding the payout side that flickering-delve never needed:
+
+```ts
+export interface Posting {
+  readonly account: string;      // chart-of-accounts path, e.g. "assets:cash:zbd",
+                                  // "income:premium", "liabilities:energy:onestone:delver-abc",
+                                  // "equity:payout-reserve"
+  readonly amount: string;       // signed exact decimal string, never a float
+  readonly commodity: string;    // "USD", "HIVE", "SATS", or "ENERGY" (the setting-agnostic unit)
+}
+
+export interface LedgerEntry {
+  readonly date: string;
+  readonly narration: string;
+  readonly postings: readonly Posting[];
+  readonly ref: string;          // idempotency key, cross-references source order/claim/intent-log
+}
+
+export interface AuditReport {
+  readonly entries: number;
+  readonly balanced: boolean;
+  readonly malformed: number;
+  readonly balances: Record<string, Record<string, string>>;
+  readonly journal: string;      // hledger-portable text
+}
+
+export interface Ledger {
+  /** Throws on unbalanced postings (per-commodity, integer 1e6 minor units,
+   *  never floats) — enforced on write, exactly as AuditLedger.record does today. */
+  record(entry: LedgerEntry): void;
+  has(ref: string): boolean;
+  all(): readonly LedgerEntry[];
+  audit(): AuditReport;
+}
+```
+
+The commodity `"ENERGY"` is the setting-agnostic unit named by the vision note ("money =
+energy = time, one economy skinned per game/setting"). Per-game display skinning (warp
+fuel, magic, tile-move energy) is a presentation-layer concern on top of this ledger, never
+a schema variant — a game's `EnergyHooks` (§2.5) may format `"ENERGY"` amounts however it
+likes for display, but every posting on the shared ledger uses the one commodity code so
+cross-game pooling/transfer (§2.5) and audit tooling stay uniform.
+
+### 2.4 The payouts ≤ verified-revenue invariant, as a checkable property
+
+This is the one requirement flickering-delve's ledger does not model today (digest 1: it
+only posts income, never payout). Energy-bank must model both sides and make the invariant
+independently checkable from the ledger's own postings — not asserted by a settlement
+backend, not trusted from a client claim.
+
+**Chart-of-accounts convention** (minimum accounts every settlement flow uses):
+
+- `assets:cash:<provider>` — real money/crypto received, mirrors flickering-delve today.
+- `income:<source>` — recognized revenue (premium purchases, SKU sales).
+- `liabilities:energy:<namespace>:<account>` — energy credited to a player's balance;
+  a liability because the bank owes it back out (as spend, transfer, or redemption).
+- `equity:payout-reserve` — revenue set aside as available for payout/redemption.
+- `expenses:payout:<provider>` — energy redeemed out to a real settlement backend.
+
+**The invariant as a checkable property**, computed purely from `ledger.audit().balances`,
+never from a running counter maintained alongside the ledger:
+
+```ts
+/** True iff, at any point the ledger has been recorded to, the sum of every
+ *  expenses:payout:* balance never exceeds the sum of every income:* balance.
+ *  This is deliberately NOT "payouts <= current liabilities:energy balance" —
+ *  a player can accrue and spend energy internally (liabilities moving to
+ *  expenses:in-game-use, say) all day without touching real revenue; the
+ *  invariant only binds the moment energy is redeemed OUT through a
+ *  settlement backend into real money/crypto. */
+export function verifyPayoutInvariant(ledger: Ledger): { readonly holds: boolean; readonly detail: string } {
+  const { balances } = ledger.audit();
+  let totalIncome = 0;
+  let totalPayout = 0;
+  for (const [account, byCommodity] of Object.entries(balances)) {
+    for (const amount of Object.values(byCommodity)) {
+      const n = Number(amount);
+      if (account.startsWith("income:")) totalIncome += -n; // income posts negative by convention
+      if (account.startsWith("expenses:payout:")) totalPayout += n;
+    }
+  }
+  return {
+    holds: totalPayout <= totalIncome,
+    detail: `payout ${totalPayout} vs verified revenue ${totalIncome}`,
+  };
+}
+```
+
+This is a pure function over `Ledger.audit()`'s own recomputed balances (never a cached
+total), matching the existing `audit()` discipline of independently recomputing from
+postings rather than trusting a running counter. A settlement backend (§2.6) calls this
+(or an equivalent check scoped to its own `expenses:payout:<provider>` account) before
+authorizing any redemption, and CI/test harnesses for `@561-group/energy-bank` should run
+it as a property test: no sequence of legal ledger operations can produce `holds: false`.
+
+Note the deliberate scope: energy earned and spent *inside* games (idle-game production,
+in-game purchases funded by earned energy, pooling/transfer between players) never touches
+`income:*` or `expenses:payout:*` at all — it moves entirely within
+`liabilities:energy:*` accounts (§2.5) and never risks the invariant. The invariant only
+binds at the one seam where energy is redeemed for something outside the ledger's own
+economy.
+
+### 2.5 Energy accrual/spend API, transfer/pooling
+
+```ts
+export interface EnergyHooks {
+  /** Credits energy to an account — in-game earning (idle production, quest
+   *  reward, purchase). Posts liabilities:energy:<ns>:<account> (credit) against
+   *  either income:<source> (real-money purchase) or a game-internal source
+   *  account (in-game-earned, no revenue implication). */
+  accrue(account: AccountId, amount: string, source: string, ref: string): Promise<void>;
+
+  /** Debits energy from an account for in-game use — never posts to income or
+   *  expenses:payout; moves liabilities:energy:<ns>:<account> to
+   *  expenses:in-game-use:<ns> or similar internal sink. */
+  spend(account: AccountId, amount: string, use: string, ref: string): Promise<void>;
+
+  /** Player-to-player transfer, same commodity, same or different namespace —
+   *  the vision note's "players can pool energy" as a first-class ledger op.
+   *  A single balanced entry: debit source liabilities:energy account, credit
+   *  destination liabilities:energy account. No income/expense account touched. */
+  transfer(from: AccountId, to: AccountId, amount: string, ref: string): Promise<void>;
+
+  /** Named pooling primitive: many accounts contribute into one shared pool
+   *  account (itself an AccountId of kind "pool"), which can later be spent,
+   *  transferred, or sold as one balance — the vision note's "players can pool
+   *  energy; players can sell energy" as two compositions of transfer(). */
+  contributeToPool(from: AccountId, pool: AccountId, amount: string, ref: string): Promise<void>;
+
+  /** Selling energy: a transfer priced through a settlement backend — the pool
+   *  or account's liabilities:energy balance decreases, and a real-money/crypto
+   *  payout is requested from the settlement backend (see 2.6), subject to
+   *  verifyPayoutInvariant before it is authorized. */
+  sell(account: AccountId, amount: string, backend: SettlementBackend, ref: string): Promise<SettleResult>;
+
+  /** Optional: a per-move/action cost lookup, so a game can price actions from
+   *  something other than a flat constant — e.g. the Hinterland puzzle's
+   *  cohomological complexity cost from @561-group/math's obstruction engine.
+   *  Energy-bank does not compute this; it only accepts whatever a game's
+   *  own pricing function returns as the `amount` passed to spend(). */
+  priceOf?(action: Intent, state: unknown): string;
+}
+```
+
+`accrue`/`spend`/`transfer` all reduce to one primitive underneath: build a balanced
+`LedgerEntry` and call `Ledger.record`. `contributeToPool` and `sell` are named
+compositions of `transfer` plus (for `sell`) a settlement-backend call, kept as distinct
+named operations because the vision note calls them out as first-class, not because they
+need separate ledger machinery.
+
+### 2.6 Settlement backend interface (ZBD-shaped, deliberately pluggable)
+
+Lifted directly from flickering-delve's `PaymentProvider`, which digest 1 confirms is
+"close to fully generic already," generalized from `Order`/`Sku`/`BoostGrant` (flickering-
+specific monetization vocabulary) to an arbitrary settlement-effect payload, and extended
+with the payout direction flickering-delve's version never needed:
+
+```ts
+export interface SettlementRequest {
+  readonly id: string;            // order/redemption id, doubles as ledger ref
+  readonly account: AccountId;
+  readonly amount: string;        // in the backend's native commodity (USD, HIVE, SATS...)
+  readonly commodity: string;
+  readonly direction: "purchase" | "payout"; // money-in vs energy-redeemed-out
+}
+
+export interface IntentResult {
+  readonly provider: string;
+  readonly requestId: string;
+  readonly instructions: Record<string, unknown>; // e.g. a Lightning invoice, a client_secret
+}
+
+export interface SettleResult {
+  readonly cleared: boolean;
+  readonly detail: string;
+}
+
+export interface SettlementBackend {
+  readonly id: string;            // "mock" | "stripe" | "hive" | "zbd" | future "onchain:<chain>"
+  readonly configured: boolean;
+
+  createIntent(request: SettlementRequest): Promise<IntentResult>;
+
+  /** Verify the money moved (purchase) or authorize + execute the payout
+   *  (payout direction). `evidence` is a webhook body, a polled chain/API
+   *  result, or unused, exactly as flickering-delve's three adapters vary today. */
+  settle(request: SettlementRequest, evidence?: unknown): Promise<SettleResult>;
+}
+```
+
+This is deliberately the same three-method shape as flickering-delve's `mockProvider`/
+`stripeProvider`/`hiveProvider` today (`id`, `configured`, `createIntent`, `settle`) with
+`Order`/`Sku` replaced by the generic `SettlementRequest`. A ZBD/Lightning backend is a
+fourth implementation of this exact interface (`createIntent` returns a Lightning invoice
+in `instructions`, `settle` polls or receives a webhook for payment confirmation — same
+shape as `hiveProvider`'s polling pattern). An on-chain backend later — the owner's
+explicitly noted "regional servers" framing — slots in as a fifth implementation with zero
+schema change to `SettlementBackend`, `Ledger`, or `EnergyHooks`: only a new `id` and a new
+`createIntent`/`settle` pair. This is the concrete mechanism by which "settlement backends
+stay pluggable behind the ledger" (vision note §5) is satisfied, not an aspiration — the
+interface is the same width regardless of how many backends exist behind it.
+
+The manager class analogous to flickering-delve's `Payments` (idempotency check via
+`ledger.has(ref)` before `record`, provider resolution with fallthrough to a default) is
+specified as `EnergyBank`:
+
+```ts
+export interface EnergyBank {
+  readonly ledger: Ledger;
+  readonly identity: IdentityFederation<unknown>;
+  readonly energy: EnergyHooks;
+  resolveBackend(requested?: string): SettlementBackend; // requested if configured, else fallthrough, else mock
+  availableBackends(): readonly { readonly id: string; readonly configured: boolean }[];
+}
+```
+
+---
+
+## 3. How the storefront consumes manifests
+
+`play.561.group` is a static site (per the vision note, deployed like lantern's fully
+static shape) whose entire game-catalog surface is:
+
+```ts
+// catalog.json — one entry per game, generated at build time by scanning each
+// cartridge-implementing service for its manifest export.
+export type Catalog = readonly CartridgeManifest[];
+```
+
+Build-time generation walks each `<game>.561.group` service, imports its manifest module
+(the same one referenced by `manifest.replayVerifier` and `manifest.intentLog.schemaRef`
+live in), and serializes the `CartridgeManifest` objects into one `catalog.json`. The
+storefront's runtime job, per the vision note ("once Cartridge exists, the storefront's job
+reduces to reading manifests"), is exactly:
+
+1. Fetch `catalog.json`.
+2. Render one catalog card per entry from `displayName`, `description`, `keywords`.
+3. Link out to `https://<subdomain>.561.group` (the browser entry point) and, where
+   `entryPoints.headless` is present, surface that as a documented API/terminal access
+   path in the card — not hidden or secondary, per the vision note's "terminal/API
+   interfaces actively made space for."
+4. Optionally render an audit/verify page per game that calls `replayVerifier` against a
+   submitted `(seed, configId, intents)` — this is the one place the storefront needs live
+   compute rather than static JSON, and it is optional, not required for the catalog to
+   function.
+
+Nothing about the storefront needs to know a game's `State`, `Intent`, or `GameEvent`
+shapes — those stay opaque behind the manifest's string-keyed entry points. Adding a new
+game to the catalog is: implement `Cartridge`, publish a `CartridgeManifest`, regenerate
+`catalog.json`. No storefront code changes per game, matching the "directory of manifests"
+framing directly.
+
+---
+
+## 4. Summary: what each existing game needs to add, not rewrite
+
+| Game | createEngine | applyIntent | replay | energy hooks |
+|---|---|---|---|---|
+| solitaire | already `dealTable` | already the move step | already `replayTo` | none (roadmap defers to a future payout adapter reading its move-log — a real, prerequisite-satisfied consumer of §2's `SettlementBackend`) |
+| onestone | already `spawnBoard` | already `applyMove`/`applyBooster` | new, but trivial via `defaultReplay` over already-pure functions | wrap existing `ledger.mts` (already a proven near-verbatim port) behind `EnergyHooks` |
+| flickering-delve | extract from `DelveScene`'s tick pipeline into a pure function over `GameState` | same extraction | new, via `defaultReplay` once the above extraction exists | wrap existing `ledger.mts`/`payments.mts`/`accounts.mts`; add the payout side (§2.4) which does not exist today |
+| lantern | `createEngine(seed)` ignores seed; wraps existing state init | wraps `reviewCard(state, grade, now)` | new, low-stakes (no adversarial replay need) | omitted entirely — legal, per manifest's optional `energy` key |
+
+In every case the wrapper is additive: existing pure functions get named under the
+`Cartridge` interface, existing ledgers get named under `Ledger`/`EnergyHooks`, and no
+game's actual domain logic (dungeon procgen, match-3 cascades, card rules, SRS scheduling)
+changes shape.

@@ -1,0 +1,91 @@
+# NotebookLM source projection
+
+Title: semiotic-smart-material/bill-of-materials
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/engineering-science-services-section/services/materials-services-section/services/smart-materials-service-section/services/abiotic-smart-material-services-section/services/semiotic-smart-material-services-section/content/documents/specifications/2026-07-26-bill-of-materials.md
+Original-Digest: sha256:e564fea11e920a7c6bca853e81e16c8824ef97cd83d2c04163197d0877b71b01
+Disclosure: repository-source
+
+---
+title: "Bill of Materials: Two-Phase Siloxane–Zeolite Substrate with Multi-Tier Exchange Chemistry"
+description: "Consolidated, IUPAC-named reagent list drawn from the lenticule-science notes, with quantities/ratios where specified in those notes, CAS numbers given at best available confidence, and every hazard flag marked for mandatory SDS verification before use — not a substitute for one."
+date-created: 2026-07-26
+kind: specification
+status: draft
+declared-by: claude-interactive-session-supplying-lenticule-science
+---
+# Bill of Materials: Two-Phase Siloxane–Zeolite Substrate with Multi-Tier Exchange Chemistry
+
+**Status: draft, unverified.** CAS numbers below are given at the author's best recollection,
+not looked up against a live chemical registry, and must be independently confirmed against
+current supplier SDS documentation before any material is ordered or handled. This document
+does not substitute for a Safety Data Sheet for any listed compound. Where a quantity or ratio
+is not given, it was not specified in the source research notes and is an open formulation
+question, not an oversight in this table.
+
+---
+
+## Core network
+
+| Component | Compound | CAS (unverified) | Role | Quantity / ratio (source) |
+|---|---|---|---|---|
+| Matrix precursor | Divinyl-terminated poly(dimethylsiloxane) (vinyl-PDMS) | ~68083-19-2 (grade-dependent; MW-dependent variants exist under other CAS numbers) | Floppy matrix backbone, $T_g \approx -120\,^\circ\mathrm{C}$ | Base resin; exact MW/viscosity grade not specified |
+| Crosslinker | Pentaerythritol tetrakis(3-mercaptopropionate) (PETMP) | 7575-23-7 | Tetrafunctional thiol, thiol–ene cure, $f=4$ | SH:vinyl **above unity** (excess thiol required — see note below) |
+| Radical photoinitiator | 2,2-dimethoxy-2-phenylacetophenone (DMPA), or equivalent Norrish Type I initiator | ~24650-42-8 | Initiates thiol–ene radical cure under UV | Not specified; typical thiol–ene formulations run 0.5–2 wt% — **not confirmed for this system** |
+| Oxidant for post-cure disulfide formation | Ambient air, or a mild chemical oxidant (unspecified in source notes) | — | Converts residual thiol to disulfide after cure | Stoichiometry not specified; controls the exchangeable-population fraction and is flagged in the source notes as a live risk of over-oxidation |
+
+**Note on SH:vinyl ratio.** The organosulfur note specifies excess thiol over vinyl so that
+thiol–ene consumes all vinyl into permanent thioether, leaving a residual thiol pool for
+post-cure oxidation to disulfide. No specific numeric ratio is given anywhere in the source
+notes — this is a real open formulation parameter, not merely omitted here.
+
+## Rigid phase
+
+| Component | Compound | CAS (unverified) | Role | Preparation |
+|---|---|---|---|---|
+| Rigid/ossified phase, option A | Zeolite 4A (Linde Type A, LTA framework), $\mathrm{Na_{12}(AlO_2)_{12}(SiO_2)_{12}\cdot 27H_2O}$ | ~70955-01-0 | Hydrophilic, high-water zeolite; the "specific-costed" reactive-water case | **Must be calcined at 450–550 °C and handled dry** before compounding — uncalcined material's 20–22 wt% pore water reacts with Si–H under platinum catalysis if that cure route is used |
+| Rigid/ossified phase, option B | ZSM-5 (MFI framework, high-silica) | not confirmed | Low-water alternative; avoids the calcination requirement, but changes the water-role chemistry described in the carriers note | Loading/particle size not specified |
+
+## Metal–ligand retuning tier (proposed, not yet formulated in combination with the above)
+
+| Component | Compound | CAS (unverified) | Role |
+|---|---|---|---|
+| Coordinating ligand, option A | Catechol (from DOPA-functionalized crosslinker, or free catechol) | 120-80-9 (catechol itself) | pH-gated mono/bis/tris-Fe coordination |
+| Coordinating ligand, option B | Histidine (free or peptide-conjugated) | 71-00-1 (L-histidine) | Metal-swappable exchange-rate tuning site |
+| Metal salt, fast-exchange | Zinc chloride, $\mathrm{ZnCl_2}$ | 7646-85-7 | Labile histidine-metal coordination |
+| Metal salt, slow-exchange | Nickel(II) chloride, $\mathrm{NiCl_2}$ | 7718-54-9 | Inert histidine-metal coordination (note: nickel salts are sensitizers and suspected carcinogens — mandatory SDS review) |
+| Metal salt, catechol coordination | Iron(III) chloride, $\mathrm{FeCl_3}$ | 7705-08-0 | pH-dependent mono/bis/tris catechol coordination |
+
+## External baths (proposed, per the growth/feeding note — not yet specified as concrete formulations)
+
+| Bath | Composition | Purpose | Status |
+|---|---|---|---|
+| Seeded-growth precursor bath | Dilute sodium silicate / sodium aluminate / NaOH, aqueous | Extensive zeolite growth via external precursor uptake | Concentration, pH, temperature, and duration are all unspecified — this is a proposal, not a formulation |
+| Photoredox feeding donor | An external sacrificial organic electron donor | Oxidized by photoexcited catechol–Fe; proposed source of "feeding" electrons | No specific donor compound has been chosen anywhere in the source notes |
+
+---
+
+## Mandatory before any bench work
+
+1. **Independent SDS lookup for every row above**, from the actual supplier and lot, not from
+   this document. Nickel salts specifically carry real, serious hazard classifications
+   (sensitization, carcinogenicity category) that this table only flags, not documents fully.
+2. **Thiol odor and exposure controls.** Multifunctional thiols, PETMP included, are strong-
+   smelling and require fume-hood handling; this was never addressed in any prior note.
+3. **Zeolite dust handling** during calcination and compounding — respirable particulate
+   controls, standard for any powder ceramic handling, not addressed elsewhere in this corpus.
+4. **No quantity in this table should be treated as a validated formulation.** Several are
+   explicitly marked unspecified; several others (SH:vinyl ratio, photoinitiator loading, bath
+   concentrations) are carried from adjacent, established literature for structurally similar
+   systems, not measured for this one.
+
+---
+
+## Source notes this table draws from
+
+- *Ossification as the State Variable* (2026-07-25) — zeolite 4A water content, calcination
+  requirement, thiol–ene cure route.
+- *Dual Organosulfur Crosslink Populations* (2026-07-25) — PETMP identity (via the $f=4$
+  tetrathiol claim), SH:vinyl excess, post-cure oxidation to disulfide.
+- *Three Ways to Retune the Exchangeable Population* (2026-07-25) — catechol/histidine/
+  terpyridine metal-coordination tier.
+- *Three Missing Pieces for a Fully Synthetic Organism* (2026-07-26) — the two external baths.

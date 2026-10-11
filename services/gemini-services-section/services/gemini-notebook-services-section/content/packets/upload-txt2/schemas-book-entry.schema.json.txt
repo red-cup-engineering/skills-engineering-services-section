@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emsenn/schema/book-entry",
+  "title": "book entry",
+  "$comment": "One line in the chief financial officer's books: a unit's sourced cost figure, with the value it created and the value it captured kept in separate columns rather than netted, per the win-win value-added statement (gongying-zengzhi-biao) this office's theory-basis names in place of a profit-and-loss account. A book entry is never invented from a unit's own report about itself — source is required, and names the record the figure was read off. This class exists because no books pool existed at all until this entry was owed: the CFO's own office record names that absence as unrealized, and the first entry is what opens the books rather than asserting them open in prose.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "unit",
+    "source",
+    "cost",
+    "value-created",
+    "value-captured"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "$comment": "The record's own name, equal to its basename in data/books/."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "$comment": "The entry as it would be said aloud: what was booked and for whom."
+    },
+    "unit": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "$comment": "The micro-enterprise or unit this entry books for. Books are opened or closed per-unit (the office's own deontic-power), so every entry says which unit's books it belongs to."
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "$comment": "The record this figure was read off — a path or record address a stranger can open and check the figure against. Required on every entry: this office's own duty is to refuse a figure a unit cannot source, so an entry with no source is not a book entry, it is an assertion."
+    },
+    "cost": {
+      "type": "object",
+      "required": [
+        "fuel-consumed",
+        "wall-time-seconds",
+        "denomination",
+        "denomination-settled"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fuel-consumed": {
+          "type": "number",
+          "minimum": 0,
+          "$comment": "Carried verbatim from source — never recomputed, never rounded past what source itself carries."
+        },
+        "wall-time-seconds": {
+          "type": "number",
+          "minimum": 0,
+          "$comment": "Carried verbatim from source."
+        },
+        "denomination": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "What fuel-consumed is counted in, exactly as source states it — named explicitly rather than assumed."
+        },
+        "denomination-settled": {
+          "type": "boolean",
+          "$comment": "Whether this denomination is presently THE firm's settled allocation currency (settle-the-denomination-an-allocation-is-counted-in, the office's own deontic-power) as opposed to one unit's own local fuel unit, sourced honestly and booked, but not yet the currency an investment-review-board verdict is stated in. false until this office has actually exercised that power for the named denomination — never asserted true by a unit reporting its own figure, and never silently implied by an entry simply existing."
+        }
+      },
+      "$comment": "Mirrors emsenn/schema/exchange's own cost shape (fuel-consumed, wall-time-seconds, denomination) so a figure sourced from an exchange record carries over without translation — plus denomination-settled, which the exchange schema has no occasion to state and this office's books cannot honestly omit."
+    },
+    "value-created": {
+      "$ref": "#/$defs/value-side"
+    },
+    "value-captured": {
+      "$ref": "#/$defs/value-side"
+    },
+    "authorized-by": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "$comment": "The decision record(s) that authorized the spend this entry books, when any exist — an allocation this office's books answer to, not a line this office drew on its own authority."
+    },
+    "witnessed-by": {
+      "type": "string",
+      "minLength": 1,
+      "$comment": "The task, if any, whose verification attests the work product this entry's cost was spent producing — never this office's own say-so."
+    },
+    "x-provenance": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "value-side": {
+      "type": "object",
+      "required": [
+        "description",
+        "quantified"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "What value, in plain language, was created or captured — stated so a stranger can check it against the source, never a bare figure with no referent."
+        },
+        "quantified": {
+          "type": "boolean",
+          "$comment": "Whether a figure is presently attached (below), as opposed to a description with no number this office can yet source — a unit's value created and captured are frequently real before they are measurable, and this field keeps that honest rather than forcing a number that cannot be sourced."
+        },
+        "figure": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "The sourced number, when quantified is true — kept as a string so its own denomination travels with it rather than being assumed to share cost's."
+        }
+      },
+      "$comment": "Value created and value captured are two instances of this same shape, kept in two separate top-level keys rather than netted into one balance — per the win-win value-added statement's own premise, that the difference between what a unit created and what it captured is informative, not leakage to be closed before anyone sees it."
+    }
+  },
+  "$comment-absences": "No worth-continuing or verdict field: whether a line is worth continuing is the investment review board's altitude, and this office holds a deontic-immunity against being made to decide it — this class carries the number the board's verdict binds, never the verdict itself. No distribution-formula field: how a unit divides what it is owed is sanquan's own reserve, per this office's deontic-immunity against setting one. No status or closed key: a book entry is a settled fact about a cost already incurred, the instant it is written — unlike an idea or anomaly, there is nothing left for it to become.",
+  "x-source": {
+    "derived-from": "rendanheyi/gongying-zengzhi-biao (lib/emsenn/services/561-group/services/union-officer-academy/services/management-thought/rendanheyi/content/glossary/terms/gongying-zengzhi-biao.md) — the win-win value-added statement's premise that value created and value captured are kept separate rather than netted; emsenn/schema/exchange's own cost shape, which this class's cost block mirrors so a sourced figure carries over without translation; office chief-financial-officer's own unrealized note that no books exist yet and no allocation currency is settled"
+  },
+  "x-provenance": {
+    "recorded-by": "claude/chief-financial-officer",
+    "recorded-on": "2026-07-16"
+  }
+}

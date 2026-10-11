@@ -1,0 +1,60 @@
+\subsection{Dirichlet energy and Rayleigh floor}
+
+\begin{proposition}[Tile Dirichlet energy]\label{thm:tile-dirichlet}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.dirichlet}\leanok\uses{thm:coordination-laplacian-dual, thm:lawvere-kernel-h0-iso}
+$\texttt{dirichlet}=\texttt{normSq}\circ\texttt{diffs}$: the sum of squared consecutive differences
+$\sum_i(v_{i+1}-v_i)^2=\|\delta v\|^2$ of a rational section $v:\texttt{List }\mathbb Q$ along the
+causal chain --- the Rayleigh numerator of the path-graph (tile) Laplacian $L=\delta^\top\delta$.
+\end{proposition}
+
+\begin{theorem}[The tile Laplacian is positive semidefinite]\label{thm:tile-laplacian-psd}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.dirichlet_nonneg}\leanok\uses{thm:tile-dirichlet}
+$0\le\texttt{dirichlet}\,v$ for every section --- immediate from the sum-of-squares factorisation
+through $\texttt{diffs}$.
+\end{theorem}
+
+\begin{theorem}[Zero Rayleigh energy $\iff$ harmonic]\label{thm:tile-rayleigh-harmonic}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.dirichlet_zero_iff_flat}\leanok\uses{thm:tile-dirichlet}
+$\texttt{dirichlet}\,v=0\iff v$ is flat (constant along the chain): the kernel $\ker L$ of the tile
+Laplacian is exactly the harmonic sections --- the inner-product realisation of the harmonic
+$=\check H^0=\ker\Delta$ side (\cref{thm:lawvere-kernel-h0-iso,thm:coordination-laplacian-dual}).
+\end{theorem}
+
+\begin{theorem}[Rayleigh bottom eigenpair $(\lambda_0=0,\ker L)$]\label{thm:tile-rayleigh-bottom}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.rayleigh_eigen_bottom}\leanok\uses{thm:tile-rayleigh-harmonic}
+Division-free Rayleigh: $0\cdot\|v\|^2\le\texttt{dirichlet}\,v$ always
+(\texttt{rayleigh\_ge\_bottom}), with equality $\texttt{dirichlet}\,v=0\cdot\|v\|^2$ exactly on the
+harmonic sections. So $\lambda_0=0$ is the bottom of the spectrum, attained precisely on $\ker L$.
+\end{theorem}
+
+\begin{theorem}[The chromatic-Lorentzian tile index]\label{thm:chromatic-tile-index}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.chain_index_balance}\leanok\uses{thm:anti-landauer-index-balance, thm:tile-rayleigh-harmonic}
+The chain tile on $n+1$ sites is reversible ($\texttt{landauerBits}=0$), its harmonic kernel is the
+single constant mode ($\texttt{antiLandauerBits}=\check H^0=1$, the one mode the Dirichlet energy
+vanishes on), and $\chi=\check H^0-\check H^1=1$ --- the index theorem on the chromatic-Lorentzian
+tile.
+\end{theorem}
+
+\begin{theorem}[The 2-site tile gap is exactly $\lambda_1=2$]\label{thm:two-site-gap}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.twoSite_gap}\leanok\uses{thm:tile-rayleigh-harmonic}
+Over ℚ, every 2-site section orthogonal to the constants ($a+b=0$) has Dirichlet energy exactly twice
+its squared norm, $\texttt{dirichlet}[a,b]=2\,\texttt{normSq}[a,b]$: the orthogonal complement of the
+harmonic line is one-dimensional, so the Rayleigh quotient is constantly $2$ there --- the smallest
+tile's spectral gap, computed exactly over the field. Witnessed by the eigenvector $[1,-1]$
+(\texttt{twoSite\_eigenvector}).
+\end{theorem}
+
+\begin{theorem}[The 3-site spectral gap is exactly $\lambda_1=1$]\label{thm:three-site-gap-lower}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.iThreeSite_gap_lower}\leanok\uses{thm:tile-rayleigh-harmonic}
+A Poincaré/Wirtinger inequality on the integer sublattice: every 3-site section orthogonal to the
+constants ($a+b+c=0$) has Dirichlet energy $\ge$ its squared norm, via the sum-of-squares certificate
+$\texttt{idirichlet}[a,b,c]=\texttt{inormSq}[a,b,c]+3b^2$ (\texttt{iThreeSite\_gap\_identity}) with
+$3b^2\ge 0$. The Rayleigh quotient is scale-invariant (clearing denominators scales numerator and norm
+by the same $D^2$), so the integer-sublattice bound is the rational tile's gap; it is attained at the
+eigenvector $[1,0,-1]$ (\texttt{iThreeSite\_eigenvector}), so $\lambda_1=1$ exactly. (The integer
+sublattice is used because the only ring automation in the dependency-free core, the integer normalizer
+\texttt{iring}, cannot discharge the two-variable \emph{rational} identity --- a tooling limit, not a
+mathematical one.)
+\end{theorem}
+
+\begin{theorem}[The harmonic kernel is exactly the constants --- a positive gap for every tile]\label{thm:tile-harmonic-kernel-constants}\lean{Obsmetrologia.Flow.ChromaticTileRayleigh.harmonic_iff_constant}\leanok\uses{thm:tile-rayleigh-harmonic}
+For \emph{every} tile size, the Dirichlet energy vanishes exactly on the constant sections:
+$\texttt{dirichlet}\,v=0\iff v$ is constant. So the bottom eigenspace $\ker L$ is the one-dimensional
+constant line ($=\check H^0=\texttt{antiLandauerBits}$ of the connected tile,
+\cref{thm:chromatic-tile-index}), the bottom eigenvalue $\lambda_0=0$ is \emph{simple}, and the
+spectral gap $\lambda_1>0$ is strictly positive for all $n$ --- the general structural content behind
+the exact small-tile gaps. Proved by `flat ⟺ constant` on top of \cref{thm:tile-rayleigh-harmonic}.
+\end{theorem}

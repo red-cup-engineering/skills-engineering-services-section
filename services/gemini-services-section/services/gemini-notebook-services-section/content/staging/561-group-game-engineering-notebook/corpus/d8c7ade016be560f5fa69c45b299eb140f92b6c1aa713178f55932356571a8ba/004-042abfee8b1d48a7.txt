@@ -1,0 +1,317 @@
+# NotebookLM source projection
+
+Title: gaming-enterprises/house-specification-standard
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/house-specification-standard.md
+Original-Digest: sha256:3208ac404ef1aa5a1d1333d0ea9b59f8eadcc75c747c1c527bb60b6eff47a27d
+Disclosure: repository-source
+
+---
+title: House Specification Standard
+description: "The lean arc42 adaptation every 561 Group game-fleet service specs against: DESIGN.md stays the design-decisions doctrine document (unchanged, unrenamed); a companion ARCHITECTURE.md carries the arc42-numbered engineering record, extended with a house §13 theory binding and §14 ludics section, plus a falsifiable now/next/later roadmap appendix. Written after reading and verifying every existing fleet spec; extends, never replaces, the precedent those specs already set."
+date-created: 2026-08-19
+date-updated: 2026-08-19
+type: specification
+authors:
+  - claude-fable-5
+tags: [gaming, enterprises, specification, standard, arc42, architecture]
+---
+
+# House Specification Standard
+
+## 0. What this document is, and is not
+
+This is an **engineering document**, not a governance document. It exists because the owner has
+explicitly rejected vocabulary empires, process doctrine, and opaque questionnaires — so every
+section below either does real work (it changes what an implementing agent writes, or what a
+reviewer checks) or it is not here. **A section with nothing true to say about a given service is
+omitted from that service's document entirely — never left as a stub, an empty heading, or a
+"TBD."** A reader who sees a section present can trust it says something real; a reader who sees
+it absent should read that as "nothing here yet," not "someone forgot."
+
+This standard does not invent a new doctrine. Every fleet service already independently converged
+on the same shape: pure `.mts` domain modules, one stateful scene, a native HTTP/SSE transport, a
+double-entry ledger behind a `PaymentProvider` boundary, deterministic seeded engines, and — since
+`onestone-service` — an explicit "the math is load-bearing (and honestly labeled)" section, which
+`lantern-service` generalized into "What's load-bearing vs. flavor," which `self-education-platform-design.md`
+and `equivo-design.md` extended again with per-row evidence-strength labeling and an explicit
+policy for representing absent material as absent rather than synthesized. This standard is the
+write-up of that convergence, formalized once so the next service doesn't have to reinvent it, and
+extended with two house-specific sections (§13, §14) that name what none of the existing docs name
+explicitly: which piece of `@561-group/math` a game's mechanics actually instantiate, and what the
+game's core loop is doing as *ludics* — session shape, skill expression, retention — with every
+claim tied to evidence rather than asserted.
+
+## 1. Two documents, not one: DESIGN.md stays; ARCHITECTURE.md is new
+
+**RESPECT existing precedent, stated as a hard rule**: this standard does not rename, supplant, or
+deprecate any existing `DESIGN.md`, `ROADMAP.md`, `README.md`, `DEPLOY.md`, or `TILESLOTS-DESIGN.md`.
+`flickering-delve-service/DESIGN.md` originated the house doctrine; `onestone-service/DESIGN.md`
+inherits it explicitly ("Doctrine (inherited from flickering-delve-service)"); `lantern-service/DESIGN.md`
+added the load-bearing-vs-flavor disclosure section by name. These are **decision documents**: they
+answer "what did we decide, and why" in the voice of the team that built the service, and they stay
+exactly where they are, exactly as they are.
+
+**`ARCHITECTURE.md` is the new, companion document this standard specifies.** It is an
+**engineering record**: it answers "what exists, traced through the actual code, with real numbers"
+— module inventories with responsibilities, runtime scenarios traced through real function calls,
+ADRs recovered from what the code shows was decided (not re-litigated), a real debt list, a real
+theory binding, and a roadmap. Where `DESIGN.md` says "we decided the settle loop terminates by
+operator idempotence, not a depth cap," `ARCHITECTURE.md` says "here is the loop
+(`engine.mts::settleLoop`), here is the acyclicity argument traced to `FALL_ALIGNMENT_MIN`, here is
+the test that exercises it, here is the debt this leaves." The two documents cite each other rather
+than duplicate each other — `ARCHITECTURE.md` should assume its reader has `DESIGN.md` open beside
+it, and should not restate the design rationale, only ground it.
+
+A service that has no `DESIGN.md` yet writes one *first*, using whatever design-decision doctrine
+already exists in the fleet (the section 1 pattern above) — `ARCHITECTURE.md` without a `DESIGN.md`
+underneath it is engineering record for decisions no one wrote down, and that gap should be visible,
+not backfilled by inventing a `DESIGN.md`'s content inside the wrong document.
+
+## 2. Constraints
+
+Every constraint below is load-bearing on how a service may be built, not aspirational style
+guidance. A service that violates one of these is not "done, minus polish" — it has not met the
+house bar.
+
+- **The determinism discipline.** No domain module may read `Date.now()` or call `Math.random()`.
+  Every function that needs "now" takes it as an injected parameter; every source of randomness is
+  a seeded PRNG (the house pattern is FNV-1a hash → mulberry32, independently re-derived in
+  `flickering-delve-service/src/seed.mts`, `onestone-service/src/seed.mts`, and `solitaire-service/src/cards.mts`,
+  never imported cross-service — see the vendor-not-import rule below). This is not a style
+  preference: it is what makes replay verification (§8) possible at all, and what makes "the same
+  seed produces the same board for every player" a provable property rather than a hope.
+- **The git ban.** No git command may be run in any form, by any agent, on this development
+  machine — git causes WSL lockups, and a hook blocks it. Version history, if wanted, is a
+  filesystem or corpus-normalization concern, never a reason to shell out to git.
+- **The zero-dependency rule.** Domain modules ship on Node builtins only. `@561-group/*` packages
+  (via the local Verdaccio registry) are the one licensed exception, and even those are vendored —
+  see below — not live-imported across independently-deployed services. `@561-group/math` itself
+  holds to zero runtime dependencies across all thirteen of its packages; a game that needs it for
+  a checker or a cost function vendors the specific subpath it needs, never the whole catalog live.
+- **Vendor a copy, not a cross-service import.** Each service ships its own Dockerfile/deploy unit;
+  a live import from one deployed service into another couples two independent deploys for a
+  handful of small pure functions. `onestone-service/src/ledger.mts` is a documented near-verbatim
+  port of `flickering-delve-service/src/ledger.mts`; `lantern-service/src/stability.mts` is a
+  documented vendor of `onestone-service/src/validate.mts`'s pebble-game functions. This standard
+  requires that every such port be *documented as a port* at the point of vendoring (a module
+  header note naming the source file) — an undocumented duplicate is debt, a documented one is the
+  house pattern working correctly.
+- **One concern per file, one stateful scene per service.** Pure `.mts` domain modules, each paired
+  with a co-located `<name>.test.mts` run under `node --test` (no external test framework). Every
+  service isolates its one piece of mutable runtime state behind a single `scene.mts` (or
+  equivalent); every other module is a pure function of its arguments. `ARCHITECTURE.md`'s module
+  inventory (§5) is where a reviewer checks this constraint actually holds for a given service.
+- **Earn-only, no wagering.** No chance-based payout multipliers, no RNG-outcome-scaled rewards, no
+  "double or nothing" mechanic, regardless of jurisdiction legality. A board's or a deal's own
+  randomness (present for reasons that have nothing to do with money) must never itself scale a
+  payout.
+
+## 3. Context
+
+What sits outside the service and why the service exists relative to it: which fleet-shared
+package it depends on (`@561-group/math`, and — once built — `@561-group/cartridge`/`@561-group/energy-bank`
+per `cartridge-and-energy-bank-spec.md`), which subdomain it deploys to per the vision note's
+`<game-name>.561.group` convention, whether `play.561.group`'s catalog lists it, and who plays it
+(human browser players, terminal/API clients, AI players as peers — the vision note's explicit
+house stance that these are not three separate integration problems but one manifest-shaped
+contract). Omit this section if a service genuinely has no external context worth stating beyond
+"it is a game in the fleet" — most services will have real content here (at minimum, the catalog
+listing and subdomain).
+
+## 4. Solution strategy
+
+The one or two sentences that explain the whole shape: "the board is a graph, not a grid, so one
+match engine serves every tessellation" (onestone); "the world is an append-only fact-trace, so
+game state doubles as an auditable ledger with no second state system" (flickering-delve); "every
+game converges on seed-in/deterministic-engine/intent-log-out/replay-to-verify, so extract that
+shape once as a shared substrate" (the Cartridge/Energy Bank proposal). This section is the
+`DESIGN.md`'s "Thesis" restated in one place for a reader who wants the whole architecture in one
+paragraph before the module-by-module detail.
+
+## 5. Building block view — the module inventory
+
+A table, not prose: every module, its responsibility in one line, whether it is pure or the
+service's one stateful piece, and its real line count and test count (`wc -l`, `node --test`
+output — read the file and run the suite, never estimate). This is the section most tempted to go
+stale; the rule that keeps it honest is that **every number in this table is one the writer ran or
+counted for this document**, not copied from a prior draft or a README that might have drifted.
+Group modules by layer where a service has real layers (domain / scene / transport / client) rather
+than listing forty files flat.
+
+## 6. Runtime view — real scenarios traced through the code
+
+Not UML sequence diagrams — prose traces of 2-4 real scenarios, each one naming actual function
+calls in order, with the file and (where useful) the line range. "A player swaps two adjacent
+tiles: `server.mts`'s `/input` route resolves the bearer token, calls `scene.mts`'s `input()`,
+which dispatches to `handleSwap`, which calls `engine.mts`'s `applyMove`, which finds matches,
+mints specials, resolves blocker hits, falls, refills, and rescans to a fixed point before
+`finishOrContinue` checks whether the level just ended." Pick scenarios that exercise the
+service's actual hard parts (a cascade, a rekindle, a webhook settle, a guest-to-account
+migration) — a scenario that's just "GET / returns HTML" teaches a reader nothing they didn't
+already assume.
+
+## 7. Deployment view
+
+How this actually ships: `node src/server.mts` directly (the house's stated no-framework
+transport), the deploy target if one is chosen (`onestone-service/DEPLOY.md`'s Cloud Run pattern
+is the fleet's first real example — `--max-instances 1` because game state lives in one process,
+`--session-affinity` for SSE), environment variables that gate real payment credentials, and the
+explicit warning pattern `DEPLOY.md` sets: do not configure real Stripe/Hive/ZBD credentials until
+durable state exists and the shared-payment-identity decision is made. A service with no deploy
+story yet should say so plainly ("not yet deployed; runs on localhost only") rather than omit the
+section — that is itself a debt-list item (§11), not a gap to paper over.
+
+## 8. Crosscutting concepts
+
+The house's non-negotiable cross-cutting properties, each stated as a **checkable claim about this
+service**, not a restatement of the general policy:
+
+- **Replay verification.** How this service's anti-cheat actually works: a seed plus an ordered
+  intent/move log is replayed server-side through the same pure engine the client ran against, and
+  the server never trusts a claimed outcome it cannot re-derive. Name the concrete artifact
+  (`solitaire-service`'s move-log, `onestone-service`'s per-move `applyMove` replay, the Cartridge
+  spec's `defaultReplay`) and, honestly, whether it exists yet or is roadmap (onestone's own
+  `ROADMAP.md`: "no standalone `replay()` exists today," per the cartridge spec's own audit).
+- **Ledger invariants.** If the service touches money at all: the chart-of-accounts shape, the
+  double-entry balance invariant (`AuditLedger.record` refuses an unbalanced entry outright — an
+  invariant of the type, not a runtime check that can be skipped), and — the newer, sharper
+  invariant the Energy Bank spec introduces — payouts never exceeding verified revenue, stated as a
+  pure function over the ledger's own recomputed balances
+  (`verifyPayoutInvariant`), never a cached running counter. A service with no payout path (every
+  shipped game today) states that plainly rather than leaving the reader to infer it.
+- **Ethics as executable tests.** The house's concrete instance is `onestone-service`'s "never a
+  level-solvability shortcut" — stated in `types.mts`'s own doc comment on `Sku['grant']`, and
+  enforced by `validate.mts`'s pebble-game oracle actually gating which levels ship. Name this
+  service's own ethical constraint, if it has one distinct from the general no-wagering/earn-only
+  rules in §2, and name the test (not the policy prose) that would fail if the constraint were
+  violated.
+- **Accessibility.** Keyboard-completeness, screen-reader announcements for state changes, no
+  color-only signals, `prefers-reduced-motion` respected. `solitaire-service/DESIGN.md`'s keyboard
+  coverage test ("a static test enumerates every move kind `engine` exposes and asserts `client`'s
+  keymap table binds a key to it — a new move kind with no keyboard binding fails CI, not a manual
+  accessibility audit") is the house pattern to match: accessibility as a CI-checked property of
+  the code, not a review checklist item that can silently rot.
+
+## 9. Decisions (ADRs)
+
+Architecture decisions **recovered from what the code shows was decided**, not invented for this
+document. Each ADR: the decision, the alternative(s) it closes off, and the evidence in the code
+that the decision was actually made (a module header comment, a test that would fail under the
+alternative, a doc-comment explaining why a citation was corrected). Onestone's own DESIGN.md
+already models this exactly — "Chaos Six is a Ramsey-inspired tuning constant, not a computed
+Ramsey result... naming it honestly... rather than claiming it's 'not a tuned number' is the corner
+where this doc previously overclaimed" is a recovered ADR with its own correction history stated
+plainly. An `ARCHITECTURE.md`'s ADR list should read the same way: decisions, not doctrine: no ADR
+here is a mandate for the *next* service to make the same choice, only a record of what *this* one
+did and why.
+
+## 10. Quality
+
+The service's actual quality posture, stated in numbers a reader can re-check: test count and pass
+rate (run fresh, never copied), what the test suite actually exercises (property tests? fixed
+fixtures? both?), and named quality properties the tests encode as invariants rather than examples
+— "the pebble game rejects the double-banana graph while accepting a Laman-minimal graph" is a
+quality *property*; "level 12 loads" is a quality *example*. Prefer citing the former.
+
+## 11. Risks and technical debt
+
+**A real list, not a disclaimer paragraph.** Every item: what's wrong, where it lives (file/line or
+module), and what it would take to fix. Undocumented vendored duplicates, dead code (a module that
+exists but nothing imports it — this standard treats an orphaned module as a debt-list item, not a
+harmless leftover), unresolved "open question for the owner" items carried forward from a design
+doc without an answer, and every place a doc comment already flags its own honesty gap ("the exact
+interaction of blockers with blasts... is genuinely underdetermined by DESIGN.md" — onestone's own
+`engine.mts` header) belongs here, cited, not re-discovered from scratch.
+
+## 12. Glossary
+
+House-specific terms a newcomer to this one service would not already know, defined once, tersely.
+Omit if the service introduces no vocabulary beyond terms already defined in `DESIGN.md` or this
+standard.
+
+## 13. Theory binding (house-specific)
+
+**Which `@561-group/math` object does this game's mechanics actually instantiate — cited to real
+files, not asserted by analogy.** This section exists because the owner is explicit that part of
+what these games are doing is exploring a new mathematical system (Obsmetrologia) honestly, and the
+house has already been burned once by an overclaim in exactly this section (onestone's original
+"graph homomorphism" framing for its rejection-sampled fill, corrected in its own DESIGN.md to say
+plainly what the check actually enforces). The required shape, following `equivo-design.md`'s own
+"What's load-bearing vs. flavor" disclosure convention:
+
+1. **Name the exact package and function** (`@561-group/math/obstruction/cochain.mts`'s
+   `cohomologyOfRelation`, `@561-group/math/bilattice`'s `settle`) the mechanic calls, or would
+   call if built. If nothing in the game actually calls the math — it only borrows a name or an
+   aesthetic — say so in exactly those words. A name borrowed honestly (onestone's Ramsey-inspired
+   Chaos Six threshold, disclosed as tuned, not computed) is legitimate flavor; a name borrowed
+   silently is the failure mode this section exists to prevent.
+2. **State the evidence strength per claim**, following `equivo-design.md` §5-6's per-row labeling
+   (Strong / Weakest / corpus-attested / single-document) rather than a single blanket "the math is
+   real" assertion covering every mechanic in the service uniformly — a service can have some
+   mechanics genuinely load-bearing and others honestly flavor-only in the same document, and both
+   are legitimate as long as each is labeled correctly.
+3. **Cite a worked example if one exists** — a real invocation of the math function with real
+   printed output, per `equivo-design.md` §5's three worked examples (each one states the exact
+   command run and the exact output, including one honest surprise the run itself surfaced,
+   "kept rather than cleaned up," as evidence the example was actually run and not authored to a
+   pre-decided answer).
+
+Omit this section entirely for a service with no math binding to disclose (a pure UI/storefront
+service like `play.561.group`) — do not fill it with "not applicable," which is filler; simply do
+not include the heading.
+
+## 14. Ludics (house-specific)
+
+What the game is doing as *play*, each claim tied to evidence rather than asserted from genre
+convention:
+
+- **Core loop.** The one-sentence loop (swap → match → cascade → settle; click → idle → automate →
+  strategize; move → replay → verify → settle), traced to the module that actually implements each
+  stage — this is §6's runtime view, read as a play loop rather than a call sequence.
+- **Skill expression.** What separates a better player's outcome from a worse one, and where that
+  lives in the code — onestone's rigidity-percolation difficulty ramp (§ theory binding) *is* one
+  answer; flickering-delve's strategy-editor Lisp program *is* a different, orthogonal one (skill
+  expressed as programming, not reflexes). A service with no real skill-expression axis yet (a pure
+  idle clicker with no meaningful choice) should say that plainly, per `fleet-definition-of-done.md`'s
+  own house standard that a claimed test count or a claimed feature must be one that's actually
+  true.
+- **Session shape.** Bounded (a level, a daily seed, a run to permadeath) or unbounded (an idle
+  game's always-running cascade) — and what that implies for the retention surfaces below. A
+  bounded-session game and an unbounded one need structurally different kind-retention mechanics,
+  and conflating them is a common design-doc failure mode this section exists to catch early.
+- **Retention surfaces, each disclosed by what's real vs. cosmetic**, following the platform
+  document's own three-way split (`self-education-platform-design.md` §7's SRS-real /
+  drills-real-math-flavor-framing / streaks-cosmetic-only pattern, generalized): name every
+  retention mechanic the service ships or plans, and for each one state plainly whether it's a real
+  scheduling/mastery system, a real mechanic wearing flavor language, or pure cosmetic
+  encouragement with zero effect on scoring or access.
+- **Kind-design constraints, stated as refusals, not aspirations.** The house no-list — no
+  energy/lives gate that fully blocks free play, no rewarded ads, no streak-loss shaming copy, no
+  dark-pattern pinch points, transparent odds wherever chance exists, and (onestone's own naming of
+  the sharpest version of this rule) never a level-solvability shortcut sold for money, since
+  solvability is a validated mathematical property of the content and selling around it would
+  falsify the game's own claims about itself. State which of these constraints this specific
+  service enforces via a test (the strongest form) versus policy-only (weaker, and should be named
+  as a debt-list item in §11 if a test doesn't yet exist to catch a regression).
+
+## Roadmap appendix format
+
+Every `ARCHITECTURE.md` ends with a roadmap in this exact three-tier shape, and every item in every
+tier is **falsifiable** — phrased so that a reader could look at the code in three months and say
+definitively whether it happened, never a vibe ("make it more fun") or an open-ended aspiration
+("explore multiplayer"):
+
+- **Now** — shipped and verified as of this document's writing (a claim with a test count or a
+  passing suite behind it).
+- **Next** — scoped, buildable from what exists today with no new design decision required (the
+  cartridge/energy-bank wrapper work is the fleet's clearest current example: "wrap existing
+  `ledger.mts` behind `EnergyHooks`" is falsifiable and requires no new design).
+- **Later** — genuinely blocked on a decision, a dependency that doesn't exist yet, or content that
+  hasn't been authored (Equivo's own MVP cut is the house model for how to write this honestly:
+  "blocked on owner-authored source material that does not exist in any surveyed corpus" is a real
+  later-tier item, not a hedge).
+
+A roadmap item that cannot be falsified — that has no code state, test result, or authored artifact
+that would prove it done — does not belong in this appendix. It belongs, if anywhere, in a design
+doc's "open questions for the owner" section, which is a different, legitimate, and differently-named
+thing.

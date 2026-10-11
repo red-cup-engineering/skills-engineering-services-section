@@ -1,0 +1,62 @@
+{
+  "id": "exchange-20260719-030944-c18b0a",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON with key status whose value is operational. This is a bounded end-to-end activation probe for the persistent inference socket."
+      }
+    ],
+    "max-tokens": 80,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"status\": \"operational\"\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-ece9f9ca-1e88-40f1-8f47-a46aa331f587",
+      "object": "chat.completion",
+      "created": 1784430586,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"status\": \"operational\"\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.006498814,
+        "prompt_tokens": 77,
+        "prompt_time": 0.005511614,
+        "completion_tokens": 10,
+        "completion_time": 0.010699621,
+        "total_tokens": 87,
+        "total_time": 0.016211235
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_e2c608b1d6",
+      "x_groq": {
+        "id": "req_01kxw5ktk0ff388rnwpja4eyvs",
+        "seed": 1664593640
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.442,
+    "denomination": "groq-api-requests"
+  }
+}

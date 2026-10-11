@@ -1,0 +1,33 @@
+{
+  "id": "contract-the-whole-liss-with-internal-routing-across-endpoints",
+  "name": "contract the whole liss with internal routing across endpoints",
+  "kind": "requirement",
+  "raised-by": "emsenn",
+  "asks": "We want to let the LISS offer inference as a service, with the request being routed through its own internal derived processes, which for now can be simple, but we want to let folk contract the whole LISS rather than need to care about which endpoint.",
+  "from-idea": "emsenn/idea/contract-the-whole-liss-with-internal-routing-across-endpoints",
+  "met-when": [
+    {
+      "cell": "contract-the-whole-liss-with-internal-routing-across-endpoints:conditions-stated",
+      "target": "held"
+    }
+  ],
+  "x-provenance": {
+    "recorded-by": "561-group capture session (claude session 017x7ZhpkZQAx5VZSv2Hz5Q9)",
+    "recorded-on": "2026-10-10",
+    "sources": [
+      {
+        "words": "We want to let the LISS offer inference as a service, with the request being routed through its own internal derived processes, which for now can be simple, but we want to let folk contract the whole LISS rather than need to care about which endpoint.",
+        "at": "2026-07-17",
+        "locator": "lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/lib/legacy/restored-from-main/2026-09-13-ccf2d7a/services/561-group-enterprise-services-section/services/561-group-board-of-directors/lib/legacy/2026-08-03-executive-office/data/records/ideas/ideas/contract-the-whole-liss-with-internal-routing-across-endpoints.json"
+      }
+    ],
+    "carried-from-idea-record": "lib/emsenn/services/561-group/services/561-group-services-section/services/561-group-operations-services-section/lib/legacy/restored-from-main/2026-09-13-ccf2d7a/services/561-group-enterprise-services-section/services/561-group-board-of-directors/lib/legacy/2026-08-03-executive-office/data/records/ideas/ideas/contract-the-whole-liss-with-internal-routing-across-endpoints.json",
+    "pending-conditions": "Carried from the 2026-07 executive office's idea record under ideas-dispose-through-the-requirement-term; no met-when that exercises this idea's capability has been stated yet. The owning section states it.",
+    "linked-carriers": [],
+    "coverage": "lib/emsenn/services/561-group/services/public-services-section/services/personal-services-section/services/emsenn-services-section/data/records/leader-utterances/coverage/executive-office-ideas-2026-07.md",
+    "sign-cell": {
+      "type": "emsenn/schema/requirement",
+      "mark": "ni:///sha-256;6MxoIe2tvNSJJKO4ajuvKkj-LR3X6HjBHKfts1TYZIo"
+    }
+  }
+}

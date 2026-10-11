@@ -1,0 +1,283 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emsenn/schema/exchange",
+  "title": "exchange",
+  "$comment": "One provider-local record of one live Gemini Notebook service invocation: the accepted packet in and exactly one artifact or structured refusal out within bounded fuel. The current executable service supports report, mind-map, infographic, audio, video, JSON-carried code proposals, schema-bound JSON, and native data-table CSV. The harness separately validates an artifact payload against its per-type class before seating this record.",
+  "type": "object",
+  "required": [
+    "id",
+    "packet",
+    "outcome",
+    "cost"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "$comment": "The record's own name, equal to its basename, filed under content/exchanges/."
+    },
+    "packet": {
+      "type": "object",
+      "required": [
+        "sources",
+        "prompt",
+        "artifact-type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/$defs/source-ref"
+              }
+            ]
+          },
+          "$comment": "The exact source locators accepted in the provider offer. Annotated source refs may carry provenance and digests used by the capability admission layer."
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "$comment": "The consumer's own instruction, unedited, exactly as the idea's own asks names it: 'here's the prompt'."
+        },
+        "artifact-type": {
+          "enum": [
+            "report",
+            "mind-map",
+            "infographic",
+            "audio",
+            "video",
+            "code",
+            "json",
+            "data-table"
+          ],
+          "$comment": "The artifact types backed by current executable realizers and per-type validators."
+        },
+        "video-options": {
+          "type": "object",
+          "required": [
+            "format",
+            "style",
+            "language"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "enum": [
+                "cinematic",
+                "explainer"
+              ]
+            },
+            "style": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "language": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "result-schema": {
+          "type": "string",
+          "pattern": "^emsenn/schema/[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "$comment": "Required only for a json artifact; the provider validates the generated data member against this already-seated Union schema before seating the exchange."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "artifact-type": {
+                "const": "video"
+              }
+            },
+            "required": [
+              "artifact-type"
+            ]
+          },
+          "then": {
+            "required": [
+              "video-options"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "video-options"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "artifact-type": { "const": "json" } },
+            "required": ["artifact-type"]
+          },
+          "then": { "required": ["result-schema"] },
+          "else": { "not": { "required": ["result-schema"] } }
+        }
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "artifact",
+        "refusal"
+      ],
+      "$comment": "Exactly one of the two typed outcomes the contract's move promises. Never a third value, never absent — that totality is the entire point of this field, and of this record existing at all."
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "type",
+        "path"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "report",
+            "mind-map",
+            "infographic",
+            "audio",
+            "video",
+            "code",
+            "json",
+            "data-table"
+          ],
+          "$comment": "Must equal packet.artifact-type; this class cannot express that cross-field equality, so the harness that seats the record is answerable for it."
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "Where the produced artifact is seated. This class does not validate the artifact's own internal shape — that is a separate check, against the per-type class the requested artifact-type resolves to (e.g. emsenn/schema/gemini-notebook-mind-map-artifact for mind-map), run by the harness before this exchange record is seated."
+        },
+        "payload": {
+          "$ref": "emsenn/schema/gemini-notebook-video-artifact",
+          "$comment": "For video, the exact already-validated payload terms cross the provider boundary with the carrier instead of being recoverable only from provider-private state."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "video" } },
+            "required": ["type"]
+          },
+          "then": { "required": ["payload"] },
+          "else": { "not": { "required": ["payload"] } }
+        }
+      ],
+      "$comment": "Present exactly when outcome is 'artifact', per the if/then/else below."
+    },
+    "refusal": {
+      "$ref": "#/$defs/refusal"
+    },
+    "cost": {
+      "type": "object",
+      "required": [
+        "fuel-consumed",
+        "wall-time-seconds",
+        "denomination"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fuel-consumed": {
+          "type": "number",
+          "minimum": 0,
+          "$comment": "The bounded-fuel budget the contract's energetics obligation (bounded-fuel) names, spent by this exchange — requests, retries, or tokens, per what denomination states."
+        },
+        "wall-time-seconds": {
+          "type": "number",
+          "minimum": 0,
+          "$comment": "Provider-observed wall time for this invocation. It is evidence about execution, not a claim that a bookkeeping system exists."
+        },
+        "denomination": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "The unit actually counted by the provider, such as notebooklm CLI invocations."
+        }
+      },
+      "$comment": "Required on every live attempt because refusals also consume provider time and calls."
+    },
+    "x-provenance": {
+      "type": "object",
+      "$comment": "Optional, never required — the house escape hatch every other instance schema in this pool declares (idea, anomaly, task, dispatch, ...) so history can be written without a schema change. An exchange record is normally silent on it (settled the instant it is written, per $comment-absences below); it exists for the one case that needs it — a record archived out of content/exchanges/ into content/exchanges/archive/ still carries the reason, stamped here rather than by growing the live top-level contract."
+    }
+  },
+  "if": {
+    "properties": {
+      "outcome": {
+        "const": "artifact"
+      }
+    },
+    "required": [
+      "outcome"
+    ]
+  },
+  "then": {
+    "required": [
+      "artifact"
+    ]
+  },
+  "else": {
+    "required": [
+      "refusal"
+    ]
+  },
+  "$defs": {
+    "source-ref": {
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "The path, URL, or other locator the harness actually hands to `notebooklm source add` (after any upload-safety conversion the harness performs — see run-one-exchange.py's prepare_source_for_upload)."
+        }
+      },
+      "$comment": "additionalProperties is intentionally NOT set to false here, unlike every other object in this schema: a source-ref's descriptive fields (seen in practice: what-it-is, resolved-from) are provenance annotation about the source, not structure the exchange contract's total-correctness promise depends on, and closing them would force whoever stages a packet to either drop useful context or fight the schema for no correctness gain."
+    },
+    "refusal": {
+      "type": "object",
+      "required": [
+        "grounds",
+        "unmet"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "grounds": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "$comment": "Why the exchange was refused, in a sentence a stranger can read — never a bare error code."
+        },
+        "unmet": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "$comment": "The specific condition(s) that failed to settle — e.g. 'google-auth-material-absent', 'notebooklm-py raised <exception>', 'fuel-budget-exhausted-before-artifact-generation-completed'. Never empty: a refusal with no named unmet condition is an assertion, not a structured refusal."
+        }
+      }
+    }
+  },
+  "$comment-absences": "No status, no severity: an exchange is a settled fact the instant it is written (outcome is never provisional), unlike an idea or anomaly which the pool deliberately leaves open. No consumer identity field beyond what the packet itself carries, because the IRB pilot allocation authorizes exactly one exchange from this office alone — a caller field belongs to the full build the IRB has not yet funded.",
+  "x-provenance": {
+    "recorded-by": "claude/requirements-implementation-team",
+    "recorded-on": "2026-07-16"
+  }
+}

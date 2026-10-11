@@ -1,0 +1,217 @@
+{
+  "requirement": {
+    "id": "notebooklm-micro-enterprise",
+    "name": "Stand up NotebookLM as a micro-enterprise",
+    "kind": "requirement",
+    "raised-by": "emsenn",
+    "asks": "i wanna stand up a NotebookLM https://github.com/teng-lin/notebooklm-py app inside our enterprise's digital platform, as a micro-enterprise itself, so taht other micro-enterprises can contract it, send it packets of resources, and be like, gimme a pdf, gimme an infographic, gimme a report and here's the prompt, but also, these days, notebooklm can produce flashcards, json mind maps, csv data reports. We could offload a LOT of data distillation/analysis to it, and that'd be a great cost savings!",
+    "met-when": [
+      {
+        "cell": "unit:seated",
+        "target": "held",
+        "command": "test -d lib/emsenn/services/notebooklm/content",
+        "expected-exit": 0
+      },
+      {
+        "cell": "contract:valid",
+        "target": "held",
+        "command": "sh -c 'node lib/emsenn/lib/management/skills/read-a-schema.js emsenn/schema/contract < lib/emsenn/services/notebooklm/content/contracts/notebooklm-service.json'",
+        "expected-exit": 0
+      },
+      {
+        "cell": "exchange:settled",
+        "target": "held",
+        "command": "sh -c 'latest=$(ls -t lib/emsenn/services/notebooklm/content/exchanges/*.json 2>/dev/null | head -n1); [ -n \"$latest\" ] && case $(jq -r .outcome \"$latest\") in artifact|refusal) exit 0 ;; *) exit 1 ;; esac'",
+        "expected-exit": 0
+      }
+    ],
+    "tier": "strategic",
+    "from-idea": "emsenn/idea/notebooklm-as-a-micro-enterprise",
+    "x-provenance": {
+      "recorded-by": "requirements-management-team",
+      "recorded-on": "2026-07-17"
+    }
+  },
+  "decision-record": {
+    "id": "fund-standing-up-notebooklm-as-a-micro-enterprise",
+    "name": "whether to fund standing up NotebookLM as a contractable micro-enterprise",
+    "decider": "the Investment Review Board",
+    "status": "decided",
+    "context": "emsenn raised the idea notebooklm-as-a-micro-enterprise: stand up the unofficial notebooklm-py client (github.com/teng-lin/notebooklm-py, wrapping undocumented Google APIs — no official, supported programmatic interface to NotebookLM exists) as a micro-enterprise at lib/emsenn/services/notebooklm, carrying its own content/ pools per the enterprise membrane rule, so that any other micro-enterprise in the firm can contract it: send a typed context packet in, and get back either a schema-validated artifact of the requested type (PDF, infographic, report, flashcards, JSON mind map, CSV data report) or a structured refusal — a total-correctness contract, never a hang or an untyped failure. emsenn's own words frame this as a general cost-savings play: offloading 'a LOT of data distillation/analysis' onto NotebookLM firm-wide. The requirements-management-team drafted this as the requirement notebooklm-micro-enterprise (drafted via drafting-a-requirement.js, pinned fields from the idea, unseated), carrying three machine-checked conditions — unit:seated (the node's content/ pool exists), contract:valid (its contract record validates against emsenn/schema/contract), exchange:settled (the latest exchange record's outcome is artifact or refusal) — all three confirmed failing today (exit 1, 2, 1) by direct re-run from the repository root, so the requirement's acceptance can be checked. What makes this a product-line question rather than a routine or major build, distinguishing it from the comparable precedent stand-up-my-substack-as-a-service-under-emsweb (tiered major, one consumer — emsenn's own content pipeline, one officially-reachable platform): this ask is explicitly meant to become shared infrastructure other autonomous micro-enterprises depend on and contract against, built on a foundation with no official support contract, no documented stability guarantee, and real continuity/ToS risk (Google can change or block the undocumented endpoints without notice, at any time, with no recourse). Committing the firm's data-distillation workload — and other micro-enterprises' contracts — to that foundation is an allocation and risk decision at the altitude this board holds, not a checkpoint continuation (integrated-portfolio-management-team's altitude) or a single ask's checkability (requirements-management-team's altitude). Per its own duty to send a strategic requirement up rather than accept it at its own authority, requirements-management-team is not seating the draft into content/requirements/ at this time; it is carried here, unseated, for this board's ruling on whether and how far to fund it.",
+    "options": [
+      {
+        "label": "fund the full micro-enterprise",
+        "description": "Seat the requirement at tier strategic and authorize the full build: the node with its own content/ pools, a seated contract record validating against emsenn/schema/contract, the exchange handling covering every artifact type the idea names (PDF, infographic, report, flashcards, JSON mind map, CSV report), and open contracting by any other micro-enterprise from day one.",
+        "tradeoffs": "Realizes the cost-savings vision emsenn described in full, immediately. Commits the firm's data-distillation pipeline, and every micro-enterprise that comes to depend on it, to an unofficial, undocumented, reverse-engineered Google client before a single exchange has been run end to end against it — if Google changes or blocks the endpoints notebooklm-py depends on, every contracting micro-enterprise inherits that breakage at once, and none of that risk has been tested yet."
+      },
+      {
+        "label": "decline for now",
+        "description": "Leave the idea disposed only by this proposed record and the unseated draft; fund nothing. Revisit once other in-flight strategic and major work has settled.",
+        "tradeoffs": "No spend, no dependency on an unsupported external client taken on. The cost-savings opportunity emsenn named goes unrealized, and other micro-enterprises continue paying whatever they presently pay (Claude sessions or otherwise) for data distillation and artifact generation that NotebookLM could do more cheaply, for as long as this stays declined."
+      },
+      {
+        "label": "fund a bounded pilot",
+        "description": "Realize only the requirement's first two conditions, plus one real exchange: (1) unit:seated — the node and its content/ pool exist; (2) contract:valid — a contract record is seated and validates; (3) exactly one exchange is run end to end against the real notebooklm-py client, producing either a schema-validated artifact or a structured refusal (exchange:settled). No other micro-enterprise is authorized to contract it, and no further artifact types are built out, until this board re-judges the pilot's result.",
+        "tradeoffs": "Bounds the risk to the one question that actually matters before any other unit is invited to depend on this: does a wrapper around an undocumented Google API actually deliver the total-correctness contract the idea promises — artifact or structured refusal, never a hang or an untyped failure — against the real, unsupported client? That is testable cheaply, in one exchange, without opening the service to firm-wide contracting first. Slower to reach the 'any micro-enterprise can contract it' shape emsenn described, and requires bringing the pilot's result back to this board rather than treating a working pilot as silent permission to keep building."
+      }
+    ],
+    "recommendation": "Option 3, the bounded pilot. The unproven risk here is not whether a NotebookLM wrapper is useful — emsenn's cost-savings case is plausible on its face — it is whether notebooklm-py, wrapping undocumented Google APIs with no official support, can honestly hold the total-correctness contract (artifact XOR refusal, never a hang) the idea is built on, and whether it keeps holding it as Google changes the surface it depends on. One real exchange, run before any other micro-enterprise is allowed to contract this one, answers that at the lowest possible cost.",
+    "consequences": "If option 1 or 3 is ruled: requirements-management-team seats the requirement at tier strategic (adding the ruled scope) and distributes it — the full build to requirements-analysis-team for breakdown, or, for the pilot, directly to requirements-implementation-team against the bounded allocation stated above — and this board is to be brought the pilot's result rather than asked to bless open contracting by default. If option 2 is ruled: the idea notebooklm-as-a-micro-enterprise stays open (undisposed — no requirement will name it via from-idea, no decision record will close it), the draft is discarded unseated, and the firm continues to pay whatever it presently pays for the data distillation and artifact generation the idea proposed offloading. Independently of which option is ruled: the requirement's own three conditions (unit:seated, contract:valid, exchange:settled) remain the acceptance test — nothing here asserts them met, and re-running them is how the record will show whether whatever is funded actually landed.",
+    "decision": "Opened, as a bounded pilot: option 3, at the allocation stated below -- not option 1 (fund the full micro-enterprise) and not option 2 (decline). Line named: this is not yet a product line in any enumerable sense -- the firm has no product/product-line schema and no register of its lines as lines (requirement product-and-product-line-become-recordable is itself open, unmet, and this board's own record already carries that absence as unrealized), so what is opened here is named plainly as what it is: a bounded internal-capability pilot toward a future shared-infrastructure micro-enterprise, not a line drawn against a portfolio that does not yet exist to draw it against. Allocation this verdict binds: exactly the drafted requirement's three met-when conditions and no more -- (a) unit:seated, the node and its content/ pool exist at lib/emsenn/services/notebooklm; (b) contract:valid, a contract record is seated at lib/emsenn/services/notebooklm/content/contracts/notebooklm-service.json and validates against emsenn/schema/contract; (c) exchange:settled, exactly one real exchange is run end to end against the actual notebooklm-py client, producing either a schema-validated artifact or a structured refusal, recorded under lib/emsenn/services/notebooklm/content/exchanges/. No artifact type beyond whatever the one exchange exercises is built out, no other micro-enterprise is authorized to contract this unit, and no second exchange is funded, until this board re-judges the pilot's result. Realization of condition (c) requires Google account credentials only emsenn can supply -- that gate belongs to whoever executes the pilot to raise or clear, not something this board waives, presumes met, or extends the allocation to work around.\n\nBasis a stranger can read: the question this board actually has to answer is not whether a NotebookLM wrapper is useful -- emsenn's cost-savings case is plausible on its face -- it is whether notebooklm-py, wrapping undocumented Google APIs with no official support contract, can honestly hold the total-correctness contract the idea is built on (schema-validated artifact XOR structured refusal, never a hang) against the real, unsupported surface, and whether the cost-savings claim survives contact with a number. Both are presently unquantified: the requirement's three conditions all fail today by direct re-run, and no figures exist for what a comparable Claude-session distillation presently costs, which is exactly the evidence one real exchange would hand the chief-financial-officer's books. The design already contains the correct discipline for a first bet at this altitude: the total-correctness contract face keeps the upstream fragility inside the unit's own interior, and the membrane rule keeps the Google dependency's ToS/continuity risk on that unit's own books rather than smeared across every contracting micro-enterprise from day one -- that containment is what makes a single bounded exchange a responsibly-sized first commitment rather than an unbounded one taken on the strength of an idea alone. Funding the full build (option 1) would commit the firm's data-distillation path, and every future contracting micro-enterprise, to an unofficial reverse-engineered client before a single exchange has been run against it; declining outright (option 2) answers nothing and leaves a plausible, cheap-to-test cost-savings claim untested for no evidentiary reason.\n\nSunk cost, named and set aside: the only work spent so far is the raised idea and one unseated drafted requirement -- cheap, and disposed of by this ruling either way. That the record has traveled this far through the process is not counted as a reason to fund further than the evidence justifies; the allocation above is sized to what still needs proving (does the wrapper survive the real Google surface under the artifact-or-refusal contract, does the cost-savings claim produce an actual figure), not to the paperwork already produced getting here.\n\nStanding picture heard beside the line's own case: several other strategic requirements are presently in flight, competing for the same finite attention this pilot would draw on -- distribute-claude-borne-work-to-scripts-and-lesser-models (itself mid-pilot under this board's own prior ruling), observed-agentic-operations-into-reports, put-the-invisible-labor-under-duties-and-spend-the-free-inference-on-it, route-work-by-measured-complexity-across-inference-tiers, and the-orchestration-platform-speaks-public-standard-protocols. This board does not rank them against each other here, but notes the competing claim rather than ruling as if this were the only strategic ask the firm carries. As with this board's prior ruling, the firm's lines have never been enumerated and no allocation currency is settled firm-wide, so this ruling is made on the narrower basis actually available -- the requirement's own case, the record's own stated options, and the competing strategic asks named above -- rather than deferred for want of instruments this office does not itself owe.\n\nRouting: sent to requirements-management-team to seat the requirement at tier strategic, bounded to the three conditions stated above, and distribute it to requirements-implementation-team against that allocation -- which will need emsenn's own action to supply the Google account credentials condition (c) depends on. This board is to be brought the pilot's result, including whatever distillation-cost figures the one exchange yields for the chief-financial-officer's books, rather than asked to bless firm-wide contracting by default: silence past the three conditions being met is not a continue.",
+    "x-provenance": {
+      "recorded-by": "requirements-management-team",
+      "recorded-on": "2026-07-16",
+      "derived-from": "idea notebooklm-as-a-micro-enterprise, unseated draft notebooklm-micro-enterprise, requirement stand-up-my-substack-as-a-service-under-emsweb (major-tier comparison), decision-record fund-distributing-claude-borne-work-to-scripts-and-lesser-models (bounded-pilot precedent)",
+      "decided-by": "claude/investment-review-board",
+      "decided-on": "2026-07-16"
+    }
+  },
+  "contract": {
+    "kind": "metroplat.contract",
+    "id": "notebooklm-service",
+    "material": {
+      "id": "notebooklm-exchange-material",
+      "loci": [
+        "consuming-micro-enterprise",
+        "notebooklm-unit",
+        "google-notebooklm-surface"
+      ],
+      "incidence": [
+        "consuming-micro-enterprise--sends-context-packet-over-a2a-to--notebooklm-unit",
+        "notebooklm-unit--drives--google-notebooklm-surface-via-vendored-notebooklm-py",
+        "notebooklm-unit--returns-artifact-or-refusal-over-a2a-to--consuming-micro-enterprise"
+      ],
+      "fibers": [
+        "context-packet",
+        "artifact-record",
+        "refusal-record",
+        "exchange-record"
+      ],
+      "valueAlgebra": "boolean",
+      "constraints": [
+        "exactly-one-artifact-type-per-packet-drawn-from-the-closed-menu-report-markdown-mind-map-json-data-table-csv-flashcards-quiz-infographic-png-slide-deck-audio-video",
+        "the-google-dependency-undocumented-apis-via-notebooklm-py-sits-on-this-units-own-books-never-the-consumers",
+        "no-other-micro-enterprise-is-authorized-to-contract-this-unit-until-the-irb-re-judges-the-pilot"
+      ],
+      "closure": [
+        "an-exchange-closes-on-exactly-one-of-artifact-or-refusal-never-left-open"
+      ],
+      "boundary": [
+        "the-context-packet-received-over-a2a-from-a-consuming-micro-enterprise-is-where-untyped-external-request-data-enters"
+      ]
+    },
+    "precondition": {
+      "id": "context-packet-received",
+      "description": "A consuming micro-enterprise, over A2A, has sent a typed context packet naming: sources, a prompt, and exactly one artifact type drawn from the closed menu (report/markdown, mind map/JSON, data table/CSV, flashcards, quiz, infographic/PNG, slide deck, audio, video)."
+    },
+    "move": {
+      "id": "realize-the-exchange",
+      "description": "The unit drives the vendored notebooklm-py client against the packet's sources and prompt to attempt the requested artifact type, within a bounded fuel budget, and settles to exactly one of the two typed outcomes.",
+      "domain": "context-packet",
+      "codomain": "artifact-or-refusal",
+      "partial": false,
+      "deterministic": false,
+      "effects": [
+        "material",
+        "boundary",
+        "evidence"
+      ]
+    },
+    "postcondition": {
+      "id": "exchange-settled",
+      "description": "An exchange record exists in the unit's own content/exchanges/ pool whose .outcome is exactly 'artifact' (an artifact validating against its own requested type's class) or 'refusal' (a structured refusal record stating grounds) — settled within the bounded fuel budget, never a hang and never an untyped failure.",
+      "entails": [
+        "context-packet-received"
+      ]
+    },
+    "phase": {
+      "id": "notebooklm-exchange-phase",
+      "closureDepth": "finite",
+      "finality": "normal-form",
+      "recurrence": "none",
+      "mobility": "fixed",
+      "coherence": "total",
+      "contradiction": "reject",
+      "coordinationCost": "evidenced",
+      "observability": "boundary-only",
+      "energy": "costed"
+    },
+    "lens": {
+      "id": "notebooklm-exchange-lens",
+      "domain": "context-packet",
+      "boundary": "a2a-exchange-boundary-between-consuming-micro-enterprise-and-notebooklm-unit",
+      "preserves": [
+        "the-consumers-requested-artifact-type",
+        "the-totality-of-outcome-artifact-xor-refusal-never-a-hang"
+      ],
+      "hides": [
+        "the-undocumented-google-notebooklm-api-surface",
+        "notebooklm-py-internal-calls-and-retries",
+        "google-account-session-state"
+      ],
+      "output": "artifact-or-refusal-record",
+      "evidenceRequired": true
+    },
+    "evidencePolicy": {
+      "id": "notebooklm-exchange-evidence-policy",
+      "required": true,
+      "records": [
+        "an-exchange-record-in-content-exchanges-with-outcome-artifact-or-refusal",
+        "the-artifact-record-validated-against-its-requested-types-class-when-outcome-is-artifact",
+        "the-refusal-records-stated-grounds-when-outcome-is-refusal",
+        "the-exchanges-cost-figure-for-the-chief-financial-officers-books"
+      ],
+      "time": "interval",
+      "caller": "required",
+      "boundaryObject": "full"
+    },
+    "energetics": [
+      {
+        "kind": "metroplat.energetic-obligation",
+        "id": "bounded-fuel",
+        "law": "total-correctness-under-a-fuel-bound",
+        "behavior": "Every exchange terminates — as artifact or as refusal — inside a bounded fuel budget; it never hangs, and it never returns an untyped failure.",
+        "source": "context-packet-received",
+        "target": "exchange-settled",
+        "invariant": "fuel-consumed-by-an-exchange-is-bounded-and-recorded",
+        "measure": "fuel units (time and/or request budget) consumed per exchange, recorded on the exchange record",
+        "evidenceRequired": true
+      }
+    ],
+    "refinements": [
+      {
+        "id": "notebooklm-py-realizes-the-move",
+        "implementation": "lib/emsenn/services/notebooklm/.venv (vendored notebooklm-py, github.com/teng-lin/notebooklm-py — an unofficial client wrapping undocumented Google NotebookLM APIs, with no official support contract)",
+        "refines": "tool",
+        "preserves": [
+          "the-artifact-xor-refusal-totality",
+          "the-membrane-rule-keeping-the-google-dependency-on-this-units-own-books-rather-than-the-consumers"
+        ]
+      }
+    ]
+  },
+  "task": {
+    "id": "pilot-the-notebooklm-micro-enterprise",
+    "name": "pilot the notebooklm micro enterprise",
+    "goal": [
+      "test -d lib/emsenn/services/notebooklm/content",
+      "sh -c 'node lib/emsenn/lib/management/skills/read-a-schema.js emsenn/schema/contract < lib/emsenn/services/notebooklm/content/contracts/notebooklm-service.json'",
+      "sh -c 'latest=$(ls -t lib/emsenn/services/notebooklm/content/exchanges/*.json 2>/dev/null | head -n1); [ -n \"$latest\" ] && case $(jq -r .outcome \"$latest\") in artifact|refusal) exit 0 ;; *) exit 1 ;; esac'"
+    ],
+    "discharges": "realizing-a-requirement",
+    "work-items": [
+      "seat-the-notebooklm-unit",
+      "seat-the-notebooklm-service-contract",
+      "settle-one-real-exchange"
+    ],
+    "x-provenance": {
+      "recorded-by": "claude",
+      "recorded-on": "2026-07-17",
+      "at-declaration": {
+        "test -d lib/emsenn/services/notebooklm/content": 1,
+        "sh -c 'node lib/emsenn/lib/management/skills/read-a-schema.js emsenn/schema/contract < lib/emsenn/services/notebooklm/content/contracts/notebooklm-service.json'": 2,
+        "sh -c 'latest=$(ls -t lib/emsenn/services/notebooklm/content/exchanges/*.json 2>/dev/null | head -n1); [ -n \"$latest\" ] && case $(jq -r .outcome \"$latest\") in artifact|refusal) exit 0 ;; *) exit 1 ;; esac'": 1
+      }
+    }
+  }
+}

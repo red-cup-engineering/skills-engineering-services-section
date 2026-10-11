@@ -1,0 +1,57 @@
+{
+  "id": "exchange-20260718-234416-37a375",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return JSON {\"summary\":string}. Summarize: observations count attempts and nonempty completion texts as successes."
+      }
+    ],
+    "max-tokens": 100
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "Here's a function that summarizes the number of observations, including the number of attempts and nonempty completion texts as successes:\n\n```python\nimport pandas as pd\n\ndef summarize_exercise(df):\n    \"\"\"\n    Summarize exercise data.\n\n    Parameters:\n    df (pandas.DataFrame): DataFrame containing exercise data.\n\n    Returns:\n    dict: Summary of exercise data as a JSON object.\n    \"\"\"\n    successes = df['completion'].dropna().shape[0]\n    attempts = df.shape[0",
+    "finish-reason": "length",
+    "raw": {
+      "id": "chatcmpl-6c029bc8-b193-4b72-80be-c00d5640b0a1",
+      "object": "chat.completion",
+      "created": 1784418257,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Here's a function that summarizes the number of observations, including the number of attempts and nonempty completion texts as successes:\n\n```python\nimport pandas as pd\n\ndef summarize_exercise(df):\n    \"\"\"\n    Summarize exercise data.\n\n    Parameters:\n    df (pandas.DataFrame): DataFrame containing exercise data.\n\n    Returns:\n    dict: Summary of exercise data as a JSON object.\n    \"\"\"\n    successes = df['completion'].dropna().shape[0]\n    attempts = df.shape[0"
+          },
+          "logprobs": null,
+          "finish_reason": "length"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.005224738,
+        "prompt_tokens": 57,
+        "prompt_time": 0.003138717,
+        "completion_tokens": 100,
+        "completion_time": 0.161379883,
+        "total_tokens": 157,
+        "total_time": 0.1645186
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01kxvsvj1ceb6sx4q297bgwa93",
+        "seed": 1408283185
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.305,
+    "denomination": "groq-api-requests"
+  }
+}

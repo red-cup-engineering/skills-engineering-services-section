@@ -1,0 +1,200 @@
+{
+  "id": "exchange-20260719-165938-aefe6a",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Classify only what the supplied executable evidence supports. Do not repair doctrine or infer a constitution. Preserve contradictions and return only contracted JSON."
+      },
+      {
+        "role": "user",
+        "content": "E1 finance-witness-bit: makeCommodityLot writes unit=commodity-utterance, intrinsicPrice=null, priceFormation=counterparty-border-offer; its assay says titleOrFungibilityAssayed=false and globalGluingClaimed=false. E2 finance-border-price: quotes accept an arbitrary nonempty consideration.unit; ask and bid are comparable only when unit, kind, monetaryClaim, and x402Applicable are identical; selectionAuthority is counterparties-only. E3 finance-bilateral-observation: reconciliation requires distinct buyer debit and seller credit book entries linked to an identical receipt, equal amount and unit, and reports globalLedgerCreated=false. E4 UOA-runtime: current exchanges book at least bilateral-observation, rmn-conformance-credit, and portfolio-admission-credit; records explicitly say centralRegisterUsed=false and centralCfo=false. E5 inference-fabric: completed work is accounted in provider-specific denominations including claude-code-cli-invocations, google-ai-studio-api-requests, and github-models-api-requests. E6 RMN-residue: price/erasure residues require one exact unit and retain Chu, connection, price/erasure, and economic-current/affinity as separate typed carriers; the profile states executable conformance is not proof of fraud, overtwistedness, C4, C5, C6, or chain necessity. E7 EVM-effect: the gyrobifastigial effect-cell profile says a cell commitment at every listed scale is a mutually signed HolonomySeamLedger sourceReceipt, and consumeEffectAuthority sends closeSeam before accepting the effect receipt. E8 FOUR-admission: the separate FOUR profile says consensusRequired exactly when par and tensor differ and explicitly rejects the claim that every valid commuting square automatically requires consensus. E9 notebook-synthesis: the WIT/dervish report calls WIT the conserved currency of settling flow, but its source packet prompt instructed the model to define WIT in that way and synthesize the connection. E10 repository-navigation-inquiry: a verified inference-fabric inquiry reports that the current fabric has no structured repository index, that workers otherwise require full-tree dumps, and that context assembly is nondeterministic. Classify the supported current-state conclusions, conflicts between current mechanisms, propositions not established by this evidence, and the next deterministic measurements needed."
+      }
+    ],
+    "max-tokens": 1800,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "required": [
+              "supported",
+              "conflicts",
+              "notEstablished",
+              "nextMeasurements"
+            ],
+            "properties": {
+              "supported": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 12,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "claim",
+                    "evidence"
+                  ],
+                  "properties": {
+                    "claim": {
+                      "type": "string",
+                      "enum": [
+                        "unit-fragmentation-currently-executable",
+                        "common-denomination-currently-executable",
+                        "bilateral-sovereign-clearing-currently-executable",
+                        "central-ledger-currently-executable",
+                        "every-effect-shared-seam-current-profile",
+                        "typed-selective-consensus-current-profile",
+                        "general-territorial-claim-metrology-currently-executable",
+                        "general-territorial-claim-metrology-not-demonstrated"
+                      ]
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "E1",
+                          "E2",
+                          "E3",
+                          "E4",
+                          "E5",
+                          "E6",
+                          "E7",
+                          "E8",
+                          "E9",
+                          "E10"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "conflicts": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 10,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "left",
+                    "right",
+                    "evidence"
+                  ],
+                  "properties": {
+                    "left": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 240
+                    },
+                    "right": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 240
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "E1",
+                          "E2",
+                          "E3",
+                          "E4",
+                          "E5",
+                          "E6",
+                          "E7",
+                          "E8",
+                          "E9",
+                          "E10"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "notEstablished": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 12,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "proposition",
+                    "reason",
+                    "evidence"
+                  ],
+                  "properties": {
+                    "proposition": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 240
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 400
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "E1",
+                          "E2",
+                          "E3",
+                          "E4",
+                          "E5",
+                          "E6",
+                          "E7",
+                          "E8",
+                          "E9",
+                          "E10"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "nextMeasurements": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 400
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 404 Not Found: {\"error\":{\"message\":\"This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct\",\"code\":404},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:404"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.294,
+    "denomination": "openrouter-api-requests"
+  }
+}

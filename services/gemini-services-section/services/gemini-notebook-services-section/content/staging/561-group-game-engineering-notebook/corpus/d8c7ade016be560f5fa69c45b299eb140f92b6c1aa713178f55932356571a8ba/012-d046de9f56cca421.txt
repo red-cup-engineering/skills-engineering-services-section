@@ -1,0 +1,72 @@
+# NotebookLM source projection
+
+Title: flickering-delve-service/DESIGN
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/flickering-delve-service/DESIGN.md
+Original-Digest: sha256:28dbd824a4b781c1b7c5be2d366359fb855c6f2c1ca1c89ed9f10c6c1654fd1c
+Disclosure: repository-source
+
+# flickering — design
+
+## Thesis
+
+The idle-game research in our corpus (`content/library/arts/ludics/games/content/idle-games`) models the genre as a discrete growth system and notes the most interesting examples ship a *custom automation scripting language* (Antimatter Dimensions).
+FeltOS already **is** such a language — the relational Lisp — and its world is an append-only settled fact-trace.
+So the next-generation move isn't more numbers; it's making the autonomy progression *be* programming, on an engine where the game state doubles as an auditable ledger.
+
+## Decisions
+
+**Current modules, not inheritance.** We compose FeltOS `world`, `lisp`, and
+`persistence` directly. Delve policy stays in its own domain object rather than
+subclassing an engine or importing unrelated game capabilities.
+`DelveScene` is a purpose-built scene over the same `world` primitive, with the same agent-pipeline shape.
+
+**State = world.** Player progress is functional cells on the player entity,
+read through the current `value` query. The functional schema belongs to each
+world value, and exact `snapshotWorld`/`restoreWorld` documents round-trip it.
+There is no GameState store beside the world — the world is it, and it is auditable.
+
+**Automation = Lisp, decided not executed.** Standing orders compose into a Lisp decision program (`progression.composeStrategy`); the strategy editor lets the player rewrite it.
+The tick *evaluates* it for a single whitelisted action symbol (`strategy.decideAction`) and applies that through the **same** verb handlers manual play uses — one implementation of "attack".
+The Lisp is step-budgeted (can't hang the tick) and we discard its threaded world (can't cheat).
+
+**Combat scales with investment.** Abundant idle essence converts to *depth* via repeatable combat upgrades (`whetstone`/`tallow-ward`), and each rekindle grants permanent per-echo attack/health — the cross-run loop that lets every prestige push deeper.
+(This was the fix for a dead loop found by the balance sim: without it the avatar walled out before the prestige gate.)
+
+**Prestige = renormalization.** `rekindle` collapses the run (essence, generators, combat, depth) into persistent `echoes` (`P = ⌊(maxDepth/8)^1.4 · echoMult⌋`), keeping echoes, fame, meta upgrades, and standing orders.
+Auto-rekindle fires when the descent stalls past a tunable `patience` cell — a real knob the strategy editor exposes.
+
+**Money = double-entry, providers pluggable.** `payments.mts` is one interface with `mock`, real `stripe` (REST + webhook HMAC verification), and real `hive` (on-chain receive over RPC, no keys needed) adapters.
+Every clear posts a balanced transaction to an append-only journal. `GET /audit` independently
+replays its postings and returns both balances and portable hledger text.
+Boosts are bounded (`k·rate·time`), never flat power, and never bypass tutorial unlocks or prestige.
+
+**Identity = guest → federated account.** Guests are real actors keyed by a `localStorage` token; `POST /claim` migrates a guest's whole fiber into a durable account via `exportActor`/`importActor` — the federation "send the entity as a message" move.
+
+## Module map (pure unless noted)
+
+| module | role |
+|---|---|
+| `seed` | deterministic RNG (string hash + mulberry32) |
+| `dungeon` | seeded procgen — `floorSpec(config, depth)` |
+| `economy` | resources, generator cascade, combat investment, modifiers, formatting |
+| `progression` | unlocks, the autonomy ladder, strategy composition, rekindle |
+| `strategy` | run a Lisp strategy → a whitelisted action (sandboxed) |
+| `scene` | `DelveScene` over the FeltOS world; the tick agent pipeline (impure) |
+| `ledger` | append-only double-entry audit journal |
+| `payments` | mock/stripe/hive payment boundary |
+| `accounts` | guest auth + federation migration (impure: reads/writes scene) |
+| `client` | the no-build browser UI (the collapsing interface) |
+| `server` | thin transport binding (impure) |
+
+## Security & fairness
+
+Server-authoritative state; the client never asserts a resource.
+Offline accrual is server-time and capped (anti clock-tampering).
+The procedural cave is deterministic (unrerollable, equally (un)lucky for all).
+Strategy programs are bounded and effect-free.
+Inputs are validated and flood-controlled (`throttleIntents`).
+Webhooks are signature-verified; the ledger is append-only and idempotent on order ref; no secrets reach the client.
+
+## Performance
+
+The tick advances only potential players; production is analytic/aggregate (cascade Euler step, not per-unit); offline reuses the same step at coarse `dt`; settling is memoized by the FeltOS world `WeakMap`; the client rebuilds a list only when its structural signature changes.

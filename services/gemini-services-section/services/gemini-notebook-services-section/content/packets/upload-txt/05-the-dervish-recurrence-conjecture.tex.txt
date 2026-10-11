@@ -1,0 +1,137 @@
+\subsection{The Dervish Recurrence Conjecture (pentagonal recurrence)}
+
+The four-corner coherence cell (\cref{ch:four}) recurs at $\kappa = 4$; this subsection records
+a conjectured fivefold analogue, first stated in \texttt{dev/content/notes/2026/07/02/} at
+\texttt{metroplat.emsenn.net} (``Dervish Recurrence Conjecture''). Where the recurring FOUR is
+one coherence cell read four ways, the conjecture asserts a single $D_5$-equivariant pentagonal
+obstruction, carried by the five-cycle $C_5$ with coefficient field $\mathbb{Q}(\sqrt5)$, read
+four ways: as the Dervish/Togliatti quintic (algebraic geometry), the KCBS pentagon (quantum
+contextuality), the five-site golden spectral gap (already green, \cref{thm:tile5-golden-gap}),
+and Penrose/pentagrid fivefold quasicrystalline order.
+
+The spectral readout is green outright; the quasicrystal readout has its honest algebraic core
+green (\cref{thm:dervish-crystallographic-restriction}); the golden field tying $\sqrt5$,
+$\varphi$, and both gap normalizations together is green (\cref{thm:dervish-golden-field}); the
+contextuality readout's possibilistic layer is green (\cref{thm:dervish-kcbs}), its value layer
+open; the algebraic readout remains entirely open. One cross-readout bridge is green: the
+five-coordinated disclination of the defect carrier has the KCBS pentagon as its boundary link
+(\cref{thm:dervish-disclination-link}); whether its descent-surviving rotational charge is a
+readout of the pentagonal obstruction is a stated open node
+(\cref{thm:dervish-protected-holonomy}). The frontier nodes below record each honestly
+rather than folding them into prose.
+
+\begin{theorem}[A common golden field for the fivefold readouts]\label{thm:dervish-golden-field}\lean{Obsmetrologia.Real.Internal.RReal.inv, Obsmetrologia.Real.Internal.RReal.mul_inv, Obsmetrologia.AperiodicOrder.Tiling.StepN.half, Obsmetrologia.AperiodicOrder.Tiling.StepN.phi, Obsmetrologia.AperiodicOrder.Tiling.StepN.gap5, Obsmetrologia.AperiodicOrder.Tiling.StepN.phi_sq, Obsmetrologia.AperiodicOrder.Tiling.StepN.phi_add_gap5}\leanok\uses{thm:tile5-golden-gap, thm:d5-is-dihedral}
+\texttt{Calculus.Real.Inverse} supplies genuine \texttt{RReal} division on the
+positive-apart-from-zero fragment (a real with an explicit rational lower bound is invertible,
+Bishop-style, no \texttt{Classical.choice}); \texttt{StepN.half} is $1/2$ built from it. On top,
+\texttt{phi} $:= (1+\sqrt5)\cdot\texttt{half}$ and \texttt{gap5} $:=
+(3-\sqrt5)\cdot\texttt{half}$ are the \emph{genuine, undoubled} $\varphi$ and $\lambda_5$ (not the
+earlier doubled surrogates). \texttt{phi\_sq} proves the golden ratio's own defining equation
+$\varphi\cdot\varphi = \varphi+1$ --- content the doubled form could only state as
+$(2\varphi)^2=2(2\varphi)+4$; \texttt{phi\_add\_gap5} proves $\varphi+\lambda_5=2$ directly. Together:
+$\sqrt5$, $\varphi$, $2-\varphi$, and $(3-\sqrt5)/2$ are one field element's normalizations, not
+four coincidentally-similar surds. Identifying this field element with the KCBS quantum value
+$\sqrt5$ (\cref{thm:dervish-kcbs-value}) remains open, pending the KCBS value module.
+\end{theorem}
+
+\begin{theorem}[The crystallographic restriction: $d=5$ is the first non-crystallographic gap]\label{thm:dervish-crystallographic-restriction}\lean{Obsmetrologia.Flow.tile5_first_noncrystallographic_quadratic_surd}\leanok\uses{thm:tile-crystallographic-gap, thm:tile5-golden-gap}
+\texttt{Flow.tile\_gap\_char\_root}'s family (\cref{thm:tile-crystallographic-gap}, $a=2$, the
+crystallographically-allowed orders $N \in \{2,3,4,6\}$) requires $d \le a\cdot a = 4$;
+\texttt{Flow.tile5\_first\_noncrystallographic\_quadratic\_surd} proves $d=5$ violates that bound
+(\texttt{$\lnot(5 \le 4)$}) while \cref{thm:tile5-golden-gap}'s $(3-\sqrt5)/2$ remains a genuine
+quadratic surd one step up, at $a=3$ --- the honest, buildable core of the ``quasicrystal
+readout.'' It does not assert Penrose rhomb matching rules, de Bruijn's pentagrid, or any
+continuum aperiodic-order theorem; those stay further frontier.
+\end{theorem}
+
+\begin{theorem}[The KCBS pentagon possibilistic scenario and its classical bound]\label{thm:dervish-kcbs}\lean{Obsmetrologia.QuantumContextuality.kcbsScenario, Obsmetrologia.QuantumContextuality.kcbsModel, Obsmetrologia.QuantumContextuality.kcbsModel_inhabited, Obsmetrologia.QuantumContextuality.kcbs_classical_bound}\leanok\uses{thm:d5-preserves-c5, thm:measurement-scenario}
+\texttt{Quantum.kcbsScenario} is a \texttt{Scenario (Fin 5)} on the five KCBS contexts
+$\{i,i{+}1\}$ (\cref{thm:d5-preserves-c5}'s exclusivity graph); \texttt{Quantum.kcbsModel} is the
+possibilistic exclusivity support. \texttt{kcbsModel\_inhabited} gives every context a nonempty
+support (the all-\texttt{false} assignment); \texttt{kcbs\_classical\_bound} proves the classical
+independence bound $\alpha(C_5) = 2$, decided by exhaustion over the $2^5$ assignments. Sketched
+in \texttt{dev/content/notes/2026/06/28/2026-06-28-imaging-kcbs-pentagon.md}. This is the
+possibilistic layer only; the value layer (\cref{thm:dervish-kcbs-value}) realizing the quantum
+bound $\sqrt5$ remains open.
+\end{theorem}
+
+\begin{theorem}[The KCBS quantum value $\sqrt5$]\label{thm:dervish-kcbs-value}\lean{Obsmetrologia.QuantumContextuality.kcbs_quantum_value_exceeds_classical}\leanok\uses{thm:dervish-kcbs, thm:dervish-golden-field}
+The real-valued refinement of \cref{thm:dervish-kcbs}, on the internal Bishop reals:
+the KCBS vertex expectation is the exact weight $1/\sqrt5 = \sqrt5\cdot(1/5)$
+(\texttt{kcbsWeight}, with $1/5$ the witnessed inverse and $\sqrt5$ the
+\texttt{sqrtNat} of the golden-field stack), the five-vertex sum is exactly
+$\sqrt5$ (\texttt{kcbsQuantumValue\_eq\_sqrt5}, by the field law
+$5\cdot(1/5)=1$), and $2 < \sqrt5$ holds in the constructive order with explicit
+witness --- excess at least $1/5$ past tail index $30$ of the floor-approximation
+sequence, whose integer heart is the finite bound $11m \le 5\lfloor\sqrt5
+m\rfloor$ for $m \ge 31$ (\texttt{sqrt\_five\_lower}). So $\sum_i \langle
+v_i\rangle = \sqrt5 > 2$, strictly exceeding the classical bound of
+\cref{thm:dervish-kcbs}. Axiom profile: the internal-reals quotient stack
+(\texttt{propext}, \texttt{Quot.sound}), as for every analytic result.
+\end{theorem}
+
+\begin{theorem}[The five-site disclination's link is the KCBS pentagon]\label{thm:dervish-disclination-link}\lean{Obsmetrologia.QuantumContextuality.DisclinationLink.five_site_link_is_kcbs_pentagon, Obsmetrologia.QuantumContextuality.DisclinationLink.link_vertex_never_redevelops}\leanok\uses{thm:disclination-holonomy-quantum, thm:dervish-kcbs, thm:d5-preserves-c5}
+The five-coordinated disclination closes its boundary at the sixth traversal --- thirty unit
+steps (\cref{thm:disclination-holonomy-quantum}). \texttt{DisclinationLink} derives the closed
+boundary's two commuting periodicities: the mod-5 link coordinate (which cone edge a step
+traverses) and the mod-6 frame coordinate (the developed phase, of period six by
+\texttt{stateAt\_add\_six}). The coordinates are jointly injective and jointly surjective
+($30 = 5 \cdot 6$, realized by the explicit Chinese-remainder step $6a + 25b \bmod 30$); the
+developed state factors exactly through the frame coordinate; consecutive-step adjacency
+descends along the link coordinate onto the pentagon \texttt{D5.adj} ---
+\cref{thm:d5-preserves-c5}'s $C_5$, the KCBS exclusivity graph --- and along the frame
+coordinate onto the hexagon; and the KCBS context list of \cref{thm:dervish-kcbs} is exactly
+the descended pentagon's edge list. \texttt{link\_vertex\_never\_redevelops}: two distinct
+boundary visits of one link vertex develop to distinct states --- the intrinsic pentagon
+admits no single-valued development, the disclination restated in link terms. The theorem
+joins the defect carrier's fivefold coordination to the contextuality carrier's five-cycle
+combinatorially; it does \emph{not} identify the disclination's holonomy quantum (one
+\emph{sixth} turn, in the crystallographic frame group) with the $D_5$ obstruction (a
+\emph{fifth}-turn symmetry) --- that identification is \cref{thm:dervish-protected-holonomy},
+open. Axiom profile: the coordinate/state theorems audit with no axioms; the
+\texttt{D5.adj}/context-list statements carry \texttt{propext} through the
+\texttt{Fin}-literal and \texttt{Or} instances, as \texttt{D5.act\_preserves\_adj} already
+does.
+\end{theorem}
+
+\begin{theorem}[Protected pentagonal holonomy]\label{thm:dervish-protected-holonomy}\notready\uses{thm:dervish-disclination-link, thm:disclination-charge-conservation, thm:dervish-kcbs-value, thm:dervish-golden-field, thm:dervish-crystallographic-restriction}
+\emph{(Open frontier --- stated, not formalized.)} The identification behind the combinatorial
+bridge of \cref{thm:dervish-disclination-link}: a valuation of the five-site's descended link
+into the golden field under which the disclination's descent-invariant rotational charge
+(\cref{thm:disclination-charge-conservation}: the unpaired five-site's quantum survives every
+slide stage while the dipole content discharges) and the KCBS contextual excess $\sqrt5 - 2$
+(\cref{thm:dervish-kcbs-value}) are normalizations of one
+$\mathbb{Q}(\sqrt5)$-valued obstruction (\cref{thm:dervish-golden-field}). The five-site's
+deficit is one quantum of the \emph{sixfold} frame group; fivefold coordination is the
+crystallographic carrier's registration of the non-crystallographic $d = 5$
+(\cref{thm:dervish-crystallographic-restriction}), not itself a $D_5$ holonomy. The open
+construction must supply the valuation and prove it carries the conserved sixth-turn deficit
+to the golden excess, or refute the identification with a countermodel; either result settles
+whether the descent-surviving disclination is a readout of the $\mathcal{D}_5$ schema of
+\cref{thm:dervish-recurrence-conjecture}.
+\end{theorem}
+
+\begin{theorem}[The Dervish/Togliatti quintic]\label{thm:dervish-algebraic-quintic}\notready
+\emph{(Open frontier --- stated, not formalized; no supporting infrastructure exists.)} The
+algebraic-geometric readout: a degree-5 nodal surface, $D_5$-invariant, with $31$ ordinary double
+points and $15 = 3\cdot5$ lines in three fivefold families (the Barth/Togliatti quintic, the
+rotated visual form called the ``dervish''). This library has no polynomial-surface or
+singularity infrastructure and is dependency-free by design; a faithful formalization would be a
+substantial separate undertaking, not a corollary of the other three readouts. At most a finite
+arithmetic proxy of the counts ($31$, $15 = 3\cdot5$) is in reach without that infrastructure.
+\end{theorem}
+
+\begin{theorem}[Dervish Recurrence Conjecture]\label{thm:dervish-recurrence-conjecture}\notready\uses{thm:tile5-golden-gap, thm:dervish-golden-field, thm:dervish-crystallographic-restriction, thm:dervish-kcbs-value, thm:dervish-algebraic-quintic, thm:dervish-disclination-link}
+\emph{(Open frontier --- stated, not formalized.)} The algebraic-geometric Dervish surface
+(\cref{thm:dervish-algebraic-quintic}), the KCBS contextuality pentagon
+(\cref{thm:dervish-kcbs-value}), the five-site golden spectral gap (\cref{thm:tile5-golden-gap}),
+and Penrose fivefold quasicrystalline order (\cref{thm:dervish-crystallographic-restriction}) are
+four readouts of a single $D_5$-equivariant pentagonal obstruction schema, carried by $C_5$
+(\cref{thm:d5-is-dihedral}, \cref{thm:d5-preserves-c5}) with coefficient field $\mathbb{Q}(\sqrt5)$
+(\cref{thm:dervish-golden-field}). The spectral readout is green, the quasicrystal readout's
+algebraic core is green (\cref{thm:dervish-crystallographic-restriction}), the golden field tying
+them together is green (\cref{thm:dervish-golden-field}), and the KCBS possibilistic layer is
+green (\cref{thm:dervish-kcbs}); the KCBS value layer and the algebraic surface remain open. No
+category-theoretic (functor) formalization of the ``strong form'' is attempted until the four leaf
+objects are real.
+\end{theorem}

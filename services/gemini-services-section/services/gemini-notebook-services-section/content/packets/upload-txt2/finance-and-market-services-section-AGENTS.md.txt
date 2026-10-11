@@ -1,0 +1,101 @@
+# Finance and Market Services Section
+
+This sovereign Executive Office service section observes supplied commercial
+evidence. It does not own the counterparties, their books, their prices, their
+assets, or the Union market. The chief financial officer governs the
+accounting product; the investment review board and integrated portfolio
+management team retain allocation and continuation decisions.
+
+Every request crosses this membrane as ActivityStreams and contains exact
+party-supplied evidence. The section never crawls a settlement tree. It writes
+only its own dated `data/` records and returns observations for each receiver
+to admit or refuse independently.
+
+The section also maintains one finite advisory referral catalog for exactly
+five parent contract boundaries plus one independently admitted child boundary.
+A caller may ask the existing section actor one exact, named intent and receive
+the pinned actor, contract, operations, and evidence needed to approach that
+boundary. The answer is an observed interface referral, not a provider offer,
+capability, availability claim, invocation, price, contract, settlement, or
+endorsement. A child is referable only through a Finance-owned exact admission
+record whose foreign carriers are rechecked offline. The referral runtime reads
+only Finance-owned carriers; it never resolves, reads, imports, executes, or
+writes the child settlement. No later child is admitted by analogy.
+
+Its first contract reconciles one buyer book, one seller book, their receipt
+copies, the buyer transaction, and the seller fulfillment. It separates
+fulfillment evidence from value captured, explicitly leaves end-user value
+unknown, preserves unknown and contested facts, and may report what
+continuation evidence remains absent. It may not mint a
+currency, impose a price, allocate resources, set a distribution formula,
+write a counterparty's book, or turn its observations into a global ledger.
+
+Its economic market primitive payload is one `CommodityUtterance`: the ordered
+`(token, claim)` pair. It must not be called the formal Obsmetrologia bit:
+that is the `Bool × Bool` articulation status in a separate
+`WitnessBitProduction`, the producer's witnessing work and illocution over one
+payload. A replayable content-addressed byte carrier and finite
+`CommodityUtteranceTrace` carry payloads; a producer may present these with
+their production records as a `CommodityUtteranceLot`. Perlocution/customer
+effect is a later counterparty-owned observation, never a mutation or field of
+the sold payload or its production. The section assays this form against a named local
+counterstate and returns a FOUR-valued evaluation through a proof-bearing
+Hoare traversal. This is an Executive Office market protocol derived from
+Obsmetrologia's existing `Utterance`, articulation-cell, `Trace`, and
+it-to-bit-to-byte readings. It is not a new mathematical primitive or a claim
+that the application is a proved Chu construction.
+
+An assay does not make a bit globally fungible, grant title, set price, or glue
+the producer's claim into another territory. Those claims can arise only at a
+counterparty border under a separate offer and contract. The assay preserves
+token, claim, producer, witness actor, and bit identity as protected
+distinctions. Application-level outputs such as readings, plans, and reports
+are specialized productions over commodity-utterance traces; a service label alone is
+not primitive commodity evidence.
+
+Border price discovery compares one seller-owned ask and one buyer-owned bid
+bound to the same exact lot digest. The section may expose an incomparable
+pair, an open quote gap, an exact match, or a crossed range. It never selects
+within a crossed range: only the counterparties may accept one common terms
+hash and form a contract. Quote comparison is local defect discovery at one
+declared seam, not an order book, global price system, or authority to relax a
+protected jurisdictional distinction.
+
+The child border-price quote formation service is the issuer-facing boundary
+before comparison. It formats and assays an exact ask or bid only when the
+ActivityStreams actor is the issuer and the issuer supplies the complete lot,
+side, counterparty, consideration, validity, and a terms-bound authority
+record. Finance remains formatter and assayer rather than issuer; its result
+is not publication, delivery, counterparty acceptance, price selection,
+contract, title, trade, settlement, book entry, x402 receipt, or customer
+effect.
+
+The child customer-effect observation formation service is the customer-facing
+boundary after settlement evidence exists. It formats and structurally assays
+an exact observation candidate only when the ActivityStreams actor, observer,
+and receipt buyer are the same customer and customer-held authority binds the
+complete lot, receipt, outcome, effect utterance, evidence, time, and intended
+use. Finance remains formatter and assayer rather than observer. Its result is
+not an effect commodity lot, truth judgment, publication, settlement, party
+book entry, customer mutation, end-user-value finding, or reinvestment
+authorization.
+
+The child economic-frontier composition service joins only a caller-declared,
+finite, digest-bound set of provider-authored local cycle observations. It
+preserves every local `firstAbsent` and performs an attributed FOUR knowledge
+join without claiming that the denominator is the Union. Capability observed
+at another border is reported separately and cannot advance the focal lot;
+outside-denominator state remains unknown.
+
+Two distinct, fully replayable bilateral evidence bundles establish only
+repeated supplier performance: quote, receipt, books, fulfillment, and a
+counterparty effect observation. They do not establish Rendanheyi user value,
+zero distance, or reinvestment eligibility. Those claims additionally require
+an attributable end user, one chain-group contract with an outcome and target,
+value-added accounting, and evidence from the holder of distribution rights.
+The section may report these absences; it cannot allocate, set distribution,
+or promote pair-local consideration to a Union denomination.
+
+A2A is reserved for coordination among future offices or services inside this
+section. Counterparty traffic is ActivityStreams; network ActivityPub is not
+claimed until deployed.

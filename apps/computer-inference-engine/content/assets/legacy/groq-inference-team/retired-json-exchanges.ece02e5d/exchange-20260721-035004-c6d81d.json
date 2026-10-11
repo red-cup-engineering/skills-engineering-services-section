@@ -1,0 +1,60 @@
+{
+  "id": "exchange-20260721-035004-c6d81d",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"additionalProperties\":false,\"properties\":{\"seams\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"carrier\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"},\"seam\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"}},\"required\":[\"seam\",\"carrier\"],\"type\":\"object\"},\"maxItems\":5,\"minItems\":1,\"type\":\"array\"}},\"required\":[\"seams\"],\"type\":\"object\"}."
+      },
+      {
+        "role": "user",
+        "content": "{\"context\":{\"messages\":[{\"content\":\"Name the missing inter-settlement protocol seams that keep these existing variants from becoming distributed RSI. Return only the contracted JSON.\",\"role\":\"system\"},{\"content\":\"Existing sovereign variants: free-compute-dev has a durable mission queue, parallel isolated actors, competing planners, verification/integration, trajectory recall, and resolver-promotion readouts, but no live worker and no A2A service ingress. SDSS separately has customer tenders and guarded MAPE-K. inference-work-lot-service compares typed provider offers. Clockkeeper only delivers exact pulses. Recursive circuit synthesis/fabrication plus RMN/WIT/RWIL assays are live. Cloud Groq/NVIDIA/Gemini/Claude providers are live; local NPU execution is unavailable. No global queue, central scheduler, umbrella runtime, or primary implementation is allowed. Existing software-production enterprises must compete. Economics must descend frontier -> small model -> induced script, never small failure -> expensive model. Operation must continue without Codex.\",\"role\":\"user\"}],\"purpose\":\"Produce one candidate for independent free-compute-dev assay and bounded tool execution.\",\"supplierExclusions\":[\"urn:ame:bare-cedar-fog-npu-inference-team\",\"urn:ame:gemini-inference-team\",\"urn:ame:nvidia-inference-team\",\"urn:ame:claude-code-inference-team\"]},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"additionalProperties\":false,\"properties\":{\"seams\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"carrier\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"},\"seam\":{\"maxLength\":300,\"minLength\":8,\"type\":\"string\"}},\"required\":[\"seam\",\"carrier\"],\"type\":\"object\"},\"maxItems\":5,\"minItems\":1,\"type\":\"array\"}},\"required\":[\"seams\"],\"type\":\"object\"}},\"residue\":{\"customerAcceptanceRequired\":true,\"reason\":\"no deterministic resolver covered the next context-complete work move\",\"type\":\"TypedWorkInferenceResidue\",\"workLot\":\"urn:work-lot:distributed-rsi:seams:v1\"},\"workLot\":{\"id\":\"urn:work-lot:distributed-rsi:seams:v1\",\"producer\":\"urn:ame:free-compute-dev\"}}"
+      }
+    ]
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\"seams\":[{\"seam\":\"exact-pulse-delivery\",\"carrier\":\"cloud-groq-provider\"}]}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-16991868-5b58-4ee5-abf3-a0e49c03f96a",
+      "object": "chat.completion",
+      "created": 1784605803,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\"seams\":[{\"seam\":\"exact-pulse-delivery\",\"carrier\":\"cloud-groq-provider\"}]}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.006912823,
+        "prompt_tokens": 623,
+        "prompt_time": 0.04585442,
+        "completion_tokens": 23,
+        "completion_time": 0.042114671,
+        "total_tokens": 646,
+        "total_time": 0.087969091
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_e2c608b1d6",
+      "x_groq": {
+        "id": "req_01ky1cq0r5ejsbpt1hms9r7ejq",
+        "seed": 561026198
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.552733613,
+    "denomination": "groq-api-requests"
+  }
+}

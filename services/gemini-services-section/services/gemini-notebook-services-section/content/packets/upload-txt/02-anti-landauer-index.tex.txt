@@ -1,0 +1,102 @@
+\subsubsection{Anti-Landauer entropy and the index balance}
+
+\begin{proposition}[Anti-Landauer entropy]\label{thm:anti-landauer-bits}\lean{Obsmetrologia.AntiLandauer.antiLandauerBits}\leanok\uses{thm:coordination-laplacian-dual}
+Anti-Landauer entropy is the reversible harmonic side of the cover nerve:
+$\check H^0=|C|$, the global-section count kept by settling.
+\end{proposition}
+
+\begin{proposition}[Euler characteristic of the cover nerve]\label{thm:nerve-euler-char}\lean{Obsmetrologia.AntiLandauer.eulerChar}\leanok\uses{thm:cover-nerve}
+The Euler characteristic of the cover nerve is $\chi=|V|-|E|$ over
+$\mathbb Z$.
+\end{proposition}
+
+\begin{theorem}[The index balance $\check H^0-\check H^1=\chi$]\label{thm:anti-landauer-index-balance}\lean{Obsmetrologia.AntiLandauer.index_balance}\leanok\uses{thm:anti-landauer-bits, thm:nerve-euler-char, thm:coordination-h1rank}
+Anti-Landauer bits minus Landauer bits equals the Euler characteristic:
+$\check H^0-\check H^1=\chi$. Settling preserves the index while distributing
+it between harmonic content and obstruction content.
+\end{theorem}
+
+\begin{proposition}[Consensus and contradiction charges]\label{thm:consensus-contradiction-charges}\lean{Obsmetrologia.AntiLandauer.consensusCharge}\leanok\uses{thm:anti-landauer-bits, thm:coordination-h1rank}
+The same index ledger can be read as two finite charges: consensus charge is
+$\check H^0$, and contradiction charge is $\check H^1$.
+\end{proposition}
+
+\begin{theorem}[The signed charge ledger]\label{thm:net-charge-balance}\lean{Obsmetrologia.AntiLandauer.net_charge_balance}\leanok\uses{thm:anti-landauer-index-balance, thm:consensus-contradiction-charges}
+Consensus charge minus contradiction charge is the conserved net charge
+$\chi$.
+\end{theorem}
+
+\begin{theorem}[Matter and anti-matter are the signed contributions]\label{thm:matter-antimatter-balance}\lean{Obsmetrologia.AntiLandauer.matter_antimatter_balance}\leanok\uses{thm:net-charge-balance}
+The Landauer side is the matter contribution $\check H^1$, the
+anti-Landauer side is the anti-matter contribution $\check H^0$, and their
+signed difference is the same net Euler charge.
+\end{theorem}
+
+\begin{theorem}[The zero-net vacuum]\label{thm:anti-landauer-vacuum}\lean{Obsmetrologia.AntiLandauer.vacuum_iff_charge_balance}\leanok\uses{thm:net-charge-balance}
+The finite-index vacuum is exactly the state in which consensus and
+contradiction charges cancel.
+\end{theorem}
+
+\begin{theorem}[Equal pair creation preserves the index]\label{thm:equal-pair-creation-preserves-net}\lean{Obsmetrologia.AntiLandauer.equal_pair_creation_preserves_net}\leanok\uses{thm:net-charge-balance}
+Adding the same finite amount to the consensus side and to the contradiction
+side preserves the net charge.
+\end{theorem}
+
+\begin{theorem}[Fixed-net cycle creation requires consensus creation]\label{thm:fixed-net-cycle-requires-consensus}\lean{Obsmetrologia.AntiLandauer.fixed_net_cycle_requires_consensus}\leanok\uses{thm:net-charge-balance}
+At fixed net charge, increasing the contradiction side by $d$ forces the
+consensus side to increase by the same $d$.
+\end{theorem}
+
+\begin{theorem}[Fixed-net consensus annihilation requires cycle annihilation]\label{thm:fixed-net-consensus-annihilation-requires-cycle-annihilation}\lean{Obsmetrologia.AntiLandauer.fixed_net_consensus_annihilation_requires_cycle_annihilation}\leanok\uses{thm:net-charge-balance}
+At fixed net charge, decreasing the consensus side by $d$ forces the
+contradiction side to decrease by the same $d$.
+\end{theorem}
+
+\begin{theorem}[Index-preserving steps have balanced cohomology deltas]\label{thm:preserves-euler-balanced-delta}\lean{Obsmetrologia.AntiLandauer.preservesEuler_iff_balanced_h0_h1_delta}\leanok\uses{thm:anti-landauer-index-balance}
+A finite transition preserves $\chi$ exactly when the signed movement of
+$\check H^0$ equals the signed movement of $\check H^1$.
+\end{theorem}
+
+\begin{theorem}[Closure index steps conserve net charge]\label{thm:closure-index-step-conserves-net}\lean{Obsmetrologia.AntiLandauer.ClosureIndexStep.preserves_matter_antimatter_balance}\leanok\uses{thm:preserves-euler-balanced-delta, thm:matter-antimatter-balance}
+Any closure step projected to an index-preserving cover-nerve transition keeps
+anti-matter minus matter fixed.
+\end{theorem}
+
+\begin{theorem}[Gauge Noether current for the index ledger]\label{thm:gauge-noether-current-index-ledger}\notready\uses{thm:ledger-noether, thm:closure-index-step-conserves-net, thm:percolation-gauge-measure, thm:mass-is-landauer}
+The current finite theorem proves conservation of the index ledger. A genuine
+Noether-current theorem still needs a carrier where the $D_4$ gauge action acts
+on closure-index steps and where the conserved current is functorially read
+from that symmetry action.
+\end{theorem}
+
+\begin{theorem}[Anti-descent and mirror temperature]\label{thm:anti-descent-mirror-temperature}\notready\uses{thm:fixed-net-cycle-requires-consensus, thm:positive-temperature-free-energy-flow, thm:stage-ledger, thm:ledger-noether}
+The current finite theorem proves only the index-compensation law. A genuine
+mirror temperature theorem must add a temporal or stochastic carrier showing
+that the anti-descent builds $\check H^0$ while free-energy descent discharges
+$\check H^1$.
+\end{theorem}
+
+\begin{theorem}[A reversible nerve's index is all harmonic]\label{thm:reversible-index-harmonic}\lean{Obsmetrologia.AntiLandauer.reversible_index_all_harmonic}\leanok\uses{thm:anti-landauer-index-balance}
+When the Landauer side vanishes, the Euler characteristic is carried wholly
+by the anti-Landauer harmonic side.
+\end{theorem}
+
+\begin{theorem}[The tree index balance]\label{thm:tree-index-balance}\lean{Obsmetrologia.AntiLandauer.tree_index_balance}\leanok\uses{thm:anti-landauer-index-balance, thm:tree-coordination-free}
+For a finite tree nerve, $\check H^0=1$, $\check H^1=0$, and $\chi=1$.
+This is the index balance on the connected acyclic case.
+\end{theorem}
+
+\begin{theorem}[The distinction-denomination functor]\label{thm:distinction-denomination-functor}\notready\uses{thm:anti-landauer-index-balance, thm:net-charge-balance, thm:settles-by-three, thm:config-burgers-additive}
+\emph{(Open frontier --- stated, not formalized.)} A single denomination of lawful change
+across the library's move carriers: a functor from a category whose morphisms are the admitted
+moves --- Hoare traversals, Chu transforms, settling steps, defect slides, cover-nerve closure
+steps --- to the signed charge ledger of \cref{thm:net-charge-balance}, assigning each move its
+distinction count (collapsed distinctions on the $\check H^1$ side, kept sections on the
+$\check H^0$ side), additive under composition, and conserved up to the Euler index of
+\cref{thm:anti-landauer-index-balance}. The green pieces are the per-carrier accountings:
+additivity of defect content (\cref{thm:config-burgers-additive}), stabilization of
+knowledge-inflationary maps by the third iterate (\cref{thm:settles-by-three}), and the index
+balance itself. Open: the common category of moves, the functor, and the proof that each
+existing per-carrier accounting is its restriction. A countermodel --- a lawful move carrier
+whose accounting cannot factor through one ledger --- would be equally decisive.
+\end{theorem}

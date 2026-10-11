@@ -1,0 +1,30 @@
+{
+  "id": "exchange-20260724-154702-94bac4",
+  "recordedAt": "2026-07-24T15:47:03.648Z",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Reply with exactly the word: PONG"
+      },
+      {
+        "role": "user",
+        "content": "ping"
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 429 Too Many Requests: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1784937600000\"},\"provider_name\":null}},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:429"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.696986041,
+    "denomination": "openrouter-api-requests"
+  }
+}

@@ -1,0 +1,556 @@
+import Obsmetrologia.Language.Positing.TruthOrder
+
+/-!
+# FOUR
+
+The number **four** recurs across the whole spine, and the corpus's claim is that
+these are not analogies but **one four-element object met at successive depths**:
+
+* the four **articulation phases** `Articulating.Corner` — potential / active / stable / absurd;
+* the four **bilattice charges** `Charge` — ⊥ₖ / t / f / ⊤ₖ (here `Charge := Articulating.Corner`,
+  so this identity is *definitional*: the same object, re-met as value);
+* the four **status pairs** `Bool × Bool` — `(token, claim)` = `(positive, negative)`;
+* the four **predicate generators** — specialization / converse / subject- and
+  object-projection.
+
+This module proves the identifications (a bijection `Articulating.Corner ≃ Bool × Bool`, the
+counts) and the **Klein-four symmetry** `K₄ = ⟨~, −⟩` of FOUR: negation `~` (swap)
+and conflation `−` (complemented swap) are commuting involutions whose four
+composites `{id, ~, −, ~∘−}` act as `ℤ/2 × ℤ/2`, with `~` preserving `≤ₖ` /
+reversing `≤ₜ`, `−` preserving `≤ₜ` / reversing `≤ₖ`, and `~∘−` reversing both —
+the two orders' duality made a group.
+-/
+
+namespace Obsmetrologia
+
+/-! ## The recurring four is one object -/
+
+/-- A bare bijection (no Mathlib `Equiv`). -/
+structure Bij (α β : Type) where
+  to : α → β
+  inv : β → α
+  left : ∀ a, inv (to a) = a
+  right : ∀ b, to (inv b) = b
+
+/-- The four articulation phases are the four status pairs: `Articulating.Corner ≃ Bool × Bool`,
+via `(token-articulated, claim-articulated) = (positive, negative)`. -/
+def cornerStatus : Bij Articulating.Corner (Bool × Bool) where
+  to c := c.toStatus
+  inv := fun s => Articulating.Corner.ofStatus s.1 s.2
+  left c := by cases c <;> rfl
+  right := fun s => by cases s with | mk p n => cases p <;> cases n <;> rfl
+
+/-- The four predicate generators — the morphism classes of the predication
+category. -/
+inductive Generator
+  | specialization
+  | converse
+  | subjectProjection
+  | objectProjection
+  deriving DecidableEq, Repr
+
+namespace Generator
+def all : List Generator := [specialization, converse, subjectProjection, objectProjection]
+theorem mem_all (g : Generator) : g ∈ all := by cases g <;> decide
+theorem card_eq_four : all.length = 4 := rfl
+end Generator
+
+/-- **The four-fold identity.** Every incarnation of the recurring four has exactly
+four elements: the articulation phases, the predicate generators — and the charges
+*are* the phases (`Charge := Articulating.Corner`, definitionally). One object, met at depth. -/
+theorem four_fold : Articulating.Corner.all.length = 4 ∧ Generator.all.length = 4 := ⟨rfl, rfl⟩
+
+/-- The charge/phase identity is definitional: a bilattice charge **is** an
+articulation phase, re-met as value. -/
+theorem charge_is_phase (c : Articulating.Corner) : (c : Charge) = c := rfl
+
+/-! ## The Klein-four symmetry K₄ = ⟨~, −⟩ -/
+
+namespace Charge
+
+/-- Conflation `−`: the knowledge-negation, `⟨a,b⟩ ↦ ⟨¬b, ¬a⟩`. Swaps ⊥↔⊤, fixes
+t and f. (Negation `~` = `negate`, the coordinate swap, is in `Positing`.) -/
+def conflate (a : Charge) : Charge := ofSlots (!a.neg) (!a.pos)
+
+/-- `~∘−`: coordinatewise complement, `⟨a,b⟩ ↦ ⟨¬a, ¬b⟩` — the third nontrivial
+element of K₄. -/
+def negConf (a : Charge) : Charge := ofSlots (!a.pos) (!a.neg)
+
+/-! ### The two generators are commuting involutions -/
+
+@[simp] theorem conflate_conflate (a : Charge) : conflate (conflate a) = a := by cases a <;> rfl
+/-- The generators **commute**: `~∘− = −∘~`. -/
+theorem negate_conflate_comm (a : Charge) : negate (conflate a) = conflate (negate a) := by
+  cases a <;> rfl
+/-- Their composite is the coordinatewise complement. -/
+theorem negate_conflate (a : Charge) : negate (conflate a) = negConf a := by cases a <;> rfl
+@[simp] theorem negConf_negConf (a : Charge) : negConf (negConf a) = a := by cases a <;> rfl
+
+/-! ### The action of K₄ on FOUR (the table) -/
+
+@[simp] theorem conflate_kBot : conflate kBot = kTop := rfl
+@[simp] theorem conflate_kTop : conflate kTop = kBot := rfl
+@[simp] theorem conflate_tTop : conflate tTop = tTop := rfl
+@[simp] theorem conflate_tBot : conflate tBot = tBot := rfl
+
+/-- The `~`-orbit `{t, f}` is fixed by `−`; the `−`-orbit `{⊥, ⊤}` is fixed by `~`.
+Each non-identity generator has exactly one 2-orbit and two fixed points — the
+extreme pair of one order, the incomparable middle of the other. -/
+theorem negate_orbit : negate tTop = tBot ∧ negate tBot = tTop
+    ∧ negate kBot = kBot ∧ negate kTop = kTop := ⟨rfl, rfl, rfl, rfl⟩
+theorem conflate_orbit : conflate kBot = kTop ∧ conflate kTop = kBot
+    ∧ conflate tTop = tTop ∧ conflate tBot = tBot := ⟨rfl, rfl, rfl, rfl⟩
+
+/-! ### Each generator's effect on the two orders -/
+
+/-- `~` preserves the knowledge order. -/
+theorem negate_preserves_kle (a b : Charge) : KLE (negate a) (negate b) ↔ KLE a b := by
+  simp only [KLE, negate_leK]
+/-- `~` reverses the truth order. -/
+theorem negate_reverses_tle (a b : Charge) : TLE (negate a) (negate b) ↔ TLE b a := by
+  simp only [TLE, negate_leT]
+/-- `−` reverses the knowledge order. -/
+theorem conflate_reverses_kle (a b : Charge) : KLE (conflate a) (conflate b) ↔ KLE b a := by
+  cases a <;> cases b <;> decide
+/-- `−` preserves the truth order. -/
+theorem conflate_preserves_tle (a b : Charge) : TLE (conflate a) (conflate b) ↔ TLE a b := by
+  cases a <;> cases b <;> decide
+/-- `~∘−` reverses **both** orders. -/
+theorem negConf_reverses_kle (a b : Charge) : KLE (negConf a) (negConf b) ↔ KLE b a := by
+  cases a <;> cases b <;> decide
+theorem negConf_reverses_tle (a b : Charge) : TLE (negConf a) (negConf b) ↔ TLE b a := by
+  cases a <;> cases b <;> decide
+
+/-- **The Klein-four group.** `{id, ~, −, ~∘−}` is closed and every element is an
+involution: `K₄ ≅ ℤ/2 × ℤ/2`, the natural symmetry group of FOUR with both
+negation and conflation. (Closure: the product of any two is again one of the
+four — witnessed by `negate_conflate` and the involution laws.) -/
+theorem klein_four (a : Charge) :
+    negate (negate a) = a ∧ conflate (conflate a) = a ∧ negConf (negConf a) = a
+      ∧ negate (conflate a) = negConf a ∧ conflate (negate a) = negConf a := by
+  refine ⟨negate_negate a, conflate_conflate a, negConf_negConf a, negate_conflate a, ?_⟩
+  rw [← negate_conflate_comm]; exact negate_conflate a
+
+end Charge
+
+/-! ## FOUR by universal property — initiality among bounded interlaced bilattices
+
+The identifications above are definitional (`Charge := Articulating.Corner`) or
+enumerated. This section states the structure those identifications rely on and
+proves it is forced: FOUR is **initial** among bounded interlaced bilattices.
+Every carrier bearing two bounded lattice structures whose operations are
+monotone across the orders receives exactly one bounds-preserving map from FOUR
+(`boundsMap`); the map is injective when the four bounds are pairwise distinct
+and bijective when the carrier holds only the bounds. A depth of the spine that
+exhibits an interlaced bilattice thereby earns its four-corner identification
+from initiality rather than inheriting it by definition. -/
+
+/-- A **bounded interlaced bilattice**: one carrier with two bounded-lattice
+structures — knowledge (`meetK`, `joinK`, `kBot`, `kTop`) and truth (`meetT`,
+`joinT`, `tBot`, `tTop`) — each operation monotone with respect to the other
+order. Order is algebraic (`a ≤ₖ b := joinK a b = b`, `a ≤ₜ b := joinT a b = b`);
+the four cross-monotonicity fields are stated in that form. Own-order
+monotonicity is derivable from the lattice laws and is not a field. -/
+structure InterlacedBilattice where
+  carrier : Type
+  meetK : carrier → carrier → carrier
+  joinK : carrier → carrier → carrier
+  kBot : carrier
+  kTop : carrier
+  meetT : carrier → carrier → carrier
+  joinT : carrier → carrier → carrier
+  tBot : carrier
+  tTop : carrier
+  joinK_comm : ∀ a b, joinK a b = joinK b a
+  joinK_assoc : ∀ a b c, joinK (joinK a b) c = joinK a (joinK b c)
+  meetK_comm : ∀ a b, meetK a b = meetK b a
+  absorbK_join : ∀ a b, joinK a (meetK a b) = a
+  absorbK_meet : ∀ a b, meetK a (joinK a b) = a
+  joinK_kBot : ∀ a, joinK kBot a = a
+  meetK_kTop : ∀ a, meetK kTop a = a
+  joinT_comm : ∀ a b, joinT a b = joinT b a
+  joinT_assoc : ∀ a b c, joinT (joinT a b) c = joinT a (joinT b c)
+  meetT_comm : ∀ a b, meetT a b = meetT b a
+  absorbT_join : ∀ a b, joinT a (meetT a b) = a
+  absorbT_meet : ∀ a b, meetT a (joinT a b) = a
+  joinT_tBot : ∀ a, joinT tBot a = a
+  meetT_tTop : ∀ a, meetT tTop a = a
+  meetT_kmono : ∀ a b c, joinK a b = b → joinK (meetT a c) (meetT b c) = meetT b c
+  joinT_kmono : ∀ a b c, joinK a b = b → joinK (joinT a c) (joinT b c) = joinT b c
+  meetK_tmono : ∀ a b c, joinT a b = b → joinT (meetK a c) (meetK b c) = meetK b c
+  joinK_tmono : ∀ a b c, joinT a b = b → joinT (joinK a c) (joinK b c) = joinK b c
+
+namespace InterlacedBilattice
+
+variable (B : InterlacedBilattice)
+
+/-! ### Derived single-lattice facts -/
+
+/-- Knowledge join is idempotent. -/
+theorem joinK_idem (a : B.carrier) : B.joinK a a = a := by
+  have h := B.absorbK_join a (B.joinK a a)
+  rwa [B.absorbK_meet a a] at h
+
+/-- Truth join is idempotent. -/
+theorem joinT_idem (a : B.carrier) : B.joinT a a = a := by
+  have h := B.absorbT_join a (B.joinT a a)
+  rwa [B.absorbT_meet a a] at h
+
+/-- Knowledge meet is idempotent. -/
+theorem meetK_idem (a : B.carrier) : B.meetK a a = a := by
+  have h := B.absorbK_meet a (B.meetK a a)
+  rwa [B.absorbK_join a a] at h
+
+/-- Truth meet is idempotent. -/
+theorem meetT_idem (a : B.carrier) : B.meetT a a = a := by
+  have h := B.absorbT_meet a (B.meetT a a)
+  rwa [B.absorbT_join a a] at h
+
+/-- `kBot` is also a right identity of the knowledge join. -/
+theorem joinK_kBot_right (a : B.carrier) : B.joinK a B.kBot = a := by
+  rw [B.joinK_comm]; exact B.joinK_kBot a
+
+/-- `kTop` absorbs the knowledge join on the right. -/
+theorem joinK_kTop (a : B.carrier) : B.joinK a B.kTop = B.kTop := by
+  have h := B.absorbK_join B.kTop a
+  rw [B.meetK_kTop a] at h
+  rw [B.joinK_comm]; exact h
+
+/-- `kTop` absorbs the knowledge join on the left. -/
+theorem joinK_kTop_left (a : B.carrier) : B.joinK B.kTop a = B.kTop := by
+  rw [B.joinK_comm]; exact B.joinK_kTop a
+
+/-- `kTop` is also a right identity of the knowledge meet. -/
+theorem meetK_kTop_right (a : B.carrier) : B.meetK a B.kTop = a := by
+  rw [B.meetK_comm]; exact B.meetK_kTop a
+
+/-- `kBot` absorbs the knowledge meet on the left. -/
+theorem meetK_kBot_left (a : B.carrier) : B.meetK B.kBot a = B.kBot := by
+  have h := B.absorbK_meet B.kBot a
+  rwa [B.joinK_kBot a] at h
+
+/-- `kBot` absorbs the knowledge meet on the right. -/
+theorem meetK_kBot (a : B.carrier) : B.meetK a B.kBot = B.kBot := by
+  rw [B.meetK_comm]; exact B.meetK_kBot_left a
+
+/-- `tBot` is also a right identity of the truth join. -/
+theorem joinT_tBot_right (a : B.carrier) : B.joinT a B.tBot = a := by
+  rw [B.joinT_comm]; exact B.joinT_tBot a
+
+/-- `tTop` absorbs the truth join on the right. -/
+theorem joinT_tTop (a : B.carrier) : B.joinT a B.tTop = B.tTop := by
+  have h := B.absorbT_join B.tTop a
+  rw [B.meetT_tTop a] at h
+  rw [B.joinT_comm]; exact h
+
+/-- `tTop` absorbs the truth join on the left. -/
+theorem joinT_tTop_left (a : B.carrier) : B.joinT B.tTop a = B.tTop := by
+  rw [B.joinT_comm]; exact B.joinT_tTop a
+
+/-- `tTop` is also a right identity of the truth meet. -/
+theorem meetT_tTop_right (a : B.carrier) : B.meetT a B.tTop = a := by
+  rw [B.meetT_comm]; exact B.meetT_tTop a
+
+/-- `tBot` absorbs the truth meet on the left. -/
+theorem meetT_tBot_left (a : B.carrier) : B.meetT B.tBot a = B.tBot := by
+  have h := B.absorbT_meet B.tBot a
+  rwa [B.joinT_tBot a] at h
+
+/-- `tBot` absorbs the truth meet on the right. -/
+theorem meetT_tBot (a : B.carrier) : B.meetT a B.tBot = B.tBot := by
+  rw [B.meetT_comm]; exact B.meetT_tBot_left a
+
+/-! ### The bound-exchange identities
+
+The four bounds of the two orders determine each other: the knowledge join of
+the truth bounds is the knowledge top, and the other three combinations mirror
+it. These are the identities that make the bounds a sub-bilattice; interlacing
+alone forces them. -/
+
+/-- **The knowledge join of the truth bounds is the knowledge top.** -/
+theorem joinK_tTop_tBot : B.joinK B.tTop B.tBot = B.kTop := by
+  have h1 : B.joinK B.tTop (B.joinK B.tTop B.tBot) = B.joinK B.tTop B.tBot := by
+    rw [← B.joinK_assoc, B.joinK_idem]
+  have h2 : B.joinK B.tBot (B.joinK B.tTop B.tBot) = B.joinK B.tTop B.tBot := by
+    rw [B.joinK_comm B.tTop B.tBot, ← B.joinK_assoc, B.joinK_idem]
+  have h3 := B.meetT_kmono B.tTop (B.joinK B.tTop B.tBot) B.kTop h1
+  rw [B.meetT_tTop] at h3
+  have h4 : B.meetT (B.joinK B.tTop B.tBot) B.kTop = B.kTop := by
+    have h5 := B.joinK_kTop (B.meetT (B.joinK B.tTop B.tBot) B.kTop)
+    rw [B.joinK_comm] at h5
+    rw [h3] at h5
+    exact h5
+  have h6 : B.joinT (B.joinK B.tTop B.tBot) B.kTop = B.joinK B.tTop B.tBot := by
+    have h := B.absorbT_join (B.joinK B.tTop B.tBot) B.kTop
+    rwa [h4] at h
+  have h7 := B.joinT_kmono B.tBot (B.joinK B.tTop B.tBot) B.kTop h2
+  rw [B.joinT_tBot] at h7
+  have h8 : B.joinT (B.joinK B.tTop B.tBot) B.kTop = B.kTop := by
+    have h9 := B.joinK_kTop (B.joinT (B.joinK B.tTop B.tBot) B.kTop)
+    rw [B.joinK_comm] at h9
+    rw [h7] at h9
+    exact h9
+  rw [← h6]; exact h8
+
+/-- The comm-flipped form of `joinK_tTop_tBot`. -/
+theorem joinK_tBot_tTop : B.joinK B.tBot B.tTop = B.kTop := by
+  rw [B.joinK_comm]; exact B.joinK_tTop_tBot
+
+/-- **The knowledge meet of the truth bounds is the knowledge bottom.** -/
+theorem meetK_tTop_tBot : B.meetK B.tTop B.tBot = B.kBot := by
+  have h1 : B.joinK (B.meetK B.tTop B.tBot) B.tTop = B.tTop := by
+    rw [B.joinK_comm]; exact B.absorbK_join B.tTop B.tBot
+  have h2 : B.joinK (B.meetK B.tTop B.tBot) B.tBot = B.tBot := by
+    rw [B.meetK_comm, B.joinK_comm]; exact B.absorbK_join B.tBot B.tTop
+  have h3 := B.meetT_kmono (B.meetK B.tTop B.tBot) B.tTop B.kBot h1
+  rw [B.meetT_tTop] at h3
+  have h4 : B.meetT (B.meetK B.tTop B.tBot) B.kBot = B.kBot := by
+    have hid : B.joinK (B.meetT (B.meetK B.tTop B.tBot) B.kBot) B.kBot
+        = B.meetT (B.meetK B.tTop B.tBot) B.kBot := B.joinK_kBot_right _
+    rw [hid] at h3; exact h3
+  have h5 : B.joinT (B.meetK B.tTop B.tBot) B.kBot = B.meetK B.tTop B.tBot := by
+    have h := B.absorbT_join (B.meetK B.tTop B.tBot) B.kBot
+    rwa [h4] at h
+  have h6 := B.joinT_kmono (B.meetK B.tTop B.tBot) B.tBot B.kBot h2
+  rw [B.joinT_tBot] at h6
+  have h7 : B.joinT (B.meetK B.tTop B.tBot) B.kBot = B.kBot := by
+    have hid : B.joinK (B.joinT (B.meetK B.tTop B.tBot) B.kBot) B.kBot
+        = B.joinT (B.meetK B.tTop B.tBot) B.kBot := B.joinK_kBot_right _
+    rw [hid] at h6; exact h6
+  rw [← h5]; exact h7
+
+/-- The comm-flipped form of `meetK_tTop_tBot`. -/
+theorem meetK_tBot_tTop : B.meetK B.tBot B.tTop = B.kBot := by
+  rw [B.meetK_comm]; exact B.meetK_tTop_tBot
+
+/-- **The truth join of the knowledge bounds is the truth top.** -/
+theorem joinT_kTop_kBot : B.joinT B.kTop B.kBot = B.tTop := by
+  have h1 : B.joinT B.kTop (B.joinT B.kTop B.kBot) = B.joinT B.kTop B.kBot := by
+    rw [← B.joinT_assoc, B.joinT_idem]
+  have h2 : B.joinT B.kBot (B.joinT B.kTop B.kBot) = B.joinT B.kTop B.kBot := by
+    rw [B.joinT_comm B.kTop B.kBot, ← B.joinT_assoc, B.joinT_idem]
+  have h3 := B.meetK_tmono B.kTop (B.joinT B.kTop B.kBot) B.tTop h1
+  rw [B.meetK_kTop] at h3
+  have h4 : B.meetK (B.joinT B.kTop B.kBot) B.tTop = B.tTop := by
+    have h5 := B.joinT_tTop (B.meetK (B.joinT B.kTop B.kBot) B.tTop)
+    rw [B.joinT_comm] at h5
+    rw [h3] at h5
+    exact h5
+  have h6 : B.joinK (B.joinT B.kTop B.kBot) B.tTop = B.joinT B.kTop B.kBot := by
+    have h := B.absorbK_join (B.joinT B.kTop B.kBot) B.tTop
+    rwa [h4] at h
+  have h7 := B.joinK_tmono B.kBot (B.joinT B.kTop B.kBot) B.tTop h2
+  rw [B.joinK_kBot] at h7
+  have h8 : B.joinK (B.joinT B.kTop B.kBot) B.tTop = B.tTop := by
+    have h9 := B.joinT_tTop (B.joinK (B.joinT B.kTop B.kBot) B.tTop)
+    rw [B.joinT_comm] at h9
+    rw [h7] at h9
+    exact h9
+  rw [← h6]; exact h8
+
+/-- The comm-flipped form of `joinT_kTop_kBot`. -/
+theorem joinT_kBot_kTop : B.joinT B.kBot B.kTop = B.tTop := by
+  rw [B.joinT_comm]; exact B.joinT_kTop_kBot
+
+/-- **The truth meet of the knowledge bounds is the truth bottom.** -/
+theorem meetT_kTop_kBot : B.meetT B.kTop B.kBot = B.tBot := by
+  have h1 : B.joinT (B.meetT B.kTop B.kBot) B.kTop = B.kTop := by
+    rw [B.joinT_comm]; exact B.absorbT_join B.kTop B.kBot
+  have h2 : B.joinT (B.meetT B.kTop B.kBot) B.kBot = B.kBot := by
+    rw [B.meetT_comm, B.joinT_comm]; exact B.absorbT_join B.kBot B.kTop
+  have h3 := B.meetK_tmono (B.meetT B.kTop B.kBot) B.kTop B.tBot h1
+  rw [B.meetK_kTop] at h3
+  have h4 : B.meetK (B.meetT B.kTop B.kBot) B.tBot = B.tBot := by
+    have hid : B.joinT (B.meetK (B.meetT B.kTop B.kBot) B.tBot) B.tBot
+        = B.meetK (B.meetT B.kTop B.kBot) B.tBot := B.joinT_tBot_right _
+    rw [hid] at h3; exact h3
+  have h5 : B.joinK (B.meetT B.kTop B.kBot) B.tBot = B.meetT B.kTop B.kBot := by
+    have h := B.absorbK_join (B.meetT B.kTop B.kBot) B.tBot
+    rwa [h4] at h
+  have h6 := B.joinK_tmono (B.meetT B.kTop B.kBot) B.kBot B.tBot h2
+  rw [B.joinK_kBot] at h6
+  have h7 : B.joinK (B.meetT B.kTop B.kBot) B.tBot = B.tBot := by
+    have hid : B.joinT (B.joinK (B.meetT B.kTop B.kBot) B.tBot) B.tBot
+        = B.joinK (B.meetT B.kTop B.kBot) B.tBot := B.joinT_tBot_right _
+    rw [hid] at h6; exact h6
+  rw [← h5]; exact h7
+
+/-- The comm-flipped form of `meetT_kTop_kBot`. -/
+theorem meetT_kBot_kTop : B.meetT B.kBot B.kTop = B.tBot := by
+  rw [B.meetT_comm]; exact B.meetT_kTop_kBot
+
+end InterlacedBilattice
+
+/-! ### The bounds map and initiality -/
+
+/-- The canonical map from FOUR into any bounded interlaced bilattice: each
+charge to the like-named bound. -/
+def boundsMap (B : InterlacedBilattice) : Charge → B.carrier
+  | .potential => B.kBot
+  | .active => B.tTop
+  | .absurd => B.kTop
+  | .stable => B.tBot
+
+@[simp] theorem boundsMap_kBot (B : InterlacedBilattice) :
+    boundsMap B Charge.kBot = B.kBot := rfl
+@[simp] theorem boundsMap_tTop (B : InterlacedBilattice) :
+    boundsMap B Charge.tTop = B.tTop := rfl
+@[simp] theorem boundsMap_tBot (B : InterlacedBilattice) :
+    boundsMap B Charge.tBot = B.tBot := rfl
+@[simp] theorem boundsMap_kTop (B : InterlacedBilattice) :
+    boundsMap B Charge.kTop = B.kTop := rfl
+
+/-- The bounds map preserves the knowledge join. -/
+theorem boundsMap_joinK (B : InterlacedBilattice) (a b : Charge) :
+    boundsMap B (Charge.joinK a b) = B.joinK (boundsMap B a) (boundsMap B b) := by
+  cases a <;> cases b <;> simp only [boundsMap] <;>
+    (first
+      | rw [B.joinK_kBot]
+      | rw [B.joinK_kBot_right]
+      | rw [B.joinK_kTop]
+      | rw [B.joinK_kTop_left]
+      | rw [B.joinK_idem]
+      | rw [B.joinK_tTop_tBot]
+      | rw [B.joinK_tBot_tTop]) <;> rfl
+
+/-- The bounds map preserves the knowledge meet. -/
+theorem boundsMap_meetK (B : InterlacedBilattice) (a b : Charge) :
+    boundsMap B (Charge.meetK a b) = B.meetK (boundsMap B a) (boundsMap B b) := by
+  cases a <;> cases b <;> simp only [boundsMap] <;>
+    (first
+      | rw [B.meetK_kTop]
+      | rw [B.meetK_kTop_right]
+      | rw [B.meetK_kBot]
+      | rw [B.meetK_kBot_left]
+      | rw [B.meetK_idem]
+      | rw [B.meetK_tTop_tBot]
+      | rw [B.meetK_tBot_tTop]) <;> rfl
+
+/-- The bounds map preserves the truth join. -/
+theorem boundsMap_joinT (B : InterlacedBilattice) (a b : Charge) :
+    boundsMap B (Charge.joinT a b) = B.joinT (boundsMap B a) (boundsMap B b) := by
+  cases a <;> cases b <;> simp only [boundsMap] <;>
+    (first
+      | rw [B.joinT_tBot]
+      | rw [B.joinT_tBot_right]
+      | rw [B.joinT_tTop]
+      | rw [B.joinT_tTop_left]
+      | rw [B.joinT_idem]
+      | rw [B.joinT_kTop_kBot]
+      | rw [B.joinT_kBot_kTop]) <;> rfl
+
+/-- The bounds map preserves the truth meet. -/
+theorem boundsMap_meetT (B : InterlacedBilattice) (a b : Charge) :
+    boundsMap B (Charge.meetT a b) = B.meetT (boundsMap B a) (boundsMap B b) := by
+  cases a <;> cases b <;> simp only [boundsMap] <;>
+    (first
+      | rw [B.meetT_tTop]
+      | rw [B.meetT_tTop_right]
+      | rw [B.meetT_tBot]
+      | rw [B.meetT_tBot_left]
+      | rw [B.meetT_idem]
+      | rw [B.meetT_kTop_kBot]
+      | rw [B.meetT_kBot_kTop]) <;> rfl
+
+/-- Any map out of FOUR that sends the four bounds to the four bounds is the
+bounds map, pointwise. FOUR's elements are its bounds, so bound preservation
+alone forces the whole map. -/
+theorem boundsMap_unique (B : InterlacedBilattice) (g : Charge → B.carrier)
+    (h1 : g Charge.kBot = B.kBot) (h2 : g Charge.tTop = B.tTop)
+    (h3 : g Charge.tBot = B.tBot) (h4 : g Charge.kTop = B.kTop) :
+    ∀ c, g c = boundsMap B c := by
+  intro c
+  cases c with
+  | potential => exact h1
+  | active => exact h2
+  | absurd => exact h4
+  | stable => exact h3
+
+/-- **FOUR is initial among bounded interlaced bilattices.** Into every `B` the
+bounds map preserves both lattice structures (existence), and any
+bounds-preserving map out of FOUR is the bounds map (uniqueness). The recurring
+four-corner cell is forced on any depth exhibiting the structure, not chosen. -/
+theorem four_initial (B : InterlacedBilattice) :
+    (∀ a b, boundsMap B (Charge.joinK a b) = B.joinK (boundsMap B a) (boundsMap B b))
+    ∧ (∀ a b, boundsMap B (Charge.meetK a b) = B.meetK (boundsMap B a) (boundsMap B b))
+    ∧ (∀ a b, boundsMap B (Charge.joinT a b) = B.joinT (boundsMap B a) (boundsMap B b))
+    ∧ (∀ a b, boundsMap B (Charge.meetT a b) = B.meetT (boundsMap B a) (boundsMap B b))
+    ∧ (∀ g : Charge → B.carrier,
+        g Charge.kBot = B.kBot → g Charge.tTop = B.tTop →
+        g Charge.tBot = B.tBot → g Charge.kTop = B.kTop →
+        ∀ c, g c = boundsMap B c) :=
+  ⟨boundsMap_joinK B, boundsMap_meetK B, boundsMap_joinT B, boundsMap_meetT B,
+    fun g h1 h2 h3 h4 => boundsMap_unique B g h1 h2 h3 h4⟩
+
+/-- The bounds map is injective when the four bounds are pairwise distinct. -/
+theorem boundsMap_injective (B : InterlacedBilattice)
+    (hbt : B.kBot ≠ B.tTop) (hbf : B.kBot ≠ B.tBot) (hbT : B.kBot ≠ B.kTop)
+    (htf : B.tTop ≠ B.tBot) (htT : B.tTop ≠ B.kTop) (hfT : B.tBot ≠ B.kTop) :
+    ∀ a b : Charge, boundsMap B a = boundsMap B b → a = b := by
+  intro a b h
+  cases a <;> cases b <;> first
+    | rfl
+    | exact absurd h hbt | exact absurd h hbf | exact absurd h hbT
+    | exact absurd h htf | exact absurd h htT | exact absurd h hfT
+    | exact absurd h.symm hbt | exact absurd h.symm hbf | exact absurd h.symm hbT
+    | exact absurd h.symm htf | exact absurd h.symm htT | exact absurd h.symm hfT
+
+/-- The bounds map is surjective when the carrier holds only the four bounds. -/
+theorem boundsMap_surjective (B : InterlacedBilattice)
+    (hall : ∀ z : B.carrier, z = B.kBot ∨ z = B.tTop ∨ z = B.tBot ∨ z = B.kTop) :
+    ∀ z : B.carrier, ∃ c : Charge, boundsMap B c = z := by
+  intro z
+  rcases hall z with h | h | h | h
+  · exact ⟨Charge.kBot, h.symm⟩
+  · exact ⟨Charge.tTop, h.symm⟩
+  · exact ⟨Charge.tBot, h.symm⟩
+  · exact ⟨Charge.kTop, h.symm⟩
+
+/-- **Rigidity at four.** A bounded interlaced bilattice whose four bounds are
+pairwise distinct and whose carrier holds only the bounds receives the bounds
+map as a bijection: it *is* FOUR, up to the unique bounds-preserving map. -/
+theorem four_rigid (B : InterlacedBilattice)
+    (hbt : B.kBot ≠ B.tTop) (hbf : B.kBot ≠ B.tBot) (hbT : B.kBot ≠ B.kTop)
+    (htf : B.tTop ≠ B.tBot) (htT : B.tTop ≠ B.kTop) (hfT : B.tBot ≠ B.kTop)
+    (hall : ∀ z : B.carrier, z = B.kBot ∨ z = B.tTop ∨ z = B.tBot ∨ z = B.kTop) :
+    (∀ a b : Charge, boundsMap B a = boundsMap B b → a = b)
+    ∧ (∀ z : B.carrier, ∃ c : Charge, boundsMap B c = z) :=
+  ⟨boundsMap_injective B hbt hbf hbT htf htT hfT, boundsMap_surjective B hall⟩
+
+/-- FOUR itself is a bounded interlaced bilattice — the initial object is
+inhabited by the spine's own value carrier. -/
+def chargeInterlaced : InterlacedBilattice where
+  carrier := Charge
+  meetK := Charge.meetK
+  joinK := Charge.joinK
+  kBot := Charge.kBot
+  kTop := Charge.kTop
+  meetT := Charge.meetT
+  joinT := Charge.joinT
+  tBot := Charge.tBot
+  tTop := Charge.tTop
+  joinK_comm := Charge.joinK_comm
+  joinK_assoc := Charge.joinK_assoc
+  meetK_comm := Charge.meetK_comm
+  absorbK_join := Charge.absorbK₁
+  absorbK_meet := Charge.absorbK₂
+  joinK_kBot := Charge.joinK_kBot
+  meetK_kTop := Charge.meetK_kTop
+  joinT_comm := Charge.joinT_comm
+  joinT_assoc := Charge.joinT_assoc
+  meetT_comm := Charge.meetT_comm
+  absorbT_join := fun a b => by cases a <;> cases b <;> rfl
+  absorbT_meet := fun a b => by cases a <;> cases b <;> rfl
+  joinT_tBot := fun a => by cases a <;> rfl
+  meetT_tTop := fun a => by cases a <;> rfl
+  meetT_kmono := fun a b c h => by revert h; cases a <;> cases b <;> cases c <;> decide
+  joinT_kmono := fun a b c h => by revert h; cases a <;> cases b <;> cases c <;> decide
+  meetK_tmono := fun a b c h => by revert h; cases a <;> cases b <;> cases c <;> decide
+  joinK_tmono := fun a b c h => by revert h; cases a <;> cases b <;> cases c <;> decide
+
+/-- The unique bounds-preserving map from FOUR to itself is the identity,
+pointwise: initiality pins the recurring four to itself. -/
+theorem boundsMap_charge (c : Charge) : boundsMap chargeInterlaced c = c := by
+  cases c <;> rfl
+
+end Obsmetrologia

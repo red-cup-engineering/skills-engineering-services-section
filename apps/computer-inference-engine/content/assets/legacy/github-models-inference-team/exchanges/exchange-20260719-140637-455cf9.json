@@ -1,0 +1,200 @@
+{
+  "id": "exchange-20260719-140637-455cf9",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are planner 1 in a competing plan pool. Produce an executable software mission DAG, not commentary."
+      },
+      {
+        "role": "user",
+        "content": "PROGRAM OBJECTIVE: Complete readablePaths confinement across every read-like agent tool as one coupled source-and-test repair. Direct read refuses out-of-scope files. list_files at the territory root allows the empty relative root as traversal base but returns only walked files for which readAdmitted(file) is true. search at the territory root allows the empty relative root but reads only files for which readAdmitted(file) is true. A non-root requested list/search base is admitted only when that base itself is readAdmitted. Preserve unrestricted behavior when readablePaths is absent. The exact source algorithm previously produced by a cloud actor uses `relativePath !== \"\" && !readAdmitted(relativePath)` for explicit-base refusal, `.filter(readAdmitted)` for list_files, and `if (!readAdmitted(file)) continue` inside search.\n\nCONSTRAINTS: The single mission must edit src/agent-tools.mjs and create test/readable-paths-complete.test.mjs.; Use relativePath !== empty-string to distinguish root traversal from an explicit non-root base.; Filter every list result and every searched file with readAdmitted.; Test both omitted path and explicit dot for root list_files and search.; Test exact-file and directory readablePaths, structured non-root refusals, and absence of protected names, bytes, and matching lines.; Preserve unrestricted behavior when readablePaths is empty and keep all existing tests green.\n\nFILES: README.md, bin/abandon-mission.mjs, bin/run-mission.mjs, bin/run-program.mjs, bin/run-worker.mjs, bin/submit-mission.mjs, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-schema-escalation.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-focused.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-learned-route.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-quality-escalation.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-claude-worktype.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-registry-fixed.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation.json, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-quality-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-schema-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-claude-worktype.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-focused.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-registry-fixed.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-learned-route.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json.settled, data/mission-queue/workers/worker-2.json, data/missions/2026/07/19/2026-07-19-complete-readable-path-confinement.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum-quality-escalation.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum-schema-escalation.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-auto-escalation.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-reset-learned-route.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json, data/programs/2026/07/19/2026-07-19-affinity-fallback-readable-path-confinement-program.json, data/programs/2026/07/19/2026-07-19-complete-readable-path-confinement-program.json, data/programs/2026/07/19/2026-07-19-independent-coupled-readable-path-confinement-program.json, data/programs/2026/07/19/2026-07-19-readable-path-confinement-program.json, data/programs/2026/07/19/2026-07-19-schema-sharded-readable-path-confinement-program.json, data/route-observations/2026/07/19/2026-07-19-free-compute-dev-route-observations.jsonl, data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl, package.json, src/agent-tools.mjs, src/context.mjs, src/edits.mjs, src/escalate.mjs, src/executor.mjs, src/fabric-client.mjs, src/inference.mjs, src/mission-pipeline.mjs, src/mission-queue.mjs, src/mission-runtime.mjs, src/program-runtime.mjs, src/resolvers.mjs, src/semantic-review.mjs, src/solve-loop.mjs, src/trajectory-memory.mjs, test/agent-tools.test.mjs, test/edits.test.mjs, test/executor.test.mjs, test/fabric-client.test.mjs, test/mission-pipeline.test.mjs, test/mission-queue.test.mjs, test/mission-runtime.test.mjs, test/program-runtime.test.mjs, test/readable-paths.test.mjs, test/semantic-review.test.mjs, test/solve-loop.test.mjs\n\nAVAILABLE ACCEPTANCE KEYS (choose; never invent commands):\ncomplete-readable-scope: One mission changes agent-tools and creates comprehensive deterministic tests for exact-file admission, directory admission, root filtering, explicit-base refusal without disclosure, and unrestricted compatibility.\n\nREQUIRED FOCUS COVERAGE (the union of mission focusPaths must cover every entry):\nsrc/agent-tools.mjs\ntest/readable-paths-complete.test.mjs\n\nREQUIRED ACCEPTANCE COVERAGE (use every key in at least one mission):\ncomplete-readable-scope\n\nREQUIRED COUPLED MISSIONS (for each line, one single mission—not several missions in aggregate—must use the named acceptance key and cover every listed focus path):\ncomplete-readable-scope: src/agent-tools.mjs, test/readable-paths-complete.test.mjs\n\nPRIOR CYCLE RESIDUE:\nexit=1\n\nCould not find 'test/readable-paths-complete.test.mjs'\n\n\nDecompose only as much as necessary. Every mission will be executed autonomously by parallel tool-using cloud workers. Dependencies must form a DAG. Return only contracted JSON."
+      }
+    ],
+    "max-tokens": 1300,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "required": [
+              "strategy",
+              "missions"
+            ],
+            "properties": {
+              "strategy": {
+                "type": "string",
+                "minLength": 10,
+                "maxLength": 500
+              },
+              "missions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "objective",
+                    "dependsOn",
+                    "acceptanceKey",
+                    "focusPaths"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 51
+                    },
+                    "objective": {
+                      "type": "string",
+                      "minLength": 20,
+                      "maxLength": 500
+                    },
+                    "dependsOn": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptanceKey": {
+                      "type": "string",
+                      "enum": [
+                        "complete-readable-scope"
+                      ]
+                    },
+                    "focusPaths": {
+                      "type": "array",
+                      "maxItems": 12,
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gpt-4o-mini-2024-07-18",
+    "text": "{\"missions\":[{\"acceptanceKey\":\"complete-readable-scope\",\"dependsOn\":[],\"focusPaths\":[\"src/agent-tools.mjs\"],\"id\":\"mission-1\",\"objective\":\"Edit agent-tools to implement readablePaths confinement.\"}],\"strategy\":\"There will be one mission focusing on modifying the agent-tools file, implementing the requested changes, and ensuring to keep the existing behavior intact while preserving unrestricted behavior when readablePaths is empty. The planned test file will be created in the next sequential mission.\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "annotations": [],
+            "content": "{\"missions\":[{\"acceptanceKey\":\"complete-readable-scope\",\"dependsOn\":[],\"focusPaths\":[\"src/agent-tools.mjs\"],\"id\":\"mission-1\",\"objective\":\"Edit agent-tools to implement readablePaths confinement.\"}],\"strategy\":\"There will be one mission focusing on modifying the agent-tools file, implementing the requested changes, and ensuring to keep the existing behavior intact while preserving unrestricted behavior when readablePaths is empty. The planned test file will be created in the next sequential mission.\"}",
+            "refusal": null,
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784469998,
+      "id": "chatcmpl-E3MS66dfWwIsew85ukClu89TjoyUd",
+      "model": "gpt-4o-mini-2024-07-18",
+      "object": "chat.completion",
+      "prompt_filter_results": [
+        {
+          "prompt_index": 0,
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          }
+        }
+      ],
+      "service_tier": "default",
+      "system_fingerprint": "fp_965c8b9ecf",
+      "usage": {
+        "completion_tokens": 100,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "latency_checkpoint": {
+          "engine_tbt_ms": 10,
+          "engine_ttft_ms": 94,
+          "engine_ttlt_ms": 1089,
+          "pre_inference_ms": 156,
+          "service_tbt_ms": 10,
+          "service_ttft_ms": 543,
+          "service_ttlt_ms": 1530,
+          "total_duration_ms": 1382,
+          "user_visible_ttft_ms": 388
+        },
+        "prompt_tokens": 2042,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 2142
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 2.413,
+    "denomination": "github-models-api-requests"
+  }
+}

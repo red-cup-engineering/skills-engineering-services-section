@@ -1,0 +1,475 @@
+import Obsmetrologia.Language.Positing.Valuation
+
+/-!
+# Settling — the generative home of order
+
+Settling is the morphism out of the *knowledge-least valuation* that brings a
+trace to its **fixed point**: it iterates the modal closure
+`possibilize ∘ necessitate` (◇∘□) until the last valuation stops changing.
+Termination is **Knaster–Tarski**: each step is monotone in the bounded knowledge
+lattice, so the orbit stabilizes.
+
+> Because the closure is monotone, the fixed point a least upper bound, and the
+> trace a graded chain, **this is the morphism that generates order.** Order is not
+> filed near settling by resemblance; order is the structure settling *is*.
+
+So this module *derives order theory itself* at the point the chain first produces
+it: the knowledge relation `≤ₖ` is proven a **partial order**, and `∨ₖ`/`∧ₖ` are
+proven its lub/glb, making `Charge` a **bounded lattice**. Then the closure
+operator and its **least fixed point** (Knaster–Tarski for closures) are derived;
+at the finite regime the closure is idempotent — the confluence ◇□ = □◇ that makes
+the residue drain to zero (H¹ = 0), so settling stabilizes in one step.
+-/
+
+namespace Obsmetrologia
+namespace Charge
+
+/-! ## Order — generated here, as a partial order on charges -/
+
+/-- The knowledge order as a `Prop` relation: the order settling generates.
+Reducible so the underlying decidable `leK a b = true` is visible to `decide`. -/
+abbrev KLE (a b : Charge) : Prop := leK a b = true
+
+/-- Reflexive. -/
+theorem kle_refl (a : Charge) : KLE a a := by cases a <;> rfl
+/-- Transitive. -/
+theorem kle_trans (a b c : Charge) : KLE a b → KLE b c → KLE a c := by
+  intro h1 h2; revert h1 h2; cases a <;> cases b <;> cases c <;> decide
+/-- Antisymmetric — so `≤ₖ` is a partial order, not a preorder. -/
+theorem kle_antisymm (a b : Charge) : KLE a b → KLE b a → a = b := by
+  intro h1 h2; revert h1 h2; cases a <;> cases b <;> decide
+
+/-! ## Lattice — `∨ₖ` is the lub, `∧ₖ` the glb, with bounds ⊥ₖ/⊤ₖ -/
+
+theorem le_joinK_left (a b : Charge) : KLE a (joinK a b) := by cases a <;> cases b <;> rfl
+theorem le_joinK_right (a b : Charge) : KLE b (joinK a b) := by cases a <;> cases b <;> rfl
+/-- `∨ₖ` is the **least** upper bound. -/
+theorem joinK_le (a b c : Charge) : KLE a c → KLE b c → KLE (joinK a b) c := by
+  intro h1 h2; revert h1 h2; cases a <;> cases b <;> cases c <;> decide
+
+theorem meetK_le_left (a b : Charge) : KLE (meetK a b) a := by cases a <;> cases b <;> rfl
+theorem meetK_le_right (a b : Charge) : KLE (meetK a b) b := by cases a <;> cases b <;> rfl
+/-- `∧ₖ` is the **greatest** lower bound. -/
+theorem le_meetK (a b c : Charge) : KLE c a → KLE c b → KLE c (meetK a b) := by
+  intro h1 h2; revert h1 h2; cases a <;> cases b <;> cases c <;> decide
+
+/-- ⊥ₖ is the least element — the seed settling climbs from. -/
+theorem kBot_le (a : Charge) : KLE kBot a := kBot_leK a
+/-- ⊤ₖ is the greatest element. -/
+theorem le_kTop (a : Charge) : KLE a kTop := leK_kTop a
+
+/-! ## Closure operator and its least fixed point (Knaster–Tarski) -/
+
+/-- A **closure operator** on the knowledge order: inflationary, monotone, and
+idempotent. (At the finite regime settling's modal closure ◇∘□ is one.) -/
+structure Closure where
+  op : Charge → Charge
+  infl : ∀ a, KLE a (op a)
+  mono : ∀ a b, KLE a b → KLE (op a) (op b)
+  idem : ∀ a, op (op a) = op a
+
+namespace Closure
+
+/-- **Knaster–Tarski (closure form).** `op a` is a fixed point — settling stops
+changing after it. -/
+theorem op_fixed (c : Closure) (a : Charge) : c.op (c.op a) = c.op a := c.idem a
+
+/-- `op a` is the **least** fixed point above `a`: any fixed point `x ≥ₖ a` lies
+above `op a`. This is the least-upper-bound character of the settled value. -/
+theorem op_least (c : Closure) (a x : Charge)
+    (hax : KLE a x) (hfx : c.op x = x) : KLE (c.op a) x := by
+  have h := c.mono a x hax
+  rw [hfx] at h; exact h
+
+end Closure
+
+/-- The canonical settling closure: raise to a knowledge bound `k` by `∨ₖ`
+(possibilize toward `k`). Settling from ⊥ₖ under `joinClosure k` reaches `k`. -/
+def joinClosure (k : Charge) : Closure where
+  op a := joinK k a
+  infl a := by
+    have : KLE a (joinK a k) := le_joinK_left a k
+    have e : joinK a k = joinK k a := joinK_comm a k
+    rw [e] at this; exact this
+  mono a b h := by revert h; cases k <;> cases a <;> cases b <;> decide
+  idem a := by cases k <;> cases a <;> rfl
+
+/-- **Settling**: the fixed point reached from a seed under a closure. For a
+closure the orbit stabilizes in one step (the finite-regime confluence
+◇□ = □◇), so the settled value is `c.op seed`. -/
+def settle (c : Closure) (seed : Charge) : Charge := c.op seed
+
+/-- The settled value is a fixed point — nothing left to descend. -/
+theorem settle_fixed (c : Closure) (seed : Charge) :
+    c.op (settle c seed) = settle c seed := c.idem seed
+
+/-- The settled value is the least fixed point above the seed. -/
+theorem settle_least (c : Closure) (seed x : Charge)
+    (h : KLE seed x) (hf : c.op x = x) : KLE (settle c seed) x :=
+  c.op_least seed x h hf
+
+/-- Worked instance: settling the knowledge-least charge ⊥ₖ toward a bound `k`
+lands exactly on `k`. -/
+@[simp] theorem settle_kBot (k : Charge) : settle (joinClosure k) kBot = k := by
+  cases k <;> rfl
+
+/-! ## The liar closure: self-negating settling
+
+The liar step accumulates a site's own negation into its record:
+`a ↦ a ∨ₖ ¬a`. It is a closure on the knowledge order, its fixed points
+are exactly the negation-fixed poles `⊥ₖ` and `⊤ₖ`, and any seed other
+than silence settles at `⊤ₖ`: the asserted liar is held inconsistency,
+never truth and never falsity. -/
+
+/-- The liar closure: join a charge with its own negation. -/
+def liarClosure : Closure where
+  op a := joinK a (negate a)
+  infl a := le_joinK_left a (negate a)
+  mono a b h := by revert h; cases a <;> cases b <;> decide
+  idem a := by cases a <;> rfl
+
+/-- The liar step fixes exactly the negation-fixed knowledge poles. -/
+theorem liar_step_fixed_iff (a : Charge) :
+    liarClosure.op a = a ↔ (a = kBot ∨ a = kTop) := by
+  cases a <;> decide
+
+/-- The liar never settles on the truth axis. -/
+theorem liar_settle_ne_truth (a : Charge) :
+    settle liarClosure a ≠ tTop ∧ settle liarClosure a ≠ tBot := by
+  cases a <;> decide
+
+/-- **The asserted liar settles at `⊤ₖ`**: from any seed other than the
+silent `⊥ₖ`, the liar closure settles at held inconsistency. -/
+theorem asserted_liar_settles_kTop (a : Charge) (h : a ≠ kBot) :
+    settle liarClosure a = kTop := by
+  cases a with
+  | potential => exact absurd rfl h
+  | active => rfl
+  | stable => rfl
+  | absurd => rfl
+
+/-- The silent liar stays silent: from `⊥ₖ` the liar closure settles at `⊥ₖ`. -/
+theorem silent_liar_settles_kBot : settle liarClosure kBot = kBot := rfl
+
+end Charge
+
+/-! ## The diagonal: Lawvere's fixed point and the Boolean liar
+
+The generic diagonal argument, with point-surjectivity stated pointwise.
+Over `Bool`, negation has no fixed point, so no carrier quotes all of its
+own Boolean valuations: two-valued self-reference is impossible. Over the
+charge carrier the same self-reference exists as the liar closure above,
+and settles. -/
+
+/-- Pointwise point-surjectivity: every `Y`-valued family on `A` is quoted
+at some point of `A`. -/
+def PointSurjective {A Y : Type} (q : A → A → Y) : Prop :=
+  ∀ h : A → Y, ∃ a, ∀ x, q a x = h x
+
+/-- **Lawvere's fixed-point theorem.** If some `q : A → A → Y` is
+point-surjective, every endomap of `Y` has a fixed point. -/
+theorem lawvere_fixed_point {A Y : Type} (q : A → A → Y)
+    (hq : PointSurjective q) (f : Y → Y) : ∃ y, f y = y := by
+  obtain ⟨a, ha⟩ := hq (fun x => f (q x x))
+  exact ⟨q a a, (ha a).symm⟩
+
+/-- Boolean negation has no fixed point. -/
+theorem bool_not_ne (b : Bool) : (!b) ≠ b := by cases b <;> decide
+
+/-- **No carrier quotes its own Boolean valuations**: a point-surjective
+`A → A → Bool` cannot exist — the two-valued liar has no home. -/
+theorem no_boolean_self_quotation {A : Type} (q : A → A → Bool) :
+    ¬ PointSurjective q := by
+  intro hq
+  obtain ⟨b, hb⟩ := lawvere_fixed_point q hq (fun b => !b)
+  exact bool_not_ne b hb
+
+/-! ## The reflexive tower
+
+The finite approximants of the reflexive value carrier: rung zero is the
+charge carrier, each next rung is the knowledge-monotone `Charge`-valued
+maps of the previous, ordered pointwise. Consecutive rungs are related by
+an embedding–projection pair whose laws are stated in the rung preorders
+(the rung carriers are function subtypes, so their sections are compared
+by the order, not by equality). A thread of the tower is an
+order-coherent choice of one section per rung; a thread applies its next
+rung to its current one, and this self-application climbs the knowledge
+order. -/
+
+/-- A rung: a carrier with a knowledge preorder. -/
+structure ValueRung where
+  /-- The rung's carrier. -/
+  ty : Type
+  /-- The rung's knowledge preorder. -/
+  le : ty → ty → Prop
+
+/-- The reflexive tower of knowledge-monotone valuation spaces. -/
+def valueRung : Nat → ValueRung
+  | 0 => ⟨Charge, Charge.KLE⟩
+  | n + 1 =>
+    ⟨{f : (valueRung n).ty → Charge //
+        ∀ a b, (valueRung n).le a b → Charge.KLE (f a) (f b)},
+     fun f g => ∀ x, Charge.KLE (f.val x) (g.val x)⟩
+
+theorem valueRung_le_refl : ∀ (n : Nat) (x : (valueRung n).ty), (valueRung n).le x x
+  | 0, x => Charge.kle_refl x
+  | _ + 1, f => fun z => Charge.kle_refl (f.val z)
+
+theorem valueRung_le_trans : ∀ (n : Nat) (x y z : (valueRung n).ty),
+    (valueRung n).le x y → (valueRung n).le y z → (valueRung n).le x z
+  | 0, x, y, z, h1, h2 => Charge.kle_trans x y z h1 h2
+  | _ + 1, f, g, k, h1, h2 => fun w =>
+      Charge.kle_trans (f.val w) (g.val w) (k.val w) (h1 w) (h2 w)
+
+/-- An embedding–projection pair between consecutive rungs, its laws
+stated in the rung preorders. -/
+structure ValueEP (n : Nat) where
+  /-- The embedding into the next rung. -/
+  e : (valueRung n).ty → (valueRung (n + 1)).ty
+  /-- The projection onto the previous rung. -/
+  p : (valueRung (n + 1)).ty → (valueRung n).ty
+  e_mono : ∀ x y, (valueRung n).le x y → (valueRung (n + 1)).le (e x) (e y)
+  p_mono : ∀ x y, (valueRung (n + 1)).le x y → (valueRung n).le (p x) (p y)
+  p_e_le : ∀ x, (valueRung n).le (p (e x)) x
+  p_e_ge : ∀ x, (valueRung n).le x (p (e x))
+  e_p_le : ∀ x, (valueRung (n + 1)).le (e (p x)) x
+
+/-- The tower's embedding–projection pairs: rung zero embeds as constant
+maps and projects by evaluation at `⊥ₖ`; each next pair conjugates by the
+previous. -/
+def valueEP : ∀ n, ValueEP n
+  | 0 =>
+    { e := fun x => ⟨fun _ => x, fun _ _ _ => Charge.kle_refl x⟩
+      p := fun f => f.val Charge.kBot
+      e_mono := fun _ _ h _ => h
+      p_mono := fun _ _ h => h Charge.kBot
+      p_e_le := fun x => Charge.kle_refl x
+      p_e_ge := fun x => Charge.kle_refl x
+      e_p_le := fun f z => f.property Charge.kBot z (Charge.kBot_le z) }
+  | n + 1 =>
+    let ih := valueEP n
+    { e := fun f => ⟨fun g => f.val (ih.p g),
+        fun g g' h => f.property _ _ (ih.p_mono g g' h)⟩
+      p := fun g => ⟨fun x => g.val (ih.e x),
+        fun x y h => g.property _ _ (ih.e_mono x y h)⟩
+      e_mono := fun _ _ h g => h (ih.p g)
+      p_mono := fun _ _ h x => h (ih.e x)
+      p_e_le := fun f x => f.property _ _ (ih.p_e_le x)
+      p_e_ge := fun f x => f.property _ _ (ih.p_e_ge x)
+      e_p_le := fun g x => g.property _ _ (ih.e_p_le x) }
+
+/-- A thread of the reflexive tower: one section per rung, order-coherent
+under projection. -/
+structure ReflexiveThread where
+  /-- The thread's section at each rung. -/
+  at_ : ∀ n, (valueRung n).ty
+  coh_le : ∀ n, (valueRung n).le ((valueEP n).p (at_ (n + 1))) (at_ n)
+  coh_ge : ∀ n, (valueRung n).le (at_ n) ((valueEP n).p (at_ (n + 1)))
+
+/-- The silent sections: `⊥ₖ` at rung zero, constantly-`⊥ₖ` above. -/
+def botSection : ∀ n, (valueRung n).ty
+  | 0 => Charge.kBot
+  | _ + 1 => ⟨fun _ => Charge.kBot, fun _ _ _ => Charge.kle_refl Charge.kBot⟩
+
+/-- The silent thread — the tower's threads are inhabited. -/
+def botThread : ReflexiveThread where
+  at_ := botSection
+  coh_le := fun n => by
+    cases n with
+    | zero => exact Charge.kle_refl Charge.kBot
+    | succ n => exact fun _ => Charge.kle_refl Charge.kBot
+  coh_ge := fun n => by
+    cases n with
+    | zero => exact Charge.kle_refl Charge.kBot
+    | succ n => exact fun _ => Charge.kle_refl Charge.kBot
+
+/-- Self-application of a thread: its rung-`(n+1)` section evaluated at
+its rung-`n` section. -/
+def selfApp (t : ReflexiveThread) (n : Nat) : Charge :=
+  (t.at_ (n + 1)).val (t.at_ n)
+
+/-- **Self-application climbs the knowledge order.** On the reflexive
+tower, a thread's self-application is a knowledge-monotone charge
+sequence: quotation applied to itself settles within the charge carrier's
+finite chain height. -/
+theorem selfApp_mono (t : ReflexiveThread) (n : Nat) :
+    Charge.KLE (selfApp t n) (selfApp t (n + 1)) := by
+  have h1 : Charge.KLE ((t.at_ (n + 1)).val (t.at_ n))
+      (((valueEP (n + 1)).p (t.at_ (n + 2))).val (t.at_ n)) :=
+    t.coh_ge (n + 1) (t.at_ n)
+  have h2 : (valueRung (n + 1)).le ((valueEP n).e (t.at_ n)) (t.at_ (n + 1)) :=
+    valueRung_le_trans (n + 1) _ _ _
+      ((valueEP n).e_mono _ _ (t.coh_ge n))
+      ((valueEP n).e_p_le (t.at_ (n + 1)))
+  have h3 : Charge.KLE ((t.at_ (n + 2)).val ((valueEP n).e (t.at_ n)))
+      ((t.at_ (n + 2)).val (t.at_ (n + 1))) :=
+    (t.at_ (n + 2)).property _ _ h2
+  exact Charge.kle_trans _ _ _ h1 h3
+
+/-! ## The liar threads
+
+The diagonal sections of the reflexive tower. `selfAppAt` is a section's
+own self-application approximant; the silent liar holds the negation of
+its argument's self-application, the asserted liar joins one telling of
+truth to it. Both are projection-coherent threads. The silent liar's
+self-application is `⊥ₖ` at every stage — the ungrounded liar; the
+asserted liar's is `⊤ₖ` at every stage — an entrenched inconsistency
+produced by diagonalization alone. -/
+
+theorem negate_kle_mono (a b : Charge) (h : Charge.KLE a b) :
+    Charge.KLE (Charge.negate a) (Charge.negate b) := by
+  revert h; cases a <;> cases b <;> decide
+
+theorem joinK_kle_mono_right (c a b : Charge) (h : Charge.KLE a b) :
+    Charge.KLE (Charge.joinK c a) (Charge.joinK c b) := by
+  revert h; cases c <;> cases a <;> cases b <;> decide
+
+/-- A section's self-application approximant: at rung zero itself, above,
+its value at its own projection. -/
+def selfAppAt : ∀ n, (valueRung n).ty → Charge
+  | 0, x => x
+  | n + 1, x => x.val ((valueEP n).p x)
+
+theorem selfAppAt_mono : ∀ (n : Nat) (x y : (valueRung n).ty),
+    (valueRung n).le x y → Charge.KLE (selfAppAt n x) (selfAppAt n y)
+  | 0, _, _, h => h
+  | n + 1, x, y, h =>
+    Charge.kle_trans _ _ _ (h ((valueEP n).p x))
+      (y.property _ _ ((valueEP n).p_mono x y h))
+
+theorem selfAppAt_embed_le : ∀ (n : Nat) (x : (valueRung n).ty),
+    Charge.KLE (selfAppAt (n + 1) ((valueEP n).e x)) (selfAppAt n x)
+  | 0, x => Charge.kle_refl x
+  | m + 1, x => x.property _ _ ((valueEP m).p_mono _ _ ((valueEP (m + 1)).p_e_le x))
+
+theorem selfAppAt_embed_ge : ∀ (n : Nat) (x : (valueRung n).ty),
+    Charge.KLE (selfAppAt n x) (selfAppAt (n + 1) ((valueEP n).e x))
+  | 0, x => Charge.kle_refl x
+  | m + 1, x => x.property _ _ ((valueEP m).p_mono _ _ ((valueEP (m + 1)).p_e_ge x))
+
+/-- Along any thread, self-application transports across projection. -/
+theorem selfAppAt_proj_eq (t : ReflexiveThread) (n : Nat) :
+    selfAppAt n ((valueEP n).p (t.at_ (n + 1))) = selfAppAt n (t.at_ n) :=
+  Charge.kle_antisymm _ _
+    (selfAppAt_mono n _ _ (t.coh_le n))
+    (selfAppAt_mono n _ _ (t.coh_ge n))
+
+/-- The silent liar's sections: `⊥ₖ` at rung zero; above, the negation of
+the argument's self-application. -/
+def liarSection : ∀ n, (valueRung n).ty
+  | 0 => Charge.kBot
+  | n + 1 => ⟨fun x => Charge.negate (selfAppAt n x),
+      fun x y h => negate_kle_mono _ _ (selfAppAt_mono n x y h)⟩
+
+theorem liar_coh_le : ∀ n, (valueRung n).le ((valueEP n).p (liarSection (n + 1)))
+    (liarSection n)
+  | 0 => Charge.kle_refl Charge.kBot
+  | n + 1 => fun x => negate_kle_mono _ _ (selfAppAt_embed_le n x)
+
+theorem liar_coh_ge : ∀ n, (valueRung n).le (liarSection n)
+    ((valueEP n).p (liarSection (n + 1)))
+  | 0 => Charge.kle_refl Charge.kBot
+  | n + 1 => fun x => negate_kle_mono _ _ (selfAppAt_embed_ge n x)
+
+/-- The silent liar thread. -/
+def liarThread : ReflexiveThread :=
+  ⟨liarSection, liar_coh_le, liar_coh_ge⟩
+
+theorem liar_selfAppAt : ∀ n, selfAppAt n (liarThread.at_ n) = Charge.kBot
+  | 0 => rfl
+  | n + 1 => by
+    show Charge.negate (selfAppAt n ((valueEP n).p (liarThread.at_ (n + 1))))
+      = Charge.kBot
+    rw [selfAppAt_proj_eq liarThread n, liar_selfAppAt n]
+    rfl
+
+/-- **The silent liar self-applies to `⊥ₖ` at every stage** — the
+ungrounded liar: never told anything, never settling elsewhere. -/
+theorem silent_liar_thread_selfApp (n : Nat) :
+    selfApp liarThread n = Charge.kBot := by
+  show Charge.negate (selfAppAt n (liarThread.at_ n)) = Charge.kBot
+  rw [liar_selfAppAt n]
+  rfl
+
+/-- The asserted liar's sections: `t` at rung zero; above, one telling of
+truth joined to the negation of the argument's self-application. -/
+def assertedLiarSection : ∀ n, (valueRung n).ty
+  | 0 => Charge.tTop
+  | n + 1 => ⟨fun x => Charge.joinK Charge.tTop (Charge.negate (selfAppAt n x)),
+      fun x y h =>
+        joinK_kle_mono_right _ _ _ (negate_kle_mono _ _ (selfAppAt_mono n x y h))⟩
+
+theorem asserted_liar_coh_le : ∀ n,
+    (valueRung n).le ((valueEP n).p (assertedLiarSection (n + 1)))
+      (assertedLiarSection n)
+  | 0 => Charge.kle_refl Charge.tTop
+  | n + 1 => fun x =>
+      joinK_kle_mono_right _ _ _ (negate_kle_mono _ _ (selfAppAt_embed_le n x))
+
+theorem asserted_liar_coh_ge : ∀ n,
+    (valueRung n).le (assertedLiarSection n)
+      ((valueEP n).p (assertedLiarSection (n + 1)))
+  | 0 => Charge.kle_refl Charge.tTop
+  | n + 1 => fun x =>
+      joinK_kle_mono_right _ _ _ (negate_kle_mono _ _ (selfAppAt_embed_ge n x))
+
+/-- The asserted liar thread. -/
+def assertedLiarThread : ReflexiveThread :=
+  ⟨assertedLiarSection, asserted_liar_coh_le, asserted_liar_coh_ge⟩
+
+theorem asserted_liar_selfAppAt : ∀ n,
+    selfAppAt (n + 1) (assertedLiarThread.at_ (n + 1)) = Charge.kTop
+  | 0 => rfl
+  | n + 1 => by
+    show Charge.joinK Charge.tTop
+        (Charge.negate (selfAppAt (n + 1)
+          ((valueEP (n + 1)).p (assertedLiarThread.at_ (n + 2)))))
+      = Charge.kTop
+    rw [selfAppAt_proj_eq assertedLiarThread (n + 1), asserted_liar_selfAppAt n]
+    rfl
+
+/-- **The asserted liar self-applies to `⊤ₖ` at every stage** — an
+entrenched inconsistency site produced by diagonalization on the
+reflexive tower: one telling of truth, negated through its own quotation,
+holds both poles forever. -/
+theorem asserted_liar_thread_selfApp : ∀ n,
+    selfApp assertedLiarThread n = Charge.kTop
+  | 0 => rfl
+  | n + 1 => by
+    show Charge.joinK Charge.tTop
+        (Charge.negate (selfAppAt (n + 1) (assertedLiarThread.at_ (n + 1))))
+      = Charge.kTop
+    rw [asserted_liar_selfAppAt n]
+    rfl
+
+/-- The liar threads, bundled: the silent liar's self-application is `⊥ₖ`
+at every stage, the asserted liar's is `⊤ₖ` at every stage, and both are
+negation-fixed — the diagonal lives on the reflexive tower and settles at
+the knowledge poles. -/
+theorem liar_threads_diagonal :
+    (∀ n, selfApp liarThread n = Charge.kBot)
+    ∧ (∀ n, selfApp assertedLiarThread n = Charge.kTop)
+    ∧ (∀ n, selfApp assertedLiarThread n
+        = Charge.negate (selfApp assertedLiarThread n)) :=
+  ⟨silent_liar_thread_selfApp, asserted_liar_thread_selfApp,
+    fun n => by rw [asserted_liar_thread_selfApp n]; rfl⟩
+
+/-! ## Lifting settling to valuations -/
+
+namespace Valuation
+
+/-- Settle a whole valuation pointwise under a charge-closure. -/
+def settle (op : Charge → Charge) (v : Valuation) : Valuation := fun φ => op (v φ)
+
+/-- Settling the knowledge-least valuation toward a target charge `k` yields the
+constant-`k` valuation — the fixed point the modal dynamic climbs to from the seed
+positing deposited. -/
+@[simp] theorem settle_knowledgeLeast (k : Charge) :
+    settle (Charge.joinClosure k).op knowledgeLeast = fun _ => k := by
+  funext φ
+  show Charge.joinK k Charge.kBot = k
+  cases k <;> rfl
+
+end Valuation
+
+end Obsmetrologia

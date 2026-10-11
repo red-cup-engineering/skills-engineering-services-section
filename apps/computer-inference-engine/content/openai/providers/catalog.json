@@ -1,0 +1,506 @@
+{
+  "kind": "openai-compatible-chat-completion.provider-catalog",
+  "version": 1,
+  "rows": [
+    {
+      "providerId": "ollama-local",
+      "chatCompletionsUrl": "http://127.0.0.1:11434/v1/chat/completions",
+      "apiKeyEnvVar": "OLLAMA_API_KEY",
+      "keyed": true,
+      "defaultModel": "qwen3:1.7b",
+      "signupUrl": null,
+      "freeTier": "Local silicon on bare-cedar-fog, no signup and no real key needed (any non-empty value satisfies the adapter's bearer header; Ollama ignores it). Serves gemma3, phi4-mini, qwen3, qwen2.5, llama3.2 locally.",
+      "note": "Verified 2026-08-31 live: dispatched a real chat completion to qwen3:1.7b through this same generic adapter and received a genuine answer (19 input / 1966 output tokens, ~161s wall time -- qwen3 emits its own chain-of-thought before the final content). Runs through Ollama's native /api/chat with thinking off (2026-09-24), so reasoning models such as qwen3 answer in content instead of returning reasoning only.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-08-31",
+        "priceSource": "free-tier: see this row's own freeTier field (local silicon, no metered billing)"
+      },
+      "auth": {
+        "mode": "none"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "qwen3:1.7b"
+      },
+      "transport": "ollama-chat"
+    },
+    {
+      "providerId": "groq",
+      "chatCompletionsUrl": "https://api.groq.com/openai/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_GROQ",
+      "keyed": true,
+      "defaultModel": "openai/gpt-oss-20b",
+      "classification": "observed-available",
+      "signupUrl": "https://console.groq.com/keys",
+      "freeTier": "Free tier, no card required. Model roster rotates; as of 2026-08-31 it serves openai/gpt-oss-20b, openai/gpt-oss-120b, qwen/qwen3.8-27b, groq/compound, allam-2-7b and others (query GET /openai/v1/models for the live list) rather than the Llama-3.x ids earlier trackers named. Limits are per-organization and per-model.",
+      "note": "Verified 2026-08-31 live through this adapter's CLI: model llama-3.1-8b-instant (the value carried in an earlier draft of this row) no longer exists on this account. Listed live models via an authenticated GET to /openai/v1/models and retried with openai/gpt-oss-20b, which answered a real one-line completion (\"pong\", 78 prompt / 36 completion tokens -- the model spends some completion budget on internal reasoning before the final content, so a caller should budget max-tokens generously -- ~0.6s wall time). apiKeyEnvVar corrected from the placeholder GROQ_API_KEY to the house .env's actual name, API_KEY_GROQ.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-08-31",
+        "priceSource": "free-tier: see this row's own freeTier field"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "openai/gpt-oss-20b"
+      },
+      "apiKeyEnvVars": [
+        "GROQ_API_KEY",
+        "API_KEY_GROQ_GROQCLOUD",
+        "API_KEY_GROQ"
+      ],
+      "defaultModelEnvVar": "GROQ_INFERENCE_DEFAULT_MODEL",
+      "omitRequestFields": [
+        "provider"
+      ],
+      "execution": {
+        "team": "groq-inference-team",
+        "label": "Groq",
+        "retiredFuelEnvVar": "GROQ_INFERENCE_EXCHANGE_FUEL_SECONDS",
+        "resourceEnv": true,
+        "requestUnit": "groq-api-request",
+        "maximumOutputTokens": 900,
+        "capacityLockEnvVar": "GROQ_CAPACITY_LOCK",
+        "capacityLockFile": "groq-request-slot.lock",
+        "minimumIntervalMilliseconds": 60000,
+        "minimumIntervalEnvVar": "GROQ_INFERENCE_MIN_INTERVAL_MS",
+        "rateStateFile": "groq-last-live-admission",
+        "maximumConcurrentLots": 1,
+        "tokensPerMinute": 6000
+      }
+    },
+    {
+      "providerId": "cerebras",
+      "chatCompletionsUrl": "https://api.cerebras.ai/v1/chat/completions",
+      "apiKeyEnvVar": "CEREBRAS_API_KEY",
+      "keyed": false,
+      "classification": "card-required",
+      "signupUrl": "https://cloud.cerebras.ai",
+      "freeTier": "No longer a zero-cash-cost lane. The open free tier ended July 21 2026; Cerebras now offers a one-time $5 credit that requires a verified payment method and expires in 30 days. Kept out of routingPolicy.freeFirstOrder because it is card-gated, not free.",
+      "note": "Corrected 2026-09-03 from the census at /tmp/.../free-compute-lanes-census.md (source: inference-docs.cerebras.ai/support/rate-limits, WebFetched). Prior text ('1,000,000 tokens/day, 30 requests/minute, no card required') was true as of an earlier check but is falsified by the July 21 2026 policy change; replaced rather than annotated. classification changed from misconfigured (lacking only a credential) to card-required (lacking a lane this adapter can arm at all without a founder-hands payment-method step). pricePerMillionTokensMicroUsd stays 0/0 as a data-shape placeholder only -- it does not represent a real zero-cash rate; Cerebras's actual post-credit per-token price was not published on a page this census fetched.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-03",
+        "priceSource": "placeholder only -- see this row's own freeTier field; this row is no longer a genuine zero-cash lane"
+      }
+    },
+    {
+      "providerId": "mistral",
+      "chatCompletionsUrl": "https://api.mistral.ai/v1/chat/completions",
+      "apiKeyEnvVar": "MISTRAL_API_KEY",
+      "keyed": false,
+      "classification": "misconfigured",
+      "signupUrl": "https://console.mistral.ai",
+      "freeTier": "Free \"Experiment\" tier, no card but phone verification required: roughly 1 billion tokens/month, ~1 request/second. Mistral no longer publishes exact numbers; check https://admin.mistral.ai/plateforme/limits after signup.",
+      "note": "Checked 2026-08-31: no credential exists anywhere in the house .env for this provider -- confirmed the same way as the cerebras row (variable-name diff only, no content read). Neither MISTRAL_API_KEY nor a house-prefixed API_KEY_MISTRAL variant is present. A live dispatch attempt through this adapter's CLI fails before any network call: \"MISTRAL_API_KEY is not set for provider mistral\". Misconfigured for lack of a credential; arming this row requires the owner to sign up (out of scope for automated work -- phone verification specifically requires the founder's own body/identity) and record the resulting env var name here. Re-confirmed 2026-09-03 against the census: phone verification requirement still holds, exact rate limits still unpublished on a live Mistral page.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-08-31",
+        "priceSource": "free-tier: see this row's own freeTier field"
+      }
+    },
+    {
+      "providerId": "sambanova",
+      "chatCompletionsUrl": "https://api.sambanova.ai/v1/chat/completions",
+      "apiKeyEnvVar": "SAMBANOVA_API_KEY",
+      "keyed": false,
+      "classification": "misconfigured",
+      "defaultModel": "Meta-Llama-3.3-70B-Instruct",
+      "signupUrl": "https://cloud.sambanova.ai",
+      "freeTier": "Free tier, no card required, recurring: 20 requests/minute, 20 requests/day, 200,000 tokens/day. OpenAI-compatible chat-completions endpoint.",
+      "note": "Added 2026-09-03 from the census at /tmp/.../free-compute-lanes-census.md (source: docs.sambanova.ai/docs/en/models/rate-limits, WebFetched). Live-confirmed 2026-09-03: an unauthenticated GET to https://api.sambanova.ai/v1/models succeeds and lists Meta-Llama-3.3-70B-Instruct, DeepSeek-V3.1, DeepSeek-V3.2, MiniMax-M2.7, MiniMax-M3, gemma-4-31B-it and gpt-oss-120b among its served models -- proves the endpoint and model id are real, proves nothing about the chat-completions path itself since that requires the credential this row does not have. No credential exists anywhere in the house .env for this provider (SAMBANOVA_API_KEY confirmed unset by name-only diff, values never read). Misconfigured for lack of a credential; arming this row requires the owner to sign up at cloud.sambanova.ai (out of scope for automated work) and record SAMBANOVA_API_KEY in .env, after which it should be added to routingPolicy.freeFirstOrder.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-03",
+        "priceSource": "free-tier: see this row's own freeTier field"
+      }
+    },
+    {
+      "providerId": "zhipu",
+      "chatCompletionsUrl": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      "apiKeyEnvVar": "ZHIPU_API_KEY",
+      "keyed": false,
+      "classification": "unverified",
+      "defaultModel": "glm-4.7-flash",
+      "signupUrl": "https://open.bigmodel.cn",
+      "freeTier": "Reported free tier on Flash-class models (GLM-4.7-Flash, GLM-4.5-Flash text; GLM-4.6V-Flash vision): roughly a 20M-token grant and ~1,000 requests/day. Not independently confirmed by a live fetch of a provider-owned page -- search-aggregated only; treat every number in this field as unverified until a WebFetch of open.bigmodel.cn or z.ai's own pricing page confirms it.",
+      "note": "Added 2026-09-03 from the census's Table A rank 1, itself explicitly flagged there as unverified-strength (search-aggregated, never independently WebFetched). Live-confirmed 2026-09-03 only that the endpoint is reachable and rejects an unauthenticated POST with HTTP 401 -- proves the URL is live, proves nothing about quota or model roster. classification is \"unverified\" -- distinct from \"misconfigured\" (a believed-correct row lacking only a credential) -- and this row is deliberately excluded from routingPolicy.freeFirstOrder until its quota and model id are confirmed against a live authenticated call. No credential exists anywhere in the house .env for this provider.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-03",
+        "priceSource": "free-tier: see this row's own freeTier field (unverified)"
+      }
+    },
+    {
+      "providerId": "openrouter-cohere-north-free",
+      "chatCompletionsUrl": "https://openrouter.ai/api/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_OPENROUTER",
+      "keyed": true,
+      "defaultModel": "cohere/north-mini-code:free",
+      "classification": "observed-available",
+      "signupUrl": "https://openrouter.ai/keys",
+      "freeTier": "OpenRouter's first-party Free Variant guide states that :free variants provide access without cost. Its Free Models Router guide also states that requests routed to free models have no charge. A live authenticated GET /api/v1/models on 2026-09-07 returned this exact model with prompt and completion prices both 0; a bounded chat completion then returned ordinary content.",
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "cohere/north-mini-code:free"
+      },
+      "note": "Verified 2026-09-07 live through the shared receiver-owned OpenAI-compatible adapter: a 12-prompt-token, 55-completion-token bounded request completed in about 0.87 s with ordinary completion content. The exact model ID carries the :free variant and is repeated in entitlement.model so the zero-cash predicate rejects a caller's differing model override. Provider availability remains quota-bound and must fail closed on rate limit or refusal.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-07",
+        "priceSource": "https://openrouter.ai/docs/guides/routing/model-variants/free and authenticated https://openrouter.ai/api/v1/models observation on 2026-09-07"
+      },
+      "providerFamily": "openrouter"
+    },
+    {
+      "providerId": "openrouter",
+      "chatCompletionsUrl": "https://openrouter.ai/api/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_OPENROUTER",
+      "keyed": true,
+      "defaultModel": "cohere/north-mini-code:free",
+      "classification": "observed-available",
+      "signupUrl": "https://openrouter.ai/keys",
+      "freeTier": "20+ models with a :free model-id suffix at $0/token. 20 requests/minute; 50 requests/day with a $0 balance, rising to 1,000 requests/day after a one-time $10 credit purchase. The free-model roster rotates fast enough that a hardcoded model id goes stale within weeks -- query GET /api/v1/models and filter for an id ending :free before dispatching.",
+      "note": "2026-09-12 read-only admission: free-account check passed; the live catalog no longer lists minimax/minimax-m3:free. Default now cohere/north-mini-code:free, which the live catalog reports as zero-priced with tools support. This catalog observation does not guarantee request capacity. Prior observations: Verified 2026-08-31 live through this adapter's CLI: two of three previously-plausible :free model ids were already gone or shared-pool rate-limited (meta-llama/llama-3.2-3b-instruct:free returned HTTP 404 telling the caller to use the paid slug instead; google/gemma-4-26b-a4b-it:free returned a real HTTP 429 \"temporarily rate-limited upstream\" against OpenRouter's shared free pool -- a genuine, live observed-exhausted result for that specific model, distinct from the credential itself). minimax/minimax-m3:free then answered a real one-line completion (\"pong\", 170 prompt / 2 completion tokens, ~10.2s wall time, $0 cost). apiKeyEnvVar corrected from the placeholder OPENROUTER_API_KEY to the house .env's actual name, API_KEY_OPENROUTER. Because individual :free models rotate and rate-limit independently of the account, a caller should treat a single model's 429 as that model's exhaustion, not the provider's, and retry a different :free id from the live /models listing before concluding OpenRouter itself is exhausted -- see the openrouter-poolside, openrouter-glm and openrouter-nemotron rows, added 2026-09-03 as exactly that: additional :free rotation targets on the same account and key.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-08-31",
+        "priceSource": "free-tier: see this row's own freeTier field (this row dispatches only :free model ids)"
+      },
+      "apiKeyEnvVars": [
+        "OPENROUTER_API_KEY",
+        "API_KEY_OPENROUTER"
+      ],
+      "defaultModelEnvVar": "OPENROUTER_INFERENCE_DEFAULT_MODEL",
+      "execution": {
+        "team": "openrouter-inference-team",
+        "label": "OpenRouter",
+        "retiredFuelEnvVar": "OPENROUTER_INFERENCE_EXCHANGE_FUEL_SECONDS",
+        "requestUnit": "openrouter-free-api-request",
+        "freeAccountPreflight": true,
+        "completionCarriers": true,
+        "requireOutputAllocation": true,
+        "capacityLockFile": "openrouter-free-admission.lock"
+      }
+    },
+    {
+      "providerId": "openrouter-poolside",
+      "chatCompletionsUrl": "https://openrouter.ai/api/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_OPENROUTER",
+      "keyed": true,
+      "defaultModel": "poolside/laguna-s-2.1:free",
+      "classification": "observed-available",
+      "signupUrl": "https://openrouter.ai/keys",
+      "freeTier": "Same OpenRouter :free lane as the openrouter row (20 RPM; 50 req/day at $0 balance) -- a distinct :free model id for the free-first loop to rotate onto when another OpenRouter model is individually rate-limited.",
+      "note": "Added 2026-09-03: a live authenticated GET /api/v1/models confirmed poolside/laguna-s-2.1:free is still served. A live chat probe the same session returned HTTP 429 (shared free-pool rate limit at probe time, not proof of no support -- the same pattern already documented on this file's openrouter and cloudflare-workers-ai rows). This is the model inference-dispatch-service has pinned as its primary OpenRouter row since before this correction and has answered real chat probes in that package's own live assay history; carried here as the one catalog fact per the single-carrier-of-truth doctrine. Re-verified 2026-09-12 by authenticated GET https://openrouter.ai/api/v1/models: this exact model remains listed with prompt and completion prices both \"0\"; the account key reported is_free_tier=true through GET https://openrouter.ai/api/v1/key. The exact model id is repeated in entitlement.model so zero-cash admission rejects overrides.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-12",
+        "priceSource": "authenticated https://openrouter.ai/api/v1/models observation on 2026-09-12 (exact model prompt and completion prices \"0\"); authenticated https://openrouter.ai/api/v1/key reported is_free_tier=true"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "poolside/laguna-s-2.1:free"
+      },
+      "providerFamily": "openrouter"
+    },
+    {
+      "providerId": "openrouter-glm",
+      "chatCompletionsUrl": "https://openrouter.ai/api/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_OPENROUTER",
+      "keyed": true,
+      "defaultModel": "z-ai/glm-5.2:free",
+      "classification": "observed-available",
+      "signupUrl": "https://openrouter.ai/keys",
+      "freeTier": "Same OpenRouter :free lane (20 RPM; 50 req/day at $0 balance) -- an alternate :free model id for the free-first loop to rotate onto.",
+      "note": "Added 2026-09-03: a live authenticated GET /api/v1/models confirmed z-ai/glm-5.2:free is served. A live chat probe the same session returned HTTP 429 (shared free-pool rate limit at probe time -- rate-limited is not proof of no support). Re-probe before relying on this row exclusively.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-03",
+        "priceSource": "free-tier: see this row's own freeTier field (this row dispatches only :free model ids)"
+      },
+      "providerFamily": "openrouter"
+    },
+    {
+      "providerId": "openrouter-nemotron",
+      "chatCompletionsUrl": "https://openrouter.ai/api/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_OPENROUTER",
+      "keyed": true,
+      "defaultModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "classification": "observed-available",
+      "signupUrl": "https://openrouter.ai/keys",
+      "freeTier": "Same OpenRouter :free lane (20 RPM; 50 req/day at $0 balance) -- an alternate :free model id for the free-first loop to rotate onto.",
+      "note": "Added 2026-09-03: a live authenticated GET /api/v1/models confirmed nvidia/nemotron-3-ultra-550b-a55b:free is served. A live chat probe the same session returned HTTP 200 with real completion content, though the model spent its reply on visible reasoning about the instruction rather than emitting the bare requested word -- a genuine live answer, distinct from a refusal, but a caller expecting exact-match short output should budget for reasoning-style responses the way the groq row already documents. Re-verified 2026-09-12 by authenticated GET https://openrouter.ai/api/v1/models: this exact model remains listed with prompt and completion prices both \"0\"; the account key reported is_free_tier=true through GET https://openrouter.ai/api/v1/key. The exact model id is repeated in entitlement.model so zero-cash admission rejects overrides.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-12",
+        "priceSource": "authenticated https://openrouter.ai/api/v1/models observation on 2026-09-12 (exact model prompt and completion prices \"0\"); authenticated https://openrouter.ai/api/v1/key reported is_free_tier=true"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+      },
+      "providerFamily": "openrouter"
+    },
+    {
+      "providerId": "openrouter-gpt-4o-paid-reference",
+      "chatCompletionsUrl": "https://openrouter.ai/api/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_OPENROUTER",
+      "keyed": false,
+      "classification": "paid-reference-catalog-only",
+      "defaultModel": "openai/gpt-4o",
+      "signupUrl": "https://openrouter.ai/keys",
+      "freeTier": null,
+      "note": "Catalog data only -- deliberately keyed:false so selectFreeFirstProvider (which only ever considers routingPolicy.freeFirstOrder) can never arm or dispatch this row. It exists to give the receipt-writer and pricing adapter one real paid-frontier per-token rate to compute against, distinct from every $0 free-tier row above. Not dispatched by any live call in this repository tonight.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 2500000,
+        "output": 10000000,
+        "asOf": "2026-08-31",
+        "priceSource": "https://openrouter.ai/openai/gpt-4o -- published rate $2.50 / 1M input tokens, $10.00 / 1M output tokens for openai/gpt-4o, fetched 2026-08-31"
+      }
+    },
+    {
+      "providerId": "nvidia-nim",
+      "keyed": true,
+      "chatCompletionsUrl": "https://integrate.api.nvidia.com/v1/chat/completions",
+      "defaultModel": "meta/llama-3.1-8b-instruct",
+      "apiKeyEnvVars": [
+        "NVIDIA_API_KEY",
+        "API_KEY_NVIDIA_NIM",
+        "API_KEY_INFERENCE_NVIDIA"
+      ],
+      "apiKeyEnvVar": "NVIDIA_API_KEY",
+      "execution": {
+        "team": "nvidia-inference-team",
+        "label": "NVIDIA",
+        "resourceEnv": true,
+        "retiredFuelEnvVar": "NVIDIA_INFERENCE_EXCHANGE_FUEL_SECONDS",
+        "requestUnit": "nvidia-nim-api-request",
+        "outputSchemaParameter": "guided_json",
+        "requireOutputAllocation": true,
+        "conversationContext": true,
+        "capacityLockEnvVar": "NVIDIA_CAPACITY_LOCK",
+        "capacityLockFile": "nvidia-request-slot.lock",
+        "maximumConcurrentLots": 1
+      },
+      "classification": "observed-available",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-27",
+        "priceSource": "NVIDIA build API developer catalog; engine forbids paid overage"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "meta/llama-3.1-8b-instruct"
+      },
+      "note": "NVIDIA build API developer access. The engine binds the exact observed model and forbids paid overage."
+    },
+    {
+      "providerId": "github-models",
+      "keyed": false,
+      "chatCompletionsUrl": "https://models.github.ai/inference/chat/completions",
+      "apiKeyEnvVars": [
+        "GITHUB_MODELS_TOKEN",
+        "GITHUB_TOKEN"
+      ],
+      "defaultModelEnvVar": "GITHUB_MODELS_INFERENCE_DEFAULT_MODEL",
+      "omitRequestFields": [
+        "provider"
+      ],
+      "apiKeyEnvVar": "GITHUB_MODELS_TOKEN",
+      "execution": {
+        "team": "github-models-inference-team",
+        "label": "GitHub Models",
+        "persistExchange": true
+      },
+      "classification": "unpriced-provider-data",
+      "note": "Provider execution and credential reference data consolidated from the former provider package. No current price or entitlement evidence is asserted; excluded from automatic free routing."
+    },
+    {
+      "providerId": "cloudflare-workers-ai",
+      "chatCompletionsUrl": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1/chat/completions",
+      "apiKeyEnvVar": "API_KEY_CLOUDFLARE_WORKERS_AI",
+      "apiKeyEnvVars": [
+        "API_KEY_CLOUDFLARE_WORKERS_AI"
+      ],
+      "keyed": true,
+      "defaultModel": "@cf/meta/llama-4-scout-17b-16e-instruct",
+      "classification": "observed-available",
+      "signupUrl": "https://dash.cloudflare.com/?to=/:account/ai/workers-ai",
+      "freeTier": "10,000 neurons per day on the account. The account is on the Cloudflare Free plan (subscriptions read 2026-09-24), where Workers AI stops at the daily allocation instead of billing overage.",
+      "note": "Verified 2026-09-24 live: llama-4-scout-17b-16e-instruct answered through the OpenAI-compatible /ai/v1/chat/completions surface. The account id is read from CLOUDFLARE_ACCOUNT_ID.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-24",
+        "priceSource": "free-tier: see this row's own freeTier field"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "@cf/meta/llama-4-scout-17b-16e-instruct"
+      },
+      "execution": {
+        "cloudflareFreeAccountPreflight": true,
+        "assistantToolContent": "empty-string"
+      }
+    },
+    {
+      "providerId": "cloudflare-workers-ai-gpt-oss",
+      "providerFamily": "cloudflare-workers-ai",
+      "keyed": true,
+      "defaultModel": "@cf/openai/gpt-oss-120b",
+      "classification": "observed-available",
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "@cf/openai/gpt-oss-120b"
+      },
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-10-07",
+        "priceSource": "Workers Free account; per-exchange subscription verification and provider daily hard stop"
+      },
+      "note": "2026-10-07: actual read_product \u2192 read_source \u2192 exact answer, three exchanges. Preserve native call ids and observations; Workers AI requires empty-string content on this model\u2019s assistant tool continuation. See native provider delivery observations."
+    },
+    {
+      "providerId": "gemini",
+      "chatCompletionsUrl": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      "apiKeyEnvVar": "API_KEY_GOOGLE_GEMINI",
+      "apiKeyEnvVars": [
+        "GEMINI_API_KEY",
+        "API_KEY_GOOGLE_GEMINI"
+      ],
+      "keyed": true,
+      "defaultModel": "gemma-4-31b-it",
+      "classification": "observed-available",
+      "signupUrl": "https://aistudio.google.com/apikey",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-09-27",
+        "priceSource": "Google AI Studio free-tier account; engine forbids paid overage"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "gemma-4-31b-it"
+      },
+      "note": "Verified key and model listing; the engine renews a short credential-bound no-overage lease before use."
+    },
+    {
+      "providerId": "claude-code",
+      "transport": "claude-print",
+      "executable": "claude",
+      "defaultModel": "sonnet",
+      "keyed": true,
+      "classification": "subscription-command",
+      "allowance": "claude-max",
+      "note": "Claude Code in print mode on the local login: receiver tool requests through the typed assistant envelope; the subprocess has no native tools, MCP servers or settings; optional provider-validated JSON output via params.outputSchema. Its five-hour and seven-day account windows are admitted and recorded in the shared subscription allowance ledger. Subscription quota, not zero-cash; reached through dispatchFreeFirst's prefer, never the free-first order. One live claude process at a time; a second request is refused at once rather than queued.",
+      "execution": {
+        "label": "Claude Code",
+        "capacityLockFile": "claude-code-request-slot.lock",
+        "capacityLockEnvVar": "CLAUDE_CODE_CAPACITY_LOCK",
+        "capacityWait": false,
+        "maximumConcurrentLots": 1
+      }
+    },
+    {
+      "providerId": "codex",
+      "transport": "codex-exec",
+      "executable": "codex",
+      "defaultModel": "default",
+      "keyed": true,
+      "classification": "subscription-command",
+      "timeoutMs": 1200000,
+      "note": "Codex exec on the local ChatGPT login (CODEX_HOME), read-only sandbox in a fresh directory, allowlisted environment; params.webSearch enables live web search and the completion's raw carries completedSearches. Subscription quota, not zero-cash; reached through prefer."
+    },
+    {
+      "providerId": "antigravity",
+      "transport": "antigravity-print",
+      "executable": "agy",
+      "defaultModel": "default",
+      "keyed": true,
+      "classification": "subscription-command",
+      "timeoutMs": 600000,
+      "note": "Antigravity CLI print mode on the Google AI Pro login (~/.gemini/antigravity-cli; signed in 2026-10-02, interaction-data collection off). The subscription's weekly compute cap is its meter; a turn refused on it settles as antigravity-weekly-compute-exhausted. Models from `agy models`: gemini-3.8/3.7/3.6-flash-{high,medium,low}, gemini-3.1-pro-{high,low}, claude-sonnet-4-6, claude-opus-4-6-thinking, gpt-oss-120b-medium. Sandboxed in a fresh directory, allowlisted environment, no tool permission granted; optional provider-validated JSON output via params.outputSchema. Subscription quota, not zero-cash; reached through prefer. Gemini CLI's personal login no longer serves this plan (Google moved it to Antigravity CLI, 2026-06-18).",
+      "allowance": "google-ai-pro-antigravity",
+      "execution": {
+        "label": "Antigravity",
+        "capacityLockFile": "antigravity-request-slot.lock",
+        "capacityLockEnvVar": "ANTIGRAVITY_CAPACITY_LOCK",
+        "capacityWait": false,
+        "maximumConcurrentLots": 1
+      }
+    },
+    {
+      "providerId": "ai-horde-anonymous",
+      "chatCompletionsUrl": "https://aihorde.net/api/v2/generate/text/async",
+      "anonymousApiKey": "0000000000",
+      "keyed": true,
+      "defaultModel": "google/gemma-4-31b",
+      "assistantProtocol": "json-envelope",
+      "signupUrl": "https://aihorde.net/register",
+      "freeTier": "Community volunteer text inference, including anonymous access. Kudos determine queue priority and cannot be bought or sold. No cash billing or paid overage.",
+      "note": "Native asynchronous volunteer text inference with the declared Gemma 4 instruction template (https://ai.google.dev/gemma/docs/core/prompt-formatting-gemma4). Receiver tools use native literal tool request frames or the JSON assistant envelope; every request is admitted locally before any effect. No native structured-output enforcement is claimed. The selected model must match the resulting generation. Cancellation deletes only the job created by that invocation. Token usage remains unknown when the worker does not report it. Exact default model observed in the live text model catalogue on 2026-10-08.",
+      "pricePerMillionTokensMicroUsd": {
+        "input": 0,
+        "output": 0,
+        "asOf": "2026-10-08",
+        "priceSource": "https://aihorde.net/ and https://github.com/Haidra-Org/AI-Horde"
+      },
+      "entitlement": {
+        "cashCost": "zero",
+        "paidOverage": "forbidden",
+        "model": "google/gemma-4-31b"
+      },
+      "transport": "horde-text",
+      "timeoutMs": 600000
+    }
+  ],
+  "routingPolicy": {
+    "kind": "openai-compatible-chat-completion.routing-policy",
+    "version": 1,
+    "statedBy": "founder-ordered 2026-08-31 agent-harness / free-inference sidequest",
+    "rule": "Route ordinary (non-premium-review) inference demand free-first: try local Ollama, then the armed cloud free tiers in freeFirstOrder, in order. On a rate-limit or capacity refusal (HTTP 429, or a provider body naming a quota/rate-limit condition) from one entry, retry the next entry in freeFirstOrder. Never fall back past the end of freeFirstOrder to a paid or frontier provider without an explicit, separate customer decision outside this adapter -- this package exports no implicit paid fallback, and none should be added to it.",
+    "freeFirstOrder": [
+      "ollama-local",
+      "openrouter-cohere-north-free",
+      "groq",
+      "gemini",
+      "nvidia-nim",
+      "openrouter",
+      "openrouter-poolside",
+      "openrouter-glm",
+      "openrouter-nemotron",
+      "cloudflare-workers-ai",
+      "cloudflare-workers-ai-gpt-oss",
+      "ai-horde-anonymous"
+    ],
+    "unconfigured": [
+      "cerebras",
+      "mistral",
+      "sambanova",
+      "zhipu"
+    ]
+  }
+}

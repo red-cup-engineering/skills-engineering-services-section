@@ -1,0 +1,84 @@
+{
+  "name": "OpenRouter Free Inference Team",
+  "description": "Executes one typed RMN inference effect only after machine-verifying a free-tier key and exact zero-priced model.",
+  "supportedInterfaces": [
+    { "url": "${BASE_URL}/a2a/jsonrpc", "protocolBinding": "JSONRPC", "tenant": "", "protocolVersion": "1.0" },
+    { "url": "${BASE_URL}/a2a/rest", "protocolBinding": "HTTP+JSON", "tenant": "", "protocolVersion": "1.0" }
+  ],
+  "provider": { "url": "https://emsenn.net/", "organization": "OpenRouter Inference Team via A2A Services Section" },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "ni:///sha-256;wzh-zYeFQCsh4zAzGS34uacNV4qJeIEmCKIUUWyRZ-M",
+        "description": "Signed sovereign M1 black-box circuit interface inhabited by this endpoint.",
+        "required": true,
+        "params": {
+          "profile": "org.emsenn.rmn.sovereign-circuit-interface.v1",
+          "account": "eip155:5615610:0xf81648ddbdbf67f8b6a53fb339c9f5569f546831",
+          "authority": "ni:///sha-256;SycQ-rYa85nNMLeutVBSP3JcCc6CCEb8lLkUyrisyDI",
+          "custody": "ni:///sha-256;O2r8i3lwBpl9SnCqObaVg7XZWfSPjtG_OhaexYZkibU",
+          "territory": "ni:///sha-256;8OuqT8l5O2kUMuEd8wm8-v6UdRkNdKohm1HW0ufLDvY",
+          "component": {
+            "profile": "org.emsenn.rmn.hierarchical-circuit.v3",
+            "law": "ni:///sha-256;o3eQMWABiBfjwFmvhZKOOukpjPBhCEXu80AfdHmcbe0",
+            "ports": [
+              { "name": "proposal", "direction": "input", "predicate": "ni:///sha-256;o3eQMWABiBfjwFmvhZKOOukpjPBhCEXu80AfdHmcbe0", "carrier": "ni:///sha-256;o3eQMWABiBfjwFmvhZKOOukpjPBhCEXu80AfdHmcbe0", "mode": "tensor" },
+              { "name": "completion", "direction": "output", "predicate": "ni:///sha-256;o3eQMWABiBfjwFmvhZKOOukpjPBhCEXu80AfdHmcbe0", "carrier": "ni:///sha-256;o3eQMWABiBfjwFmvhZKOOukpjPBhCEXu80AfdHmcbe0", "mode": "tensor" }
+            ],
+            "instances": [],
+            "nets": [],
+            "behavior": {
+              "factors": [{
+                "inputs": ["proposal"],
+                "outputs": ["completion"],
+                "rows": [
+                  { "input": [{ "positiveEvidence": false, "negativeEvidence": false }], "output": [{ "positiveEvidence": false, "negativeEvidence": false }] },
+                  { "input": [{ "positiveEvidence": true, "negativeEvidence": false }], "output": [{ "positiveEvidence": true, "negativeEvidence": false }] },
+                  { "input": [{ "positiveEvidence": false, "negativeEvidence": true }], "output": [{ "positiveEvidence": false, "negativeEvidence": true }] },
+                  { "input": [{ "positiveEvidence": true, "negativeEvidence": true }], "output": [{ "positiveEvidence": true, "negativeEvidence": true }] }
+                ]
+              }]
+            }
+          }
+        }
+      },
+      {
+        "uri": "ni:///sha-256;hLCUM4R4uZnPEVaY9Cb6sDwruIVBtw2bjleYGbeATaQ",
+        "description": "Signed standing terms for the fail-closed zero-cash OpenRouter route.",
+        "required": true,
+        "params": {
+          "profile": "org.emsenn.inference.market-offer.v2",
+          "model": "poolside/laguna-xs-2.1:free",
+          "workTypes": "chat classification extraction summarization inquiry",
+          "capabilities": "chat classification extraction summarization inquiry json-output",
+          "maximumDifficulty": "0.45",
+          "maximumSourceWords": "12000",
+          "maximumSourceCharacters": "60000",
+          "maximumRequestCharacters": "120000",
+          "maximumOutputTokens": "2048",
+          "maximumConcurrentLots": "1",
+          "considerationAlternatives": [{ "id": "resolution-credit", "obligations": [{ "id": "resolution-credit", "kind": "credit", "asset": "urn:union:credit:relative-resolution-milliquanta-v1", "amount": 20, "unit": "relative-resolution-milliquanta-v1", "settlementAdapter": "urn:union:settlement-adapter:direct-witness-v1" }] }]
+        }
+      }
+    ],
+    "extendedAgentCard": false
+  },
+  "securitySchemes": {},
+  "securityRequirements": [],
+  "defaultInputModes": ["application/rmn+cbor"],
+  "defaultOutputModes": ["application/rmn+cbor", "text/plain"],
+  "skills": [{
+    "id": "execute-typed-openrouter-free-inference",
+    "name": "Execute typed zero-cash OpenRouter inference",
+    "description": "Validates one RMN effect, proves the key is free tier and the exact model is zero-priced, then returns a witnessed completion or refusal.",
+    "tags": ["rmn", "a2a", "openrouter", "free-tier", "zero-cash", "inference"],
+    "examples": [],
+    "inputModes": ["application/rmn+cbor"],
+    "outputModes": ["application/rmn+cbor", "text/plain"],
+    "securityRequirements": []
+  }],
+  "signatures": []
+}

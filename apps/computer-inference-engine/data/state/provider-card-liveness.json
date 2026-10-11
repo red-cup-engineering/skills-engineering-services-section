@@ -1,0 +1,17 @@
+{
+  "http://127.0.0.1:8813/.well-known/agent-card.json": {
+    "status": "offline",
+    "checkedAt": 1788655719371,
+    "reason": "fetch failed"
+  },
+  "http://127.0.0.1:8808/.well-known/agent-card.json": {
+    "status": "offline",
+    "checkedAt": 1789230914570,
+    "reason": "fetch failed"
+  },
+  "http://127.0.0.1:8795/.well-known/agent-card.json": {
+    "status": "offline",
+    "checkedAt": 1790607812779,
+    "reason": "fetch failed"
+  }
+}

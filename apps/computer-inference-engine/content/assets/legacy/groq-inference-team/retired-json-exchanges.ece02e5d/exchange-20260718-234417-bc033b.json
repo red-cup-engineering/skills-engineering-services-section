@@ -1,0 +1,57 @@
+{
+  "id": "exchange-20260718-234417-bc033b",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return JSON {\"summary\":string}. Summarize: output locks prevent a second resume from dispatching the same output."
+      }
+    ],
+    "max-tokens": 100
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "```json\n{\n  \"summary\": \"Output locks prevent concurrent resumes from dispatching the same output, ensuring thread safety.\"\n}\n```\n\nAlternatively, here's a shorter version:\n\n```json\n{\n  \"summary\": \"Output locks prevent concurrent resume dispatch issues.\"\n}\n```",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-6ea0564a-14d3-461e-aeff-aa086325e486",
+      "object": "chat.completion",
+      "created": 1784418258,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "```json\n{\n  \"summary\": \"Output locks prevent concurrent resumes from dispatching the same output, ensuring thread safety.\"\n}\n```\n\nAlternatively, here's a shorter version:\n\n```json\n{\n  \"summary\": \"Output locks prevent concurrent resume dispatch issues.\"\n}\n```"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.005836667,
+        "prompt_tokens": 59,
+        "prompt_time": 0.004445296,
+        "completion_tokens": 56,
+        "completion_time": 0.098735649,
+        "total_tokens": 115,
+        "total_time": 0.103180945
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01kxvsvk5jf04a1bmkjjtnqx0k",
+        "seed": 2064368070
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.317,
+    "denomination": "groq-api-requests"
+  }
+}

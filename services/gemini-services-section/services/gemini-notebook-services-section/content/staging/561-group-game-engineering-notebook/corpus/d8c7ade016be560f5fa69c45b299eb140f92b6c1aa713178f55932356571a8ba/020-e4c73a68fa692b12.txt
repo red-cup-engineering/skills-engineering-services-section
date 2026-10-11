@@ -1,0 +1,206 @@
+# NotebookLM source projection
+
+Title: solitaire-service/DESIGN
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/solitaire-service/DESIGN.md
+Original-Digest: sha256:188d546a52b04ce4ad3a76ce503748ef0d9602dee86f448ffe596090b31fc7cf
+Disclosure: repository-source
+
+# solitaire — design
+
+## Thesis
+
+Klondike, FreeCell, and Spider are not three games; they are three settings of the same six
+knobs: how many decks, how piles deal, how a pile accepts a card, how a run of cards moves
+together, when the stock reshuffles, and what "won" means. Treat those knobs as **data**
+(a `VariantSpec`) and write **one** rules engine that interprets whichever `VariantSpec` it's
+given. A new variant — or a new draw-count, or a new suit-count on Spider — is a new record,
+never a new branch of `if (variant === "klondike")` threaded through move legality. This is
+the same discipline `onestone-service` used for its tessellation ladder (`cells(size)` is data
+the match engine never special-cases per tiling) and the same discipline `flickering-delve-service`
+used for `PaymentProvider` (one interface, swappable implementations) — applied here to game
+rules instead of geometry or money.
+
+The second thesis is honesty about what a solver can promise. FreeCell deals nearly all
+resolve to a full-information search a modern machine finishes in milliseconds, so we can
+*guarantee* every FreeCell deal is winnable before we ever show it to a player. Klondike does
+not afford that: the deal is played under **imperfect information** (only the top card of each
+tableau pile and the stock's next draw are known), and the honest notion of "solvable" for
+Klondike branches into at least three inequivalent definitions in the solitaire-research
+literature (thoughtful/full-information solvability, which is what a computer can cheaply
+check; blind solvability under one fixed strategy; and "practically winnable by a human playing
+without cheating," which is what a player actually cares about and is not the same question as
+either of the other two). Full-information Klondike solving is itself expensive — best-known
+solvers report a nontrivial *unsolvable* fraction (roughly 1 in 20–30 deals under standard
+scoring rules) and take real backtracking-search time per deal, not a lookup. Spider inherits
+the same problem plus a larger, partially-hidden deck. We do not pretend otherwise: Klondike and
+Spider seeds are **not** solver-verified before serving. Instead we track **win-rate telemetry**
+per seed from real play (and from the move-log corpus that play produces) and can retire or flag
+a seed found to convert unusually rarely — an empirical safety net where a proof isn't
+affordable, not a substitute for one.
+
+## Decisions
+
+**One rules engine, variant rules as data.** `variants.mts` holds a `VariantSpec` per variant
+(`klondike-draw1`, `klondike-draw3`, `freecell`, `spider-1suit`, `spider-2suit`,
+`spider-4suit`) — deck composition, pile layout, deal sequence, build rule, sequence-move rule,
+redeal rule, and win condition, all declarative. `engine.mts` is the only place move legality,
+application, and win-checking are implemented, and it never imports a variant by name — it only
+ever consumes a `VariantSpec` value. Adding "Klondike draw-3, redeal-limited to 3 passes" is a
+new `VariantSpec` entry, not a new code path.
+
+```ts
+// variants.mts (shape)
+export interface PileSpec {
+  readonly id: string;
+  readonly kind: "stock" | "waste" | "foundation" | "tableau" | "freecell";
+  readonly dealFaceUp: number;   // cards dealt face-up when this pile is initially filled
+  readonly dealFaceDown: number; // cards dealt face-down beneath them
+}
+export interface BuildRule {
+  readonly order: "descending" | "ascending" | "any";
+  readonly color: "alternating" | "same-suit" | "any";
+  readonly base: "any-rank" | "king-only" | "ace-only" | "empty-accepts-any";
+}
+export interface VariantSpec {
+  readonly id: string;
+  readonly name: string;
+  readonly decks: 1 | 2;                 // Spider 4-suit reuses 2 decks, restricted to fewer suits
+  readonly suitsInPlay: 1 | 2 | 4;        // Spider's headline knob
+  readonly piles: readonly PileSpec[];
+  readonly dealOrder: readonly string[]; // pile ids, dealt round-robin as in the real deal
+  readonly tableauBuild: BuildRule;
+  readonly foundationBuild: BuildRule;
+  readonly sequenceMove: "single-card" | "any-legal-run" | "supermove"; // supermove = FreeCell's (free cells + 1) × (empty columns + 1) rule
+  readonly redeal: { readonly stockRecycles: number | "unlimited" } | null;
+  readonly win: "all-foundations-full" | "all-thirteen-sequences-cleared";
+}
+```
+
+**Deterministic seeded deals, seed in the URL.** `deal.mts` turns a `(seed: string, variant: VariantSpec)`
+pair into an initial pile layout via the same string-hash + mulberry32 approach `flickering-delve-service/src/seed.mts`
+already uses for its cave — no new RNG idea needed, just applied to a shuffled deck instead of a
+dungeon. The seed is a URL query parameter (`?seed=abc123&variant=klondike-draw1`); a shared link
+reproduces the exact deal, on any client, forever — no server round-trip is needed to *render* a
+game from a seed, only to score or verify it.
+
+**Daily deal: one seed, all players, all day.** `daily.mts` derives a seed deterministically from
+the UTC calendar date and the variant id (`dailySeed(date, variantId) = hash("solitaire-daily:" + variantId + ":" + date)`),
+so every player worldwide who opens today's Klondike daily gets the identical deal — no server
+state to keep in sync, no clock-tampering surface beyond the server's own UTC clock (the same
+posture `flickering-delve-service`'s offline-accrual cap takes: server time is authoritative).
+A daily leaderboard keys on `(date, variantId)` and needs no more storage than a result row per
+finisher, mirroring `onestone-service`'s roadmapped weekly-seed leaderboard pattern.
+
+**FreeCell: solver-guaranteed. Klondike/Spider: telemetry-honest.** `solver-freecell.mts` is a
+real DFS solver (iterative deepening, a visited-state transposition set keyed by a canonical
+board hash, a simple heuristic move ordering — foundation moves and supermoves first) run
+**at deal-generation time**, offline or lazily-cached, never in the request path a player waits
+on. A FreeCell seed is only ever served after the solver has certified it winnable (or, for the
+daily deal specifically, the day's seed is pre-solved during a low-traffic window before UTC
+midnight, with a pinned fallback seed if solving somehow doesn't finish in time). This works
+*because* FreeCell deals every card face-up — full information collapses the "which notion of
+solvable" question the Thesis section raises for Klondike down to one unambiguous, cheaply
+checkable question. `telemetry.mts` is the honest alternative for Klondike/Spider: every
+completed game (won or abandoned) posts `{seed, variantId, outcome, moveCount, durationMs}` to a
+per-seed rolling aggregate; a seed whose observed win rate sits far outside the variant's
+historical band (either suspiciously low — possibly unwinnable — or suspiciously high — possibly
+a generation bug making it trivial) is flaggable for review. We do not call this "verified
+winnable." We call it "watched."
+
+**Move-log as the undo/redo stack — and as proof-of-play.** `movelog.mts` is the single source
+of truth for game history: every legal move applied is appended as `{seq, from, to, count, ts}`
+(`count` covers a moved run's length; `ts` is server-received time for anything that leaves the
+client). Undo/redo are pure pointer movement over this log, never a second data structure to
+keep in sync — undo replays the log up to `seq - 1` from the initial deal (`deal(seed, variant)`),
+redo replays back up to a previously-undone `seq`. Because the log plus the seed is sufficient to
+**deterministically replay an entire game from scratch and independently re-derive the exact
+final state**, the same artifact that gives us undo/redo is, unmodified, the evidence a
+reward-adjacent policy engine needs to confirm a claimed win actually happened move-by-legal-move
+rather than being asserted by a client. See `content/text/documents/articles/notes/zbd-micropayment-rails.md`
+for how a family-wide payout adapter consumes exactly this log as its solitaire proof-of-play
+source — this design intentionally does not special-case rewards into the engine; the log would
+exist for undo/redo regardless, and reward verification is a downstream *reader* of it, not a
+participant in its schema.
+
+**Auto-finish detection.** Once every face-down card is exposed and every tableau/freecell card
+sits in a monotonically completable order toward the foundations (checked incrementally after
+each move, not by brute search — the condition is "no face-down cards remain, and every remaining
+card's rank is ≥ the lowest current foundation rank across the *other* three suits minus one," the
+standard safe-autoplay bound), the engine flags `autoFinishAvailable: true` and the client offers
+one button that plays the deterministic foundation-completing sequence as a fast batch of ordinary
+logged moves — it is not a different code path from manual play, just manual play requested in
+bulk, so the move-log stays the single, uniform record either way.
+
+**Keyboard-complete accessibility.** Every action reachable by drag has a keyboard equivalent:
+arrow keys move a pile-cursor, Space/Enter picks up or drops the card(s) under the cursor
+(building a legal run pickup automatically, per `sequenceMove`), Tab cycles selectable piles in a
+stable reading order, `U`/`Ctrl+Z` and `Shift+U`/`Ctrl+Y` undo/redo, `A` triggers auto-finish when
+available, `N` deals a new game, `?` opens a keymap overlay. Legal-move highlighting (piles the
+cursor's held card could legally drop on) is exposed the same way for keyboard and mouse users —
+it's computed once by `engine.legalTargets()`, not duplicated per input mode. `client.mts`'s test
+plan (below) includes a static coverage check that every `engine` move kind has a bound key.
+
+**SVG cards, themed via CSS custom properties.** Cards are inline SVG built from a small vector
+vocabulary (rank glyph, suit glyph, one of four suit-color custom properties) rather than a
+sprite sheet, so re-theming is a CSS variable swap (`--suit-red`, `--suit-black`, `--card-face`,
+`--card-back-pattern`) with no asset re-export. Card-*back* themes are deliberately scoped as a
+separable visual layer from the front (which must stay legible and is not a cosmetic surface) —
+this is the same `--card-back-*` custom-property vocabulary `onestone-service`'s tile-skin system
+already uses for prototile theming, so a collection-cosmetics layer added later (unlock a card
+back, unlock a tile skin) can share one rendering convention and, eventually, one unlock/inventory
+model across both games rather than inventing a second theming system per title.
+
+## Module map (pure unless noted)
+
+| module | role |
+|---|---|
+| `seed` | deterministic RNG (string hash + mulberry32) — same approach as `flickering-delve-service/src/seed.mts` |
+| `variants` | declarative `VariantSpec` data for all six variant/draw-count combinations |
+| `deal` | `deal(seed, variant): TableState` — shuffle + initial layout from a `VariantSpec` |
+| `daily` | `dailySeed(date, variantId): string` — UTC-date-derived shared seed |
+| `engine` | the one rules engine: `legalTargets`, `applyMove`, `checkWin`, `autoFinishAvailable` — reads only `VariantSpec` + `TableState`, never a variant id |
+| `movelog` | append-only move log; undo/redo as log-pointer replay; `replay(seed, variant, log)` for verification |
+| `solver-freecell` | offline/lazy DFS solver certifying a FreeCell seed winnable before it's served |
+| `telemetry` | per-seed win-rate aggregation for Klondike/Spider (honest non-guarantee) |
+| `client` | no-build browser UI: SVG cards, keyboard-complete input, CSS-custom-property theming |
+| `server` | thin native-HTTP transport binding (impure): serve a deal, accept a move-log for scoring/leaderboard, serve `/daily` |
+
+Zero external npm dependencies, in keeping with house doctrine: the solver, RNG, and SVG
+rendering are all small enough to own outright rather than pull in a package for.
+
+## Test plan
+
+- **Engine genericity.** One shared test suite runs against *every* `VariantSpec` in `variants.mts`
+  parametrically (not six copy-pasted test files): deal a known seed, assert the initial layout
+  matches a fixture, assert a table of known-legal and known-illegal moves resolves correctly per
+  variant's `tableauBuild`/`sequenceMove` rule. A new variant is test-covered automatically by
+  being added to the fixture table — this is the test-side enforcement of "rules are data."
+- **Determinism.** `deal(seed, variant)` called twice (including across a process restart) yields
+  byte-identical `TableState`; `dailySeed` is stable for a given `(date, variantId)` regardless of
+  the caller's local timezone (computed from UTC only).
+- **Move-log replay equivalence.** For a sample of played-out games, `replay(seed, variant, log)`
+  from the empty initial deal reproduces the exact final `TableState` the live session ended in —
+  this is the property that makes the log trustworthy as both undo/redo backing *and* proof-of-play;
+  a single regression here would silently break both at once, so it's tested directly, not inferred.
+- **Undo/redo invariants.** Undo then redo round-trips to the identical state at every log
+  position; undo past `seq=0` and redo past the log's tip are no-ops, not errors; a new move played
+  after an undo truncates the redo tail (standard editor-history semantics) rather than branching.
+- **FreeCell solver soundness.** For every seed the solver certifies winnable, a reference
+  auto-player (greedy-with-backtrack, independent of the solver's own search order) actually wins
+  it — catches a solver bug that would otherwise silently promise an unwinnable deal. Solver wall
+  time per deal is asserted under a ceiling so "guaranteed winnable" stays cheap enough to run
+  ahead of traffic rather than degrading into a live bottleneck.
+- **Klondike/Spider honesty.** A test asserts these variants are *not* wired to
+  `solver-freecell` (i.e., no code path claims solver-backed winnability for them) and that
+  `telemetry`'s aggregation math is correct on synthetic win/loss sequences — we test that the
+  claim we make is the claim we actually make.
+- **Auto-finish correctness.** Fixture boards just below and just above the safe-autoplay
+  threshold assert `autoFinishAvailable` flips at the right point, and that the played
+  auto-finish sequence is itself a sequence of ordinary legal moves appended to the same
+  move-log (not a special end-state jump).
+- **Keyboard coverage.** A static test enumerates every move kind `engine` exposes and asserts
+  `client`'s keymap table binds a key to it — a new move kind with no keyboard binding fails CI,
+  not a manual accessibility audit.
+- **Theming.** A snapshot-style test renders one card of each suit under two different
+  `--card-back-pattern`/`--suit-*` custom-property sets and asserts only the themed properties
+  change in the rendered SVG (structure and rank/suit glyphs are theme-invariant).

@@ -1,0 +1,430 @@
+{
+  "id": "urn:sha256:351782bc810ecf08ab381758e6d8a408e34665073f64c26fbe3d6d728fcbfe74",
+  "type": "NotebookLMCorpusCompilationReceipt",
+  "provider": "urn:ame:notebooklm-inference-team",
+  "customer": "urn:ame:561-group-game-engineering-notebook",
+  "purpose": "Ground a NotebookLM workspace in the best of the 561 Group's game engineering, design, and theory: the gaming-enterprise's own vision/spec/audit notes, the DESIGN/ARCHITECTURE/README surface of the four shipped or shipping games (flickering-delve, onestone, lantern, solitaire), the weiqi platform plan and its market/tileslots teardowns, the Equivo and self-education-platform designs, the house @561-group/math library's public surface, the semiotic-smart-material corpus, and the predication/ludics theory notes most load-bearing for game mechanics (task decomposition, regime classification, capacity, abandonment, lusory constraint, Girard/Caillois ludics).",
+  "manifestDigest": "sha256:d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba",
+  "sourceSetDigest": "sha256:2d8099ac14bb3a0489a8aa8ca890176f11ee735de9c25bb1c2dd95c90857658d",
+  "sourceCount": 46,
+  "purchasedSourceCeiling": 300,
+  "projected": [
+    {
+      "title": "gaming-enterprises/cartridge-and-energy-bank-spec",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/cartridge-and-energy-bank-spec.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/001-999f11b1128d84ff.txt",
+      "digest": "sha256:999f11b1128d84ff9aadf7c25400400332a17ca439e9b1461783ba918bc60140",
+      "byteLength": 32950,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "gaming-enterprises/fleet-spec-coverage-and-roadmap",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/fleet-spec-coverage-and-roadmap.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/002-3b9abea4be5b6e3c.txt",
+      "digest": "sha256:3b9abea4be5b6e3c60f68ed78c997e0ffa891bac0e84a79d670f9f36d822e9b6",
+      "byteLength": 20945,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "gaming-enterprises/vision",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/gaming-enterprises-vision.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/003-c8ba112725ee02d8.txt",
+      "digest": "sha256:c8ba112725ee02d89fadb7b3685d465db8f4a0d424659eefa384529e50a651b4",
+      "byteLength": 9895,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "gaming-enterprises/house-specification-standard",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/house-specification-standard.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/004-042abfee8b1d48a7.txt",
+      "digest": "sha256:042abfee8b1d48a7259fe2ef62d8e98afd08d992b15e34cecbcfd9186f99005b",
+      "byteLength": 23071,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "gaming-enterprises/semioverse-state-and-fediverse-client-feasibility",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/semioverse-state-and-fediverse-client-feasibility.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/005-eebd6db0fa9b9805.txt",
+      "digest": "sha256:eebd6db0fa9b980553fbaf6e467aa8d63ca53582a5ae38b5f34d054d7a695360",
+      "byteLength": 12595,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "gaming-enterprises/the-suite-and-the-studio",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/the-suite-and-the-studio.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/006-d574ef7047a9838a.txt",
+      "digest": "sha256:d574ef7047a9838a452c07edfbfd412d049b629292c74eed87f35e7405abda74",
+      "byteLength": 10931,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "gaming-enterprises/wilder-conceptions-01",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/wilder-conceptions-01.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/007-fc0abda4038b8a6f.txt",
+      "digest": "sha256:fc0abda4038b8a6f2db9fbcbdf1b3d4044f37bee0a1aa7f2a66af13c87dd3337",
+      "byteLength": 36280,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "equivo-design",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/content/text/documents/articles/notes/equivo-design.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/008-df92033ec478bb9b.txt",
+      "digest": "sha256:df92033ec478bb9ba3a176958c7e1d1f8dcf03618aeb860d41144e02a5d79d09",
+      "byteLength": 35265,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "self-education-platform-design",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/content/text/documents/articles/notes/self-education-platform-design.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/009-ae792164ec90982b.txt",
+      "digest": "sha256:ae792164ec90982b2e80a12a41d2dc39fb6d437d15f8a7cd880c091eb10d5898",
+      "byteLength": 31330,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "tileslots/market-teardown",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/content/text/documents/articles/notes/tileslots-market-teardown.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/010-32d27b944e56ac18.txt",
+      "digest": "sha256:32d27b944e56ac183a4073336beb2203d579daa8fcdd53606e76747308938c94",
+      "byteLength": 24397,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "flickering-delve-service/ARCHITECTURE",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/flickering-delve-service/ARCHITECTURE.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/011-0bf5191193dc12b3.txt",
+      "digest": "sha256:0bf5191193dc12b3958c76a1201e73e21b75a87981b7bcb73d9e025902a7e9ac",
+      "byteLength": 31202,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "flickering-delve-service/DESIGN",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/flickering-delve-service/DESIGN.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/012-d046de9f56cca421.txt",
+      "digest": "sha256:d046de9f56cca4210b5d1184eb506d8c48b9b14741843e3269b964d5f3f7b3cd",
+      "byteLength": 5185,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "flickering-delve-service/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/flickering-delve-service/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/013-da4103d29a6537f0.txt",
+      "digest": "sha256:da4103d29a6537f0c70e63b74c38df2e7b7dd5615114278d07a4255395f84654",
+      "byteLength": 6260,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "lantern-service/DESIGN",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/lantern-service/DESIGN.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/014-5246fcfafb737674.txt",
+      "digest": "sha256:5246fcfafb7376745b4ab4ab8075447637069921f2e010bcb85060c9a1a9d5c3",
+      "byteLength": 23532,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "lantern-service/web-README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/lantern-service/web/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/015-eba953be03aace08.txt",
+      "digest": "sha256:eba953be03aace08a337062d375815ba7b37d4ab0e78203e7b05479b689ffa26",
+      "byteLength": 7475,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "onestone-service/ARCHITECTURE",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/onestone-service/ARCHITECTURE.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/016-7ed9b4ee9708f8a1.txt",
+      "digest": "sha256:7ed9b4ee9708f8a1cbd50391bb0f2194d22d7f7d918ec1f642c4b63b051d46eb",
+      "byteLength": 38778,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "onestone-service/DESIGN",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/onestone-service/DESIGN.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/017-ac806137ce8618db.txt",
+      "digest": "sha256:ac806137ce8618db211b83c11341379bede02016d4f836beed29271a09fabdb3",
+      "byteLength": 19451,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "onestone-service/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/onestone-service/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/018-995f958d41c86247.txt",
+      "digest": "sha256:995f958d41c862473c985f8179901867cec898bfc3cbe81dab52dd0e28b5f839",
+      "byteLength": 10766,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "onestone-service/TILESLOTS-DESIGN",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/onestone-service/TILESLOTS-DESIGN.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/019-1688217aa172051f.txt",
+      "digest": "sha256:1688217aa172051f6179a2a9c49a0c33a30516d4f976155b41c9885a44750f5a",
+      "byteLength": 41529,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "solitaire-service/DESIGN",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/solitaire-service/DESIGN.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/020-e4c73a68fa692b12.txt",
+      "digest": "sha256:e4c73a68fa692b12eee83a69115e854d60f71b60f94ee595f6540ef3ad65abe4",
+      "byteLength": 15405,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "solitaire-service/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/solitaire-service/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/021-bebaa17253eaad8a.txt",
+      "digest": "sha256:bebaa17253eaad8a1ed195d0ba59c70a1d228af3363dde1a2fcf6091c6fefb87",
+      "byteLength": 11255,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "semiotic-smart-material/bill-of-materials",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/engineering-science-services-section/services/materials-services-section/services/smart-materials-service-section/services/abiotic-smart-material-services-section/services/semiotic-smart-material-services-section/content/documents/specifications/2026-07-26-bill-of-materials.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/022-4d502e3e96ed3cca.txt",
+      "digest": "sha256:4d502e3e96ed3cca57354287a3a85390618665733425747f7b49e8577e710a66",
+      "byteLength": 7293,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "semiotic-smart-material/consolidated-fabrication-protocol",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/engineering-science-services-section/services/materials-services-section/services/smart-materials-service-section/services/abiotic-smart-material-services-section/services/semiotic-smart-material-services-section/content/documents/specifications/2026-07-26-consolidated-fabrication-protocol.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/023-b6394b61e175d7a8.txt",
+      "digest": "sha256:b6394b61e175d7a858fe99e5cc9613dfd027ff27ca63f9307a6790842fada57f",
+      "byteLength": 7286,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "weiqi/market-teardown",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/game-science-services-section/services/board-games-services-section/services/weiqi-services-section/content/text/documents/articles/notes/weiqi-market-teardown.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/024-8afc4d9e5531cc79.txt",
+      "digest": "sha256:8afc4d9e5531cc79c0ad01fc3f494e126051244a67e4af8c8528ba730cb9c4a6",
+      "byteLength": 14412,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "weiqi/platform-plan",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/game-science-services-section/services/board-games-services-section/services/weiqi-services-section/content/text/documents/articles/notes/weiqi-platform-plan.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/025-227b2f79d3fcc73a.txt",
+      "digest": "sha256:227b2f79d3fcc73a52d3599bfdf597235b2449eaacdd23b7a2e970ab34e116f2",
+      "byteLength": 18556,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/bilattice/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/bilattice/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/026-e7699ef1b68d798b.txt",
+      "digest": "sha256:e7699ef1b68d798b233187a894d9a1637fed432f5ffacea8b97dbc07b35b7d03",
+      "byteLength": 4283,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/chu/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/chu/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/027-4d577e6f48c5b8e0.txt",
+      "digest": "sha256:4d577e6f48c5b8e048d395bf22c3b01b6775eea442be3d4128f71c54683b4c59",
+      "byteLength": 4485,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/closure/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/closure/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/028-c8028e0b0aae50a5.txt",
+      "digest": "sha256:c8028e0b0aae50a52d68c9cb0e514fd51bc1057993d7f9429dffd74c6db757ac",
+      "byteLength": 2396,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/dframe/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/dframe/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/029-261994073bb922a6.txt",
+      "digest": "sha256:261994073bb922a69a913e44c4605981f4f0646f48cae290ce2f4ede514b0040",
+      "byteLength": 2182,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/dgen/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/dgen/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/030-1eea018d5526a360.txt",
+      "digest": "sha256:1eea018d5526a3606350f6842bd6b0ee3e484afadd14a69b63c0b3ca5f32cf0d",
+      "byteLength": 2045,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/hyperdoctrine/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/hyperdoctrine/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/031-c0fcaf2cc86061bb.txt",
+      "digest": "sha256:c0fcaf2cc86061bbef208dfb186fcced1ce4417100311889c3e4305a11b9e270",
+      "byteLength": 4176,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/number/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/number/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/032-3f10c34b60a3d07e.txt",
+      "digest": "sha256:3f10c34b60a3d07ea6ae3279d6fb04015e94cefa94028b66c329f29bb93bbaa3",
+      "byteLength": 6518,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/obstruction/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/obstruction/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/033-aef4c47055f2de85.txt",
+      "digest": "sha256:aef4c47055f2de8513f3e12671b400ad5f2d4172bec4c22455a5af3a52695438",
+      "byteLength": 5273,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/034-79803dde1d53d0f2.txt",
+      "digest": "sha256:79803dde1d53d0f2d92ea64c04b1faa5b0fcc669c7aca6efd6aee17299268637",
+      "byteLength": 4178,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/readout/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/readout/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/035-aef2f41b563f55c1.txt",
+      "digest": "sha256:aef2f41b563f55c105edbbfa45ecaa9e343a34bce0de34e3ca11f069a7e91b98",
+      "byteLength": 2446,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/spectral/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/spectral/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/036-c26ab5cfa3c2c62d.txt",
+      "digest": "sha256:c26ab5cfa3c2c62d42d2381e32c1ddf13fde798ba15130f14772cd9b02f738da",
+      "byteLength": 2940,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/type-theory/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/type-theory/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/037-f2a704f730d1c026.txt",
+      "digest": "sha256:f2a704f730d1c026d0e0bef64d84e5e909316892985eedaad33770035f5c557c",
+      "byteLength": 2099,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "@561-group/math/verdier/README",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/information-science-services-section/services/math-services-section/services/voidmath-services-section/services/math-core/verdier/README.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/038-94746b3d941d229a.txt",
+      "digest": "sha256:94746b3d941d229a0f92bf97ff549a0aa2e05d16577bad5ff1b117bc41f9a7d2",
+      "byteLength": 2879,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "ludics/theory/girard-caillois-substrate-correspondence",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/other-social-science-services-section/services/ludics-science-services-section/content/documents/notes/questions-on-girard-caillois-substrate-correspondence.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/039-ceac7aa2c55896e0.txt",
+      "digest": "sha256:ceac7aa2c55896e07f01d7694801ea7d6ac883ac4832f0c6589d21aad9360ab9",
+      "byteLength": 24446,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "predicated-work/theory/lusory-constraint-and-the-magic-circle",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/note-on-lusory-constraint-and-the-magic-circle.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/040-1b3522a7dcfd0461.txt",
+      "digest": "sha256:1b3522a7dcfd04613b93e12ca91c9648607cfbc4bf88e7ea1dfaea46dfe8322b",
+      "byteLength": 11387,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "predicated-work/theory/three-formalisms-of-work",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/note-on-three-formalisms-of-work.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/041-03fa1d0293184c34.txt",
+      "digest": "sha256:03fa1d0293184c3432d21bead5ef44747684454722de901335eb6faedd51deec",
+      "byteLength": 9793,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "predicated-work/theory/abandonment-and-resumability",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/questions-on-abandonment-and-resumability.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/042-b5aea463e48fb1c0.txt",
+      "digest": "sha256:b5aea463e48fb1c011fada08f8d6188b3c457e2632b36b37030c51bd3cba47d7",
+      "byteLength": 2900,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "predicated-work/theory/capacity-as-substrate-property",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/questions-on-capacity-as-substrate-property.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/043-b50efb9a93bb61be.txt",
+      "digest": "sha256:b50efb9a93bb61bee8e80902d06c95b93e30ff41404408c444360ddd853f0a41",
+      "byteLength": 1903,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "predicated-work/theory/decomposition-patterns",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/questions-on-decomposition-patterns.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/044-739549e7f7502bdd.txt",
+      "digest": "sha256:739549e7f7502bdd268d31d41807c522326f70996838e04840708a833b28467a",
+      "byteLength": 2442,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "predicated-work/theory/operational-meaning-of-h1-classes",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/questions-on-operational-meaning-of-h1-classes.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/045-6604462f940824e2.txt",
+      "digest": "sha256:6604462f940824e2e2b2558536beb03ebf4efedbc8c3e3cb8595ac9662ea7485",
+      "byteLength": 2260,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    },
+    {
+      "title": "predicated-work/theory/regime-classification-scope",
+      "origin": "/home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/questions-on-regime-classification-scope.md",
+      "path": "/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-services-section/services/computer-systems-services-section/services/computer-inference-system-services-section/services/gemini-services-section/services/gemini-notebook-services-section/services/notebooklm-services-section/content/staging/561-group-game-engineering-notebook/corpus/d8c7ade016be560f5fa69c45b299eb140f92b6c1aa713178f55932356571a8ba/046-5393aeaefe59f6a6.txt",
+      "digest": "sha256:5393aeaefe59f6a6cb27197c623a8ee3fc4b8db674e3bb1964c6519a5e9aaafe",
+      "byteLength": 2748,
+      "mediaType": "text/plain",
+      "disclosure": "repository-source"
+    }
+  ],
+  "retention": "persistent",
+  "compiledAt": "2026-08-19T18:18:55.692Z",
+  "externalEffects": []
+}

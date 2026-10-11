@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emsenn/schema/gemini-notebook-audio-artifact",
+  "title": "gemini-notebook-audio-artifact",
+  "type": "object",
+  "required": ["format", "mediaType", "byteLength", "sha256"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "mp3" },
+    "mediaType": { "const": "audio/mpeg" },
+    "byteLength": { "type": "integer", "minimum": 16 },
+    "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

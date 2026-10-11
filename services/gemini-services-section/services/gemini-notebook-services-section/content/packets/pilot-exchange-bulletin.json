@@ -1,0 +1,23 @@
+{
+  "id": "pilot-exchange-stakeholder-bulletin",
+  "prompted-by": "pilot-exchange-mind-map-of-the-enterprise",
+  "purpose": "The one exchange the IRB's bounded-pilot allocation permits, retargeted by emsenn from the mind map to a textual bulletin: a status report for external parties — customers, investors, stakeholders — distilled from the enterprise's not-prose, hard-to-read work records. It still settles the board's two questions: can notebooklm-py hold the artifact-or-refusal contract, and what does one distillation cost.",
+  "sources": [
+    {"path": "lib/emsenn/services/notebooklm/content/packets/sources/settled-evidence.json", "what-it-is": "Deterministic readout: what the firm's own evidence currently settles to, per cell, in the four-valued knowledge order."},
+    {"path": "lib/emsenn/services/notebooklm/content/packets/sources/gluing-obstructions.json", "what-it-is": "Deterministic readout: every cell where the firm's evidence sources disagree — Čech gluing obstructions."},
+    {"path": "lib/emsenn/services/notebooklm/content/packets/sources/coordination-cost.json", "what-it-is": "Deterministic readout: the dispatch board's coordination cost, Ȟ¹ in Landauer-bits."},
+    {"path": "lib/emsenn/services/notebooklm/content/packets/sources/attention-allocation.json", "what-it-is": "Deterministic readout: the priority order a bounded agent should reconcile obstructions in."},
+    {"path": "lib/emsenn/services/notebooklm/content/packets/sources/open-obligations.json", "what-it-is": "The live dispatch board: every open obligation, derived by re-running each task's goal."},
+    {"path": "lib/emsenn/services/notebooklm/content/packets/sources/pilot-line-records.json", "what-it-is": "The NotebookLM pilot's own paper trail: the strategic requirement, the IRB decision record, the unit's Hoare-triple contract, and the pilot task."}
+  ],
+  "prompt": "Write a status report for external parties — customers, investors, and partners of this small agentic enterprise. Audience: intelligent outsiders who have never seen these records and will not read JSON. Sections: (1) What this enterprise is and how it works — offices, dispatches, machine-checkable goals; (2) Current operational state — how many obligations are open, what the coordination-cost and evidence-settlement readouts say in plain words, and what the top obstructions are; (3) Featured initiative — the NotebookLM micro-enterprise pilot: what was decided, by whom, under what bounded allocation, and what its contract promises; (4) Risks stated honestly — including the pilot's dependency on an unofficial client over undocumented Google APIs; (5) What comes next, per the attention-allocation priority order. Plain prose, no jargon left unexplained, numbers cited from the sources.",
+  "artifact-type": "report",
+  "output-contract": {
+    "success": "One exchange record seated in lib/emsenn/services/notebooklm/content/exchanges/ with outcome \"artifact\", a report payload validating against the seated report class, and a cost block.",
+    "failure": "One exchange record in the same pool with outcome \"refusal\", grounds and unmet conditions stated — never a hang, never an absent record once attempted.",
+    "settles-by": "sh -c 'latest=$(ls -t lib/emsenn/services/notebooklm/content/exchanges/*.json 2>/dev/null | head -n1); [ -n \"$latest\" ] && case $(jq -r .outcome \"$latest\") in artifact|refusal) exit 0 ;; *) exit 1 ;; esac'"
+  },
+  "lane": "Executed by requirements-implementation-team through the unit's run-one-exchange harness, which enforces the one-exchange allocation guard itself. Witness attestation belongs to product-quality-assurance afterward.",
+  "authorization": "IRB allocation: exactly one exchange. emsenn authorized spending it on this packet after completing Google login (auth seated in the default notebooklm profile).",
+  "credentials": "Saved browser auth at ~/.notebooklm/profiles/default/storage_state.json; never copied into any record, never printed."
+}

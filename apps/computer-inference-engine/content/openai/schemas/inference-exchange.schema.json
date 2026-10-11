@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "emsenn/schema/inference-exchange",
+  "title": "inference-exchange",
+  "$comment": "The shared chat-completion exchange class used by the nvidia-inference-team, openai-inference-team, and anthropic-inference-team units: one record of one exchange against a chat-completions API — a typed context packet in (a model id and a non-empty array of {role, content} messages), and exactly one of a completion or a structured refusal out, within a bounded fuel budget. This is distinct from emsenn/schema/exchange, which is scoped to Gemini Notebook's own closed artifact-type menu (report/mind-map/data-table/flashcards/quiz/infographic/slide-deck/audio/video) and is not a chat-completion exchange at all. outcome is always exactly completion or refusal, never anything else and never absent, so a hang or an untyped failure cannot be recorded as a settled exchange. A specific exchange is its own instance in a unit's own content/exchanges/; this is the contract any such instance must satisfy.",
+  "type": "object",
+  "required": [
+    "id",
+    "packet",
+    "outcome",
+    "cost"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "$comment": "The record's own name, equal to its basename, filed under content/exchanges/."
+    },
+    "packet": {
+      "type": "object",
+      "required": [
+        "model",
+        "messages"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "The provider's own model id, named by the caller — e.g. a NVIDIA NIM model id, an OpenAI model id, an Anthropic model id."
+        },
+        "messages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "role",
+              "content"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "enum": [
+                  "system",
+                  "user",
+                  "assistant"
+                ]
+              },
+              "content": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "$comment": "The chat turns, in order, exactly as the caller supplied them."
+        },
+        "max-tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "$comment": "Optional. A cap on completion length, when the caller wants one bounded."
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": true,
+          "$comment": "Optional. Provider-specific fields (temperature, top_p, and the like) this shared class does not police — a caller's own request shape, not structure the exchange contract's total-correctness promise depends on."
+        }
+      }
+    },
+    "outcome": {
+      "enum": [
+        "completion",
+        "refusal"
+      ],
+      "$comment": "Exactly one of the two typed outcomes the contract's move promises. Never a third value, never absent — that totality is the entire point of this field, and of this record existing at all."
+    },
+    "completion": {
+      "type": "object",
+      "required": [
+        "model",
+        "text",
+        "finish-reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "$comment": "The model that actually served the completion, per the provider's own response — not necessarily byte-identical to packet.model if the provider aliases it."
+        },
+        "text": {
+          "type": "string"
+        },
+        "finish-reason": {
+          "type": "string",
+          "$comment": "The provider's own stop reason (e.g. 'stop', 'length', 'end_turn'), carried through rather than normalized."
+        },
+        "raw": {
+          "type": "object",
+          "$comment": "Optional. The full provider response body, kept for audit without this class policing its shape — that shape is the provider's own, not this contract's."
+        }
+      },
+      "$comment": "Present exactly when outcome is 'completion', per the if/then/else below."
+    },
+    "refusal": {
+      "type": "object",
+      "required": [
+        "grounds",
+        "unmet"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "grounds": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "Why the exchange was refused, in a sentence a stranger can read — never a bare error code."
+        },
+        "unmet": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "$comment": "The specific condition(s) that failed to settle — e.g. 'http-failure:429', 'fetch-timeout', 'unparseable-response-body'. Never empty: a refusal with no named unmet condition is an assertion, not a structured refusal."
+        }
+      },
+      "$comment": "Present exactly when outcome is 'refusal', per the if/then/else below."
+    },
+    "cost": {
+      "type": "object",
+      "required": [
+        "fuel-consumed",
+        "wall-time-seconds",
+        "denomination"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fuel-consumed": {
+          "type": "number",
+          "minimum": 0,
+          "$comment": "The bounded-fuel budget the contract's energetics obligation names, spent by this exchange — requests, retries, or tokens, per what denomination states."
+        },
+        "wall-time-seconds": {
+          "type": "number",
+          "minimum": 0,
+          "$comment": "How long the exchange took end to end. One of the two figures this record owes the chief financial officer's books."
+        },
+        "denomination": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "What unit fuel-consumed is counted in (e.g. 'nvidia-nim-api-requests', 'openai-api-requests', 'usd') — named explicitly rather than assumed."
+        }
+      },
+      "$comment": "Required on every exchange regardless of outcome: a refusal still costs fuel and time."
+    },
+    "recordedAt": {
+      "type": "string",
+      "minLength": 1,
+      "$comment": "Optional. The ISO-8601 UTC instant the harness itself wrote this record (Date.now at settlement, not any provider-supplied field) — the field an hourly-window collector attributes this exchange to. Optional for backward compatibility with exchange records written before this field existed; every harness writing a new record populates it going forward. Its absence on an old record is honest silence, not a defect."
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "input": {
+          "type": "object",
+          "required": [
+            "quantity",
+            "denomination"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "quantity": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "denomination": {
+              "type": "string",
+              "minLength": 1,
+              "$comment": "e.g. 'github-models-tokens-in', 'openrouter-tokens-in' — provider-scoped, never converted or summed across providers, matching cost.denomination's own idiom."
+            }
+          }
+        },
+        "output": {
+          "type": "object",
+          "required": [
+            "quantity",
+            "denomination"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "quantity": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "denomination": {
+              "type": "string",
+              "minLength": 1,
+              "$comment": "e.g. 'github-models-tokens-out', 'openrouter-tokens-out' — provider-scoped, never converted or summed across providers, matching cost.denomination's own idiom."
+            }
+          }
+        }
+      },
+      "$comment": "Optional, and present only to the extent the upstream provider's own API response actually returned a token-usage object (e.g. an OpenAI-compatible {prompt_tokens, completion_tokens}, or a provider's own equivalent). input and output are independently optional — a provider may report one without the other, or neither, in which case this whole property is absent rather than written with a zero or estimated figure. This is witnessed usage read from the provider's response, never a count the harness computes or estimates itself."
+    }
+  },
+  "if": {
+    "properties": {
+      "outcome": {
+        "const": "completion"
+      }
+    },
+    "required": [
+      "outcome"
+    ]
+  },
+  "then": {
+    "required": [
+      "completion"
+    ]
+  },
+  "else": {
+    "required": [
+      "refusal"
+    ]
+  },
+  "$comment-absences": "No status, no severity: an exchange is a settled fact the instant it is written (outcome is never provisional). No consumer identity field beyond what the packet itself carries — a caller field belongs to a full multi-tenant build, not this shared class.",
+  "x-provenance": {
+    "recorded-by": "claude/module-developer",
+    "recorded-on": "2026-07-17"
+  }
+}

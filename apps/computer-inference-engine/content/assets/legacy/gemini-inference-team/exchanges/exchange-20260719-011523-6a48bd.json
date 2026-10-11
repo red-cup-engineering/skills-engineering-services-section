@@ -1,0 +1,55 @@
+{
+  "id": "exchange-20260719-011523-6a48bd",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return only JSON with key controls containing exactly these strings in order: rpm, concurrency, attempts, timeout, verification."
+      }
+    ],
+    "max-tokens": 100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"controls\": [\n    \"rpm\",\n    \"concurrency\",\n    \"attempts\",\n    \"timeout\",\n    \"verification\"\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"controls\": [\n    \"rpm\",\n    \"concurrency\",\n    \"attempts\",\n    \"timeout\",\n    \"verification\"\n  ]\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIP17LQ6DHTrWm4mkFTUqn9htsUlx8WowGXzrjC//IEKQtxScmGCOns9mDFpzCQ"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784423725,
+      "id": "LCVcaqT1KuGBjrEPoM_0mQg",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 38,
+        "prompt_tokens": 24,
+        "total_tokens": 62
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.743,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

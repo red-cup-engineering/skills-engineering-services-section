@@ -1,0 +1,42 @@
+{
+  "id": "claude-max",
+  "account": "urn:ame:561-group-claude-account",
+  "product": "claude-code",
+  "carries": [
+    "claude-"
+  ],
+  "unit": "percent-of-window",
+  "draws": "every",
+  "admits": "open",
+  "because": "The Claude subscription carries Claude Code usage under a five-hour and a seven-day window, each stated on every headless turn (the rate_limit_event's unifiedWindows: utilization and resetsAt, observed 2026-10-03). Overage is disabled at the organization level, so an exhausted window refuses. The house's interactive sessions draw on the same windows, so the level is read from the statement and never summed from the house's own sessions.",
+  "meters": [
+    {
+      "id": "five_hour",
+      "law": "stated",
+      "hours": 5,
+      "budget": 100,
+      "because": "the five-hour window the CLI states"
+    },
+    {
+      "id": "seven_day",
+      "law": "stated",
+      "hours": 168,
+      "budget": 100,
+      "because": "the seven-day window the CLI states"
+    }
+  ],
+  "costs": {
+    "session": null
+  },
+  "kindsByModel": [
+    [
+      "sonnet",
+      "session"
+    ],
+    [
+      "claude-",
+      "session"
+    ]
+  ],
+  "refusedOn": "claude-subscription-window-exhausted"
+}

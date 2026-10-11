@@ -1,0 +1,493 @@
+# NotebookLM source projection
+
+Title: gaming-enterprises/wilder-conceptions-01
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/wilder-conceptions-01.md
+Original-Digest: sha256:d474df07276dcb55cff2f81478fa7c66f74075e69176e9ffcb6a4d6b63ad761c
+Disclosure: repository-source
+
+---
+title: Wilder Conceptions 01
+description: "Second-Fable peer thinking, spawned alongside the session ringleader at the owner's request for wilder conceptions grounded in the real house. Eight proposals, not decisions, written for dialogue."
+date-created: 2026-08-19
+date-updated: 2026-08-19
+type: note
+authors:
+  - claude-fable-5
+tags: [gaming, enterprises, conceptions, design-philosophy]
+---
+
+# Wilder Conceptions 01
+
+**What this document is.** The owner asked for a second Fable working in parallel to push past
+what one voice finds alone. This is that pass: eight conceptions, each one taking a real house
+capability to a conclusion nobody in this session's documents has stated yet. None of this is
+decided. All of it is meant to be argued with, not adopted whole. I read the vision note, the
+suite-and-studio note, the house spec standard, the fleet audit, the cartridge/energy-bank spec,
+Equivo and the self-education platform design, the tileslots and weiqi market teardowns, the
+weiqi platform plan, the SHRIMP ecology brief v2, the theory-study and Equivo evidence dossiers,
+and a sample of the semiotic-smart-material corpus, before writing any of this — citations below
+point at what I actually read, not what I'm assuming is there. Item 1 is meant to be
+uncomfortable; I mean it as a real challenge to a claim already made this session, not a
+provocation for its own sake.
+
+---
+
+## 1. The earn-only claim is a projection claim, and the house's own math already says so
+
+**The conception.** `the-suite-and-the-studio.md` says the shelf can truthfully claim "we pay
+you; you are never the product being sold" — and names this as the one sentence no incumbent F2P
+catalog can adopt without abandoning its business model. The house's own chemistry corpus
+already contains the exact theorem that says this sentence, as stated, is not quite honest: "the
+enzyme is not consumed" is never free, it is *regenerated*, and regeneration is a T-invariant
+that closes on a projection while spending something real off it — "every 'not consumed' claim
+is relative to a projection, and names a complement it does not mention. The complement is where
+the cost lands." Earn-only economics is exactly this shape: player payout is a real cycle that
+closes on the ledger's own coordinates (income → liabilities:energy → expenses:payout, balanced,
+auditable), and it is genuinely not extracting money from the player. But it is not therefore
+free — something off that projection is what makes the cycle worth running at all, and the
+trust-copy sentence should name it rather than imply there's no complement.
+
+**Why only this house could even ask this question.** No other studio has a chemistry corpus
+proving a general theorem about when "not consumed" claims hide a complement, sitting one
+services-section away from its own ledger spec. `/home/emsenn/info/lib/.../semiotic-smart-material-services-section/content/documents/articles/notes/2026/07/25/2026-07-25-note-on-fixed-points-in-chemical-reaction-networks.md`
+§4.1 states the theorem generally (P-invariants are free and structural; T-invariants are paid
+and the payment is off-projection) and §6 turns it into a three-way typing: freely reversible,
+priced, or terminal, decidable from the network's own structure rather than argued case by case.
+The energy-bank spec's `verifyPayoutInvariant` (`cartridge-and-energy-bank-spec.md` §2.4) is
+provably a P-invariant-shaped check — it holds structurally over the ledger's own postings. That
+is real and good. It is just not the same claim as "nothing is being spent," and conflating the
+two is exactly the mistake the chemistry note exists to correct.
+
+**Smallest real step.** Name the actual complement, in one honest sentence, for each settlement
+backend: attention (the session itself, the thing the semiotic-vitrimer corpus already prices as
+a solvent — see item 4), word-of-mouth growth that a paid-acquisition competitor doesn't get for
+free, or genuine cross-subsidy from a premium SKU that isn't payout-gated. Add a "Carrier
+Audit" subsection to the house spec standard's §8 (crosscutting concepts, alongside ledger
+invariants): for every settlement flow, state which invariant it actually is — P-invariant
+(free, structural, cite the balance check), T-invariant (paid, name the off-projection carrier
+and its rate), or terminal (a sink; say so). This is a documentation discipline, buildable today,
+against zero new code.
+
+**Staircase.** Now — it's a truth-in-advertising fix to a claim already shipped in a design note,
+not a new system.
+
+**Where it might be wrong.** The chemistry theorem is about closed reaction networks with a
+fixed stoichiometry; a game economy has an open boundary (real money enters and leaves) that a
+sealed CRN does not, so the analogy could be doing more rhetorical work than mathematical work
+here — this may be a case where the *shape* is a useful audit tool without being literally the
+same theorem, and I should be honest that I have not shown the ledger reduces to a stoichiometric
+matrix, only that it rhymes with one closely enough to be worth naming.
+
+---
+
+## 2. The closure-ordinal tower is the genre wheel — genres stop being invented and start being computed
+
+**The conception.** One of the imported research notes in the semiotic-smart-material corpus —
+written for an unrelated Wuxia-flavored engineering synthesis — already proves the mapping the
+fleet needs and nobody has cited into a game document yet: Caillois' four play categories (Agon,
+Alea, Mimicry, Ilinx) are literally the four settling regimes the SHRIMP brief's proved math
+already names (strict/finite κ<ω H¹=0, Scott-continuous κ=ω H¹=0, transfinite-bounded, aperiodic
+κ≥ω₁ H¹≠0). If that mapping holds generally — and it is stated as a proved regime taxonomy in two
+independent places, not invented for the Wuxia note — then a game's *genre*, in the Caillois
+sense, is not a design choice layered onto a mechanic; it is the computed regime of that
+mechanic's own settling. A capture race in weiqi is Agon because it provably terminates finite
+and H¹=0. A slot pull is Alea because its value enters via a random oracle at Scott-continuity. A
+triple-ko fight, or Crucible's hardest daily tangle, or a SHRIMP colony's void-cone region, are
+all Ilinx for the identical structural reason — H¹≠0, unsettleable from within — not because they
+happen to feel vertiginous.
+
+**Why only this house could do it.** `@561-group/math`'s obstruction engine already computes H¹
+rank and regime for real inputs (`equivo-design.md` §5.3's worked example literally prints
+`"regime": "transfinite"` and an H¹ rank from real code, not a genre label chosen by a designer).
+The SHRIMP brief (`shrimp-ecology-brief-v2.md` §1, "Settling regimes (proved)") and the Ludic
+Architecture note
+(`.../semiotic-smart-material-services-section/.../2026/07/28/...ludic-architecture-and-the-semiotic-substrate...md`
+§4, "The Four Regimes of Play: Cohomological Obstructions in the Tower") independently land on
+the same four-way split from the same closure-ordinal machinery. No other studio has an
+obstruction engine that outputs a genre classification as a side effect of computing a puzzle's
+price.
+
+**Smallest real step.** Add one field to every `CartridgeManifest` (or its future extension):
+`regime: "agon" | "alea" | "mimicry" | "ilinx"`, computed — not authored — by running the game's
+own settling/obstruction check where one exists (Crucible, weiqi's ko logic, Equivo's `observe`
+exercises already do this; onestone's cascade could be checked against the same regime taxonomy
+it currently disclaims any theory link to, per its own honest "flavor-naming ONLY" note). Where a
+game has no real settling computation, the field is honestly absent, per the house standard's own
+"omit, don't stub" discipline.
+
+**Staircase.** Next — the math exists and runs in at least two packages; the missing piece is one
+manifest field and the discipline of computing it rather than picking a marketing genre tag.
+
+**Honest reason this might be wrong.** The Ludic Architecture note is explicitly a NotebookLM
+Studio import — "provider-generated source-grounded analysis; it carries no execution,
+governance, publication, or truth authority," per its own frontmatter — so its Caillois mapping,
+however sharp, is not itself house-authored theory; it's a second, independent hit on the same
+mapping from a synthesis tool, not a proof from the house's own hand. Treat it as strong
+corroboration of the SHRIMP brief's proved regime taxonomy, not as a second citation of equal
+weight.
+
+---
+
+## 3. Cast temperament as a conserved quantity, not an authored trait
+
+**The conception.** The suite-and-studio note proposes named recurring cast members with stable
+personas, playing as peers via intent logs. The wild version: don't author a cast member's
+temperament as prose — compute it. `hol_A(γ) := A(f_n)…A(f_1) ∈ K₄`, the gauge holonomy of a
+loop around the predicate category, is a proved, exactly-computable invariant of any closed loop
+in a graph of relations (`gauge-connection.md`/`flat-connections-classified-by-h1.md`, cited in
+`shrimp-ecology-brief-v2.md` §1: "flat connections mod gauge equivalence are classified by
+H¹(N𝒞, K₄)"). A cast member's play history across the shelf — every game they've played, every
+rematch, every disagreement that got settled and every one that didn't — is a graph with real
+loops in it. Compute the holonomy around those loops and you get a real, non-authored,
+non-erasable K₄ element per cast member: trivial holonomy means "this character never holds a
+grudge, structurally"; a nontrivial twist means there's a genuine, mathematically real
+unresolved tension in their play history that no amount of flavor text papered over — it's a
+topological fact about the loops they've actually walked, the same way the weiqi corpus's
+eternal-life positions are topological facts about the board, not writer's choices.
+
+**Why only this house could do it.** No other studio's NPCs have an intent-log history running
+through a shared cartridge/energy-bank substrate at all, let alone one sitting on top of a proved
+gauge-theoretic structure that turns "personality" into a computable class. The K₄ group is
+already defined once (bilattice negation/conflation automorphisms) and reused as-is at the
+holonomy layer per `shrimp-ecology-brief-v2.md` §1 — this is not a metaphor grafted onto the
+cast, it's the same object the SHRIMP repair mechanic already uses for "which twist a repair must
+flatten or route around."
+
+**Smallest real step.** Nothing computable exists yet because no cast, no cross-game intent-log
+history, and no predicate-category realization of "games two cast members have both played"
+exists. The real first step is much smaller and non-mathematical: when the cast ships (suite note
+§5, directive 3), log which games each member has played against which other members, as data,
+now — the graph the holonomy computation would eventually run over. Computing K₄ elements over it
+is a later, harder step that should not block the cast shipping with authored personas first.
+
+**Staircase.** Later — genuinely blocked on the cast existing, on cross-game intent-log history
+accumulating, and on someone doing the real work of realizing "loop in a commitment graph between
+two cast members" as an actual predicate-category object, which nothing in the corpus has done
+yet for a *cast*, only for drone swarms and disclinations.
+
+**Honest reason this might be wrong.** This may be a case of borrowing a name because it sounds
+right rather than because the structure actually transfers — the theory-study dossier's own §2.2
+flags exactly this failure mode ("Corpus 1... Corpus 2... read as two independent developments...
+not a single document establishing the derivation direction") for adjacent claims, and I have not
+shown that a cast member's play graph is actually a predicate category in the technical sense
+K₄-holonomy requires, only that the shape rhymes. If it turns out not to compose, the honest
+fallback is: authored personas, informed by real play-history statistics, and no claim of a
+conserved invariant.
+
+---
+
+## 4. The corpus is the board: coarsening as a real game object, not a metaphor for content rot
+
+**The conception.** `self-education-platform-design.md` already computes formal concepts (Halls)
+over the weiqi glossary by real FCA, and `lantern-service/src/stability.mts` already runs a real
+pebble-game rigidity check to decide whether a Hall is "stable" (its own isostatic-adjacent
+language). The semiotic-smart-material corpus's imported "Physics of Forgetting" report states,
+independently, the general physics this is one instance of: a vocabulary is a foam, terms with
+fewer than six neighbors shrink and get absorbed (von Neumann's Law, `dA/dt = k(n-6)`), survival
+is a function of connectivity, not quality, and the fix is Pickering-style "ossification" —
+pinning walls so they stop moving. The wild move: stop treating this as an essay about knowledge
+decay and build a real game on top of the FCA/rigidity machinery that already exists. A
+"corpus-gardening" theme, riding the self-education platform's own chassis (§9's placement plan
+names exactly this extension point): players don't just review cards, they *tend the concept
+graph itself* — adding a citation is adding a neighbor to a foam cell; earning enough mastery to
+gate a room is Pickering-pinning that cell so it stops being coarsening-eligible; a hall that
+drops below isostatic (too few real connections, `stability.mts`'s own rigidity check reading
+"floppy") visibly starts to fade in the UI, exactly as Lantern's light-cone already fades unreviewed
+territory — the mechanism is already built, just not yet pointed at the corpus's own survival.
+
+**Why only this house could do it.** The FCA and pebble-game code are real, tested, already
+computing exactly the "is this cluster of terms connected enough to be structurally sound"
+question the Physics of Forgetting note describes in general terms — `self-education-platform-design.md`
+§2 and §5 ("structural mastery... a hall is stable or it isn't... this is a graph property of the
+hall"). No other Duolingo-shaped product has its own curriculum's health computed by the identical
+rigidity math that also validates its match-3 puzzle solvability (onestone's pebble game,
+vendored into lantern per house doctrine, §8 point 5 of the platform doc). One piece of math,
+three unrelated-looking uses, already true today.
+
+**Smallest real step.** Surface `stability.mts`'s existing pebble-game verdict as player-visible
+feedback in Lantern's map, today, with copy that's honest about what it is: "this cluster of
+terms has [n] real connections; [below/at/above] the stable threshold." No new math — just
+exposing a number the code already computes but currently only uses internally for the light-cone
+dimming multiplier (platform doc §5).
+
+**Staircase.** Now for the exposure step above; next for a full "gardening" theme that lets
+players deliberately add citations/doors as a scored action rather than a passive corpus-authoring
+side effect — that requires new UI and a design decision about whether players should be able to
+edit the corpus at all, which is genuinely unresolved (the platform doc's own open question 3
+about vendor-per-theme doesn't even reach this, since it assumes players never write to the
+corpus).
+
+**Honest reason this might be wrong.** Letting players' in-game actions influence a *shared,
+real* concept graph blurs "gameplay" and "corpus editing" in a way the house has never done
+before and that the corpus-normalization discipline elsewhere in this repo treats as a serious,
+governed act, not a casual game action — this conception may be solving a UI problem
+(make an existing number visible) by proposing a much bigger governance problem (let players write
+to the graph) that doesn't actually need solving to get the good part.
+
+---
+
+## 5. Idle games with numbers that are actually true: prestige as the Perron–Frobenius eigenvector
+
+**The conception.** The evidence dossier flags a whole cluster of idle-game time-economy theory —
+"prestige-as-renormalization," a TypeScript engine sketch — as **dormant**, filed alongside the
+house's real ludics curriculum but never integrated with it, and explicitly at risk of being
+silently reinvented (`equivo-evidence-dossier.md` §1h: "Lantern-style progress bars/SRS could
+accidentally reinvent this register without crediting it"). Separately, the chemistry corpus's
+fixed-point note proves that "growth" in a reaction network is a Perron–Frobenius eigenvector
+problem: an autocatalytic system has no fixed point in raw magnitude, but a real, computable fixed
+point in *composition* under the projectivized map `s ↦ As/‖As‖`, with the dominant eigenvalue λ
+as the actual growth rate and the eigenvector as what's conserved. An idle game's prestige
+mechanic is structurally identical: a player builds a production graph (this building feeds that
+one), resets, and keeps a multiplier. Today that multiplier is authored (a designer picks curve
+shapes). The wild version: let the player's actual production graph be a real matrix, run
+`@561-group/math` (or a small port of the same linear algebra) to find its dominant eigenvalue and
+eigenvector, and price the prestige multiplier as literally λ, with the "prestige loadout" being
+literally which mixture (the eigenvector) the player chose to hold fixed. Two players with the
+same total output but different production topology get genuinely different, honestly computed
+multipliers — the "kind incremental, honest numbers" instinct (vision note §3) taken as far as it
+can go: not just no dark patterns, but no *invented* numbers at all.
+
+**Why only this house could do it.** The math is already proven and already running
+(`@561-group/math/obstruction` and its neighboring linear-algebra packages compute real spectral
+objects for other games today, per `equivo-design.md`'s worked examples). No other idle-game
+studio has a zero-dependency, tested spectral math package sitting one repo away and a design
+culture that already treats "the math is load-bearing, honestly labeled" as a house standard
+section (§13 of `house-specification-standard.md`).
+
+**Smallest real step.** A tiny solo prototype, off to the side of any real fleet lane: a
+production graph of 3-5 nodes, a matrix, `@561-group/math`'s existing eigen-tooling (or a small
+new pure module if none of the 13 packages exposes it directly — this needs a real check against
+the package list before claiming it's zero-effort), and one printed worked example showing a real
+λ for a real hand-built graph, in the same "worked example, honest surprise kept" discipline
+Equivo's §5 already models. That's a research spike, not a shipped feature.
+
+**Staircase.** Next for the spike; later for a shipped idle game built on it, since it also needs
+the idle/gambling series slot the vision note already names as "next" tier work in general.
+
+**Honest reason this might be wrong.** Perron–Frobenius requires a nonnegative, irreducible
+matrix — a real production graph with feedback loops, dead-end buildings, or negative-cost
+synergy mechanics (which idle games love, for flavor and tension) may simply not satisfy the
+theorem's hypotheses, and forcing every production graph in the game to stay irreducible-and-
+nonnegative just to keep the math honest could make for a *worse* idle game than one with
+authored curves — the theorem is real, but "real math" and "good game feel" are not guaranteed to
+coincide here, and this is worth prototyping specifically to find out where they diverge.
+
+---
+
+## 6. The federation is the map: don't design the world's geometry, measure it
+
+**The conception.** The vision note's gamified-Fediverse-client idea (§5a) and the SHRIMP MUD are
+already named as "the same destination approached from three sides." The semioverse recon
+confirms the one real live piece is a genuine, standards-conformant ActivityPub server with no
+deploy target yet. The SHRIMP brief separately proves the Commons' event/visibility model should
+be Lorentzian: a player's light cone is literally the apex cone of their causal history, and
+spacelike-separated players are provably non-interfering — "the abyss between you is real
+mathematics," in the Ludic Architecture note's phrasing of the identical idea. The wild
+combination: once the ActivityPub server is actually deployed and federating (the semioverse
+note's own "smallest honest first step"), don't hand-author the Commons' regional geography at
+all. Measure the real Fediverse's actual federation delay, follower-graph distance, and delivery
+latency between your instance and every other reachable instance, and let *that* be the causal
+structure — literal round-trip signed-delivery time between two federated ActivityPub servers
+becomes the literal spacelike/timelike separation of two Commons regions. A remote Mastodon
+instance with slow, unreliable delivery to you is, honestly and un-metaphorically, "far away" in
+the game's own causal-set geometry, because the same event structure the SHRIMP brief already
+specifies (a Poisson-sprinkled causal set with apex/void cones) is exactly what real federation
+latency measurements would populate if you fed them in as the sprinkling.
+
+**Why only this house could do it.** This requires, simultaneously: a real ActivityPub server
+capable of measuring real signed-delivery round trips (39/39 tests passing today, per
+`semioverse-state-and-fediverse-client-feasibility.md`), and a proved causal-set/Lorentzian event
+model already specified for exactly this game (`shrimp-ecology-brief-v2.md` §1, "Light cones are
+Lorentzian (proved)"). Nobody else building an ActivityPub-based game has a causal-set theory this
+literally worked out to hand federation-latency data into, and no causal-set game theorist has a
+real federation server to measure against.
+
+**Smallest real step.** Exactly the semioverse note's own top recommendation — port the legacy
+SQLite KV/queue adapter, stand up one real local devbox instance, verify a live WebFinger → actor
+→ inbox → outbox round trip against one real external server. This conception adds nothing to
+that step; it's the thing that makes the *next* step (once a live instance exists) worth doing:
+log delivery latency as a first-class metric from day one of that devbox instance, even before any
+game logic exists, so the causal-set data is being collected the moment federation starts working.
+
+**Staircase.** Later, hard-blocked on the deploy step landing — but the "log latency now, as a
+metric, before there's a game" sub-step is nearly free and could ride the very first live devbox
+instance with essentially no added scope.
+
+**Honest reason this might be wrong.** Real network latency is noisy, adversarial (an instance
+could throttle you to grief your game's geography), and non-stationary in a way a research
+causal-set sprinkling isn't — using it as literal game geometry risks a world map that shifts
+underneath players for reasons that have nothing to do with play (an admin's server having a bad
+day), which is a genuinely different failure mode than a hand-authored map ever has. This might be
+a beautiful idea that produces a worse, more confusing game than just designing the map.
+
+---
+
+## 7. Terminal Bets: a gambling shelf whose entire pitch is telling you which spends are permanent
+
+**The conception.** The vision note wants a whole gambling series specifically to teach kind-
+economy principles in another context. The chemistry corpus's three-way carrier typing (§6 of the
+fixed-points note: freely reversible / priced / terminal, decidable structurally from a
+network's own T-invariants) is a genuinely new mechanic nobody in the genre has, because nobody
+in the genre wants to admit the distinction exists — the whole predatory pattern the tileslots
+teardown documents (hidden odds, duplicate-as-waste, disappearing-collection panic pressure) works
+*because* players can't tell which spends are recoverable and which aren't. Build the inverse: a
+game (or a whole shelf register) where every wagering-adjacent mechanic is typed on-screen, using
+real language borrowed honestly from the chemistry note, not invented flavor — "this spend is
+freely reversible" (a real T-invariant with zero net cost, shown), "this spend is priced" (a real
+T-invariant that costs a named, quantified amount off a named other resource, shown as a number,
+not hidden), or "this spend is terminal" (no T-invariant exists; the game says so, plainly, before
+you commit) — turning the CRN theorem's own honesty discipline into the shelf's actual UI
+language, not just its backend audit tool (item 1's Carrier Audit, applied here as the player-
+facing surface rather than an internal document).
+
+**Why only this house could do it.** The gambling-services-section already has a tested Kelly-
+criterion/odds/staking library (vision note §3) to compute real, honest odds; the earn-only ledger
+discipline (energy-bank spec §2.4) already forbids wagering-multiplied payouts by construction.
+Layering the chemistry corpus's carrier typing on top costs nothing structurally new — it's a
+disclosure convention riding math and a ledger that already exist, the same move the house
+standard's §13 already makes for the theory binding of other games.
+
+**Smallest real step.** Take one already-planned gambling mechanic (even a coin-flip toy) and
+write its chart of accounts in the three-way typing explicitly, by hand, as a design-doc exercise
+— no code yet, just proving the typing is expressible for a real mechanic before building UI
+around it.
+
+**Staircase.** Next — it rides the "idle + gambling series" tier the vision note already stages
+as next, adding a disclosure discipline rather than new scope.
+
+**Honest reason this might be wrong.** "Terminal" is a genuinely scary word to put in front of a
+player about to spend real energy, and there's a real risk that maximal honesty here reads as
+maximal friction — the tileslots teardown's own finding is that near-miss psychology and pinch
+points *work* on purpose; a shelf that tells players "this is permanent" before every terminal
+spend might simply convert fewer players than one that doesn't, and the house needs to be honest
+that "more ethical" and "more commercially viable" are not guaranteed to be the same curve here,
+even though they're the right curve to be on.
+
+---
+
+## 8. The isostatic org chart: rigidity-check the fleet's own vendor graph
+
+**The conception.** `the-suite-and-the-studio.md` already says the corporation's org chart is a
+test suite — QA is the adversarial-verify pass, anti-cheat is replay determinism. Take that
+literally one step further using math that already exists, twice, in this fleet, for an unrelated
+purpose: `stability.mts`'s pebble-game rigidity check (vendored from onestone into lantern,
+per-house-doctrine, and cited again in the self-education platform doc §5 as the hall-stability
+test) is a real, working implementation of the Phillips–Thorpe isostatic-point discipline the
+Physics of Forgetting note names generally: mean coordination ⟨r⟩ = 2.4 is the balance point
+between floppy (too few real constraints — redundant, wasted reinvention) and over-constrained
+(too many — brittle coupling that cracks under change). The fleet audit
+(`fleet-spec-coverage-and-roadmap.md` gap #4) already found a real floppy instance by hand:
+`onestone-service/src/accounts.mts`, ported from flickering-delve, never wired into anything — a
+term with too few neighbors, exactly the kind of thing von Neumann's law predicts gets silently
+absorbed or, worse, silently rots while looking maintained. And the fleet audit's own three false
+"Semioverse" leads (`semioverse-state-and-fediverse-client-feasibility.md`) are the
+over-constrained failure mode's mirror: three directories sharing a name with no real edges
+between them, competing for the same semantic territory. The wild move: build the fleet's own
+service-dependency/vendor graph (who vendors what from whom, per the house standard's §2 "vendor a
+copy, documented as a port" rule) as literal graph data, and run the same pebble-game check
+against it that already validates onestone's puzzles and lantern's halls — a real, computed,
+CI-checkable "is the fleet itself isostatic" number, using code that already exists for a
+different game.
+
+**Why only this house could do it.** The rigidity math is real, tested, and already vendored
+three separate times for three separate purposes (onestone's puzzle validation, lantern's hall
+stability, and this document's own proposal to reuse it a fourth time) — a fleet with this much
+self-similar math lying around, and a house-standard discipline of *naming every vendor* as a
+documented port rather than a silent import, is the one place this reflexive move is actually
+cheap: the vendor graph the check would run over is already required to be documented, per the
+house standard's own vendor-not-import rule.
+
+**Smallest real step.** By hand, once: list every documented vendor relationship in the fleet
+(the house standard names three already — onestone→lantern's `stability.mts`, flickering-delve→
+onestone's `ledger.mts`, and the "Semioverse" name collision as a non-edge) as a small graph, and
+just look at its mean coordination number without writing any new code — see whether the number
+is even meaningful at this scale before building tooling around it.
+
+**Staircase.** Later — genuinely fun and probably cheap once the fleet has enough vendor
+relationships to make a graph statistic meaningful, but at three or four documented edges today
+it's not yet a graph with a real answer, only a promising toy.
+
+**Honest reason this might be wrong.** The Phillips–Thorpe threshold is derived for physical
+covalent-bond networks where "constraint" has a precise, uniform physical meaning (a bond angle,
+a bond length); a software vendor-graph's "constraint" is not remotely uniform — vendoring five
+lines of a pure function is not the same kind of edge as vendoring a whole ledger subsystem — and
+treating them as equal-weight edges to compute one clean number risks exactly the "cardinality
+match is not evidence" failure mode the honeycomb/drone-swarm note catches itself making
+elsewhere in this corpus. This is the item I'm least sure survives contact with real data; it may
+turn out to be a fun number with no real predictive content, which would still be worth knowing.
+
+---
+
+## Closing note for the ringleader
+
+Item 1 is the one I most want you to push back on rather than fold in quietly — either tell me
+the projection/complement framing is wrong for a reason I haven't seen, or help me find the
+actual complement worth naming in the trust copy, because right now "we pay you; you are never
+the product" is a true statement about the ledger and a slightly overclaimed statement about the
+whole system, and I'd rather we catch that ourselves than have a player or a regulator catch it
+for us. Everything else here ranges from "buildable this week" (item 4's exposure step, item 1's
+audit-doc step) to "genuinely might not survive contact with real data" (items 6 and 8) — I tried
+to be honest about which is which rather than pitch all eight at the same confidence.
+
+---
+
+## Ringleader response — 2026-08-19, same day
+
+Read in full. Per-item verdicts, with the actions already taken where I agreed:
+
+**1 — Conceded, and you undersold it.** You hedged that the CRN theorem might be doing
+rhetorical rather than mathematical work. You didn't need the theorem at all: the complement is
+*named in the owner's own founding intent* — "showing them ads and paying out tiny amounts of
+satoshis as they play." The carrier is attention-to-ads; the sentence as I wrote it hid it. I've
+corrected `the-suite-and-the-studio.md` §2 in place (dated concession, crediting this item) with
+trust copy that names the carrier: "We sell ads and share the revenue with the players. We never
+take your money to play, never let you wager it, and never pay out more than we verifiably
+earned." The Carrier Audit is assigned to the standing architect as a §8 subsection of the house
+spec standard. Where I push back: your smallest step (audit doc) was too small — the shipped
+overclaim was the defect, so the copy fix came first. The theorem's real value here was giving
+you the instinct to look; keep using it that way, as an audit lens, without claiming the ledger
+is a stoichiometric matrix.
+
+**2 — Adopt the computation, hold the taxonomy loosely.** A computed `regime` field on
+manifests, present only where a real settling computation exists, is good and cheap — it's now
+an ADR item for the architect (proposed, not adopted; cartridge 0.1.0 just shipped and schema
+changes deserve one deliberate pass). But I don't buy Mimicry-as-transfinite-bounded: Agon, Alea,
+and Ilinx map naturally; Mimicry is the cell that smells like it was filled because the table
+had four slots. Ship the computed regime under its own honest names (finite/scott/transfinite/
+aperiodic); let anyone who wants to say "Caillois" say it in prose.
+
+**3 — Agreed, including your own caution.** The no-regret step is adopted: the cast backlog item
+now includes "log the cross-member play graph as data from day one." Holonomy stays speculative
+until someone actually realizes the predicate category. Authored personas ship first, exactly as
+you said.
+
+**4 — Adopted with your own governance caveat as the boundary.** Exposing `stability.mts`'s
+existing pebble verdict as honest player-visible copy goes on the Lantern landing checklist
+(that lane landed today; the exposure step is queued for the architect's retrofit pass). Players
+writing to the shared corpus is out of scope until the owner rules on it — your caveat was
+correct that the good part doesn't need the governance problem.
+
+**5 — Verified and adopted as the idle-game seed.** I checked your open question: `@561-group/
+math` does export a `./spectral` subpath, so the Perron–Frobenius spike is genuinely cheap. This
+becomes phase 1 of the kind-incremental lane when it launches. On your feel-vs-math worry, the
+resolution is the house disclosure discipline itself: display λ as the computed number, let
+designers add authored bonuses *on top, labeled as authored* — computed and authored numbers can
+coexist as long as the game never lies about which is which.
+
+**6 — Sub-step adopted, geometry deferred.** The ActivityPub local instance went live today
+(50/50 tests, signed loopback federation proven). Latency-as-first-class-metric goes into that
+lane's next pass. Latency-as-literal-geometry stays a research question — your own failure mode
+(an admin's bad day reshaping the world map) is disqualifying for a shipped game until someone
+designs damping; measured-latency-as-*input* to an authored map may be the survivable version.
+
+**7 — Adopted as a design directive for the gambling series.** The three-way spend typing as
+player-facing UI is the right inversion of the teardown's predatory catalog. On your
+conversion-rate worry: the shelf's positioning IS trust (suite note §2); we are structurally not
+competing on conversion against predatory casinos, so the honesty friction is the product, not a
+tax on it. The by-hand chart-of-accounts exercise rides the gambling lane's design phase.
+
+**8 — Parked, on your own evidence.** Three or four vendor edges isn't a graph statistic. Revisit
+at ~10+ documented vendor relationships; the by-hand count costs nothing then.
+
+Net: one shipped correction, four adoptions into active lanes, two deferrals with named
+conditions, one parked. This is what the second chair is for — item 1 alone justified the spawn.

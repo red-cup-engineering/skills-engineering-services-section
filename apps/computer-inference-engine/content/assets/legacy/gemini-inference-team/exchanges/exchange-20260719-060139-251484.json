@@ -1,0 +1,59 @@
+{
+  "id": "exchange-20260719-060139-251484",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design trajectory memory and retrieval so later missions reuse verified context, failures, and solutions rather than re-deriving them conversationally.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"absent_components\": [\n    \"Vector-indexed trajectory embedding space\",\n    \"Persistent artifact provenance graph\",\n    \"Causal failure registry\",\n    \"Cross-session state serialization\",\n    \"Asynchronous memory compaction workers\"\n  ],\n  \"trajectory_design\": {\n    \"data_model\": {\n      \"node\": {\n        \"id\": \"UUID\",\n        \"parent_id\": \"UUID\",\n        \"action\": \"STR\",\n        \"state_delta\": \"JSON\",\n        \"outcome\": \"ENUM('success', 'failure', 'stale')\",\n        \"embedding\": \"VECTOR[1536]\"\n      },\n      \"edge\": {\n        \"source\": \"UUID\",\n        \"target\": \"UUID\",\n        \"type\": \"ENUM('derivation', 'refutation', 'refinement')\"\n      }\n    },\n    \"retrieval_api\": {\n      \"query\": \"vector_search(query_embedding, top_k=5)\",\n      \"filter\": \"WHERE outcome = 'success' AND environment_match > 0.8\",\n      \"synthesis\": \"prompt_injection(retrieved_context_summaries)\"\n    },\n    \"verification_rules\": {\n      \"non_repudiation\": \"hash_chain(node_sequence)\",\n      \"validity\": \"must_pass_unit_test_harness_before_persist\"\n    }\n  },\n  \"smallest_vertical_slice\": {\n    \"name\": \"Failure-Recovery-Registry\",\n    \"mechanism\": \"Intercept test-harness failures, serialize the specific code-state mutation causing the failure, store in Pinecone with metadata linking to the triggering instruction, and inject these embeddings as 'Negative Constraints' into the next agent prompt generation for the same repository scope.\"\n  }\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"absent_components\": [\n    \"Vector-indexed trajectory embedding space\",\n    \"Persistent artifact provenance graph\",\n    \"Causal failure registry\",\n    \"Cross-session state serialization\",\n    \"Asynchronous memory compaction workers\"\n  ],\n  \"trajectory_design\": {\n    \"data_model\": {\n      \"node\": {\n        \"id\": \"UUID\",\n        \"parent_id\": \"UUID\",\n        \"action\": \"STR\",\n        \"state_delta\": \"JSON\",\n        \"outcome\": \"ENUM('success', 'failure', 'stale')\",\n        \"embedding\": \"VECTOR[1536]\"\n      },\n      \"edge\": {\n        \"source\": \"UUID\",\n        \"target\": \"UUID\",\n        \"type\": \"ENUM('derivation', 'refutation', 'refinement')\"\n      }\n    },\n    \"retrieval_api\": {\n      \"query\": \"vector_search(query_embedding, top_k=5)\",\n      \"filter\": \"WHERE outcome = 'success' AND environment_match > 0.8\",\n      \"synthesis\": \"prompt_injection(retrieved_context_summaries)\"\n    },\n    \"verification_rules\": {\n      \"non_repudiation\": \"hash_chain(node_sequence)\",\n      \"validity\": \"must_pass_unit_test_harness_before_persist\"\n    }\n  },\n  \"smallest_vertical_slice\": {\n    \"name\": \"Failure-Recovery-Registry\",\n    \"mechanism\": \"Intercept test-harness failures, serialize the specific code-state mutation causing the failure, store in Pinecone with metadata linking to the triggering instruction, and inject these embeddings as 'Negative Constraints' into the next agent prompt generation for the same repository scope.\"\n  }\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPuGQSsyPYHzQ7AreuQ++2XlvoVU5BVe2SEPlUNxi1VKNq8xYXAlKrDOLrFfL5"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784440904,
+      "id": "RmhcarviEd2w1MkP7eeYoAo",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 407,
+        "prompt_tokens": 368,
+        "total_tokens": 775
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 2.301,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

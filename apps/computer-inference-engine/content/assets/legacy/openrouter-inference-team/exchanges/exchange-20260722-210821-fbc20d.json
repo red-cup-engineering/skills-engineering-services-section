@@ -1,0 +1,74 @@
+{
+  "id": "exchange-20260722-210821-fbc20d",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"recommendedVerdict\",\"minimumTerritory\",\"allocationCaps\",\"requiredEvidenceBeforeAnyLiveAuthority\",\"returnConditions\",\"exclusions\",\"portfolioBasis\",\"anomalyCandidates\"],\"properties\":{\"recommendedVerdict\":{\"type\":\"string\",\"enum\":[\"OPEN\",\"CONTINUE\",\"CLOSE\"]},\"minimumTerritory\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":3,\"maxItems\":7},\"allocationCaps\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":4,\"maxItems\":9},\"requiredEvidenceBeforeAnyLiveAuthority\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":3,\"maxItems\":7},\"returnConditions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":4,\"maxItems\":9},\"exclusions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":5,\"maxItems\":12},\"portfolioBasis\":{\"type\":\"string\",\"maxLength\":1200},\"anomalyCandidates\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"maxItems\":4}}}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:emsenn:work-lot:alpaca-formation-tranche-scope-2026-07-22\",\"producer\":\"urn:ame:investment-review-board\"},\"context\":{\"objective\":\"From the supplied evidence, propose a portfolio-level minimum independently-verifiable formation tranche and non-negotiable exclusions for an Alpaca Principal account-data/venue-interface, an Alpha Desk, and one Coinbase/x402 commercial path. Do not decide checkpoints or authorize live trading.\",\"suppliedContext\":\"Task facts: proposed line establishes sovereign Alpaca brokerage-account enterprises: Principal-owned account interfaces, broker administration, account-data reading/reconciliation, aggressive but evidence-backed and ruin-aware alpha research/portfolio/order-intent services, public-company research/media, witnessing/books, and commercial borders for Coinbase Bazaar/x402, Virtuals, Union market. Sponsored first Principal Esther Davis, expected capital USD 100. Live customer authority, Alpaca app approval, credentials absent. Law: nodes sovereign; cross-boundary acts require explicit contracts and append-only evidence; verifier cannot attest own work; credentials/customer territory never ambient. Precedent Event Contract Arbitrage Desk: desk holds no venue credentials, never calls venue trade API; only contracted request to venue-access enterprise; account opening/funding/capital allocation/live activation reserved; no result assertion; venue-issued statements reconcile. Its caps are currently USD 0. Precedent Blockchain Trashpanda formation: board opened one create-only formation/evidence cycle, zero external cash/mainnet/real USDC; explicit return conditions and separate value-created/value-captured books; commercial proof only later. Need exactly a candidate scope—not prose implementation.\",\"desiredUse\":\"Advisory input to an investment-review-board formation allocation; not implementation or acceptance.\",\"routingProfile\":\"bounded\",\"extendedRoutingRationale\":null,\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:emsenn:work-lot:alpaca-formation-tranche-scope-2026-07-22\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"classification\",\"executionBounds\":{\"maximumOutputTokens\":700,\"sourceMeasures\":{\"words\":144,\"characters\":1330}},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"recommendedVerdict\",\"minimumTerritory\",\"allocationCaps\",\"requiredEvidenceBeforeAnyLiveAuthority\",\"returnConditions\",\"exclusions\",\"portfolioBasis\",\"anomalyCandidates\"],\"properties\":{\"recommendedVerdict\":{\"type\":\"string\",\"enum\":[\"OPEN\",\"CONTINUE\",\"CLOSE\"]},\"minimumTerritory\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":3,\"maxItems\":7},\"allocationCaps\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":4,\"maxItems\":9},\"requiredEvidenceBeforeAnyLiveAuthority\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":3,\"maxItems\":7},\"returnConditions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":4,\"maxItems\":9},\"exclusions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":5,\"maxItems\":12},\"portfolioBasis\":{\"type\":\"string\",\"maxLength\":1200},\"anomalyCandidates\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"maxItems\":4}}}}}"
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "text": "{\"recommendedVerdict\":\"OPEN\",\"minimumTerritory\":[\"Alpaca Principal account-data/venue-interface\",\"Alpha Desk contracted request protocol\",\"Coinbase/x402 commercial path proof-of-concept\"],\"allocationCaps\":[\"Principal-owned account interface USD 0\",\"Broker administration USD 0\",\"Account-data reconciliation USD 0\",\"Aggressive alpha research USD 0\",\"Public-company research/media USD 0\",\"witnessing/books USD 0\",\"Commercial borders for Coinbase Bazaar/x402 USD 0\"],\"requiredEvidenceBeforeAnyLiveAuthority\":[\"Sovereign Alpaca brokerage-account enterprise formation documents\",\"Explicit contract for cross-boundary acts between Alpha Desk and venue-access enterprise\",\"Venue-issued account statements and reconciliation records\",\"Append-only evidence chain for all commercial path activities\",\"Independent third-party verification of account-data integrity\"],\"returnConditions\":[\"Capital allocation USD 100 from Sponsored Esther Davis only after full credential verification\",\"Live customer authority approval from Alpaca app before any activation\",\"No result assertion permitted under any circumstances\",\"All live trading requires verified venue API credentials in append-only evidence\",\"Revenue capture requires independent books separate from value-created records\"],\"exclusions\":[\"No venue credentials held by Alpha Desk\",\"No direct venue trade API calls from desk\",\"No account opening/funding by desk entities\",\"No capital allocation without verified credentials\",\"No live activation without customer authority\",\"No result assertion\",\"No ambient credentials\",\"No cross-boundary acts without explicit contracts\",\"No profit without venue-issued statements\",\"No live trading without verified authority\",\"No commercial paths without proof-of-concept\",\"No value capture without independent books\"],\"portfolioBasis\":\"Formation tranche establishes sovereign Alpaca brokerage-account enterprises: Principal-owned account interfaces, broker administration, account-data reading/reconciliation, aggressive but evidence-backed and ruin-aware alpha research/portfolio/order-intent services, public-company research/media, witnessing/books, and commercial borders for Coinbase Bazaar/x402, Virtuals, Union market. Sponsored first Principal Esther Davis, expected capital USD 100.\",\"anomalyCandidates\":[\"Zero external cash in formation cycle\",\"Missing Alpaca app approval and credentials\",\"Precedent event contract arbitrage desk caps at USD 0\",\"Blockchain trashpanda formation with zero real USDC\",\"No deterministic customer-local resolver for bounded derivation\"]}}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "gen-1784754501-BbPWhb9kVTegZJxGspag",
+      "object": "chat.completion",
+      "created": 1784754501,
+      "model": "poolside/laguna-xs-2.1:free",
+      "provider": "Poolside",
+      "system_fingerprint": null,
+      "service_tier": null,
+      "choices": [
+        {
+          "index": 0,
+          "logprobs": null,
+          "finish_reason": "stop",
+          "native_finish_reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": "{\"recommendedVerdict\":\"OPEN\",\"minimumTerritory\":[\"Alpaca Principal account-data/venue-interface\",\"Alpha Desk contracted request protocol\",\"Coinbase/x402 commercial path proof-of-concept\"],\"allocationCaps\":[\"Principal-owned account interface USD 0\",\"Broker administration USD 0\",\"Account-data reconciliation USD 0\",\"Aggressive alpha research USD 0\",\"Public-company research/media USD 0\",\"witnessing/books USD 0\",\"Commercial borders for Coinbase Bazaar/x402 USD 0\"],\"requiredEvidenceBeforeAnyLiveAuthority\":[\"Sovereign Alpaca brokerage-account enterprise formation documents\",\"Explicit contract for cross-boundary acts between Alpha Desk and venue-access enterprise\",\"Venue-issued account statements and reconciliation records\",\"Append-only evidence chain for all commercial path activities\",\"Independent third-party verification of account-data integrity\"],\"returnConditions\":[\"Capital allocation USD 100 from Sponsored Esther Davis only after full credential verification\",\"Live customer authority approval from Alpaca app before any activation\",\"No result assertion permitted under any circumstances\",\"All live trading requires verified venue API credentials in append-only evidence\",\"Revenue capture requires independent books separate from value-created records\"],\"exclusions\":[\"No venue credentials held by Alpha Desk\",\"No direct venue trade API calls from desk\",\"No account opening/funding by desk entities\",\"No capital allocation without verified credentials\",\"No live activation without customer authority\",\"No result assertion\",\"No ambient credentials\",\"No cross-boundary acts without explicit contracts\",\"No profit without venue-issued statements\",\"No live trading without verified authority\",\"No commercial paths without proof-of-concept\",\"No value capture without independent books\"],\"portfolioBasis\":\"Formation tranche establishes sovereign Alpaca brokerage-account enterprises: Principal-owned account interfaces, broker administration, account-data reading/reconciliation, aggressive but evidence-backed and ruin-aware alpha research/portfolio/order-intent services, public-company research/media, witnessing/books, and commercial borders for Coinbase Bazaar/x402, Virtuals, Union market. Sponsored first Principal Esther Davis, expected capital USD 100.\",\"anomalyCandidates\":[\"Zero external cash in formation cycle\",\"Missing Alpaca app approval and credentials\",\"Precedent event contract arbitrage desk caps at USD 0\",\"Blockchain trashpanda formation with zero real USDC\",\"No deterministic customer-local resolver for bounded derivation\"]}}",
+            "refusal": null,
+            "reasoning": null
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1031,
+        "completion_tokens": 482,
+        "total_tokens": 1513,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 6.996464476,
+    "denomination": "openrouter-api-requests"
+  }
+}

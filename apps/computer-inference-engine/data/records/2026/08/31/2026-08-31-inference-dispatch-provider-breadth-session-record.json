@@ -1,0 +1,65 @@
+{
+  "type": "InferenceDispatchProviderBreadthSessionRecord",
+  "recordedAt": "2026-08-31T19:10:00.000Z",
+  "session": "node-programming subagent, owner order: get the cloud inference stuff actually working (provider breadth)",
+  "actionsTaken": [
+    "Renamed content/provider-admissions/codex-inference-providers.nq to inference-providers.nq (filesystem move; git index was locked by a concurrent session so `git mv` could not run -- the rename is on disk, staging is left for the next commit).",
+    "Added urn:ame:bare-cedar-fog-npu-inference-team (the already-built, already-tested local Ollama provider) as a row to inference-providers.nq and to codex-inference-providers.json, pointed at http://127.0.0.1:8795/.well-known/agent-card.json -- it was fully built (agent card, signing JWKS, RMN executor, A2A server script, EVM account) but never admitted.",
+    "Fixed a real defect in bare-cedar-fog-npu-inference-team/src/execute-rmn-inference.mjs: it lacked the `LAW` export its own tests import; added the same hierarchical-circuit-v3 law hash gemini-services-section uses for the identical FOUR-bottom circuit shape.",
+    "Built @red-cup-engineering/openai-compatible-chat-completion-service (new package): one generic OpenAI-compatible chat-completions adapter parameterized by {providerId, chatCompletionsUrl, apiKey}, a CLI (scripts/dispatch-chat-completion.mjs), a provider catalog (content/providers/catalog.json), and 8 unit tests, all passing.",
+    "Ran real live dispatches through that one adapter against two different real providers (see assayOutcomes).",
+    "Researched and recorded free-tier facts + signup URLs for gemini-direct, groq, cerebras, mistral, openrouter in the catalog (keyed: false, ready to arm)."
+  ],
+  "assayOutcomes": [
+    {
+      "provider": "ollama-local (bare-cedar-fog-npu-inference-team's backing substrate)",
+      "path": "direct call to ollama-tool-exchange.mjs's executeOllamaToolExchange (the exact function execute-rmn-inference.mjs's perform() calls)",
+      "outcome": "SUCCESS",
+      "detail": "qwen3:1.7b answered a real classification prompt: {\"class\": \"Risk\", \"basis\": \"Financial and Operational\"}, 67 prompt / 15 completion tokens, ~17.6s wall time."
+    },
+    {
+      "provider": "ollama-local",
+      "path": "through the new generic openai-compatible-chat-completion-service adapter, via its own /v1/chat/completions surface",
+      "outcome": "SUCCESS",
+      "detail": "qwen3:1.7b answered a second real prompt (\"Dawn paints the sky in gold and rose, illuminating the world.\"), 19 prompt / 1966 completion tokens (qwen3 emits chain-of-thought before content), ~161s wall time."
+    },
+    {
+      "provider": "github-models",
+      "path": "existing run-one-exchange.mjs harness, then re-run through the new generic adapter for the same packet",
+      "outcome": "PROVIDER-SIDE REFUSAL (not an auth/scope failure)",
+      "detail": "gh auth token (scopes: gist, read:org, repo, workflow -- no explicit models scope) reached the endpoint and authenticated; the API returned HTTP 410 {\"code\":\"github_models_retirement_brownout\",\"message\":\"GitHub Models is temporarily unavailable as part of a scheduled retirement brownout.\"}. Both the original harness and the new generic adapter produced byte-identical refusal grounds, confirming the extraction is behavior-preserving."
+    },
+    {
+      "provider": "gemini-inference-team, rmn-semantic-conformance, wit-transition-assay (all on Cloud Run project five-six-one-group-dev)",
+      "path": "direct HTTPS GET of each agent-card.json",
+      "outcome": "CONFIRMED DEAD",
+      "detail": "All three returned HTTP 500 (matches the briefed fact: project billing is disabled)."
+    },
+    {
+      "provider": "bare-cedar-fog-npu-inference-team, full RMN/A2A envelope (executeMessage)",
+      "path": "the package's own test/execute-rmn-inference.test.mjs and test/provider-boundary.test.mjs",
+      "outcome": "BLOCKED -- pre-existing, not caused by this session",
+      "detail": "Two independent defects, both pre-existing in the checkout before this session touched the package: (1) test/execute-rmn-inference.test.mjs imports `rawNiUri` from @red-cup-engineering/relation-model-notation-runtime/canonical-cbor, but that export was dropped when the RMN runtime was split into its current packages (still present only in lib/legacy/2026-08-17 and 2026-08-26 rmn-semantic-conformance-v3/v4 sources) -- the test has apparently never run green against the current dependency versions. (2) `export const ACCOUNT = loadSettlementAccount(...)` runs eagerly at module import time and requires a live EVM_RPC_URL plus the Foundry `cast` CLI to query a real deployed EnterpriseAccountDeployed event on chain eip155:5615610 -- no such endpoint is configured in this dev environment, and standing one up is EVM-settlement custody, not inference-provider custody. Neither defect was introduced by this session; both block calling executeMessage() (and therefore a literal through-the-market assay with real settlement) here today."
+    }
+  ],
+  "findings": [
+    "The provider-side family already contains SIX separately hand-built RMN/A2A executors with near-identical envelopes (gemini-services-section, groq-inference-team, nvidia-inference-team, openrouter-inference-team, bare-cedar-fog-npu-inference-team, anthropic-inference-team/nvidia-inference-team stubs) -- confirms the owner's diagnosis. github-models-inference-team and llm-services-section/openai-services-section additionally each hand-roll a near-byte-identical standalone OpenAI-compatible run-one-exchange.mjs harness (diffed nvidia vs groq's execute-rmn-inference.mjs: ~90% identical besides actor/model names and error-message text). Migrating these onto the new openai-compatible-chat-completion-service (one consumer at a time, via migrate-consumer) is filed as follow-up, not done in this pass.",
+    "bare-cedar-fog-npu-inference-team was fully built (agent card, JWKS signing material, tested Ollama executor, A2A server) but never admitted in content/provider-admissions -- a built-but-unwired instance of the documented disease. Now admitted.",
+    "@red-cup-engineering/a2a-contracted-agent-service's serveContractedAgent() serves exactly one agent card and one executor per process (confirmed by reading its source) -- 'one process, N provider rows' is not available without extending that shared package, which is out of this session's scope (many unrelated consumers depend on it). The chosen shape instead runs one lightweight process per admitted provider, all from the same generic code -- one adapter, N process instances, not N implementations.",
+    "The entire customer-service dependency chain the full typed-inference market needs (RMN conformance + WIT transition assay) was deployed only to the dead five-six-one-group-dev Cloud Run project; content/provider-admissions/semantic-services.json still points there. @red-cup-engineering/relation-model-notation-conformance and @lenticule-science/wit-transition-assay both ship a local, npm-installable A2A server bin (serve-rmn-conformance-a2a, serve-wit-transition-assay-a2a) and the package's own test suites already show the exact ephemeral-local-server recipe (ephemeralAgentCardSigning + startWitnessJournalProviderProcess + startWitTransitionAssayProcess). Standing these up locally (or on a real host) to restore a genuinely local through-the-market path is a concrete, bounded follow-up.",
+    "GitHub Models is in a provider-announced 'retirement brownout' as of 2026-08-31 -- this is a live provider-side fact, not a token-scope problem; the owner's suspected fix (`gh auth refresh -s models`) was not needed to reach the API, but won't help either while the brownout holds.",
+    "codex-inference-providers.json (not the .nq file) is the file actually loaded by src/codex-inference-market.mjs and scripts/exercise-npu-procurement.mjs -- both are being reworked by another concurrent agent per the coordinator's boundary notice, so this session only added data rows to it and did not touch its consumer code."
+  ],
+  "shoppingList": [
+    { "provider": "gemini-direct", "envVar": "GEMINI_API_KEY", "signupUrl": "https://aistudio.google.com/apikey", "freeTier": "Flash-Lite ~15 RPM/1,000 RPD; Flash ~10 RPM/250 RPD; 2.5 Pro ~5 RPM/50-100 RPD." },
+    { "provider": "groq", "envVar": "GROQ_API_KEY", "signupUrl": "https://console.groq.com/keys", "freeTier": "Llama-3.1-8b-instant 30 RPM/14,400 RPD/6,000 TPM/500,000 TPD; larger models 1,000 RPD; per-organization." },
+    { "provider": "cerebras", "envVar": "CEREBRAS_API_KEY", "signupUrl": "https://cloud.cerebras.ai", "freeTier": "1,000,000 tokens/day, 30 RPM, 8,192-token context cap, no card." },
+    { "provider": "mistral", "envVar": "MISTRAL_API_KEY", "signupUrl": "https://console.mistral.ai", "freeTier": "~1B tokens/month, ~1 req/s; phone verification required, no card." },
+    { "provider": "openrouter", "envVar": "OPENROUTER_API_KEY", "signupUrl": "https://openrouter.ai/keys", "freeTier": "20+ :free models, 20 RPM; 50 req/day at $0 balance, 1,000 req/day after a one-time $10 credit purchase." }
+  ],
+  "testCounts": [
+    { "package": "openai-compatible-chat-completion-service (new)", "result": "8 pass, 0 fail" },
+    { "package": "inference-work-lot-service", "result": "120 pass, 1 fail (pre-existing, unrelated: inference-dispatch-configured-customer.test.mjs -- JSON-schema 'instance: not a JSON value' inside inference-work-carriers.mjs, no reference to provider-admissions in that test file)" },
+    { "package": "bare-cedar-fog-npu-inference-team", "result": "0 pass, 2 fail -- both blocked at import/module-load time by the two pre-existing defects above (rawNiUri, EVM_RPC_URL), not by anything changed this session" }
+  ]
+}

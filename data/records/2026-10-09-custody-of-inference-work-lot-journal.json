@@ -1,0 +1,27 @@
+{
+  "kind": "content-custody-record",
+  "verdict": "unique-move",
+  "subject": "inference-work-lot journal segments (data/journals) of 2026-10-07",
+  "store": {
+    "repository": "emsenn/bare-cedar-fog",
+    "service": "@red-cup-engineering/immutable-content-custody-service",
+    "carrier": "file",
+    "root": "lib/emsenn/services/561-group/services/561-group-services-section/data/state/content-custody",
+    "get": "node <service>/scripts/custody-file.mjs get --root <root> --ni <ni> --out <file>",
+    "getTree": "node <service>/scripts/custody-file.mjs get-tree --root <root> --ni <ni> --out <new-directory>",
+    "service_path": "lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-data-engineering-services-section/services/computer-content-engineering-services-section/services/computer-content-address-engineering-services-section/services/uri-services-section/services/ni-services-section/services/immutable-content-custody-service"
+  },
+  "held": [
+    {
+      "was": "~/.local/state/561-group/inference-work-lot",
+      "ni": "ni:///sha-256;s_IlAt6jJrSwPCSjTElPVhxYbw8Ok6zmQnTqSVSU_Ug",
+      "byteLength": 42733,
+      "mediaType": "application/gzip",
+      "packaging": "tar-gnu-sorted-mtime0-owner0-gzip-n",
+      "tree": "inference-work-lot"
+    }
+  ],
+  "judged": "2026-10-09",
+  "by": "Red Cup Engineer Senior (Claude), request debt-2026-10-09-home-and-state-in-info, requirement moved",
+  "verified": "read back by ni with get-tree or get and compared with the source (diff -r or cmp) before the home copy was removed; secret scan found no private key, token or credential assignment"
+}

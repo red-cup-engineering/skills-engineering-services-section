@@ -1,0 +1,122 @@
+# NotebookLM source projection
+
+Title: semiotic-smart-material/consolidated-fabrication-protocol
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/engineering-science-services-section/services/materials-services-section/services/smart-materials-service-section/services/abiotic-smart-material-services-section/services/semiotic-smart-material-services-section/content/documents/specifications/2026-07-26-consolidated-fabrication-protocol.md
+Original-Digest: sha256:abab19b4ab8f69babac7b433b3d6e3a53439c83f68af9051ab0547547f424d2d
+Disclosure: repository-source
+
+---
+title: "Consolidated Fabrication Protocol: Base Substrate, Read/Write Channels, and Open Steps"
+description: "Pulls the fabrication and operating steps scattered across the lenticule-science research notes into one ordered, buildable-format procedure, marking every step that is fully specified versus every step that is a proposal without a chosen parameter — a first draft toward a protocols.io-style versioned procedure, not itself that artifact yet."
+date-created: 2026-07-26
+kind: specification
+status: draft
+declared-by: claude-interactive-session-supplying-lenticule-science
+---
+# Consolidated Fabrication Protocol: Base Substrate, Read/Write Channels, and Open Steps
+
+**Status: draft.** This is a first assembly of steps already argued, individually, across
+several research notes, into one ordered procedure. It is not a validated protocol. Every step
+is marked as either *specified* (a real quantity or condition is given in a source note) or
+*unspecified* (the mechanism is argued but no concrete parameter has been chosen). See the
+companion bill of materials for reagent identities and hazard flags.
+
+---
+
+## Stage 1 — Base substrate cure (specified in outline, unspecified in exact quantity)
+
+1. Calcine zeolite 4A at 450–550 °C; handle dry thereafter. *(specified — temperature range
+   given.)*
+2. Combine divinyl-terminated PDMS, PETMP at SH:vinyl above unity, and calcined zeolite
+   particles. *(specified direction, unspecified loading fraction and exact SH:vinyl ratio.)*
+3. Add radical photoinitiator (DMPA or equivalent). *(unspecified loading.)*
+4. Cast or spin-coat onto the electrode-patterned substrate. *(unspecified film thickness.)*
+5. Cure under UV (or thermally) to consume all vinyl into thioether. *(specified mechanism,
+   unspecified cure dose/time.)*
+6. Expose the cured film to air, or a mild oxidant, to convert residual thiol to disulfide.
+   *(specified direction, unspecified oxidant identity, dose, or endpoint — the source note
+   flags over-oxidation into the sulfinic/sulfonic ladder as a live risk here specifically.)*
+
+**Result:** a floppy, ion-permeable film at baseline φ, with an initial disulfide population,
+sitting on the electrode array.
+
+---
+
+## Stage 2 — Structural write/erase (fully specified, from the thermal-cycle report)
+
+1. **Write.** Pass current to raise local temperature to ~140 °C for the write window
+   (120–150 °C). φ rises toward the crystallization plateau. *(specified.)*
+2. **Read-lock.** Cut current; cool to ambient. Below $T_v$, exchange kinetics freeze and the
+   written φ is retained. *(specified.)*
+3. **Erase.** Raise local temperature above 175 °C. Dissolution kinetics dominate and φ falls
+   back toward baseline. *(specified.)*
+4. **Read.** Measure local dynamic modulus (mechanical) and local impedance (electrical) at
+   the same site; the two should move in opposition as φ changes. *(specified as a signature,
+   unspecified instrumentation — no probe geometry or measurement protocol is given anywhere
+   in the source notes.)*
+
+---
+
+## Stage 3 — Local disulfide rewrite (mechanism specified, reagent/dose unspecified)
+
+1. Dope the cured film with a photoacid or photobase generator (PAG/PBG) — no specific PAG/PBG
+   compound is named in any source note. *(unspecified reagent.)*
+2. Address a spot with UV or a wavelength matched to the PAG/PBG's absorption. *(unspecified
+   wavelength, dose, spot size.)*
+3. Read local disulfide/thiol ratio by an unspecified means — no assay is named in any source
+   note for measuring this directly on the cured film. *(unspecified readout.)*
+
+**Open gap, not filled by any note so far:** there is no specified way to read the exchange-
+population state independent of the mechanical/electrical φ readout of Stage 2. This is worth
+flagging on its own — building this channel without a way to read it back is exactly the
+"filename, manifest claim, or passing local test does not substitute for the effect" problem
+named in this repo's own capability-cell discipline, applied to chemistry instead of software.
+
+---
+
+## Stage 4 — Metal–ligand retuning (mechanism specified, procedure unspecified)
+
+1. Formulate a catechol- or histidine-bearing crosslinker into the base network (not yet
+   integrated with Stage 1 above in any source note — this is a proposed addition, not a
+   confirmed compatible co-formulation).
+2. Equilibrate the cured film against a chosen metal salt solution ($\mathrm{ZnCl_2}$,
+   $\mathrm{NiCl_2}$, or $\mathrm{FeCl_3}$ depending on desired tier) for an unspecified soak
+   time.
+3. Read exchange rate by stress relaxation (DMA) at the tier of interest. *(method named,
+   parameters unspecified.)*
+
+---
+
+## Stage 5 — Growth, feeding, and locomotion (all three: mechanism specified, procedure absent)
+
+1. **Growth.** Immerse in a dilute silicate/aluminate bath (composition, pH, temperature, and
+   duration all unspecified) and weigh dry, before and after, against a solvent-uptake control.
+2. **Feeding.** Illuminate a catechol–Fe-doped region in the presence of an external electron
+   donor (donor compound unspecified) and assay free-thiol concentration before/after against
+   a dark control (assay method unspecified).
+3. **Locomotion.** Requires an azobenzene-functionalized liquid-crystal actuator region, not
+   yet formulated at all — this stage has no procedure, only a cited mechanism from a
+   structurally different material system.
+
+---
+
+## What this document is not
+
+This is not a protocols.io-ready procedure. Every "unspecified" marked above is a real
+decision that has to be made — usually by running a small screening experiment, sometimes by
+simply picking a reasonable literature-precedented value and stating it — before this becomes
+something a lab could follow without guessing. The falsification tests already written into
+the source notes are the natural first experiments for resolving the "unspecified" items tied
+to Stage 2 onward; Stage 1's unspecified items (loading, dose, ratio) don't have falsification
+tests written anywhere yet and are the actual next gap.
+
+---
+
+## Source notes this protocol draws from
+
+- *Thermal Write/Erase Dynamics* (2026-07-25) — Stage 2 in full.
+- *Dual Organosulfur Crosslink Populations* (2026-07-25) — Stage 1's cure chemistry, Stage 3's
+  disulfide mechanism.
+- *Ambient and Specific Carriers* (2026-07-25) — Stage 3's PAG/PBG addressing logic.
+- *Three Ways to Retune the Exchangeable Population* (2026-07-25) — Stage 4 in full.
+- *Three Missing Pieces for a Fully Synthetic Organism* (2026-07-26) — Stage 5 in full.

@@ -1,0 +1,1250 @@
+import Obsmetrologia.Cohomology.BigradedSettlingCohomology
+import Obsmetrologia.Cohomology.InconsistencySheaf
+import Obsmetrologia.Language.Positing.D4Gauge
+
+/-!
+# The truth–knowledge LES: decomposition, connecting homomorphism, and the quench
+
+One development in three movements, all under `Bigraded` (corpus:
+`content/.../bigraded-settling-cohomology`,
+`content/.../settling-cohomology/references/truth-knowledge-cohomology-long-exact-sequence`,
+and the stage-indexed `Δ⁺,⊤_τ` of `content/.../inconsistency-sheaf`).
+
+**Degree-0 decomposition (sections A–E).** `BigradedSettlingCohomology` proves the
+cochain-level input of the truth–knowledge mapping cone (the designated SES is split, the
+vertical differential `d_v = 0`), but its cohomology objects are placeholders (`Hn n := Unit`).
+Here the degree-0 cohomology objects are supplied — the designated-section subgroups
+`{c // Vanishes (mask v) c}` of the truth, inconsistency, and knowledge sheaves — and the
+direct-sum decomposition `KSec v ≅ TSec v × TopSec v` is an isomorphism (`split`/`merge`
+mutually inverse), by disjointness of the masks `dT`, `dTop` and `dK = dT ⊔ dTop`. On this
+carrier the LES degenerates: all content is in degree 0 and the connecting maps vanish.
+
+**The connecting homomorphism with content (sections F–L).** A `GradedTwoTerm` complex —
+finite cells and edges over `ℤ` with truth masks and the subcomplex law `truth_closed` (truth
+cells are incident only to truth edges) — carries the six-term sequence
+
+`0 → H⁰_t → H⁰_k → H⁰_⊤ → H¹_t → H¹_k → H¹_⊤ → 0`
+
+as the entire graded LES (degrees above 1 are zero by construction, matching
+`Cohomology.hn_vanishes_above_one`). Exactness is stated in representative form. The
+connecting map sends a record 0-cocycle to its ambient coboundary, which lands in the truth
+edges; `connecting_zero_of_split` shows it vanishes identically when the complex splits as a
+direct sum (the static-mask case). `measurementComplex` is the minimal instance with a nonzero
+connecting class: one coherent cell, one record cell, one truth edge, where the truth `H¹` is
+`ℤ`, the ambient `H¹` is trivial, and the record generator's connecting class generates the
+image.
+
+**The quench: the connecting homomorphism on a settling stage (sections M–Q).** A **stage**
+is a step map on charged cells; the graded complex is the mapping-torus complex of the step —
+degree 0 the cell cochains, degree 1 the transition cochains, `δ⁰ c = c ∘ step − c`
+(`delta0_temporal`). The truth grading is read from the charges (`Charge.isInconsistency`, the
+`dTop` mask of `InconsistencySheaf`); an edge is a truth edge when either endpoint is a truth
+cell, which makes the truth cochains a subcomplex. `connecting_zero_of_charge_invariant` is
+the degeneration criterion on this carrier: a stage whose step preserves the inconsistency
+mask — freezes nothing, thaws nothing — has zero connecting map. `quench_connecting_model` is
+the nonzero witness on charged cells: a record source feeding a truth cell that refreezes
+into a distinct record (`src → mid → sink`, charges `⊤, t, ⊤`) carries a record cocycle whose
+connecting class is not a truth coboundary; `j_symmetry_breaking` contrasts it with the uncut
+`negSwap`-orbit carrier, where every connecting class is a coboundary.
+
+## Main definitions
+
+* `KSec` / `TSec` / `TopSec`, `split` / `merge` — the degree-0 cohomology objects of the
+  knowledge, truth, and `⊤` sheaves, and the decomposition maps between them.
+* `GradedTwoTerm`, `GradedTwoTerm.delta0`, `GradedTwoTerm.connecting` — the graded two-term
+  complex and its coboundary and connecting maps.
+* `measurementComplex`, `recordUnit` — the minimal nonzero-connecting instance.
+* `chargeTruth`, `temporalComplex` — the mapping-torus complex of a settling stage.
+* `QCell`, `qStep`, `qCharge`, `quenchStage`, `recordSrc`, `jStep`, `jCarrier` — the quench
+  stage and the `negSwap`-orbit carrier.
+
+## Main results
+
+* `truth_knowledge_section_decomposition`, `truth_knowledge_graded_decomposition` —
+  `KSec v ≅ TSec v × TopSec v`, and the graded LES degenerated on the sheaf carrier.
+* `GradedTwoTerm.graded_two_term_les`, `GradedTwoTerm.connecting_zero_of_split` — the
+  six-term LES in representative form and the split degeneration criterion.
+* `measurement_connecting_model` — the bundled minimal nonzero-connecting instance.
+* `delta0_temporal`, `connecting_zero_of_charge_invariant` — the mapping-torus differential
+  and the charge-invariance degeneration criterion.
+* `quench_connecting_coboundary_iff_records_agree`, `j_symmetry_breaking`,
+  `quench_connecting_model` — the quench obstruction and the orbit/cut dichotomy.
+* `GradedTwoTerm.six_term_les_objects` — the six-term sequence on cohomology objects:
+  `H⁰` as cocycle subtypes, `H¹` as quotients by coboundaries, the five maps descending to
+  classes, and exactness at every node.
+* `measurement_conn_recordUnit_ne_zero`, `quench_conn_recordSrc_ne_zero` — the connecting
+  map is nonzero on the instances as a map between the cohomology objects.
+
+## References
+
+`content/.../bigraded-settling-cohomology`,
+`content/.../settling-cohomology/references/truth-knowledge-cohomology-long-exact-sequence`,
+`content/.../inconsistency-sheaf`. Built on
+`Obsmetrologia.Cohomology.BigradedSettlingCohomology` and
+`Obsmetrologia.Cohomology.InconsistencySheaf`.
+
+## Tags
+
+bigraded cohomology, truth–knowledge, long exact sequence, connecting homomorphism, mapping
+torus, quench, Landauer
+-/
+
+namespace Obsmetrologia
+namespace Bigraded
+
+open Obsmetrologia.AssocSheaf
+
+variable (v : Valuation)
+
+/-! ## (A) The degree-0 cohomology objects -/
+
+/-- Degree-0 cohomology of the knowledge sheaf `F_U^{(k)}`: its designated sections (cochains
+vanishing off the knowledge mask `dK`). -/
+abbrev KSec : Type := { c : Cochain // Vanishes (dK v) c }
+
+/-- Degree-0 cohomology of the truth sheaf `F_U^{(t)}`: sections vanishing off the truth mask `dT`. -/
+abbrev TSec : Type := { c : Cochain // Vanishes (dT v) c }
+
+/-- Degree-0 cohomology of the `⊤` sheaf `F_U^{(⊤)}`: sections vanishing off the mask `dTop`. -/
+abbrev TopSec : Type := { c : Cochain // Vanishes (dTop v) c }
+
+/-! ## (B) The disjoint-mask split lemmas -/
+
+/-- Recombining a truth-supported and a `⊤`-supported cochain stays knowledge-supported: their
+supports `dT`, `dTop` union to `dK`. -/
+theorem combine_vanishes_dK {a b : Cochain} (ha : Vanishes (dT v) a) (hb : Vanishes (dTop v) b) :
+    Vanishes (dK v) (combine a b) := by
+  intro φ hφ
+  rw [dK_eq_dT_or_dTop] at hφ
+  obtain ⟨hdT, hdTop⟩ := Bool.or_eq_false_iff.mp hφ
+  show a φ + b φ = 0
+  simp [ha φ hdT, hb φ hdTop]
+
+/-- The truth-projection of a recombination recovers the truth part (the `⊤` part vanishes on `dT`). -/
+theorem projT_combine {a b : Cochain} (ha : Vanishes (dT v) a) (hb : Vanishes (dTop v) b) :
+    projT v (combine a b) = a := by
+  funext φ
+  simp only [projT, restrict, combine]
+  cases hT : dT v φ with
+  | true =>
+    have hTop : dTop v φ = false := by
+      cases hd : dTop v φ
+      · rfl
+      · exact absurd ⟨hT, hd⟩ (dT_dTop_disjoint v φ)
+    simp [hb φ hTop]
+  | false => simp [ha φ hT]
+
+/-- The `⊤`-projection of a recombination recovers the `⊤` part (the truth part vanishes on `dTop`). -/
+theorem projTop_combine {a b : Cochain} (ha : Vanishes (dT v) a) (hb : Vanishes (dTop v) b) :
+    projTop v (combine a b) = b := by
+  funext φ
+  simp only [projTop, restrict, combine]
+  cases hTop : dTop v φ with
+  | true =>
+    have hT : dT v φ = false := by
+      cases hd : dT v φ
+      · rfl
+      · exact absurd ⟨hd, hTop⟩ (dT_dTop_disjoint v φ)
+    simp [ha φ hT]
+  | false => simp [hb φ hTop]
+
+/-! ## (C) The decomposition maps and the isomorphism -/
+
+/-- Split a knowledge section into its truth part and its `⊤` part. -/
+def split : KSec v → TSec v × TopSec v :=
+  fun c => (⟨projT v c.val, restrict_vanishes (dT v) c.val⟩,
+            ⟨projTop v c.val, restrict_vanishes (dTop v) c.val⟩)
+
+/-- Recombine a truth section and a `⊤` section into a knowledge section. -/
+def merge : TSec v × TopSec v → KSec v :=
+  fun p => ⟨combine p.1.val p.2.val, combine_vanishes_dK v p.1.property p.2.property⟩
+
+/-- `merge ∘ split = id`: recombining the two parts of a knowledge section recovers it. -/
+theorem merge_split (c : KSec v) : merge v (split v c) = c :=
+  Subtype.ext (combine_split v c.val c.property)
+
+/-- `split ∘ merge = id`: the two parts are recovered from their recombination. -/
+theorem split_merge (p : TSec v × TopSec v) : split v (merge v p) = p := by
+  obtain ⟨a, b⟩ := p
+  have h1 : (split v (merge v (a, b))).1 = a :=
+    Subtype.ext (projT_combine v a.property b.property)
+  have h2 : (split v (merge v (a, b))).2 = b :=
+    Subtype.ext (projTop_combine v a.property b.property)
+  exact Prod.ext h1 h2
+
+/-! ## (D) The decomposition headline -/
+
+/-- **The truth–knowledge section decomposition.** The knowledge sheaf's designated sections (the degree-0 cohomology object `H⁰(F_U^{(k)})`) are the **direct sum** of the truth sections and
+the `⊤` sections — `split`/`merge` are mutually inverse. This is the degenerate truth–knowledge LES
+realized at the object level (`d_v = 0` makes the knowledge sheaf split as `F_U^{(t)} ⊕ F_U^{(⊤)}`),
+with objects rather than the placeholder `Hn := Unit`. -/
+theorem truth_knowledge_section_decomposition :
+    (∀ c : KSec v, merge v (split v c) = c)
+    ∧ (∀ p : TSec v × TopSec v, split v (merge v p) = p) :=
+  ⟨fun c => merge_split v c, fun p => split_merge v p⟩
+
+/-! ## (E) The full graded LES, degenerated -/
+
+/-- **The truth–knowledge LES degenerates to the direct-sum decomposition.** The induced long exact
+sequence of the split designated SES collapses because all graded content is concentrated in degree
+0: there, the knowledge sections are the direct sum of the truth and `⊤` sections
+(`split`/`merge` are the induced maps and are mutually inverse — `H⁰(F_U^{(k)}) ≅ H⁰(F_U^{(t)}) ⊕
+H⁰(F_U^{(⊤)})`); in degree 1 the settling cohomology `H¹` **vanishes** for every Čech datum of each
+sheaf (every cocycle is a coboundary); and in every degree `n ≥ 2` the cohomology is the zero group.
+So the only nondegenerate graded piece is the `H⁰` direct sum, and the connecting maps of the
+LES are zero — the degenerate truth–knowledge LES, on real cohomology objects rather than the
+placeholder `Hn := Unit`. -/
+theorem truth_knowledge_graded_decomposition :
+    ((∀ c : KSec v, merge v (split v c) = c)
+        ∧ (∀ p : TSec v × TopSec v, split v (merge v p) = p))
+    ∧ (∀ D : Cohomology.Cech1, Cohomology.H1Vanishes D)
+    ∧ (∀ n : Nat, 2 ≤ n → ∀ x y : Cohomology.Hn n, x = y) :=
+  ⟨⟨fun c => merge_split v c, fun p => split_merge v p⟩,
+   fun D => Cohomology.h1_vanishes D,
+   fun n hn x y => Cohomology.hn_vanishes_above_one n hn x y⟩
+
+/-! ## (F) Graded two-term complexes -/
+
+/-- A finite two-term integer cochain complex with a truth grading: cells (degree 0), edges
+(degree 1), incidence `d`, truth masks on both degrees, and the subcomplex law that truth
+cells are incident only to truth edges. -/
+structure GradedTwoTerm where
+  /-- The 0-cells. -/
+  Cell : Type
+  /-- The 1-cells. -/
+  Edge : Type
+  /-- The enumeration of 0-cells over which the coboundary sum is taken. -/
+  cells : List Cell
+  /-- The incidence coefficients `∂ : C1 → C0` read as `δ⁰` weights. -/
+  d : Cell → Edge → Int
+  /-- The truth mask on 0-cells. -/
+  tCell : Cell → Bool
+  /-- The truth mask on 1-cells. -/
+  tEdge : Edge → Bool
+  /-- Truth cells are incident only to truth edges — the truth cochains form a subcomplex. -/
+  truth_closed : ∀ x e, tCell x = true → tEdge e = false → d x e = 0
+
+namespace GradedTwoTerm
+
+/-- `∀`-bounded map-sums of zeros are zero. -/
+private theorem sum_map_zero {α : Type} :
+    ∀ (l : List α) (f : α → Int), (∀ a, a ∈ l → f a = 0) → (l.map f).sum = 0
+  | [], _, _ => rfl
+  | a :: t, f, h => by
+    simp only [List.map_cons, List.sum_cons]
+    rw [h a (List.mem_cons_self), sum_map_zero t f (fun b hb => h b (List.mem_cons_of_mem a hb))]
+    omega
+
+/-- Map-sums distribute over pointwise addition. -/
+private theorem sum_map_add {α : Type} :
+    ∀ (l : List α) (f g : α → Int),
+      (l.map (fun a => f a + g a)).sum = (l.map f).sum + (l.map g).sum
+  | [], _, _ => rfl
+  | a :: t, f, g => by
+    simp only [List.map_cons, List.sum_cons, sum_map_add t f g]
+    omega
+
+variable (K : GradedTwoTerm)
+
+/-- The degree-0 coboundary: `(δ⁰ c) e = Σ_x d x e · c x` over the cell enumeration. -/
+def delta0 (c : K.Cell → Int) (e : K.Edge) : Int :=
+  (K.cells.map (fun x => K.d x e * c x)).sum
+
+/-- `δ⁰` is additive. -/
+theorem delta0_add (c c' : K.Cell → Int) (e : K.Edge) :
+    K.delta0 (fun x => c x + c' x) e = K.delta0 c e + K.delta0 c' e := by
+  unfold delta0
+  have h : (fun x => K.d x e * (c x + c' x))
+      = fun x => K.d x e * c x + K.d x e * c' x := by
+    funext x; exact Int.mul_add ..
+  rw [h, sum_map_add]
+
+/-- A 0-cochain is **truth-supported** when it vanishes off the truth cells. -/
+def TruthCochain0 (c : K.Cell → Int) : Prop := ∀ x, K.tCell x = false → c x = 0
+
+/-- A 0-cochain is **record-supported** (`⊤`-supported) when it vanishes on the truth cells. -/
+def TopCochain0 (c : K.Cell → Int) : Prop := ∀ x, K.tCell x = true → c x = 0
+
+/-- A 1-cochain is **truth-supported** when it vanishes off the truth edges. -/
+def TruthCochain1 (f : K.Edge → Int) : Prop := ∀ e, K.tEdge e = false → f e = 0
+
+/-- A record 0-cochain is a **record cocycle** when its ambient coboundary vanishes on the
+record edges — it is a cocycle of the quotient complex. -/
+def TopCocycle (c : K.Cell → Int) : Prop :=
+  K.TopCochain0 c ∧ ∀ e, K.tEdge e = false → K.delta0 c e = 0
+
+/-- The truth projection of a 0-cochain. -/
+def projT0 (c : K.Cell → Int) : K.Cell → Int := fun x => if K.tCell x then c x else 0
+
+/-- The record projection of a 0-cochain. -/
+def projTop0 (c : K.Cell → Int) : K.Cell → Int := fun x => if K.tCell x then 0 else c x
+
+theorem projT0_truth (c : K.Cell → Int) : K.TruthCochain0 (K.projT0 c) := by
+  intro x hx; simp [projT0, hx]
+
+theorem projTop0_top (c : K.Cell → Int) : K.TopCochain0 (K.projTop0 c) := by
+  intro x hx; simp [projTop0, hx]
+
+/-- Every 0-cochain is the sum of its truth and record projections. -/
+theorem projT0_add_projTop0 (c : K.Cell → Int) (x : K.Cell) :
+    K.projT0 c x + K.projTop0 c x = c x := by
+  unfold projT0 projTop0
+  cases K.tCell x <;> simp
+
+/-! ## (G) The subcomplex law and the connecting map -/
+
+/-- `δ⁰` of a truth-supported 0-cochain is truth-supported — the truth cochains form a
+subcomplex (`truth_closed` in action). -/
+theorem delta0_truth {c : K.Cell → Int} (hc : K.TruthCochain0 c) :
+    K.TruthCochain1 (K.delta0 c) := by
+  intro e he
+  apply sum_map_zero
+  intro x _
+  cases hx : K.tCell x with
+  | true => rw [K.truth_closed x e hx he, Int.zero_mul]
+  | false => rw [hc x hx, Int.mul_zero]
+
+/-- The **connecting cochain** of a record 0-cochain: its ambient coboundary. For a record
+cocycle it is truth-supported (`connecting_truth_supported`). -/
+def connecting (c : K.Cell → Int) : K.Edge → Int := K.delta0 c
+
+/-- The connecting cochain of a record cocycle lands in the truth edges. -/
+theorem connecting_truth_supported {c : K.Cell → Int} (hc : K.TopCocycle c) :
+    K.TruthCochain1 (K.connecting c) :=
+  fun e he => hc.2 e he
+
+/-! ## (H) Exactness, in representative form -/
+
+/-- **Exactness at `H⁰` of the quotient.** The connecting class of a record cocycle is a truth
+coboundary iff the record cocycle lifts to an ambient 0-cochain with vanishing coboundary that
+agrees with it off the truth cells. The witnesses convert by `t = c - b`. -/
+theorem connecting_coboundary_iff_lifts {c : K.Cell → Int} (_hc : K.TopCocycle c) :
+    (∃ t, K.TruthCochain0 t ∧ K.delta0 t = K.connecting c)
+      ↔ (∃ b, (∀ x, K.tCell x = false → b x = c x) ∧ ∀ e, K.delta0 b e = 0) := by
+  constructor
+  · rintro ⟨t, ht, hdt⟩
+    refine ⟨fun x => c x - t x, fun x hx => by show c x - t x = c x; rw [ht x hx]; omega,
+      fun e => ?_⟩
+    have h : (fun x => c x - t x) = fun x => c x + (-1) * t x := by
+      funext x; omega
+    have hneg : K.delta0 (fun x => (-1) * t x) e = (-1) * K.delta0 t e := by
+      unfold delta0
+      have h' : (fun x => K.d x e * ((-1) * t x)) = fun x => (-1) * (K.d x e * t x) := by
+        funext x
+        rw [← Int.mul_assoc, Int.mul_comm (K.d x e) (-1), Int.mul_assoc]
+      rw [h']
+      induction K.cells with
+      | nil => simp
+      | cons a l ih => simp only [List.map_cons, List.sum_cons, ih]; omega
+    rw [h, K.delta0_add, hneg, hdt]
+    show K.delta0 c e + (-1) * K.delta0 c e = 0
+    omega
+  · rintro ⟨b, hb, hdb⟩
+    refine ⟨fun x => c x - b x, fun x hx => by show c x - b x = 0; rw [hb x hx]; omega, ?_⟩
+    funext e
+    have h : (fun x => c x - b x) = fun x => c x + (-1) * b x := by
+      funext x; omega
+    have hneg : K.delta0 (fun x => (-1) * b x) e = (-1) * K.delta0 b e := by
+      unfold delta0
+      have h' : (fun x => K.d x e * ((-1) * b x)) = fun x => (-1) * (K.d x e * b x) := by
+        funext x
+        rw [← Int.mul_assoc, Int.mul_comm (K.d x e) (-1), Int.mul_assoc]
+      rw [h']
+      induction K.cells with
+      | nil => simp
+      | cons a l ih => simp only [List.map_cons, List.sum_cons, ih]; omega
+    rw [h, K.delta0_add, hneg, hdb]
+    show K.delta0 c e + (-1) * 0 = K.delta0 c e
+    omega
+
+/-- **Exactness at `H¹` of the truth subcomplex.** A truth-supported 1-cochain is an ambient
+coboundary iff it is a connecting class plus a truth coboundary. The witnesses convert by the
+truth/record projection split. -/
+theorem truth_cocycle_ambient_coboundary_iff {f : K.Edge → Int} (hf : K.TruthCochain1 f) :
+    (∃ b, K.delta0 b = f)
+      ↔ (∃ c t, K.TopCocycle c ∧ K.TruthCochain0 t
+          ∧ ∀ e, f e = K.connecting c e + K.delta0 t e) := by
+  constructor
+  · rintro ⟨b, hdb⟩
+    refine ⟨K.projTop0 b, K.projT0 b, ⟨K.projTop0_top b, fun e he => ?_⟩,
+      K.projT0_truth b, fun e => ?_⟩
+    · -- record part is a quotient cocycle: its coboundary off the truth edges is
+      -- f − δ(truth part), and both terms vanish there
+      have hsplit : K.delta0 b e = K.delta0 (K.projT0 b) e + K.delta0 (K.projTop0 b) e := by
+        rw [← K.delta0_add]
+        show K.delta0 b e = K.delta0 (fun x => K.projT0 b x + K.projTop0 b x) e
+        have h : (fun x => K.projT0 b x + K.projTop0 b x) = b := by
+          funext x; exact K.projT0_add_projTop0 b x
+        rw [h]
+      have hfe : f e = 0 := hf e he
+      have htruth : K.delta0 (K.projT0 b) e = 0 := K.delta0_truth (K.projT0_truth b) e he
+      rw [hdb] at hsplit
+      omega
+    · have hsplit : K.delta0 b e = K.delta0 (K.projT0 b) e + K.delta0 (K.projTop0 b) e := by
+        rw [← K.delta0_add]
+        show K.delta0 b e = K.delta0 (fun x => K.projT0 b x + K.projTop0 b x) e
+        have h : (fun x => K.projT0 b x + K.projTop0 b x) = b := by
+          funext x; exact K.projT0_add_projTop0 b x
+        rw [h]
+      rw [hdb] at hsplit
+      show f e = K.delta0 (K.projTop0 b) e + K.delta0 (K.projT0 b) e
+      omega
+  · rintro ⟨c, t, _hc, _ht, hsum⟩
+    refine ⟨fun x => c x + t x, ?_⟩
+    funext e
+    rw [K.delta0_add]
+    have := hsum e
+    have hconn : K.connecting c e = K.delta0 c e := rfl
+    show K.delta0 c e + K.delta0 t e = f e
+    omega
+
+/-! ## (I) The degeneration criterion -/
+
+/-- **The split case has zero connecting map.** If record cells are also incident only to
+record edges — the complex splits as a direct sum of the truth and record complexes — then the
+connecting cochain of every record cocycle is identically zero. This is the two-term analogue
+of `BigradedSettlingCohomology.dv_zero`: the static-mask carrier is the split case. -/
+theorem connecting_zero_of_split
+    (hsplit : ∀ x e, K.tCell x = false → K.tEdge e = true → K.d x e = 0)
+    {c : K.Cell → Int} (hc : K.TopCocycle c) :
+    ∀ e, K.connecting c e = 0 := by
+  intro e
+  cases he : K.tEdge e with
+  | false => exact hc.2 e he
+  | true =>
+    apply sum_map_zero
+    intro x _
+    cases hx : K.tCell x with
+    | true => rw [hc.1 x hx, Int.mul_zero]
+    | false => rw [hsplit x e hx he, Int.zero_mul]
+
+/-! ## (J) The graded LES, bundled -/
+
+/-- Bundles the graded LES in representative form: the truth subcomplex is closed under `δ⁰`
+(`delta0_truth`); the connecting class of a record cocycle is truth-supported; exactness at
+`H⁰` of the quotient (`connecting_coboundary_iff_lifts`); exactness at `H¹` of the truth
+subcomplex (`truth_cocycle_ambient_coboundary_iff`); and the split degeneration
+(`connecting_zero_of_split`). Degrees above 1 are zero by construction
+(`Cohomology.hn_vanishes_above_one` is the sheaf-side statement). -/
+theorem graded_two_term_les :
+    (∀ c : K.Cell → Int, K.TruthCochain0 c → K.TruthCochain1 (K.delta0 c))
+    ∧ (∀ c : K.Cell → Int, K.TopCocycle c → K.TruthCochain1 (K.connecting c))
+    ∧ (∀ c : K.Cell → Int, K.TopCocycle c →
+        ((∃ t, K.TruthCochain0 t ∧ K.delta0 t = K.connecting c)
+          ↔ (∃ b, (∀ x, K.tCell x = false → b x = c x) ∧ ∀ e, K.delta0 b e = 0)))
+    ∧ (∀ f : K.Edge → Int, K.TruthCochain1 f →
+        ((∃ b, K.delta0 b = f)
+          ↔ (∃ c t, K.TopCocycle c ∧ K.TruthCochain0 t
+              ∧ ∀ e, f e = K.connecting c e + K.delta0 t e)))
+    ∧ ((∀ x e, K.tCell x = false → K.tEdge e = true → K.d x e = 0) →
+        ∀ c : K.Cell → Int, K.TopCocycle c → ∀ e, K.connecting c e = 0) :=
+  ⟨fun _ hc => K.delta0_truth hc,
+   fun _ hc => K.connecting_truth_supported hc,
+   fun _ hc => K.connecting_coboundary_iff_lifts hc,
+   fun _ hf => K.truth_cocycle_ambient_coboundary_iff hf,
+   fun hsplit _ hc => K.connecting_zero_of_split hsplit hc⟩
+
+end GradedTwoTerm
+
+/-! ## (K) The measurement instance -/
+
+/-- The two 0-cells of the measurement instance: the coherent cell and the record cell. -/
+inductive MCell | coherent | record
+  deriving DecidableEq, Repr
+
+/-- The single truth edge of the measurement instance. -/
+inductive MEdge | e
+  deriving DecidableEq, Repr
+
+/-- The measurement instance: one coherent (truth) cell not incident to the edge, one record
+cell incident with coefficient `1`, one truth edge. The truth subcomplex has zero
+differential, so its `H¹` is `ℤ` on the edge; the ambient complex has trivial `H¹`. -/
+def measurementComplex : GradedTwoTerm where
+  Cell := MCell
+  Edge := MEdge
+  cells := [MCell.coherent, MCell.record]
+  d := fun x _ => match x with
+    | .coherent => 0
+    | .record => 1
+  tCell := fun x => match x with
+    | .coherent => true
+    | .record => false
+  tEdge := fun _ => true
+  truth_closed := fun _ ed h h' => by cases ed; exact absurd h' (by decide)
+
+/-- The record generator: `1` on the record cell, `0` on the coherent cell. -/
+def recordUnit : MCell → Int := fun x => match x with
+  | .coherent => 0
+  | .record => 1
+
+/-- The record generator is a record cocycle (there are no record edges). -/
+theorem recordUnit_topCocycle : measurementComplex.TopCocycle recordUnit :=
+  ⟨fun x hx => by cases x <;> first | rfl | exact absurd hx (by decide),
+   fun ed he => by cases ed; exact absurd he (by decide)⟩
+
+/-- The connecting class of the record generator is `1` on the edge. -/
+theorem connecting_recordUnit (ed : MEdge) :
+    measurementComplex.connecting recordUnit ed = 1 := by
+  cases ed; decide
+
+/-- **The connecting class of the record generator is not a truth coboundary** — discarding
+the record leaves a nonzero class in the truth `H¹`. -/
+theorem recordUnit_class_not_truth_coboundary :
+    ¬ ∃ t, measurementComplex.TruthCochain0 t
+        ∧ measurementComplex.delta0 t = measurementComplex.connecting recordUnit := by
+  rintro ⟨t, ht, hdt⟩
+  have h1 : measurementComplex.delta0 t MEdge.e = 1 := by
+    rw [hdt]; exact connecting_recordUnit MEdge.e
+  have h0 : t MCell.record = 0 := ht MCell.record (by decide)
+  have : measurementComplex.delta0 t MEdge.e = t MCell.record := by
+    show 0 * t MCell.coherent + (1 * t MCell.record + 0) = t MCell.record
+    omega
+  omega
+
+/-- **Every 1-cochain of the measurement instance is an ambient coboundary** — the ambient
+(knowledge) `H¹` is trivial: the record cell explains the edge. -/
+theorem measurement_ambient_h1_trivial (f : MEdge → Int) :
+    ∃ b, measurementComplex.delta0 b = f := by
+  refine ⟨fun x => match x with | .coherent => 0 | .record => f MEdge.e, ?_⟩
+  funext ed
+  cases ed
+  show 0 * 0 + (1 * f MEdge.e + 0) = f MEdge.e
+  omega
+
+/-- **The record generator's class generates the connecting image**: every record cocycle's
+connecting cochain is its record coordinate times the generator's. The image has one
+independent class — one bit in the `Landauer.landauerBits` currency. -/
+theorem connecting_image_generated_by_recordUnit (c : MCell → Int)
+    (_hc : measurementComplex.TopCocycle c) (ed : MEdge) :
+    measurementComplex.connecting c ed
+      = c MCell.record * measurementComplex.connecting recordUnit ed := by
+  cases ed
+  rw [connecting_recordUnit]
+  show 0 * c MCell.coherent + (1 * c MCell.record + 0) = c MCell.record * 1
+  omega
+
+/-! ## (L) The measurement headline -/
+
+/-- Bundles the measurement instance: the record generator is a record cocycle; its
+connecting class is truth-supported and is not a truth coboundary; the ambient `H¹` is
+trivial; and the connecting image is generated by the record generator's class. -/
+theorem measurement_connecting_model :
+    measurementComplex.TopCocycle recordUnit
+    ∧ measurementComplex.TruthCochain1 (measurementComplex.connecting recordUnit)
+    ∧ (¬ ∃ t, measurementComplex.TruthCochain0 t
+        ∧ measurementComplex.delta0 t = measurementComplex.connecting recordUnit)
+    ∧ (∀ f : MEdge → Int, ∃ b, measurementComplex.delta0 b = f)
+    ∧ (∀ (c : MCell → Int), measurementComplex.TopCocycle c → ∀ ed,
+        measurementComplex.connecting c ed
+          = c MCell.record * measurementComplex.connecting recordUnit ed) :=
+  ⟨recordUnit_topCocycle,
+   measurementComplex.connecting_truth_supported recordUnit_topCocycle,
+   recordUnit_class_not_truth_coboundary,
+   measurement_ambient_h1_trivial,
+   fun c hc ed => connecting_image_generated_by_recordUnit c hc ed⟩
+
+/-! ## (M) The mapping-torus complex of a settling stage -/
+
+/-- The truth mask of a charge: `true` off the inconsistency corner (the complement of the
+`dTop` mask of `InconsistencySheaf`). -/
+def chargeTruth (a : Charge) : Bool := !(Charge.isInconsistency a)
+
+/-- The **mapping-torus complex of a settling stage**: cells in degree 0, one transition edge
+per cell (`x → step x`) in degree 1, incidence realizing `δ⁰ c = c ∘ step − c`
+(`delta0_temporal`), truth grading read from the charges. An edge is a truth edge when either
+endpoint is a truth cell, so truth cells are incident only to truth edges. -/
+def temporalComplex (Cell : Type) [DecidableEq Cell] (cells : List Cell)
+    (step : Cell → Cell) (q : Cell → Charge) : GradedTwoTerm where
+  Cell := Cell
+  Edge := Cell
+  cells := cells
+  d := fun y e => (if y = step e then 1 else 0) - (if y = e then 1 else 0)
+  tCell := fun x => chargeTruth (q x)
+  tEdge := fun e => chargeTruth (q e) || chargeTruth (q (step e))
+  truth_closed := by
+    intro x e hx he
+    obtain ⟨he1, he2⟩ := Bool.or_eq_false_iff.mp he
+    have hxe : x ≠ e := fun h => by rw [h, he1] at hx; cases hx
+    have hxs : x ≠ step e := fun h => by rw [h, he2] at hx; cases hx
+    simp [hxe, hxs]
+
+/-- Map-sums of pointwise differences split. -/
+private theorem sum_map_sub {α : Type} :
+    ∀ (l : List α) (f g : α → Int),
+      (l.map (fun a => f a - g a)).sum = (l.map f).sum - (l.map g).sum
+  | [], _, _ => rfl
+  | a :: t, f, g => by
+    simp only [List.map_cons, List.sum_cons, sum_map_sub t f g]
+    omega
+
+/-- The indicator sum over a list avoiding `a` is zero. -/
+private theorem sum_indicator_notMem {α : Type} [DecidableEq α] :
+    ∀ (l : List α) (a : α) (c : α → Int), a ∉ l →
+      (l.map (fun y => (if y = a then 1 else 0) * c y)).sum = 0
+  | [], _, _, _ => rfl
+  | b :: t, a, c, hnot => by
+    simp only [List.map_cons, List.sum_cons]
+    have hba : b ≠ a := fun h => hnot (h ▸ List.mem_cons_self)
+    rw [if_neg hba,
+      sum_indicator_notMem t a c (fun h => hnot (List.mem_cons_of_mem b h))]
+    omega
+
+/-- The indicator sum: over a duplicate-free list containing `a`, summing
+`(if y = a then 1 else 0) * c y` yields `c a`. -/
+private theorem sum_indicator {α : Type} [DecidableEq α] :
+    ∀ (l : List α) (a : α) (c : α → Int), l.Nodup → a ∈ l →
+      (l.map (fun y => (if y = a then 1 else 0) * c y)).sum = c a
+  | [], _, _, _, hmem => absurd hmem List.not_mem_nil
+  | b :: t, a, c, hnodup, hmem => by
+    simp only [List.map_cons, List.sum_cons]
+    by_cases hba : b = a
+    · subst hba
+      rw [if_pos rfl, sum_indicator_notMem t b c (List.nodup_cons.mp hnodup).1]
+      omega
+    · have hmem' : a ∈ t := by
+        rcases List.mem_cons.mp hmem with h | h
+        · exact absurd h.symm hba
+        · exact h
+      rw [if_neg hba, sum_indicator t a c (List.nodup_cons.mp hnodup).2 hmem']
+      omega
+
+/-- **The mapping-torus differential.** Over a duplicate-free cell enumeration containing every
+cell, the coboundary of `temporalComplex` is `δ⁰ c = c ∘ step − c` on each transition edge. -/
+theorem delta0_temporal (Cell : Type) [DecidableEq Cell] (cells : List Cell)
+    (step : Cell → Cell) (q : Cell → Charge)
+    (hnodup : cells.Nodup) (hmem : ∀ x, x ∈ cells)
+    (c : Cell → Int) (e : Cell) :
+    (temporalComplex Cell cells step q).delta0 c e = c (step e) - c e := by
+  show (cells.map
+      (fun y => ((if y = step e then 1 else 0) - (if y = e then 1 else 0)) * c y)).sum
+    = c (step e) - c e
+  have hsplit : (fun y => ((if y = step e then (1 : Int) else 0)
+        - (if y = e then 1 else 0)) * c y)
+      = fun y => (if y = step e then (1 : Int) else 0) * c y
+        - (if y = e then (1 : Int) else 0) * c y := by
+    funext y
+    exact Int.sub_mul _ _ _
+  rw [hsplit, sum_map_sub,
+    sum_indicator cells (step e) c hnodup (hmem (step e)),
+    sum_indicator cells e c hnodup (hmem e)]
+
+/-! ## (N) The degeneration criterion on charges -/
+
+/-- **A stage that preserves the inconsistency mask has zero connecting map.** If the step
+neither freezes a truth cell into a record nor thaws a record into a truth cell
+(`chargeTruth (q (step x)) = chargeTruth (q x)`), the mapping-torus complex splits as a direct
+sum, and by `GradedTwoTerm.connecting_zero_of_split` the connecting cochain of every record
+cocycle vanishes. The static-mask model (`BigradedSettlingCohomology.dv_zero`) is this case. -/
+theorem connecting_zero_of_charge_invariant (Cell : Type) [DecidableEq Cell]
+    (cells : List Cell) (step : Cell → Cell) (q : Cell → Charge)
+    (hinv : ∀ x, chargeTruth (q (step x)) = chargeTruth (q x))
+    {c : Cell → Int} (hc : (temporalComplex Cell cells step q).TopCocycle c) :
+    ∀ e, (temporalComplex Cell cells step q).connecting c e = 0 := by
+  have hsplit : ∀ x e : Cell, chargeTruth (q x) = false →
+      (chargeTruth (q e) || chargeTruth (q (step e))) = true →
+      ((if x = step e then (1 : Int) else 0) - (if x = e then 1 else 0)) = 0 := by
+    intro x e hx' he'
+    have hce : chargeTruth (q e) = true := by
+      rcases Bool.or_eq_true_iff.mp he' with h | h
+      · exact h
+      · exact (hinv e) ▸ h
+    have hcs : chargeTruth (q (step e)) = true := (hinv e).trans hce
+    have hxe : x ≠ e := fun h => by rw [h, hce] at hx'; cases hx'
+    have hxs : x ≠ step e := fun h => by rw [h, hcs] at hx'; cases hx'
+    rw [if_neg hxs, if_neg hxe]
+    omega
+  exact GradedTwoTerm.connecting_zero_of_split _
+    (fun x e hx he => hsplit x e hx he) hc
+
+/-! ## (O) The quench instance -/
+
+/-- The three cells of the quench stage: a record source, a truth carrier, a record sink. -/
+inductive QCell | src | mid | sink
+  deriving DecidableEq, Repr
+
+/-- The step of the quench stage: `src → mid → sink → sink`. -/
+def qStep : QCell → QCell
+  | .src => .mid
+  | .mid => .sink
+  | .sink => .sink
+
+/-- The charges of the quench stage: the source and sink are records (`⊤`), the carrier is a
+truth cell. -/
+def qCharge : QCell → Charge
+  | .src => Charge.kTop
+  | .mid => Articulating.Corner.active
+  | .sink => Charge.kTop
+
+/-- The quench stage as a mapping-torus complex. -/
+def quenchStage : GradedTwoTerm :=
+  temporalComplex QCell [QCell.src, QCell.mid, QCell.sink] qStep qCharge
+
+/-- The coboundary of the quench stage is the mapping-torus differential
+(`delta0_temporal` at its enumeration). -/
+theorem quench_delta0 (c : QCell → Int) (e : QCell) :
+    quenchStage.delta0 c e = c (qStep e) - c e :=
+  delta0_temporal QCell [QCell.src, QCell.mid, QCell.sink] qStep qCharge
+    (by decide) (fun x => by cases x <;> decide) c e
+
+/-- The record source cochain: `1` on `src`, `0` elsewhere. -/
+def recordSrc : QCell → Int
+  | .src => 1
+  | _ => 0
+
+/-- The record source is a record cocycle of the quench stage: it is `⊤`-supported, and the
+only record edge (`sink → sink`) carries zero coboundary. -/
+theorem recordSrc_topCocycle : quenchStage.TopCocycle recordSrc := by
+  constructor
+  · intro x hx
+    cases x <;> first | rfl | exact absurd hx (by decide)
+  · intro e he
+    cases e
+    · exact absurd he (by decide)
+    · exact absurd he (by decide)
+    · rw [quench_delta0]; decide
+
+/-- **The record source's connecting class is not a truth coboundary.** The record value
+crosses the truth carrier between inequivalent records; no truth-supported potential
+reconciles the entry edge (`src → mid`) with the quench edge (`mid → sink`). -/
+theorem recordSrc_class_not_truth_coboundary :
+    ¬ ∃ t, quenchStage.TruthCochain0 t
+        ∧ quenchStage.delta0 t = quenchStage.connecting recordSrc := by
+  rintro ⟨t, ht, hdt⟩
+  have hsrc : t QCell.src = 0 := ht QCell.src (by decide)
+  have hsink : t QCell.sink = 0 := ht QCell.sink (by decide)
+  have hentry := congrFun hdt QCell.src
+  have hquench := congrFun hdt QCell.mid
+  rw [quench_delta0] at hentry hquench
+  have hce : quenchStage.connecting recordSrc QCell.src = -1 := by
+    show quenchStage.delta0 recordSrc QCell.src = -1
+    rw [quench_delta0]; decide
+  have hcq : quenchStage.connecting recordSrc QCell.mid = 0 := by
+    show quenchStage.delta0 recordSrc QCell.mid = 0
+    rw [quench_delta0]; decide
+  rw [hce] at hentry
+  rw [hcq] at hquench
+  simp only [qStep] at hentry hquench
+  omega
+
+/-! ## (P) The `negSwap`-orbit carrier and the cut -/
+
+/-- The quarter-turn step: the `negSwap` action on charges (`D4Gauge`), the order-4 rotation
+`⊥ → t → ⊤ → f → ⊥` of the charge diamond. -/
+def jStep (a : Charge) : Charge := D4.D8.act D4.D8.negSwap a
+
+@[simp] private theorem jStep_potential :
+    jStep Articulating.Corner.potential = Articulating.Corner.active := rfl
+@[simp] private theorem jStep_active :
+    jStep Articulating.Corner.active = Articulating.Corner.absurd := rfl
+@[simp] private theorem jStep_stable :
+    jStep Articulating.Corner.stable = Articulating.Corner.potential := rfl
+@[simp] private theorem jStep_absurd :
+    jStep Articulating.Corner.absurd = Articulating.Corner.stable := rfl
+
+/-- The mapping-torus complex of the `negSwap` rotation itself: cells are the four charges,
+each carrying its own charge, the step the quarter-turn. -/
+def jCarrier : GradedTwoTerm :=
+  temporalComplex Charge
+    [Articulating.Corner.potential, Articulating.Corner.active,
+     Articulating.Corner.stable, Articulating.Corner.absurd]
+    jStep (fun a => a)
+
+/-- The coboundary of the `negSwap`-orbit carrier is the mapping-torus differential. -/
+theorem jCarrier_delta0 (c : Charge → Int) (e : Charge) :
+    jCarrier.delta0 c e = c (jStep e) - c e :=
+  delta0_temporal Charge
+    [Articulating.Corner.potential, Articulating.Corner.active,
+     Articulating.Corner.stable, Articulating.Corner.absurd]
+    jStep (fun a => a) (by decide) (fun x => by cases x <;> decide) c e
+
+/-- **On the `negSwap`-orbit carrier every record cocycle's connecting class is a truth
+coboundary.** The rotation is invertible: what enters the record corner leaves it, the entry
+and exit contributions cancel, and the constant potential `−c(⊤)` off the record corner
+witnesses the coboundary. -/
+theorem jCarrier_connecting_coboundary {c : Charge → Int} (hc : jCarrier.TopCocycle c) :
+    ∃ t, jCarrier.TruthCochain0 t ∧ jCarrier.delta0 t = jCarrier.connecting c := by
+  have hpot : c Articulating.Corner.potential = 0 := hc.1 _ (by decide)
+  have hact : c Articulating.Corner.active = 0 := hc.1 _ (by decide)
+  have hsta : c Articulating.Corner.stable = 0 := hc.1 _ (by decide)
+  refine ⟨((fun x => if x = Articulating.Corner.absurd then 0
+      else -(c Articulating.Corner.absurd)) : Charge → Int), ?_, ?_⟩
+  · intro x hx
+    cases x <;> first | exact absurd hx (by decide) | simp
+  · funext e
+    have h2 : jCarrier.connecting c e = c (jStep e) - c e := jCarrier_delta0 c e
+    rw [jCarrier_delta0, h2]
+    cases e <;> simp <;> omega
+
+/-- **On the quench — the orbit cut at the record — the connecting class is a truth coboundary
+iff the record's two copies carry equal values.** The quench identifies with the `negSwap`
+orbit severed at `⊤` (`src`/`sink` its pre- and post-copies); a record cocycle descends to the
+uncut carrier iff `c src = c sink`, and its connecting class obstructs exactly the failure of
+that descent. -/
+theorem quench_connecting_coboundary_iff_records_agree {c : QCell → Int}
+    (hc : quenchStage.TopCocycle c) :
+    (∃ t, quenchStage.TruthCochain0 t
+        ∧ quenchStage.delta0 t = quenchStage.connecting c)
+      ↔ c QCell.src = c QCell.sink := by
+  have hmid : c QCell.mid = 0 := hc.1 _ (by decide)
+  constructor
+  · rintro ⟨t, ht, hdt⟩
+    have hsrc : t QCell.src = 0 := ht _ (by decide)
+    have hsink : t QCell.sink = 0 := ht _ (by decide)
+    have h1 := congrFun hdt QCell.src
+    have h2 := congrFun hdt QCell.mid
+    have hc1 : quenchStage.connecting c QCell.src
+        = c (qStep QCell.src) - c QCell.src := quench_delta0 c QCell.src
+    have hc2 : quenchStage.connecting c QCell.mid
+        = c (qStep QCell.mid) - c QCell.mid := quench_delta0 c QCell.mid
+    rw [quench_delta0, hc1] at h1
+    rw [quench_delta0, hc2] at h2
+    simp only [qStep] at h1 h2
+    omega
+  · intro heq
+    refine ⟨((fun x => if x = QCell.mid then -(c QCell.src) else 0) : QCell → Int), ?_, ?_⟩
+    · intro x hx
+      cases x <;> first | exact absurd hx (by decide) | simp
+    · funext e
+      have h2 : quenchStage.connecting c e = c (qStep e) - c e := quench_delta0 c e
+      rw [quench_delta0, h2]
+      cases e <;> simp [qStep] <;> omega
+
+/-! ## (Q′) The graded cohomology objects
+
+`H⁰` of each complex is its cocycle subtype (there are no `(−1)`-cochains, so no quotient in
+degree 0); `H¹` is a genuine quotient — 1-cochains modulo coboundaries — via `Quotient` of the
+coboundary setoid. The truth complex's carriers are the truth-supported cochains; the record
+(quotient) complex's degree-1 carrier is the record-supported 1-cochains with differential
+`recordDelta` (the ambient `δ⁰` read on the record edges). -/
+
+namespace GradedTwoTerm
+
+variable (K : GradedTwoTerm)
+
+private theorem sum_map_neg' {α : Type} :
+    ∀ (l : List α) (f : α → Int), (l.map (fun a => -(f a))).sum = -((l.map f).sum)
+  | [], _ => rfl
+  | a :: t, f => by
+    simp only [List.map_cons, List.sum_cons, sum_map_neg' t f]
+    omega
+
+/-- `δ⁰` of the zero cochain is zero. -/
+theorem delta0_zero (e : K.Edge) : K.delta0 (fun _ => 0) e = 0 :=
+  sum_map_zero _ _ (fun x _ => Int.mul_zero (K.d x e))
+
+/-- `δ⁰` of a pointwise negation is the negation. -/
+theorem delta0_neg (c : K.Cell → Int) (e : K.Edge) :
+    K.delta0 (fun x => -(c x)) e = -(K.delta0 c e) := by
+  unfold delta0
+  have h : (fun x => K.d x e * (-(c x))) = fun x => -(K.d x e * c x) := by
+    funext x; exact Int.mul_neg ..
+  rw [h, sum_map_neg']
+
+/-- `δ⁰` splits through the truth/record projections. -/
+theorem delta0_proj_split (c : K.Cell → Int) (e : K.Edge) :
+    K.delta0 c e = K.delta0 (K.projT0 c) e + K.delta0 (K.projTop0 c) e := by
+  rw [← K.delta0_add]
+  have h : (fun x => K.projT0 c x + K.projTop0 c x) = c :=
+    funext (K.projT0_add_projTop0 c)
+  rw [h]
+
+/-- A 1-cochain is **record-supported** when it vanishes on the truth edges. -/
+def RecordCochain1 (f : K.Edge → Int) : Prop := ∀ e, K.tEdge e = true → f e = 0
+
+/-- The record complex's differential: the ambient `δ⁰` read on the record edges, zero on the
+truth edges. -/
+def recordDelta (c : K.Cell → Int) : K.Edge → Int :=
+  fun e => if K.tEdge e then 0 else K.delta0 c e
+
+theorem recordDelta_record (c : K.Cell → Int) : K.RecordCochain1 (K.recordDelta c) := by
+  intro e he; simp [recordDelta, he]
+
+/-- **`H⁰` of the truth complex**: truth-supported cocycles. (For a truth-supported cochain
+the ambient and truth-complex cocycle conditions agree, by `delta0_truth`.) -/
+abbrev H0T : Type := { c : K.Cell → Int // K.TruthCochain0 c ∧ ∀ e, K.delta0 c e = 0 }
+
+/-- **`H⁰` of the ambient (knowledge) complex**: cocycles. -/
+abbrev H0K : Type := { c : K.Cell → Int // ∀ e, K.delta0 c e = 0 }
+
+/-- **`H⁰` of the record (quotient) complex**: record cocycles. -/
+abbrev H0Top : Type := { c : K.Cell → Int // K.TopCocycle c }
+
+/-- The coboundary relation on truth-supported 1-cochains. -/
+def truthRel (f g : { f : K.Edge → Int // K.TruthCochain1 f }) : Prop :=
+  ∃ c, K.TruthCochain0 c ∧ ∀ e, f.val e = g.val e + K.delta0 c e
+
+/-- Truth 1-cochains modulo truth coboundaries. -/
+def truthSetoid : Setoid { f : K.Edge → Int // K.TruthCochain1 f } where
+  r := K.truthRel
+  iseqv := by
+    refine ⟨fun f => ⟨fun _ => 0, fun _ _ => rfl, fun e => ?_⟩,
+      fun {f g} ⟨c, hc, h⟩ =>
+        ⟨fun x => -(c x),
+         fun x hx => by show -(c x) = 0; have := hc x hx; omega, fun e => ?_⟩,
+      fun {f g h} ⟨c, hc, hfg⟩ ⟨c', hc', hgh⟩ =>
+        ⟨fun x => c x + c' x,
+         fun x hx => by
+           show c x + c' x = 0
+           have := hc x hx; have := hc' x hx; omega, fun e => ?_⟩⟩
+    · rw [K.delta0_zero]; omega
+    · rw [K.delta0_neg]; have := h e; omega
+    · rw [K.delta0_add]; have := hfg e; have := hgh e; omega
+
+/-- **`H¹` of the truth complex**: truth 1-cochains modulo truth coboundaries. -/
+abbrev H1T : Type := Quotient K.truthSetoid
+
+/-- The coboundary relation on ambient 1-cochains. -/
+def ambientRel (f g : K.Edge → Int) : Prop :=
+  ∃ c : K.Cell → Int, ∀ e, f e = g e + K.delta0 c e
+
+/-- Ambient 1-cochains modulo ambient coboundaries. -/
+def ambientSetoid : Setoid (K.Edge → Int) where
+  r := K.ambientRel
+  iseqv := by
+    refine ⟨fun f => ⟨fun _ => 0, fun e => ?_⟩,
+      fun {f g} ⟨c, h⟩ => ⟨fun x => -(c x), fun e => ?_⟩,
+      fun {f g h} ⟨c, hfg⟩ ⟨c', hgh⟩ => ⟨fun x => c x + c' x, fun e => ?_⟩⟩
+    · rw [K.delta0_zero]; omega
+    · rw [K.delta0_neg]; have := h e; omega
+    · rw [K.delta0_add]; have := hfg e; have := hgh e; omega
+
+/-- **`H¹` of the ambient (knowledge) complex**. -/
+abbrev H1K : Type := Quotient K.ambientSetoid
+
+/-- The coboundary relation on record 1-cochains: differ by `recordDelta` of a record
+0-cochain. -/
+def recordRel (f g : { f : K.Edge → Int // K.RecordCochain1 f }) : Prop :=
+  ∃ c, K.TopCochain0 c ∧ ∀ e, f.val e = g.val e + K.recordDelta c e
+
+/-- Record 1-cochains modulo record coboundaries. -/
+def recordSetoid : Setoid { f : K.Edge → Int // K.RecordCochain1 f } where
+  r := K.recordRel
+  iseqv := by
+    refine ⟨fun f => ⟨fun _ => 0, fun _ _ => rfl, fun e => ?_⟩,
+      fun {f g} ⟨c, hc, h⟩ =>
+        ⟨fun x => -(c x),
+         fun x hx => by show -(c x) = 0; have := hc x hx; omega, fun e => ?_⟩,
+      fun {f g h} ⟨c, hc, hfg⟩ ⟨c', hc', hgh⟩ =>
+        ⟨fun x => c x + c' x,
+         fun x hx => by
+           show c x + c' x = 0
+           have := hc x hx; have := hc' x hx; omega, fun e => ?_⟩⟩
+    · unfold recordDelta
+      rcases Bool.eq_false_or_eq_true (K.tEdge e) with hte | hte
+      · rw [if_pos hte]; omega
+      · rw [if_neg (by simp [hte]), K.delta0_zero]; omega
+    · have he := h e
+      unfold recordDelta at he ⊢
+      rcases Bool.eq_false_or_eq_true (K.tEdge e) with hte | hte
+      · rw [if_pos hte] at he ⊢; omega
+      · rw [if_neg (by simp [hte])] at he ⊢
+        rw [K.delta0_neg]; omega
+    · have h1 := hfg e; have h2 := hgh e
+      unfold recordDelta at h1 h2 ⊢
+      rcases Bool.eq_false_or_eq_true (K.tEdge e) with hte | hte
+      · rw [if_pos hte] at h1 h2 ⊢; omega
+      · rw [if_neg (by simp [hte])] at h1 h2 ⊢
+        rw [K.delta0_add]; omega
+
+/-- **`H¹` of the record (quotient) complex**. -/
+abbrev H1Top : Type := Quotient K.recordSetoid
+
+/-- The zero class of `H0Top`. -/
+def zeroH0Top : K.H0Top :=
+  ⟨fun _ => 0, fun _ _ => rfl, fun e _ => K.delta0_zero e⟩
+
+/-- The zero class of `H1T`. -/
+def zeroH1T : K.H1T := Quotient.mk K.truthSetoid ⟨fun _ => 0, fun _ _ => rfl⟩
+
+/-- The zero class of `H1K`. -/
+def zeroH1K : K.H1K := Quotient.mk K.ambientSetoid (fun _ => 0)
+
+/-- The zero class of `H1Top`. -/
+def zeroH1Top : K.H1Top := Quotient.mk K.recordSetoid ⟨fun _ => 0, fun _ _ => rfl⟩
+
+end GradedTwoTerm
+
+/-! ## (Q″) The induced maps and the six-term exact sequence
+
+The five maps of `0 → H⁰_t → H⁰_k → H⁰_⊤ → H¹_t → H¹_k → H¹_⊤ → 0`, as functions between
+the objects above, and exactness at each node. The earlier representative-form theorems
+(`connecting_coboundary_iff_lifts`, `truth_cocycle_ambient_coboundary_iff`) are the
+well-definedness and exactness content; here they act on classes. -/
+
+namespace GradedTwoTerm
+
+variable (K : GradedTwoTerm)
+
+/-- `ι⁰ : H⁰_t → H⁰_k` — a truth cocycle is an ambient cocycle. -/
+def iota0 : K.H0T → K.H0K := fun c => ⟨c.val, c.property.2⟩
+
+/-- `π⁰ : H⁰_k → H⁰_⊤` — the record projection of an ambient cocycle is a record cocycle. -/
+def pi0 : K.H0K → K.H0Top := fun c =>
+  ⟨K.projTop0 c.val, K.projTop0_top c.val, fun e he => by
+    have hsplit := K.delta0_proj_split c.val e
+    have hzero := c.property e
+    have htruth := K.delta0_truth (K.projT0_truth c.val) e he
+    omega⟩
+
+/-- `δ : H⁰_⊤ → H¹_t` — the connecting map: the ambient coboundary of a record cocycle,
+which is truth-supported, taken as a truth class. -/
+def conn : K.H0Top → K.H1T := fun c =>
+  Quotient.mk K.truthSetoid ⟨K.delta0 c.val, K.connecting_truth_supported c.property⟩
+
+/-- `ι¹ : H¹_t → H¹_k` — a truth class read as an ambient class. -/
+def iota1 : K.H1T → K.H1K :=
+  Quotient.lift (fun f => Quotient.mk K.ambientSetoid f.val)
+    (fun _ _ ⟨c, _, h⟩ => Quotient.sound ⟨c, h⟩)
+
+/-- The record projection of a 1-cochain. -/
+def projTop1 (f : K.Edge → Int) : K.Edge → Int := fun e => if K.tEdge e then 0 else f e
+
+theorem projTop1_record (f : K.Edge → Int) : K.RecordCochain1 (K.projTop1 f) := by
+  intro e he; simp [projTop1, he]
+
+/-- `π¹ : H¹_k → H¹_⊤` — the record projection of an ambient class. -/
+def pi1 : K.H1K → K.H1Top :=
+  Quotient.lift (fun f => Quotient.mk K.recordSetoid ⟨K.projTop1 f, K.projTop1_record f⟩)
+    (by
+      rintro f g ⟨c, h⟩
+      refine Quotient.sound ⟨K.projTop0 c, K.projTop0_top c, fun e => ?_⟩
+      show K.projTop1 f e = K.projTop1 g e + K.recordDelta (K.projTop0 c) e
+      unfold projTop1 recordDelta
+      rcases Bool.eq_false_or_eq_true (K.tEdge e) with hte | hte
+      · rw [if_pos hte, if_pos hte, if_pos hte]
+        have h2 := h e
+        omega
+      · rw [if_neg (by simp [hte]), if_neg (by simp [hte]), if_neg (by simp [hte])]
+        have hsplit := K.delta0_proj_split c e
+        have htruth := K.delta0_truth (K.projT0_truth c) e hte
+        have h2 := h e
+        omega)
+
+/-- **Exactness at `H⁰_t`**: `ι⁰` is injective (the sequence starts `0 → H⁰_t`). -/
+theorem iota0_injective (c c' : K.H0T) (h : K.iota0 c = K.iota0 c') : c = c' := by
+  have h2 : (K.iota0 c).val = (K.iota0 c').val := congrArg Subtype.val h
+  exact Subtype.ext h2
+
+/-- **Exactness at `H⁰_k`**: `π⁰ c` vanishes iff `c` comes from a truth cocycle. -/
+theorem exact_at_h0K (c : K.H0K) :
+    K.pi0 c = K.zeroH0Top ↔ ∃ t : K.H0T, K.iota0 t = c := by
+  constructor
+  · intro h
+    have hval : K.projTop0 c.val = fun _ => 0 := congrArg Subtype.val h
+    refine ⟨⟨c.val, fun x hx => ?_, c.property⟩, rfl⟩
+    have h2 : (if K.tCell x = true then (0 : Int) else c.val x) = 0 := congrFun hval x
+    rw [if_neg (by simp [hx])] at h2
+    exact h2
+  · rintro ⟨t, rfl⟩
+    refine Subtype.ext (funext fun x => ?_)
+    show (if K.tCell x = true then (0 : Int) else t.val x) = 0
+    rcases Bool.eq_false_or_eq_true (K.tCell x) with hx | hx
+    · rw [if_pos hx]
+    · rw [if_neg (by simp [hx]), t.property.1 x hx]
+
+/-- **Exactness at `H⁰_⊤`**: the connecting class of a record cocycle vanishes iff the
+cocycle lifts along `π⁰` to an ambient cocycle. -/
+theorem exact_at_h0Top (c : K.H0Top) :
+    K.conn c = K.zeroH1T ↔ ∃ b : K.H0K, K.pi0 b = c := by
+  constructor
+  · intro h
+    obtain ⟨t, ht, hrel⟩ := Quotient.exact h
+    have hlift := (K.connecting_coboundary_iff_lifts c.property).mp
+      ⟨t, ht, funext fun e => by
+        have h2 : K.delta0 c.val e = 0 + K.delta0 t e := hrel e
+        show K.delta0 t e = K.delta0 c.val e
+        omega⟩
+    obtain ⟨b, hb, hdb⟩ := hlift
+    refine ⟨⟨b, hdb⟩, Subtype.ext (funext fun x => ?_)⟩
+    show (if K.tCell x = true then (0 : Int) else b x) = c.val x
+    rcases Bool.eq_false_or_eq_true (K.tCell x) with hx | hx
+    · rw [if_pos hx, c.property.1 x hx]
+    · rw [if_neg (by simp [hx]), hb x hx]
+  · rintro ⟨b, hb⟩
+    have hval : K.projTop0 b.val = c.val := congrArg Subtype.val hb
+    have hlift : ∃ b' : K.Cell → Int,
+        (∀ x, K.tCell x = false → b' x = c.val x) ∧ ∀ e, K.delta0 b' e = 0 :=
+      ⟨b.val, fun x hx => by
+        have h2 : (if K.tCell x = true then (0 : Int) else b.val x) = c.val x :=
+          congrFun hval x
+        rw [if_neg (by simp [hx])] at h2
+        exact h2, b.property⟩
+    obtain ⟨t, ht, hdt⟩ := (K.connecting_coboundary_iff_lifts c.property).mpr hlift
+    refine Quotient.sound ⟨t, ht, fun e => ?_⟩
+    have h2 : K.delta0 t e = K.connecting c.val e := congrFun hdt e
+    have h3 : K.connecting c.val e = K.delta0 c.val e := rfl
+    show K.delta0 c.val e = 0 + K.delta0 t e
+    omega
+
+/-- **Exactness at `H¹_t`**: a truth class dies in the ambient `H¹` iff it is a connecting
+class. -/
+theorem exact_at_h1T (x : K.H1T) :
+    K.iota1 x = K.zeroH1K ↔ ∃ c : K.H0Top, K.conn c = x := by
+  refine Quotient.inductionOn x (fun f => ?_)
+  constructor
+  · intro h
+    obtain ⟨b, hb⟩ := Quotient.exact h
+    have hcob : ∃ b', K.delta0 b' = f.val :=
+      ⟨b, funext fun e => by
+        have h2 : f.val e = 0 + K.delta0 b e := hb e
+        show K.delta0 b e = f.val e
+        omega⟩
+    obtain ⟨c, t, hc, ht, hsum⟩ :=
+      (K.truth_cocycle_ambient_coboundary_iff f.property).mp hcob
+    refine ⟨⟨c, hc⟩, Quotient.sound ⟨fun x => -(t x), fun x hx => by
+      show -(t x) = 0
+      have := ht x hx
+      omega, fun e => ?_⟩⟩
+    have h2 := hsum e
+    have h3 : K.connecting c e = K.delta0 c e := rfl
+    show K.delta0 c e = f.val e + K.delta0 (fun x => -(t x)) e
+    rw [K.delta0_neg]
+    omega
+  · rintro ⟨c, hc⟩
+    obtain ⟨t, ht, hrel⟩ := Quotient.exact hc
+    refine Quotient.sound ⟨fun x => c.val x + -(t x), fun e => ?_⟩
+    rw [K.delta0_add, K.delta0_neg]
+    have h2 : K.delta0 c.val e = f.val e + K.delta0 t e := hrel e
+    show f.val e = 0 + (K.delta0 c.val e + -(K.delta0 t e))
+    omega
+
+/-- **Exactness at `H¹_k`**: an ambient class projects to zero in the record `H¹` iff it has
+a truth-supported representative. -/
+theorem exact_at_h1K (x : K.H1K) :
+    K.pi1 x = K.zeroH1Top ↔ ∃ y : K.H1T, K.iota1 y = x := by
+  refine Quotient.inductionOn x (fun f => ?_)
+  constructor
+  · intro h
+    obtain ⟨c, hc, hrel⟩ := Quotient.exact h
+    have hker : ∀ e, K.tEdge e = false → f e = K.delta0 c e := by
+      intro e he
+      have h2 : (if K.tEdge e = true then (0 : Int) else f e)
+          = 0 + (if K.tEdge e = true then (0 : Int) else K.delta0 c e) := hrel e
+      rw [if_neg (by simp [he]), if_neg (by simp [he])] at h2
+      omega
+    refine ⟨Quotient.mk K.truthSetoid
+      ⟨fun e => f e - K.delta0 c e, fun e he => by
+        show f e - K.delta0 c e = 0
+        have := hker e he
+        omega⟩,
+      Quotient.sound ⟨fun x => -(c x), fun e => ?_⟩⟩
+    show f e - K.delta0 c e = f e + K.delta0 (fun x => -(c x)) e
+    rw [K.delta0_neg]
+    omega
+  · rintro ⟨y, hy⟩
+    refine Quotient.inductionOn y (fun g hg => ?_) hy
+    obtain ⟨c, hc⟩ := Quotient.exact hg
+    refine Quotient.sound
+      ⟨K.projTop0 (fun x => -(c x)), K.projTop0_top (fun x => -(c x)), fun e => ?_⟩
+    show (if K.tEdge e = true then (0 : Int) else f e)
+      = 0 + (if K.tEdge e = true then (0 : Int)
+          else K.delta0 (K.projTop0 (fun x => -(c x))) e)
+    rcases Bool.eq_false_or_eq_true (K.tEdge e) with hte | hte
+    · rw [if_pos hte, if_pos hte]; omega
+    · rw [if_neg (by simp [hte]), if_neg (by simp [hte])]
+      have hsplit := K.delta0_proj_split (fun x => -(c x)) e
+      have htruth := K.delta0_truth (K.projT0_truth (fun x => -(c x))) e hte
+      have hneg := K.delta0_neg c e
+      have hgz := g.property e hte
+      have h2 : g.val e = f e + K.delta0 c e := hc e
+      omega
+
+/-- **Exactness at `H¹_⊤`**: `π¹` is surjective (the sequence ends `H¹_⊤ → 0`). -/
+theorem pi1_surjective (z : K.H1Top) : ∃ x : K.H1K, K.pi1 x = z := by
+  refine Quotient.inductionOn z (fun f => ?_)
+  refine ⟨Quotient.mk K.ambientSetoid f.val, ?_⟩
+  show Quotient.mk K.recordSetoid _ = Quotient.mk K.recordSetoid f
+  refine congrArg _ (Subtype.ext (funext fun e => ?_))
+  show (if K.tEdge e = true then (0 : Int) else f.val e) = f.val e
+  rcases Bool.eq_false_or_eq_true (K.tEdge e) with hte | hte
+  · rw [if_pos hte, f.property e hte]
+  · rw [if_neg (by simp [hte])]
+
+/-- The six-term sequence `0 → H⁰_t → H⁰_k → H⁰_⊤ → H¹_t → H¹_k → H¹_⊤ → 0` on the
+cohomology objects: injectivity at the start, exactness at the four middle nodes, and
+surjectivity at the end. -/
+theorem six_term_les_objects :
+    (∀ c c' : K.H0T, K.iota0 c = K.iota0 c' → c = c')
+    ∧ (∀ c : K.H0K, K.pi0 c = K.zeroH0Top ↔ ∃ t : K.H0T, K.iota0 t = c)
+    ∧ (∀ c : K.H0Top, K.conn c = K.zeroH1T ↔ ∃ b : K.H0K, K.pi0 b = c)
+    ∧ (∀ x : K.H1T, K.iota1 x = K.zeroH1K ↔ ∃ c : K.H0Top, K.conn c = x)
+    ∧ (∀ x : K.H1K, K.pi1 x = K.zeroH1Top ↔ ∃ y : K.H1T, K.iota1 y = x)
+    ∧ (∀ z : K.H1Top, ∃ x : K.H1K, K.pi1 x = z) :=
+  ⟨K.iota0_injective, K.exact_at_h0K, K.exact_at_h0Top, K.exact_at_h1T, K.exact_at_h1K,
+    K.pi1_surjective⟩
+
+end GradedTwoTerm
+
+/-! ## (Q‴) The connecting map is nonzero on the instances
+
+On the measurement and quench carriers the connecting map `δ : H⁰_⊤ → H¹_t` of the six-term
+sequence sends the record generator to a nonzero class — the sequence does not degenerate. -/
+
+/-- The record generator's connecting class in `H¹_t` of `measurementComplex` is nonzero. -/
+theorem measurement_conn_recordUnit_ne_zero :
+    measurementComplex.conn ⟨recordUnit, recordUnit_topCocycle⟩
+      ≠ measurementComplex.zeroH1T := by
+  intro h
+  obtain ⟨t, ht, hrel⟩ := Quotient.exact h
+  refine recordUnit_class_not_truth_coboundary ⟨t, ht, funext fun ed => ?_⟩
+  have h2 : measurementComplex.delta0 recordUnit ed
+      = 0 + measurementComplex.delta0 t ed := hrel ed
+  have h3 : measurementComplex.connecting recordUnit ed
+      = measurementComplex.delta0 recordUnit ed := rfl
+  show measurementComplex.delta0 t ed = measurementComplex.connecting recordUnit ed
+  omega
+
+/-- The record source's connecting class in `H¹_t` of `quenchStage` is nonzero. -/
+theorem quench_conn_recordSrc_ne_zero :
+    quenchStage.conn ⟨recordSrc, recordSrc_topCocycle⟩ ≠ quenchStage.zeroH1T := by
+  intro h
+  obtain ⟨t, ht, hrel⟩ := Quotient.exact h
+  refine recordSrc_class_not_truth_coboundary ⟨t, ht, funext fun e => ?_⟩
+  have h2 : quenchStage.delta0 recordSrc e = 0 + quenchStage.delta0 t e := hrel e
+  have h3 : quenchStage.connecting recordSrc e = quenchStage.delta0 recordSrc e := rfl
+  show quenchStage.delta0 t e = quenchStage.connecting recordSrc e
+  omega
+
+/-! ## (Q) The quench headlines -/
+
+/-- Bundles the symmetry dichotomy: on the `negSwap`-orbit carrier every record cocycle's
+connecting class is a truth coboundary (`jCarrier_connecting_coboundary`); on the quench — the
+orbit cut at the record — the class is a coboundary iff the record's two copies agree
+(`quench_connecting_coboundary_iff_records_agree`); `recordSrc` disagrees, so its class is the
+obstruction. -/
+theorem j_symmetry_breaking :
+    (∀ c : Charge → Int, jCarrier.TopCocycle c →
+        ∃ t, jCarrier.TruthCochain0 t ∧ jCarrier.delta0 t = jCarrier.connecting c)
+    ∧ (∀ c : QCell → Int, quenchStage.TopCocycle c →
+        ((∃ t, quenchStage.TruthCochain0 t
+            ∧ quenchStage.delta0 t = quenchStage.connecting c)
+          ↔ c QCell.src = c QCell.sink))
+    ∧ recordSrc QCell.src ≠ recordSrc QCell.sink
+    ∧ (¬ ∃ t, quenchStage.TruthCochain0 t
+        ∧ quenchStage.delta0 t = quenchStage.connecting recordSrc) :=
+  ⟨fun _ hc => jCarrier_connecting_coboundary hc,
+   fun _ hc => quench_connecting_coboundary_iff_records_agree hc,
+   by decide,
+   recordSrc_class_not_truth_coboundary⟩
+
+/-- Bundles the quench stage: the record source is a record cocycle; its connecting class is
+truth-supported; it is not a truth coboundary; and a mask-preserving stage has zero connecting
+map (`connecting_zero_of_charge_invariant`). -/
+theorem quench_connecting_model :
+    quenchStage.TopCocycle recordSrc
+    ∧ quenchStage.TruthCochain1 (quenchStage.connecting recordSrc)
+    ∧ (¬ ∃ t, quenchStage.TruthCochain0 t
+        ∧ quenchStage.delta0 t = quenchStage.connecting recordSrc)
+    ∧ (∀ (Cell : Type) (_ : DecidableEq Cell) (cells : List Cell)
+        (step : Cell → Cell) (q : Cell → Charge),
+        (∀ x, chargeTruth (q (step x)) = chargeTruth (q x)) →
+        ∀ c : Cell → Int, (temporalComplex Cell cells step q).TopCocycle c →
+        ∀ e, (temporalComplex Cell cells step q).connecting c e = 0) :=
+  ⟨recordSrc_topCocycle,
+   quenchStage.connecting_truth_supported recordSrc_topCocycle,
+   recordSrc_class_not_truth_coboundary,
+   fun Cell _ cells step q hinv _c hc e =>
+     connecting_zero_of_charge_invariant Cell cells step q hinv hc e⟩
+
+end Bigraded
+end Obsmetrologia

@@ -1,0 +1,50 @@
+{
+  "id": "exchange-20260718-234412-b585fb",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return JSON {\"kind\":string}. Classify `appendJsonl(output, record)` as persistence, routing, or authentication."
+      }
+    ],
+    "max-tokens": 80
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\"kind\": \"persistence\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\"kind\": \"persistence\"}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPcaozeBI0CwEMgFbe1rY1rogtDAn06Ie5vUm5Behcgzf23IdUxSMlocATFGRR"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784418255,
+      "id": "zw9catvUH6TXjMcP3bKvuAc",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 27,
+        "total_tokens": 33
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 3.367,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

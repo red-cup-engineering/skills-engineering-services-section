@@ -1,0 +1,76 @@
+{
+  "id": "exchange-20260719-045423-05dd08",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Classify the supplied work item as finance, software, or operations. Return only JSON matching the supplied schema."
+      },
+      {
+        "role": "user",
+        "content": "The invoice total is due on the fifteenth and must be reconciled against the purchase order."
+      }
+    ],
+    "max-tokens": 32,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "const": "finance"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\"label\": \"finance\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\"label\": \"finance\"}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIP3KQHXFsIoOzpLZZzds0gCeo37xK28Nj49ebEbSPSFkb0etOWBQy0YceTFbJj"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784436867,
+      "id": "glhcauTXMcy-_uMP39Ld-QM",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 41,
+        "total_tokens": 47
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.53,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

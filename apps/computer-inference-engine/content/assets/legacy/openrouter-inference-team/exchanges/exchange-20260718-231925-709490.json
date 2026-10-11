@@ -1,0 +1,25 @@
+{
+  "id": "exchange-20260718-231925-709490",
+  "packet": {
+    "model": "meta-llama/llama-3.3-70b-instruct:free",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Answer this source-grounded inquiry: how can historical outcome records alter later endpoint choice? Return exactly JSON {\"key\":string,\"attemptsEffect\":string,\"successEffect\":string,\"routeEffect\":string}. Each value must reference an identifier or formula fragment from the excerpt.\n\nconst observation = observationFor(observations, endpoint.id, job.workType);\nconst smoothedPrior = observation ? (observation.successes + basePrior * 2) / (observation.attempts + 2) : basePrior;\nconst pSuccess = clamp(smoothedPrior * (1 - difficulty.difficulty * difficultyPenalty), 0.01, 0.999);\nconst totalAttemptCost = componentCost + latencyShadowCost;\nexpectedResolutionCost: totalAttemptCost / pSuccess\nconst ordered = selected.sort((a, b) => a.expectedResolutionCost - b.expectedResolutionCost || a.endpoint.localeCompare(b.endpoint));"
+      }
+    ],
+    "max-tokens": 260
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "OpenRouter responded with HTTP 429 Too Many Requests: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"meta-llama/llama-3.3-70b-instruct:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Venice\",\"is_byok\":false,\"retry_after_seconds\":26,\"retry_after_seconds_raw\":25.886,\"headers\":{\"Retry-After\":\"26\"}}},\"user_id\":\"user_3Gf4M1GRWTgGRggDZfh3HBdao2o\"}",
+    "unmet": [
+      "http-failure:429"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.469,
+    "denomination": "openrouter-api-requests"
+  }
+}

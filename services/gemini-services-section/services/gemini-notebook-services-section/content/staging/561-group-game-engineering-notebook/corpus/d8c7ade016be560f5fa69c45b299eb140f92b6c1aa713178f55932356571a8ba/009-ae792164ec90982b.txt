@@ -1,0 +1,466 @@
+# NotebookLM source projection
+
+Title: self-education-platform-design
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/content/text/documents/articles/notes/self-education-platform-design.md
+Original-Digest: sha256:8413e79f97c6f324bd7cf7dab0a8764b54168f2d66faf299fa6f581b57127b31
+Disclosure: repository-source
+
+---
+title: Self-Education Platform Design
+description: "The generalized engine behind Lantern, Equivo, and weiqi-Learn as one contract: corpus-compiler, deterministic SRS, pluggable exercise checkers, mastery, theming, and local-first persistence. Audience: implementing agents and the board."
+date-created: 2026-08-19
+date-updated: 2026-08-19
+type: specification
+authors:
+  - claude-fable-5
+tags: [fleet, education, platform, lantern, equivo, weiqi-learn]
+---
+
+# Self-Education Platform Design
+
+**One engine, many themes.** This document specifies the platform contract underneath every
+game in this services-section that teaches by compiling a corpus of frontmattered markdown into
+a walkable, spaced-repeated, checker-gated world. It is not a new build: `lantern-service`
+already implements most of this contract (74/74 `src/` tests + 10/10 web-parity tests green,
+verified directly for this document — see §8) against one corpus (the weiqi glossary, "wing
+one"). What this document adds is the generalization that lets **Equivo** and **weiqi-Learn**
+both ride the same compiler, scheduler, and persistence layer as declared *themes*, instead of
+each becoming its own bespoke service — and it names the one interface Lantern does not yet have
+that both of them need: a **pluggable checker**, because Lantern's gate cards are graded by
+loose text match while Equivo's exercises are graded by literally running a mathematical
+descent.
+
+## Design authority
+
+Structural choices below cite the evidence dossier at
+`/tmp/claude-1000/-home-emsenn-info/47cac153-3148-4572-abf7-955708e564d4/scratchpad/equivo-evidence-dossier.md`
+by section (`§N`). Single-corpus claims are marked as such and are not treated as load-bearing on
+their own. The owner's live intent — "Equivo is the flagship theme within a generalized
+self-education platform; fleet strategy is many web games for many audiences" (dossier header) —
+is the direct brief for this document.
+
+## What's load-bearing vs. flavor
+
+Following the sibling services' disclosure doctrine. (Correction to dossier §1i, verified against
+the primary sources: the literal section title and the phrase "vendor a copy, not a cross-service
+import" appear only in `lantern-service`; `onestone-service/DESIGN.md` carries the same doctrine
+under different headings — "The math is load-bearing" plus an explicit "Doctrine (inherited from
+flickering-delve-service)" section — and `flickering-delve-service/DESIGN.md` has no such section
+at all, being the originator the others cite. So the convention is real and at least two-source
+in substance, but this exact section form is Lantern's, generalized here — not a three-service
+verbatim pattern.)
+
+1. **The corpus-compiler pipeline (§2), the SRS math (§3), and the pebble-game hall-stability
+   check are real, running, tested code**, not this document's invention. §2–§3 below cite exact
+   files and function names in `lantern-service/src/`, and every claim about test counts in this
+   document was re-run directly for it (§8), not copied from an older doc.
+2. **The checker interface (§4) is the one genuinely new piece of platform surface.** Lantern
+   today has no `verdict(spec, answer)` abstraction — its `cards.mts` generates cards and grades
+   them by construction (a cloze's back is always the blanked term; there is nothing to check
+   against). Equivo's exercises (see the companion document, `equivo-design.md`) grade by running
+   real mathematics and cannot be graded that way. §4 is a genuine design decision, argued from
+   both services' actual needs, not a retrofit disguised as discovery.
+3. **The mastery model (§5) is a disclosed synthesis**, built from two already-real numbers
+   (per-card recall probability from FSRS-lite, §3; hall stability from the pebble game, already
+   in Lantern's `stability.mts`) — no new unverified math is introduced, but the *aggregate* is
+   this document's own design, not lifted from a corpus.
+4. **The theming contract and presentation registers (§6) are new**, motivated directly by the
+   dossier's vocabulary tables (§3 of the dossier) and its explicit finding that the Lakotaean
+   lens has **zero corpus vocabulary** (dossier §3, confirmed independently in this campaign by
+   reading `learn-semiotics-basics/SKILL.md`, which states under "Scope": *"Indigenous or
+   non-European sign theories — acknowledged gap; these traditions have their own systematic
+   accounts of signs and meaning that are not represented here"*). The non-negotiable rule that
+   follows from that (§6.3) is a direct response to a real, confirmed absence, not a hedge.
+
+## 1. Scope
+
+**In scope**: the platform contract shared by every theme — corpus compilation, scheduling,
+gating, mastery, theming, persistence, and the module/test conventions a new theme must follow to
+be accepted into this services-section. **Out of scope**: any one theme's actual exercise
+content, vocabulary, or curriculum spine — those are theme-level design docs (`equivo-design.md`
+is the first). This document is deliberately the "chassis" half of the dossier's own recommended
+split (dossier §5, Candidate C): *"Use the already-working, already-validated delivery mechanics
+... as the chassis, and drop [content] into it as the engine."*
+
+## 2. The corpus-compiler contract: frontmattered markdown → concept graph
+
+A **wing** is any directory of frontmattered markdown with link-shaped fields. Compiling a wing
+is a pure function of its directory contents — this is Lantern's own `DESIGN.md` §7 contract,
+verified against real code rather than assumed:
+
+```
+Wing.root  →  walk *.md (skip node_modules/.git)
+           →  parse minimal frontmatter (lantern-service/src/frontmatter.mts:
+              hand-rolled, zero-dependency, scalars + flat string lists only —
+              nested maps, e.g. this tree's `references:` citation blocks, are
+              recognized and deliberately skipped, never mis-parsed)
+           →  extract Rooms + Doors (door-extraction rules below)
+           →  Formal Concept Analysis over a declared attribute field set → Halls
+              (lantern-service/src/fca.mts: genuine closed-concept computation,
+              intersection-closure to a fixpoint, `ATTRIBUTE_CEILING=500` fallback
+              disclosed, not silently capped)
+           →  generate gate exercises (§4) from body + frontmatter shape
+           →  emit a World snapshot: { rooms, doors, halls, cards, warnings }
+              (deterministic, re-buildable, cacheable — no DB needed to compile)
+```
+
+**Room** = one markdown file. **Door** = a directed dependency edge, `prerequisite → dependent`.
+**Hall** = a formal concept: a maximal set of rooms sharing an *exact* attribute set, `intent ≠
+∅`, `|extent| ≥ 2` — real FCA, not a hand-drawn cluster (verified directly against the weiqi
+corpus's own `cites` field in Lantern's `DESIGN.md` §1: the derived halls, e.g. `{atari,
+connection, eye, handicap, life-and-death}` sharing one citation, are a genuinely different split
+from the corpus author's own hand-written Tactical/Scoring/Structural grouping — evidence the
+algorithm runs, not that it rubber-stamps intuition).
+
+**Door extraction is a shape rule, not a per-corpus special case** — this is the property that
+makes "compiler" the right word and not "weiqi importer":
+
+1. **Hard doors.** Any frontmatter key whose value(s) resolve to another file in the same wing
+   (relative markdown-link shape) becomes a hard door. This is how `requires` and
+   `uses-mechanic` are discovered in the weiqi corpus without the compiler ever being told those
+   field names (confirmed directly by reading `content/text/glossary/terms/atari.md` and
+   `content/text/documents/articles/notes/living-groups-and-eyes.md` in the weiqi corpus: the
+   former has no `requires`, the latter's `requires`/`uses-mechanic` are ordinary `.md`-shaped
+   frontmatter lists the compiler discovers by shape alone).
+2. **Soft doors.** `[text](relative/path.md)` links inside the body. **Promotion rule**: a room
+   with zero hard doors promotes its soft doors to hard — every term in the weiqi corpus has no
+   `requires`, so its `## Related terms` links become real gates.
+3. **Not doors.** `cites`/`references` (feeds Hall attributes only), `defines`/`aliases`/
+   `teaches` (feed exercise generation, §4), self-links, and links resolving outside the wing
+   root (logged as a warning, never a crash — corpora are messy).
+
+**Attribute fields for FCA default to `['cites', 'type', 'tags']`** (`WingConfig.attributeFields`
+in `types.mts`), overridable per wing; a corpus's own hand-written grouping can be supplied as a
+`groups` override that supplements, never silently replaces, the derived halls.
+
+**What makes this a "concept graph," not just a link graph**: Rooms are nodes, Doors are directed
+edges, and Halls are the graph's own closed neighborhoods under a declared attribute reading —
+three different structural readings of the same corpus, all computed, none hand-curated by
+default.
+
+## 3. Deterministic SRS
+
+Scheduling is FSRS-lite (`lantern-service/src/srs.mts`), and the module's own header states the
+determinism discipline this platform requires of **every** domain module: *"every function that
+needs 'now' takes it as a parameter (an epoch day) ... nothing in this module ever calls
+`Date.now()`."* That discipline is the platform contract, not a Lantern-only habit — §8 below
+states it as a house rule new themes must also follow.
+
+The forgetting curve is real and cited, not invented for this project:
+
+```
+R(t, S) = (1 + FACTOR · t / S) ^ DECAY
+DECAY  = -0.5
+FACTOR = 19/81 ≈ 0.234568   (= 0.9^(1/DECAY) − 1, FSRS's own published constant)
+```
+
+`t` = days since last review, `S` = stability in days, `R` = recall probability. `FACTOR` is
+*derived* so `R = 0.9` exactly at `t = S` — a structural identity of the formula, asserted here
+because `srs.test.mts` verifies it directly (`R(t=S) = 0.9 exactly`), not on faith.
+
+**Review grades**: Anki-style `Again(1)/Hard(2)/Good(3)/Easy(4)`. New-card seeding, the lapse
+rule (`S' = max(S0(Again), S·0.2)`), the success-growth rule (`S' = S·(1 + 1.2·(1−R)·G)`), and
+the difficulty clip to `[1,10]` are exactly as specified in `srs.mts` and re-verified for this
+document (§8: 74/74 green including 9 SRS-specific tests, one of which asserts the constants
+*"are FSRS's published defaults, not arbitrary values"*). This document does not restate the full
+table — see `srs.mts` directly; the platform contract is that **every theme schedules through
+this one module**, never a second scheduler (kata/drill scheduling reuses it wholesale too, per
+`kata.mts`'s `ratioToGrade` synthetic-grade mapping).
+
+**Light stage** (full/embers/dim/fogged) is computed live from `R(t)` at read time — no cron job,
+no stored "due" field to drift out of sync (`lightcone.mts`). **Territory revealed** (monotonic,
+permanent) and **light cone** (the current walkable frontier, which shrinks under forgetting and
+re-expands on review) are kept as two strictly separate progress readings — this separation is
+what makes "nothing is ever destructively lost" true rather than asserted; forgetting fogs
+*access*, never erases *proof of having been there*.
+
+## 4. The exercise-gate interface: pluggable checkers
+
+Entering a room the player has not yet gated requires clearing every generated exercise for that
+room once; passing seeds each exercise straight into the SRS at its grade's `S0`/`D0` — the
+gate-pass **is** the first SRS review (Lantern `DESIGN.md` §3), a design decision this platform
+keeps as-is because it is already correct: there is no reason for a "practice" system and a
+"review" system to be two different pieces of state.
+
+**What is new here.** Lantern's `cards.mts` generates five card kinds by fixed rules (verbatim
+exercise extraction, dependency-rationale cards, definition cloze, reversed cloze, `teaches`
+fallback) and every one of them is graded by construction — the back of a card *is* the answer,
+so "checking" is string identity, never computed. Equivo's exercises are graded by literally
+running a descent, a cohomology computation, or a regime classification (`equivo-design.md` §4)
+— there is no fixed "back of the card" to compare against, because the correct answer is whatever
+the math actually settles to for *this* player-submitted input. The platform therefore needs a
+real interface, not an assumption that grading is always string comparison:
+
+```ts
+/** A pure verdict function. MUST be synchronous, MUST NOT perform I/O, MUST NOT read wall-clock
+ * time or any mutable state outside its two arguments — same discipline as srs.mts's `now`
+ * parameter (§3), for the same reason: a checker that isn't pure can't be replayed, can't be
+ * unit-tested without a harness, and can't be trusted inside a gate that also drives SRS state. */
+export type Checker<Spec, Answer> = (spec: Spec, answer: Answer) => Verdict;
+
+export interface Verdict {
+  pass: boolean;
+  /** Human-legible, always present — even on pass. Never a bare boolean in the UI; the player
+   * gets a reason, not just a checkmark, matching the corpus's own worked-example convention
+   * (`cards.mts` Rule 1: pre-authored Q/A is presented with its own reasoning, never a bare
+   * "correct"). */
+  diagnosis: string;
+}
+
+/** One exercise, as compiled data: which checker grades it, plus that checker's own spec shape.
+ * `kind` is the dispatch key a theme's checker registry is keyed by — see below. */
+export interface GateExercise<Spec = unknown, Answer = unknown> {
+  id: string;
+  roomId: string;
+  kind: string;           // theme-declared, e.g. lantern's five card kinds, or equivo's six (equivo-design.md §4)
+  spec: Spec;              // the compiled, checker-specific payload — data, never code (§6 corpus-compiler discipline)
+  prompt: string;          // what the player is shown
+  checker: Checker<Spec, Answer>;
+}
+```
+
+**Registration, not inheritance.** A theme supplies a `Record<string, Checker>` keyed by `kind`;
+the platform's gate runner never hard-codes which kinds exist — it looks the exercise's `kind` up
+in the active theme's registry. Lantern's five existing card kinds become one theme's checker
+registry, ported forward unchanged (each one is trivially expressible as a `Checker` whose
+`verdict` is a string/regex comparison — no behavior changes, only the wrapper is new). Equivo's
+six-type taxonomy (`equivo-design.md` §4) is a different registry entirely, and both can be
+registered without either module importing the other — themes stay decoupled the same way
+sibling *services* stay decoupled (§8's vendor-not-import doctrine, one level down: themes vendor
+checker modules, not import across theme boundaries).
+
+**Gate minimum**: at least 1 exercise, at least 2 distinct kinds where the room supports it — kept
+exactly as Lantern already states it (`DESIGN.md` §3), since nothing about pluggable checkers
+changes how many are required, only how each one is graded.
+
+## 5. Mastery model
+
+Two real numbers already exist per room and are combined here into one player-facing mastery
+reading, disclosed plainly as this document's own synthesis (not corpus-sourced):
+
+- **Recall mastery** — the minimum `R(t)` (§3) across the room's currently-due-or-overdue
+  exercises. Minimum, not mean, because a room is only as strong as its weakest remembered piece
+  — a player who aced the cloze card but never reviewed the dependency card has not mastered the
+  room, and a mean would hide that.
+- **Structural mastery** — whether the room sits in a *stable* hall (`stability.mts`'s pebble-game
+  check: connected, has a cycle beyond a bare spanning tree, and that cycle is not redundant
+  bracing under the (2,3)-counting rule). This is a binary, not a spectrum — a hall is stable or
+  it isn't — and it multiplies the room's *effective* stability by `1.25` for light-cone dimming
+  when true (Lantern `DESIGN.md` §4), never rewriting the stored `S`.
+
+**Room mastery = `recallMastery`, gated by `structuralMastery`**: a room reads as "mastered" in
+the UI only once `recallMastery ≥ 0.9` (the same `full`-light cut, §3) **and** it has passed its
+gate at least once. Structural mastery is never itself a pass/fail gate on an individual room —
+it is a *hall*-level signal (shown as hall "bracing," a map decoration) precisely because it is a
+graph property of the hall, not a fact about any one room in isolation; conflating the two would
+misattribute a group property to an individual. This is stated explicitly so a future
+implementer does not accidentally gate a single room on its hall's bracing.
+
+## 6. Theming contract
+
+A **theme** is a bundle of: (a) a corpus reading — one or more Wings, plus wing-config overrides
+(`WingConfig.hardLinkFields`/`attributeFields`/`groups`); (b) a checker registry (§4); (c) a
+**presentation register** (below); (d) cosmetic/gamification config (§6.4's no-list still
+applies to every theme, not just Lantern's own weiqi wing).
+
+### 6.1 What a presentation register is
+
+The platform's internal vocabulary (Room, Door, Hall, gate, settle, measure, obstruction) is
+theme-neutral by design — it has to be, since weiqi-Learn and Equivo share the same engine but
+must never leak each other's words into the UI. A **register** is the theme's own lookup table
+from engine concepts to its own vocabulary and phrasing, applied only at render time — the
+compiler, scheduler, checker registry, and persisted state never contain register-translated
+strings, only the neutral engine vocabulary plus a `registerKey`.
+
+```ts
+export interface PresentationRegister {
+  id: string;                       // e.g. 'weiqi-learn', 'equivo-obsmetrologia', 'equivo-lakotaean'
+  /** Every entry is either a real term or an explicit absence — see §6.3. Never both undefined and silently skipped. */
+  terms: Record<EngineConceptKey, RegisterEntry>;
+}
+
+export type RegisterEntry =
+  | { state: 'present'; term: string; source?: string }   // source = citation path, when the term is corpus-sourced
+  | { state: 'absent'; reason: string };                   // §6.3 — rendered, never silently omitted
+```
+
+### 6.2 Worked example: weiqi-Learn vs. Equivo's obsmetrologia register
+
+weiqi-Learn's register is close to the identity function — the corpus already uses its own
+vocabulary (atari, liberty, territory), so `terms` mostly maps engine concepts straight to the
+corpus's own words with no translation needed. Equivo's registers are the harder case, and this
+is exactly where the dossier's vocabulary tables (dossier §3) become load-bearing platform data,
+not decoration — the "measure" row, reproduced here verbatim from the dossier for one lens as a
+concrete instance of a populated register:
+
+| Engine concept | obsmetrologia register | source |
+|---|---|---|
+| `distinguish` | **Mark** / **Kind** (`token`/`claim`) | `chapters/primitives/01-marks-and-kinds.tex` |
+| `relate` | **Utterance** (ordered pair), **Articulating** | `Obsmetrologia.lean` |
+| `measure` | **Charge** (FOUR bilattice); `measured` vs. `seeded` | `Obsmetrologia.Articulating.Cell` |
+| `settle` | **Closure / settle** (Knaster–Tarski lfp) | `chapters/settling/03-*.tex` |
+| `observe` | **Observation**; **Obstruction** = H¹ | `CausalSets...LightObservation`; `sheaf-cohomology/*.tex` |
+| `repair` | *(no single named primitive — see §6.3's honesty note, weakest-attested row)* | — |
+
+`equivo-design.md` §5 wires in all four lenses' full tables (semiotics and relationality
+populated the same way; Lakotaean is the case below).
+
+### 6.3 The Lakotaean register: owner-authored-only, honest absence — non-negotiable
+
+The dossier's vocabulary-table campaign (§3) checked all nine assigned corpora for Lakotaean
+metaphysical vocabulary at every one of the six engine-concept rows and found **none** — not thin
+coverage, a confirmed absence, corroborated independently in this campaign by
+`learn-semiotics-basics/SKILL.md`'s own explicit scope note (quoted in "What's load-bearing vs.
+flavor" above). The owner's stated equivalence — obsmetrologia = relationality = semiotics =
+Lakotaean metaphysics, four lenses on one mathematics — makes the fourth lens's absence a real
+gap in the product, not a footnote, and this platform's rule for it is a hard constraint, not a
+style preference:
+
+> **A presentation register MUST render every `absent` entry as an explicit, visible
+> "not yet available in this lens" state. It MUST NOT fall back to another lens's term, MUST NOT
+> machine-translate from another lens, and MUST NOT synthesize a plausible-sounding term to fill
+> the gap.** The Lakotaean register ships (if it ships at all before owner content exists) as a
+> register whose every entry is `{ state: 'absent', reason: '...' }` — a real, renderable,
+> honest state, not a missing feature quietly hidden by falling through to English or to another
+> lens's word.
+
+This is non-negotiable specifically because the dossier's own analysis (§3, closing paragraph)
+warns against the tempting failure mode directly: the three populated lenses "turned out to
+already differ from one another in emphasis" (obsmetrologia measurement-first, relationality
+process-first, semiotics sign-first), so *any* backfill of the fourth from the other three would
+be a fabrication dressed as translation, not a recovery of something that was really there.
+Populating the Lakotaean register is an **authoring dependency on the owner**, tracked in
+`equivo-design.md`'s MVP cut, not a synthesis task this platform (or any agent) can complete on
+its own.
+
+### 6.4 Cosmetic gamification stays theme-level, and stays on Lantern's no-list
+
+Every theme inherits Lantern `DESIGN.md` §6's explicit no-list verbatim, as a platform floor, not
+a per-theme option: no energy/lives gate on reviewing, no rewarded ads, no leaderboard pressure,
+no streak-loss shaming copy, no LLM-generated exercises (checker *specs* are compiled from real
+corpus data or hand-authored, never model-hallucinated at serve time — this is stricter than it
+sounds for Equivo specifically, since an LLM-generated obstruction exercise would be unverifiable
+without re-deriving the math by hand; the checker contract in §4 exists partly so this rule is
+enforceable by construction, not just policy).
+
+## 7. Local-first persistence
+
+**Two kinds of state, kept strictly separate** — this separation already exists in Lantern's
+design and this document elevates it to a platform rule because conflating them is exactly how a
+"reset my browser and lose everything" bug gets built:
+
+- **World snapshot** — the compiler's output (`{rooms, doors, halls, cards/exercises,
+  warnings}`). Deterministic and re-buildable from the corpus at any time; safe to cache, safe to
+  discard and recompute, never hand-edited, never the thing a migration needs to preserve.
+- **Player state** — per-exercise SRS state (`stability`, `difficulty`, `lastReviewedAt`),
+  territory-revealed set, kind-streak counters, kata/drill history. This is the only state that
+  must survive a corpus recompile untouched; it is keyed by exercise `id`, which is itself derived
+  from `roomId#kind#index` (`cards.mts`'s existing id scheme) so that recompiling an unchanged
+  room reproduces the same ids and player state re-attaches cleanly.
+
+**v1 persistence is `localStorage`, exactly as Lantern already ships it** (`web/js/state.js`) —
+this document does not add a database, per the fleet's own "works on localhost is a build
+artifact, not a deliverable" standard (`fleet-definition-of-done.md` §1) applying to *hosting*,
+not to *storage*; local-first is a deliberate design choice here, not a shortcut, because the
+"mount the player's own vault" promise (Lantern `DESIGN.md` §7) requires the platform work
+entirely client-side with zero account before a player has committed to anything.
+
+**The documented gap, inherited honestly, not hidden**: `lantern-service/DESIGN.md` itself
+promises a server-side accounts/ledger/payments layer matching the sibling-service convention
+(dossier §1i), and as of this document's writing that layer does not exist in `src/` — only the
+pure compiler+engine does. This platform document does not resolve that gap; it states the seam
+where it will attach: **player-state export/import** (a versioned JSON blob, already implied by
+the id scheme above) is the boundary a future accounts layer synchronizes across devices — vendor
+a copy of `flickering-delve-service`'s accounts/ledger/payments stack per house doctrine (§8) when
+that work is prioritized, never a live cross-service import.
+
+## 8. Module and test conventions (house family)
+
+These conventions recur, verbatim in spirit, across `flickering-delve-service` (convention-
+originating, 54/54 tests), `onestone-service` (228/228 tests), and `lantern-service` (74/74
+`src/` + 10/10 `web/` tests) — re-verified directly for this document:
+
+```
+$ cd lantern-service && npm run verify
+...
+ℹ tests 74
+ℹ pass 74
+ℹ fail 0
+```
+
+The convention this platform requires of every theme and every platform module:
+
+1. **Pure `.mts` domain modules**, one concern per file (`srs.mts`, `fca.mts`, `frontmatter.mts`,
+   `cards.mts`/theme-equivalent, `stability.mts`, `lightcone.mts`, `kata.mts`), each paired with a
+   co-located `<name>.test.mts` under `node --test`. No test framework dependency beyond Node's
+   built-in runner.
+2. **One stateful "scene"** per service — sibling services isolate all mutable runtime state
+   (`scene.mts` in `onestone-service`/`flickering-delve-service`) behind one module; every other
+   module stays pure. This platform's equivalent is the player-state store (§7) — the one place
+   allowed to mutate.
+3. **Native transport**, no framework — `node src/server.mts` directly (sibling pattern);
+   Lantern's own `web/server.mjs` is (today, disclosed) a bare static file server, itself a valid
+   v1 instance of this rule, not a shortcut around it.
+4. **Deterministic seeded RNG, never bare `Math.random()`** in domain logic, and **`now` is always
+   an injected parameter, never `Date.now()` inside a pure module** — stated once in `srs.mts`'s
+   own header and elevated here to apply to every checker and every scheduler in every theme.
+5. **Vendor a copy, not a cross-service import.** Each service (and, within this platform, each
+   theme's checker/register bundle) ships independently; a live cross-service or cross-theme
+   import would couple two independently-deployed things for a handful of small pure functions
+   with no external state. `stability.mts`'s pebble-game functions are already vendored verbatim
+   from `onestone-service/src/validate.mts` under this exact rule (Lantern `DESIGN.md` §4) —
+   the precedent this platform generalizes, not invents.
+6. **Zero runtime dependencies** where the corpus's own precedent supports it — `@561-group/math`
+   ships zero runtime deps across all 13 packages (42/42 `bilattice` tests re-verified for this
+   document); Lantern's `src/` matches it. A theme that needs `@561-group/math` for its checkers
+   (Equivo does) vendors the specific subpath it needs per point 5, not the whole catalog live.
+
+## 9. Placement and migration plan: Lantern, Equivo, and weiqi-Learn as the first themings
+
+**Where this document lives**: this file, alongside `equivo-design.md`, in
+`public-web-game-services-section/content/text/documents/articles/notes/` — the fleet's existing
+home for cross-cutting design docs (`fleet-definition-of-done.md` already lives here). The
+platform *code* this document specifies is not a new service; it is what `lantern-service/src/`
+already substantially is, generalized in place.
+
+**Migration steps, in dependency order**:
+
+1. **Extract the theme-neutral core.** `frontmatter.mts`, `fca.mts`, `srs.mts`, `stability.mts`,
+   `lightcone.mts` are already theme-neutral (nothing in them mentions weiqi). No code moves;
+   this step is a documentation/contract step — declaring these five modules *as* the platform
+   surface this document specifies, so a second theme knows exactly what it is allowed to depend
+   on.
+2. **Refactor `cards.mts` behind the `Checker` interface (§4).** Wrap each of the five existing
+   rules as a `Checker`; register them as the `lantern-basic` (equivalently, `weiqi-learn`) theme
+   registry. This is a pure refactor — no rule changes, no behavior changes, verified by keeping
+   `cards.test.mts` green throughout.
+3. **weiqi-Learn ships as the renamed, formalized "wing one.”** Its corpus, its register (near-
+   identity, §6.2), and its checker registry are exactly what Lantern already has; the rename
+   marks it as *a* theme rather than *the* product, which is the actual structural change the
+   fleet-strategy brief (dossier header: "many web games for many audiences") requires.
+4. **Equivo ships as a new theme** in its own services-section directory, per
+   `equivo-design.md`'s own placement plan, importing the platform contract's five neutral
+   modules (vendored per §8 point 5) and supplying its own corpus (once authored — `equivo-
+   design.md` §7 states this dependency plainly, since no Equivo-specific lesson corpus exists in
+   any surveyed corpus today), its own six-type checker registry, and its own presentation
+   registers (§6.2–6.3).
+5. **Open items carried forward, not silently dropped**: server-authoritative accounts/ledger
+   (§7's documented gap), custom curator-authored kata/drill paths (Lantern `DESIGN.md` open
+   question 4, unresolved by this document), and the vault-mounting UI (Lantern `DESIGN.md` §7,
+   "later pass" — a second `Wing.root` pointed at a player's own directory is already supported
+   by the compiler contract, only the folder-picker UI is unbuilt).
+
+## Open questions for the owner
+
+1. **Mastery model (§5)** is this document's own synthesis, not corpus-sourced — does "minimum
+   recall across due exercises, gated by hall stability" match the owner's intuition for what
+   "mastered" should mean, or is a different aggregate wanted before Equivo's harder tiers
+   (obstruction regimes, dossier §1b/§1c) need one?
+2. **Register absence rendering (§6.3)** — confirm the "explicit, visible absence" requirement
+   is wanted as a *shipped* UI state (a real, if sparse, Lakotaean-lens screen) versus the lens
+   being entirely hidden from theme selection until owner content exists. Both honor "no
+   fabrication"; they are different product decisions.
+3. **Theme independence (§8 point 5)** — confirm "vendor per theme" is wanted even for the two
+   themes sharing the *same* owner and the *same* deploy cadence (weiqi-Learn, Equivo), given the
+   sibling-service precedent this generalizes from was originally about independently-deployed
+   *services*, not co-located *themes* of one service.

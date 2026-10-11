@@ -1,0 +1,66 @@
+{
+  "id": "exchange-20260719-064143-8ad8b0",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an autonomous software worker operating an isolated copy of one admitted territory. Invoke exactly one tool per response using the contracted JSON. Available actions:\nlist_files {path?,max?}; search {query,path?}; read {path,startLine?,endLine?}; edit {path,blocks}; command {name}; test {}; finish {summary?}.\nInclude only the arguments used by the selected action. For edit, blocks must be exact SEARCH/REPLACE blocks: <<<<<<< SEARCH, exact old text, =======, replacement, >>>>>>> REPLACE. You have no shell. Inspect before editing. Make the smallest correct change. The host automatically runs the declared verification after every edit. Never claim success without a passing verification result."
+      },
+      {
+        "role": "user",
+        "content": "OBJECTIVE: Repair the real resource leak demonstrated by the failing executor test: applyUnifiedDiff must retire every temporary patch directory on both successful and refused git-apply paths without changing its public return contract.\n\nCONSTRAINTS: Do not weaken or remove the acceptance test.; Preserve applyUnifiedDiff's synchronous public API and returned object shapes.; Make the smallest correct implementation change.\n\nDECLARED VERIFICATION: node --test\n\nOBJECTIVE ACCEPTANCE: node --test\n\nNo commands beyond test/acceptance are admitted.\n\nTERRITORY FILES (complete): README.md, bin/run-mission.mjs, bin/run-program.mjs, bin/run-worker.mjs, bin/submit-mission.mjs, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json, data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl, package.json, src/agent-tools.mjs, src/context.mjs, src/edits.mjs, src/escalate.mjs, src/executor.mjs, src/fabric-client.mjs, src/inference.mjs, src/mission-queue.mjs, src/mission-runtime.mjs, src/program-runtime.mjs, src/resolvers.mjs, src/solve-loop.mjs, src/trajectory-memory.mjs, test/edits.test.mjs, test/executor.test.mjs, test/mission-queue.test.mjs, test/mission-runtime.test.mjs, test/program-runtime.test.mjs, test/solve-loop.test.mjs\n\nObservation 1: {\"files\":[\"README.md\",\"bin/run-mission.mjs\",\"bin/run-program.mjs\",\"bin/run-worker.mjs\",\"bin/submit-mission.mjs\",\"data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json\",\"data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json\",\"data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl\",\"package.json\",\"src/agent-tools.mjs\",\"src/context.mjs\",\"src/edits.mjs\",\"src/escalate.mjs\",\"src/executor.mjs\",\"src/fabric-client.mjs\",\"src/inference.mjs\",\"src/mission-queue.mjs\",\"src/mission-runtime.mjs\",\"src/program-runtime.mjs\",\"src/resolvers.mjs\",\"src/solve-loop.mjs\",\"src/trajectory-memory.mjs\",\"test/edits.test.mjs\",\"test/executor.test.mjs\",\"test/mission-queue.test.mjs\",\"test/mission-runtime.test.mjs\",\"test/program-runtime.test.mjs\",\"test/solve-loop.test.mjs\"]}\nObservation 2: {\"error\":\"command is not admitted: applyUnifiedDiff\",\"available\":[]}\nObservation 3: {\"path\":\"src/executor.mjs\",\"startLine\":30,\"endLine\":34,\"text\":\"30: export function runTestsCommand(workdir, command, opts = {}) {\\n31:   const r = runCommand(command, { cwd: workdir, ...opts });\\n32:   return { passed: r.code === 0, output: `exit=${r.code}\\\\n${r.stdout}\\\\n${r.stderr}`.slice(0, 8000) };\\n33: }\\n34: \"}\nObservation 4: {\"ok\":false,\"error\":\"no edit blocks\"}"
+      }
+    ],
+    "max-tokens": 800,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"command\" : \"command\",\n   \"name\" : \"applyUnifiedDiff\"\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-cb4909a2-257f-486b-91a3-930ffd68c5e2",
+      "object": "chat.completion",
+      "created": 1784443304,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"command\" : \"command\",\n   \"name\" : \"applyUnifiedDiff\"\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.006601994,
+        "prompt_tokens": 965,
+        "prompt_time": 0.118313706,
+        "completion_tokens": 37,
+        "completion_time": 0.095753668,
+        "total_tokens": 1002,
+        "total_time": 0.214067374
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01kxwhqybkfz5tnd295axwg4yz",
+        "seed": 1391861360
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.345,
+    "denomination": "groq-api-requests"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "prices": [
+    {
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "date": "2026-08-01",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "inputUsdPerMillionTokens": "2",
+      "outputUsdPerMillionTokens": "10",
+      "cacheReadUsdPerMillionTokens": "0.20",
+      "cacheWriteUsdPerMillionTokens": "2.50"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-opus-5",
+      "date": "2026-08-01",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "inputUsdPerMillionTokens": "5",
+      "outputUsdPerMillionTokens": "25",
+      "cacheReadUsdPerMillionTokens": "0.50",
+      "cacheWriteUsdPerMillionTokens": "6.25"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5",
+      "date": "2026-08-01",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "inputUsdPerMillionTokens": "1",
+      "outputUsdPerMillionTokens": "5",
+      "cacheReadUsdPerMillionTokens": "0.10",
+      "cacheWriteUsdPerMillionTokens": "1.25"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "date": "2026-08-01",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "inputUsdPerMillionTokens": "1",
+      "outputUsdPerMillionTokens": "5",
+      "cacheReadUsdPerMillionTokens": "0.10",
+      "cacheWriteUsdPerMillionTokens": "1.25"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-opus-4-8",
+      "date": "2026-08-01",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "inputUsdPerMillionTokens": "5",
+      "outputUsdPerMillionTokens": "25",
+      "cacheReadUsdPerMillionTokens": "0.50",
+      "cacheWriteUsdPerMillionTokens": "6.25"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-fable-5-1",
+      "date": "2026-08-01",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "inputUsdPerMillionTokens": "10",
+      "outputUsdPerMillionTokens": "50",
+      "cacheReadUsdPerMillionTokens": "0.25",
+      "cacheWriteUsdPerMillionTokens": "12.50"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-fable-5",
+      "date": "2026-08-01",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "inputUsdPerMillionTokens": "10",
+      "outputUsdPerMillionTokens": "50",
+      "cacheReadUsdPerMillionTokens": "1",
+      "cacheWriteUsdPerMillionTokens": "12.50"
+    }
+  ]
+}

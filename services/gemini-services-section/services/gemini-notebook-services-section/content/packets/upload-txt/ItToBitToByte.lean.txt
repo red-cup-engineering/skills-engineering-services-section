@@ -1,0 +1,333 @@
+import ObsmetrologiaManual.DocSetup
+import Obsmetrologia.Articulation
+import Obsmetrologia.Closure.Collatz.AffineTrace
+import Obsmetrologia.Computing.FormatsFour
+import Obsmetrologia.Language.Positing.BigradedTower
+import Obsmetrologia.Cohomology.AntiLandauerEntropy
+
+open Verso.Genre Manual InlineLean
+open Obsmetrologia
+
+/-!
+A teaching chapter for `it -> bit -> byte` as a clearer reading of existing
+Articulating, Trace, FOUR, format, and ledger structures.
+-/
+
+#doc (Manual) "It to Bit to Byte" =>
+
+# It To Bit To Byte
+
+This chapter explains a small phrase that is easy to ruin by reading it too
+quickly:
+
+```text
+it -> bit -> byte
+```
+
+The phrase does not mean that Obsmetrologia starts with objects, reduces them to
+abstract information, and then stores them in computers. That would import an
+external object ontology, an external information ontology, and an external
+machine ontology.
+
+The formal reading is grounded in existing declarations:
+
+```text
+process already happened
+  -> recovered it and retrospective move status
+  -> forward bit record
+  -> carrier that preserves the record
+```
+
+No new primitive is introduced here. `Articulating` remains the process-side
+primitive. The "it" is recovered by looking backward at such a process. A move
+is articulation after the fact: while it happens it is articulation, when read
+back it is movement data.
+
+The page law for this chapter is:
+
+* claim-site: `it -> bit -> byte` as a reading discipline for existing carriers;
+* phase: `head` and `moved`, then FOUR, then trace/format/ledger carriers;
+* generating sites: `Articulating`, articulation cells, `K4`, format carriers,
+  traces, and finite Landauer ledgers;
+* Lean carrier: existing declarations under `Obsmetrologia.Articulating`,
+  `Obsmetrologia.Trace`, `Obsmetrologia.Positing.BigradedTower`,
+  `Obsmetrologia.Format`, and `Obsmetrologia.AntiLandauer`;
+* Blueprint nodes: `def:articulating-head-it`, `def:articulating-moved`,
+  `thm:it-move-joint-onto`, `thm:move-toggles-it-fixed`,
+  `thm:it-varies-move-fixed`, `thm:flip-move-visible-readouts`,
+  `def:trace-fold-carrier`,
+  `thm:k4-it-bit-byte`, `thm:format-corner-byte-surface`, and
+  `thm:ledger-it-bit-byte`;
+* frontier status: the It/Move independence lemmas are cheap and proved; a
+  strict K4-style group action on these readouts is not claimed here.
+
+## Process First
+
+The primitive side is process:
+
+{docstring Obsmetrologia.Articulating}
+
+The recovered "it" at the current layer is the existing head readout:
+
+{docstring Obsmetrologia.Articulating.head}
+
+The floor readout is the other backward-facing recovery:
+
+{docstring Obsmetrologia.Articulating.floor}
+
+The new clarification is not a new ontology. It is a second readout on the same
+recursion:
+
+{docstring Obsmetrologia.Articulating.moved}
+
+Checked:
+
+```lean
+example (u : Utterance) :
+    (Articulating.utter u).head = u :=
+  rfl
+
+example (u : Utterance) :
+    (Articulating.utter u).moved = false :=
+  Articulating.moved_utter u
+
+example (u : Utterance) (a : Articulating) :
+    (Articulating.pair u a).moved = true :=
+  Articulating.moved_pair u a
+```
+
+## It And Move Are Independent
+
+The proposed "It-Move Fiber Independence" is not gibberish. It is the right
+register for this layer: an inexpensive fact about two readouts of the same
+recursion.
+
+Joint onto:
+
+{docstring Obsmetrologia.Articulating.head_moved_joint_onto}
+
+Checked:
+
+```lean
+example (u : Utterance) (b : Bool) :
+    ∃ a : Articulating, a.head = u ∧ a.moved = b :=
+  Articulating.head_moved_joint_onto u b
+```
+
+Move toggles while it is fixed:
+
+{docstring Obsmetrologia.Articulating.flipMove}
+
+{docstring Obsmetrologia.Articulating.head_flipMove}
+
+{docstring Obsmetrologia.Articulating.moved_flipMove}
+
+{docstring Obsmetrologia.Articulating.flipMove_flipMove_readouts}
+
+Checked:
+
+```lean
+example (a : Articulating) :
+    a.flipMove.head = a.head :=
+  Articulating.head_flipMove a
+
+example (a : Articulating) :
+    a.flipMove.moved = !a.moved :=
+  Articulating.moved_flipMove a
+
+example (a : Articulating) :
+    a.flipMove.flipMove.head = a.head ∧
+      a.flipMove.flipMove.moved = a.moved :=
+  Articulating.flipMove_flipMove_readouts a
+```
+
+It varies while move is fixed:
+
+{docstring Obsmetrologia.Articulating.replaceHead}
+
+{docstring Obsmetrologia.Articulating.head_varies_moved_fixed}
+
+Checked:
+
+```lean
+example (a : Articulating) (u' : Utterance) :
+    ∃ a' : Articulating,
+      a'.moved = a.moved ∧ a'.head = u' :=
+  Articulating.head_varies_moved_fixed a u'
+```
+
+The honest boundary is exactly the one in the conjecture: these theorems prove
+independent readouts and a visible double-toggle law. They do not prove that
+the readouts are the two coordinates of a K4 action, and they do not make
+`flipMove` an involution on full recursive carriers.
+
+## Bit: The Forward Record
+
+After recovering an utterance from the process, the forward-facing bit record is
+already present in articulation cells. The readout used here is the cell's
+corner:
+
+{docstring Obsmetrologia.Articulating.Cell.corner}
+
+The record is the existing four-corner status:
+
+{docstring Obsmetrologia.Articulating.FourCorner}
+
+The bridge to charge is also existing Lean:
+
+{docstring Obsmetrologia.articulation_phase_is_charge}
+
+So the first honest bit is not a computer bit. It is the token/claim status
+record carried by the articulation cell.
+
+## Trace: Carrier Of Movement
+
+The byte-like role begins when a record becomes finite, addressable, and
+replayable. The existing trace abstraction already gives that shape:
+
+{docstring Obsmetrologia.Trace}
+
+The carrier is the fold of the word:
+
+{docstring Obsmetrologia.Trace.carrier}
+
+At the Articulating spine, the initial carrier is an utterance floor and the
+advance operation is exactly `pair`:
+
+{docstring Obsmetrologia.Trace.articulating}
+
+Checked:
+
+```lean
+example (floor : Utterance) (n : Nat) (moves : Fin n → Utterance) :
+    (Trace.articulating floor n moves).carrier.depth = n :=
+  Trace.articulating_carrier_depth floor n moves
+
+example (a : Articulating) :
+    (Trace.ofArticulating a).carrier = a :=
+  Trace.ofArticulating_carrier a
+```
+
+The Collatz affine trace is the arithmetic specialization of the same fold
+shape: its step alphabet is `Branch`, its carrier is `AffineTrace`, and its
+advance operation is `traceStep`.
+
+{docstring Obsmetrologia.Closure.Collatz.traceOfWord_eq_trace_carrier}
+
+Checked:
+
+```lean
+example (w : List Closure.Collatz.Branch) :
+    Closure.Collatz.traceOfWord w =
+      (Closure.Collatz.affineTraceOfWord w).carrier :=
+  Closure.Collatz.traceOfWord_eq_trace_carrier w
+```
+
+## K4: Strict Axis Independence
+
+The strict K4 analogue already exists for knowledge/truth:
+
+{docstring Obsmetrologia.Positing.BigradedTower.axes_independent}
+
+Checked:
+
+```lean
+example (g : Positing.Gauge.K4) :
+    (Positing.BigradedTower.knowledgeBit
+        (Positing.Gauge.K4.mul Positing.Gauge.K4.neg g) =
+      !Positing.BigradedTower.knowledgeBit g ∧
+      Positing.BigradedTower.truthBit
+        (Positing.Gauge.K4.mul Positing.Gauge.K4.neg g) =
+      Positing.BigradedTower.truthBit g) ∧
+    (Positing.BigradedTower.knowledgeBit
+        (Positing.Gauge.K4.mul Positing.Gauge.K4.conf g) =
+      Positing.BigradedTower.knowledgeBit g ∧
+      Positing.BigradedTower.truthBit
+        (Positing.Gauge.K4.mul Positing.Gauge.K4.conf g) =
+      !Positing.BigradedTower.truthBit g) :=
+  Positing.BigradedTower.axes_independent g
+```
+
+The It/Move result is deliberately weaker: it gives independent readouts and a
+movement toggle that restores the visible readouts after two applications, but
+it does not yet identify the two readouts as a K4 diamond in this strict
+group-action sense.
+
+## Formats: Byte As Carrier Surface
+
+The computing surface already has bytes, but bytes are not foundational. They
+are one format carrier. A format exposes two readouts:
+
+{docstring Obsmetrologia.Format.corner}
+
+{docstring Obsmetrologia.Format.regime}
+
+Raw bytes occupy the potential content corner and strict completion regime:
+
+```lean
+example :
+    Format.corner Format.bytes =
+        Articulating.Corner.potential ∧
+      Format.regime Format.bytes =
+        ClosureRegime.strict :=
+  ⟨rfl, rfl⟩
+```
+
+The carrier surface is broader than raw bytes:
+
+{docstring Obsmetrologia.Format.card_eight}
+
+{docstring Obsmetrologia.Format.corner_onto}
+
+{docstring Obsmetrologia.Format.regime_onto}
+
+Checked:
+
+```lean
+example : Format.all.length = 8 :=
+  Format.card_eight
+
+example (c : Articulating.Corner) :
+    ∃ f : Format, Format.corner f = c :=
+  Format.corner_onto c
+
+example (r : ClosureRegime) :
+    ∃ f : Format, Format.regime f = r :=
+  Format.regime_onto r
+```
+
+So a byte is not the completed meaning. It is a carrier surface. Completion,
+validation, entailment, execution, and regime remain separate.
+
+## Ledger: Carrier Law
+
+At the finite ledger layer, the byte-like carrier is the cover nerve whose two
+readouts must satisfy the index balance:
+
+{docstring Obsmetrologia.AntiLandauer.index_balance}
+
+Checked:
+
+```lean
+example (N : Cohomology.CoverNerve) :
+    (AntiLandauer.antiLandauerBits N : Int) -
+        (Landauer.landauerBits N : Int) =
+      AntiLandauer.eulerChar N :=
+  AntiLandauer.index_balance N
+```
+
+## The Rule
+
+The useful rule is:
+
+```text
+Process first.
+Recover it by looking backward.
+Read bit as the forward record.
+Call something byte-like only when the carrier preserves the record.
+```
+
+Read this way, "it depends on what the definition of it is" becomes a local
+rule, not a joke. The definition of `it` is not a free object. In the
+articulation spine, it is the recovered head or floor of a process that already
+happened.

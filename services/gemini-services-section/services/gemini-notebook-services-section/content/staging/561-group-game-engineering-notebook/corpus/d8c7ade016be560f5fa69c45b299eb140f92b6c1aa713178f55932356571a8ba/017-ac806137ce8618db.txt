@@ -1,0 +1,280 @@
+# NotebookLM source projection
+
+Title: onestone-service/DESIGN
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/onestone-service/DESIGN.md
+Original-Digest: sha256:6448f27e62588b44b577a933878949de5c7c1d935c252a6644ac60ad946020da
+Disclosure: repository-source
+
+# Onestone — design document & module contracts
+
+**onestone.561.group** — a serious browser match-3 whose differentiator is the one thing no
+incumbent has touched in a decade: **the grid itself**. Every chapter is a different real
+tessellation, all compiled to one tiling-agnostic graph engine, with the repo's proved math
+load-bearing on actual mechanics — never flavor text.
+
+This document is the synthesis of a 7-researcher / design-panel workflow (research pack and
+the two surviving panel designs are journaled with the session). It is written so that each
+module below can be implemented *blind* against `src/types.mts` and this file alone.
+
+## Identity
+
+A Candy Crush veteran must need zero onboarding for chapter 1 (square 8×8, swap, line-match,
+striped/nova/prism specials, moss/frost/cage/geode blockers, move-limited levels, stars).
+The hook unfolds chapter by chapter: the same verbs on a hex board (chapter 2), then a
+rhombille board whose three rhombus orientations shade into the famous tumbling-cubes
+illusion (chapter 3). The roadmap ladder continues: Cairo pentagonal → snub-square →
+Penrose P2/P3 (baked deflation assets) → hat/spectre monotile → the Jeandel-Rao 11-tile
+4-color aperiodic Wang set as the citable capstone.
+
+## The math is load-bearing (and honestly labeled)
+
+Only proved/published results drive mechanics; the sheaf/H1 material from the corpus is
+flavor-naming ONLY (its own source disclaims truth authority):
+
+1. **Spawn = rejection-sampled anti-run/anti-blob fill**, palette-sized against
+   `chi(K4)=4`. Board fill/refill rejects any color that would complete an immediate 3+
+   run/blob against already-placed neighbors, so no tile is ever born pre-matched.
+   `chi(K4)=4` lower-bounds the palette at king-adjacency junctions; square/hex chapters ship
+   5 colors (headroom above the local clique bound) — but the fill itself is NOT a proper
+   coloring/graph-homomorphism (that would forbid any two adjacent cells sharing a color at
+   all, which would make the board unswappable). `chi(K4)=4` sizes the palette honestly; the
+   graph-homomorphism framing does not describe what the rejection check enforces, and earlier
+   drafts of this doc overstated it — corrected here rather than left standing.
+2. **Pebble-game board validation** (Jacobs–Hendrickson (2,3)-pebble game; Laman 2n−3;
+   double-banana warning). Level QA runs a real independence/solvability check on the
+   blocker constraint graph — never a bare edge-count budget, because the double-banana
+   graph proves counts can certify a broken layout. No engineered-impossible levels, ever.
+3. **Difficulty = rigidity percolation** (Phillips–Thorpe isostatic point ⟨r⟩ = 2.4,
+   provably a continuous/second-order transition ⇒ no difficulty cliffs by construction).
+   Each level's blocker graph has a mean coordination number; chapters ramp it smoothly
+   from ~0.5 toward 2.4.
+4. **Cascade termination = deliberately no max-depth cap.** The settle loop's termination
+   condition is operator idempotence: each step re-scans the whole board, and cascades end
+   because there is nothing left to clear, never because a depth cap stopped the search. The
+   accurate proof for *why* the happy path always terminates is graph-theoretic, not
+   Knaster–Tarski (that citation would need a monotone operator climbing a fixed lattice, and
+   refill injects fresh RNG-drawn tiles every round, so no such lattice exists here): every
+   `fallTo` edge is required to be strictly +y-aligned (`tiling-core.mts`'s
+   `FALL_ALIGNMENT_MIN`), so the fall graph is acyclic and any one tile can only fall a bounded
+   number of times. Per-step score is proportional to settling height (cells resolved that
+   step) times an escalating step multiplier.
+5. **Chaos Six is a Ramsey-inspired tuning constant, not a computed Ramsey result.** Six
+   specials concurrently live on the board triggers a guaranteed score-burst; the choice of
+   "6" takes its inspiration from R(3,3) ≤ 6, but the engine only counts concurrently-live
+   specials against that threshold — it never constructs a compatible/incompatible relation
+   over those six specials or checks for a monochromatic triangle, so the mechanic does not
+   itself compute or prove the Ramsey result. Naming it honestly as a tuned threshold (chosen
+   for a mathematically resonant reason) rather than claiming it's "not a tuned number" is the
+   corner where this doc previously overclaimed.
+6. **Ring specials exist because cycles do.** On hex/rhombille a match can close a cycle
+   around a cell — geometrically impossible on square grids. That mints the `ring`
+   special, the ladder's first "this could never happen on a square board" moment.
+
+## v1 scope (this build)
+
+Three tilings (square, hex, rhombille) on the full generic engine; 60 deterministic levels
+(20 per chapter) with a validated ⟨r⟩ ramp; full economy (shards/prisms, lives cap 5 with
+regen, streaks, boosters); ported mock/stripe/hive PaymentProvider with double-entry audit
+ledger; native Node HTTP/SSE server; single-file no-build SVG client. NOT in v1: Cairo and
+beyond (roadmap), accounts beyond token identity, leagues/pass UI (economy models the pass;
+UI sells it later), rewarded ads.
+
+## Doctrine (inherited from flickering-delve-service)
+
+Pure domain modules (`.mts`, each with a `.test.mts`, `node --test`, strict erasable-syntax
+TypeScript checked by editors via tsconfig and syntax-checked by `node --check`), one
+stateful scene, one thin native-HTTP transport, PaymentProvider boundary with balanced
+double-entry ledger and `GET /audit` hledger export. No runtime dependencies. v1 keeps its
+own atomic-JSON persistence (FeltOS world integration is roadmap, for shared events — the
+assertion-trace model fits settled per-move outcomes, not per-frame board physics).
+
+Determinism doctrine: every board and level is a pure function of seed strings. The server
+replays moves through the same pure engine the tests use; the client is presentation only
+and cannot cheat.
+
+## Module contracts
+
+Everything imports types from `./types.mts` (with `import type`). Modules must compile
+under the strict tsconfig; no `any` unless unavoidable; JSDoc in the sibling's voice.
+
+### src/seed.mts — deterministic RNG
+Port of the sibling's seed module (FNV-1a `hashSeed(text): number`, mulberry32 `Rng`).
+Exports: `hashSeed`, `interface Rng { next(); int(min,max); range(min,max); pick(items);
+chance(p); shuffle<T>(items: readonly T[]): T[] }`, `makeRng(seed: string): Rng`.
+
+### src/tiling-core.mts — shared geometry compiler
+Exports:
+- `interface RawCell { poly: number[]; cx: number; cy: number; shade: number }`
+- `compileGeometry(tiling: TilingKind, raw: RawCell[], paletteSize: number): BoardGeometry`
+  Computes: shared-edge adjacency by canonical quantized edge keys (round coords to 1e-4;
+  edge key = sorted endpoint pair); `fallTo` = the edge-neighbor whose center is most
+  aligned with gravity (+y), requiring alignment dot > 0.25 so sideways neighbors never
+  become gravity targets; `fallFrom` = inverse (when two cells contend for the same
+  fallFrom, nearest-center wins and the other keeps null); spawn mouths = cells with no
+  fallFrom; rails = maximal straight chains: greedy walks pairing each cell's opposite-ish
+  edge-neighbors (angle between incoming and outgoing direction < 30°), each maximal chain
+  of length >= 3 recorded once, family = quantized direction bucket; `railsAt` derived;
+  bounding box normalized to origin.
+
+### src/tiling-square.mts, src/tiling-hex.mts, src/tiling-rhombille.mts
+Each exports `cells(size: number): RawCell[]` producing unit-scale polygons:
+- square: size×size axis-aligned unit squares; shade 0.
+- hex: pointy-top axial hexes with |q|,|r|,|q+r| <= size (radius-`size` hexagon), unit
+  circumradius; shade 0.
+- rhombille: the rhombic tiling dual to the trihexagonal lattice — 3 rhombi per hex of a
+  radius-`size` hex patch; shade = orientation index 0|1|2 (cosmetic cube-illusion field,
+  never consulted by matching).
+
+### src/tiling.mts — registry
+`buildGeometry(tiling: TilingKind, size: number, paletteSize: number): BoardGeometry` —
+dispatches to the three cell builders through `compileGeometry`. Also re-exports the
+per-tiling default sizes used by levels: `defaultSize(tiling)` (square 8, hex 4,
+rhombille 3).
+
+### src/engine.mts — the pure match/cascade engine (the heart)
+Exports (all pure; input state never mutated):
+- `spawnBoard(geom: BoardGeometry, seed: string): BoardState` — rejection-sampled fill in
+  fallTo-topological order (reject colors completing a 3+ match against placed neighbors,
+  both rail-run and blob counted — see "The math is load-bearing" above for why this is NOT
+  a proper coloring in the graph-homomorphism sense, despite the palette being sized off
+  `chi(K4)=4`); re-derive with salted seed (`seed#1`, `#2`, …) until at least one legal move
+  exists.
+- `applyBlockers(state: BoardState, blockers: readonly BlockerPlacement[]): BoardState`
+- `findMatches(geom, state): MatchGroup[]` — rail runs of 3+ same color (per rail,
+  run-length scan, skipping cage/geode cells) plus same-color blob components of 3+ that
+  are not already covered by a single rail run; `mints`: rail run of exactly 4 → striped,
+  run of 5+ → prism, blob of 5+ containing a junction cell (3+ same-color neighbors in
+  the group) → nova, group closing a cycle around a non-member cell → ring (checked via a
+  bounded interior test: some non-member cell all of whose neighbors are members).
+- `legalMoves(geom, state): Move[]` — adjacent pairs whose swap yields a match (frost/cage/
+  geode cells are not swappable); prism swaps are always legal.
+- `applyMove(geom, state, move): SettleResult` — swap; if no match and neither tile is a
+  prism, `legal: false` with the input state returned; else settle: fire matches (minting
+  specials at origin), fire special blasts (striped → its longest rail through the cell;
+  nova → 1-ring neighborhood; prism → all cells of the swapped-with color, or the most
+  common color when fired by blast; ring → convert its interior cell to prism and fire
+  it; special+special swaps compound: striped+striped → both rails, striped+nova → rails
+  through the whole 1-ring, prism+prism → clear the board, prism+striped → all tiles of a
+  random color become striped and fire), decrement blockers (moss cleared on match ON the
+  cell; frost/cage broken by a match ADJACENT; geode hit by adjacent match/blast),
+  cascade tiles along `fallTo`, refill spawn mouths from the seeded draw stream with the
+  same no-premade-match rejection, rescan, repeat to fixed point; score per step =
+  10 × cellsResolved × stepIndex (stepIndex from 1); track peak concurrent specials for
+  `chaosSix` (>= 6 live at once → score ×2 for that settle and flag true); if the settled
+  board has zero legal moves, deterministically reshuffle (re-spawn preserving blockers,
+  salt `#r1`, `#r2`, …) and set `reshuffled`.
+- `applyBooster(geom, state, booster, cell?): SettleResult` — hammer clears one cell (and
+  settles); shuffle = deterministic reshuffle; extraMoves/prismStart are handled by scene/
+  levels (booster inventory), engine only validates.
+
+### src/validate.mts — the math QA oracle
+Exports:
+- `pebbleIndependent(nodes: number, edges: ReadonlyArray<readonly [number, number]>):
+  boolean` — the (2,3)-pebble game: every edge insertion must free 2 pebbles on its
+  endpoints via pebble-move search; returns false on the first redundant edge.
+- `lamanCount(nodes, edges): boolean` — the cheap 2n−3 prefilter (documented as NOT
+  sufficient — double-banana).
+- `meanCoordination(cellCount: number, edgeCount: number): number` — 2E/N.
+- `loadBearing(nodes: number, edges: number, components: number): boolean` — edges ≥
+  (nodes − components) + 1, the `loadBearing_iff_critical` spanning-forest-plus-one test.
+- `blockerEdges(geom: BoardGeometry, blockers: readonly BlockerPlacement[]):
+  Array<[CellId, CellId]>` — constraint edges between adjacent blocker-bearing cells.
+- `validateLevel(spec: LevelSpec): { ok: boolean; problems: string[] }` — builds the
+  geometry, applies blockers, spawns the board, and checks: palette within geometry bound,
+  ≥ 1 legal move, blocker graph pebble-independent, meanCoordination within 0.05 of
+  `spec.meanCoordination`, goals achievable (collectColor color < palette; geode goals ≤
+  geode count; moss goals ≤ moss count).
+
+### src/levels.mts — the 60-level v1 ladder
+Exports `LEVELS: readonly LevelSpec[]` (ids 1..60; chapters 0/1/2 = square/hex/rhombille,
+20 each), `levelById(id): LevelSpec | undefined`, `starThresholds(spec): [number, number,
+number]`, `rateLevel(spec, score, movesLeft, won, chaosSix): LevelResult`,
+`goalProgressFrom(steps: readonly CascadeStep[], tilesBefore: Tile[]): per-goal deltas`
+helper the scene uses to advance goal progress. Levels are generated by a deterministic
+in-module builder (seeded from level id) that ramps meanCoordination linearly ~0.5 → 2.4
+across each chapter, introduces blocker kinds gradually (moss from lvl 3, frost 6, cage
+10, geode 14 within each chapter), and every generated spec MUST pass
+`validateLevel` — the test suite asserts all 60.
+
+### src/economy.mts — wallets, lives, streaks, boosters, SKUs
+Exports: `LIFE_CAP`, `LIFE_CAP_PASS`, `LIFE_REGEN_MS` (30 min), `freshMeta(): PlayerMeta`,
+`tickLives(meta, now): PlayerMeta`, `spendLife`, `refillLives`, `winReward(result:
+LevelResult, streak: number): { shards: number; prisms: number }` (bounded: shards =
+25 + 5·stars² + min(streak,10)·5; prisms only on 3-star first-clear = 1),
+`applyStreak(meta, won): PlayerMeta`, booster shard prices `BOOSTER_PRICES`, `buyBooster`,
+`SKUS: readonly Sku[]` (charm-priced ladder: prisms 99¢/$4.99/$19.99, booster bundle
+$1.99, life refill 99¢, pass 7-day $4.99 / 30-day $9.99 — grants per the bounded-grant
+doctrine in types), `grantSku(meta, sku, now): PlayerMeta`, `fmt(n): string` compact
+number formatting.
+
+### src/progression.mts — unlocks & the Lattice Garden
+Exports: `applyResult(meta: PlayerMeta, result: LevelResult, now: number): PlayerMeta`
+(stars recorded max-wise, unlock = next level on win, streak+reward via economy, garden
+trophy on chapter completion: 'square', 'hex', 'rhombille'), `chapterOf(levelId)`,
+`isUnlocked(meta, levelId)`, `totalStars(meta)`, `gardenPieces(meta)`.
+
+### src/accounts.mts, src/ledger.mts, src/payments.mts — ported boundary
+Near-verbatim ports from `../flickering-delve-service/src/` (same doctrine, onestone
+naming): token-identity accounts; double-entry `AuditLedger` with hledger export;
+`PaymentProvider { id, configured, createIntent(order, sku), settle(order) }` with mock
+(always configured, instant clear), stripe (PaymentIntents + HMAC-SHA256 webhook
+verification, env `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET`), hive (read-chain
+confirm-by-memo, env `HIVE_ACCOUNT`, optional `HIVE_NODES`). Read the sibling source
+before writing; keep its security properties (constant-time signature compare, bounded
+bodies upstream in server).
+
+### src/scene.mts — the one stateful piece
+`createScene(opts: { savePath?: string; now?: () => number }): Scene` where `Scene`
+exposes: `login(name: string): { token: string; account: string }`, `frame(account):
+ClientFrame`, `input(account, input: ClientInput): ClientFrame` (start consumes a life —
+refused at 0 lives; swap/booster run the pure engine and advance goal progress; win/loss
+finalizes via progression/economy and clears the active board; abandon = loss), `order`/
+`settle` hooks for payments to grant SKUs, `subscribe(account, fn(frame)): unsubscribe`,
+`snapshot()`/`persist()` (atomic write: tmp + rename) and constructor-time restore.
+Per-account state: PlayerMeta + active run {spec, geom, state, movesLeft, goalProgress,
+score}. All time via injected `now` for testability.
+
+### src/server.mts — native HTTP/SSE transport (port pattern: sibling server.mts)
+Default port **18796** (`ONESTONE_PORT`/`PORT`, `HOST`), env `ONESTONE_SAVE`,
+`ONESTONE_LEDGER`. Routes: `GET /` client HTML; `POST /session {name}` → token;
+`GET /stream?token=…` SSE frames; `POST /input {token, input}` (bounded body 32KB, input
+queue per account); `GET /skus`; `POST /pay {token, skuId, provider?}`;
+`POST /webhook/stripe` (raw body + signature header to payments); `GET /audit` hledger
+text; `GET /healthz`. Security headers as sibling (no-store, nosniff, frame-deny, CSP
+self/inline for the one document). Graceful SIGINT/SIGTERM persist.
+
+### src/client.mts — `export const CLIENT_HTML` (one document, no build, no deps)
+Sibling conventions (inner script avoids template literals). Renders: login → chapter/level
+map (3 chapters, stars, locks, lives/wallet HUD) → board as inline SVG built from
+`geometry.cells[].poly` (each cell a `<polygon>`, tile color fills from a 5-color
+accessible palette, rhombille cells shaded by `cell.shade` into the cube illusion —
+three lightness steps of the tile color), tap-select + tap-adjacent-swap (and click-drag),
+settle animation replaying `lastSteps` (clear flash → falls translated along cell centers
+→ spawn pop, ~120ms/step via CSS transitions), specials drawn with glyph overlays (striped:
+rail-direction bars; nova: ring; prism: star; ring: circle), goals/moves/score HUD,
+chaos-six full-board flourish, win/loss sheet with stars, shop sheet listing /skus with
+mock-pay flow wired, Lattice Garden sheet showing earned tessellation trophy pieces
+(mini-SVG of each tiling). Palette must be color-blind-considerate (distinct lightness +
+glyph per color at minimum on specials).
+
+## Testing bar
+
+Every module ships a `.test.mts` (node:test + node:assert/strict). Non-negotiable cases:
+compileGeometry adjacency symmetry + fallTo/fallFrom inverse + spawn-mouth reachability
+on all three tilings; engine determinism (same seed ⇒ identical settle), no premade
+matches after spawn/refill, cascade reaches fixed point, reshuffle guarantee; pebble game
+rejects the double-banana graph (nodes 8, the classic two-bananas-sharing-a-hinge edge
+list) while accepting a Laman-minimal graph; all 60 levels validate; economy bounds
+(lives never exceed cap, rewards monotone in stars, streak resets); ledger balance
+invariant; payments mock round-trip + stripe signature rejection; scene life-consumption,
+win path, persistence round-trip; server smoke (boot on port 0, session→stream→input,
+audit endpoint, bounded body rejection).
+
+## Roadmap (post-v1, kept honest)
+
+Cairo/snub-square chapter (first 4-chromatic king-adjacency junctions → the Belnap FOUR
+palette claim + Duality Bomb), Penrose P2/P3 via offline Robinson-triangle deflation baked
+to JSON assets, hat/spectre via HTPF substitution tables, Jeandel-Rao Wang capstone,
+weekly Rigidity Cup, Settling Pass UI, rewarded ads, FeltOS world integration for shared
+events, real Stripe product setup (decide shared-vs-separate 561-group payment identity
+BEFORE /pay goes live in production).

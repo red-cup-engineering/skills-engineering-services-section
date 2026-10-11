@@ -1,0 +1,66 @@
+{
+  "id": "exchange-20260719-064300-d23287",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an autonomous software worker operating an isolated copy of one admitted territory. Invoke exactly one tool per response using the contracted JSON. Available actions:\nlist_files {path?,max?}; search {query,path?}; read {path,startLine?,endLine?}; edit {path,blocks}; command {name}; test {}; finish {summary?}.\nInclude only the arguments used by the selected action. For edit, blocks must be exact SEARCH/REPLACE blocks: <<<<<<< SEARCH, exact old text, =======, replacement, >>>>>>> REPLACE. You have no shell. Inspect before editing. Make the smallest correct change. The host automatically runs the declared verification after every edit. Never claim success without a passing verification result."
+      },
+      {
+        "role": "user",
+        "content": "OBJECTIVE: Repair the real resource leak demonstrated by the failing executor test: applyUnifiedDiff must retire every temporary patch directory on both successful and refused git-apply paths without changing its public return contract.\n\nCONSTRAINTS: Do not weaken or remove the acceptance test.; Preserve applyUnifiedDiff's synchronous public API and returned object shapes.; Make the smallest correct implementation change.\n\nDECLARED VERIFICATION: node --test\n\nOBJECTIVE ACCEPTANCE: node --test\n\nNo commands beyond test/acceptance are admitted.\n\nTERRITORY FILES (complete): README.md, bin/run-mission.mjs, bin/run-program.mjs, bin/run-worker.mjs, bin/submit-mission.mjs, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json, data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl, package.json, src/agent-tools.mjs, src/context.mjs, src/edits.mjs, src/escalate.mjs, src/executor.mjs, src/fabric-client.mjs, src/inference.mjs, src/mission-queue.mjs, src/mission-runtime.mjs, src/program-runtime.mjs, src/resolvers.mjs, src/solve-loop.mjs, src/trajectory-memory.mjs, test/agent-tools.test.mjs, test/edits.test.mjs, test/executor.test.mjs, test/mission-queue.test.mjs, test/mission-runtime.test.mjs, test/program-runtime.test.mjs, test/solve-loop.test.mjs\n\nNo tool observations yet. Begin by inspecting the territory."
+      }
+    ],
+    "max-tokens": 800,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"action\": \"list_files\",\n   \"path\": \"/\",\n   \"max\": 50\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-8870d236-1fac-4c58-9513-0f551cc6d0fb",
+      "object": "chat.completion",
+      "created": 1784443381,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"action\": \"list_files\",\n   \"path\": \"/\",\n   \"max\": 50\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.007460773,
+        "prompt_tokens": 576,
+        "prompt_time": 0.115855226,
+        "completion_tokens": 23,
+        "completion_time": 0.046751478,
+        "total_tokens": 599,
+        "total_time": 0.162606704
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_020e283281",
+      "x_groq": {
+        "id": "req_01kxwht9sze2c9a5dhhmvwktpj",
+        "seed": 1831698494
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.369,
+    "denomination": "groq-api-requests"
+  }
+}

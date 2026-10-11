@@ -1,0 +1,23 @@
+# NotebookLM source projection
+
+Title: predicated-work/theory/regime-classification-scope
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/documents/notes/questions-on-regime-classification-scope.md
+Original-Digest: sha256:96a8840650eb04d9c061ccea90f1b87445581c43089927fb7b8407d47f466ac2
+Disclosure: repository-source
+
+---
+type: question
+status: open
+explores: [operations-settling, regime-of-task]
+---
+
+# Is regime classification a property of the closure operator alone, or of the closure operator plus the increment sequence?
+
+The math's [four-regime dichotomy](../../../../../../../../../../library/theories/humanities/theories/math/theories/categories/theories/predication-categories/theorems/four-regime-dichotomy.md) classifies a settling by its closure ordinal $\kappa$ — the smallest ordinal at which the orbit becomes a fixed point. The dichotomy's equivalences refer to properties of the closure operator (Scott-continuity, lax-idempotence) and properties of the base (cardinalities, cofinality), not directly to the increment sequence.
+
+But a settling depends on both the closure operator and the increment sequence: $v_{\tau+1} = \mathrm{cl}(v_\tau \vee_k u_\tau)$. The operations settling has $u_\tau$ = the operations event log at stage $\tau$. Two operations on the same closure-rule system but different event logs could behave differently:
+
+- A closure operator that *can* lift to non-Scott-continuous behavior on certain rules might not actually do so if the relevant event-pattern never arrives in the increment sequence.
+- A closure operator that *would* stabilize finitely on a single isolated task might not stabilize at all if increments keep arriving with new related cells.
+
+The question is what "the operations settling is in regime $X$" actually quantifies over: the closure operator's structural commitments alone, the closure operator together with a particular increment sequence, or some intermediate notion. The [regime-of-task theorem](../../../../../../../../../../../../../../../../../../../science-services-section/services/social-science-services-section/services/sociology-science-services-section/services/work-science-services-section/services/predicated-work-services-section/content/glossary/concepts/regime-of-task.md) treats regime as a closure-operator property, but the increment sequence is part of the data of an operations settling, and the math program's regime classification is stated for the joint object. The exact scope of the regime claim — and whether the dichotomy admits a refinement that distinguishes operator-regime from operator-plus-increment-regime — is unsettled.

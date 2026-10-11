@@ -1,0 +1,47 @@
+{
+  "type": "GeminiNotebookWorkspaceMarketPolicy",
+  "version": 1,
+  "provider": "urn:ame:notebooklm-inference-team",
+  "offerLifetimeMinutes": 30,
+  "accounting": {
+    "model": "metered-cost-recovery",
+    "fixedFee": null,
+    "markup": "0",
+    "monetaryConversion": "none-without-an-observed-cost-oracle",
+    "meters": [
+      "gemini-notebook-provider-calls",
+      "source-bytes-egressed",
+      "provider-wall-time",
+      "studio-quota-consumed"
+    ],
+    "settlement": "Record provider-native quantities after execution; do not translate them into money unless an independent cost oracle supplies the rate."
+  },
+  "workspace": {
+    "maximumSourceCeiling": 300,
+    "maximumLeaseHours": 720,
+    "includedSourceAdmissions": 300,
+    "includedQuestions": 100
+  },
+  "studioPrices": {
+    "audio": "metered-cost-recovery",
+    "cinematic-video": "metered-cost-recovery-plus-observed-scarce-quota",
+    "data-table": "metered-cost-recovery",
+    "flashcards": "metered-cost-recovery",
+    "infographic": "metered-cost-recovery",
+    "mind-map": "metered-cost-recovery",
+    "quiz": "metered-cost-recovery",
+    "report": "metered-cost-recovery",
+    "slide-deck": "metered-cost-recovery",
+    "video": "metered-cost-recovery-plus-observed-scarce-quota"
+  },
+  "retentionPolicies": {
+    "ephemeral": "Destroy the exact notebook after locally seating purchased outcomes and a cleanup intent.",
+    "persistent": "Retain the notebook until an authorized custodian purchases an exact destruction operation."
+  },
+  "authority": {
+    "creation": "A purchased workspace offer does not create Leader authority. Live opening also requires a current exact notebook-creation authorization.",
+    "custody": "The accepted lease assigns operation custody only to its customer actor.",
+    "advice": "Notebook answers and Studio outputs are non-authoritative knowledge artifacts.",
+    "promotion": "Union Advisory admission is a separate assay and is never implied by condensation."
+  }
+}

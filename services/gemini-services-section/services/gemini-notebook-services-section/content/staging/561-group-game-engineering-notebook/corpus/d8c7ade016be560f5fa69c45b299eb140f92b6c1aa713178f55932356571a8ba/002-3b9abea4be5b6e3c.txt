@@ -1,0 +1,253 @@
+# NotebookLM source projection
+
+Title: gaming-enterprises/fleet-spec-coverage-and-roadmap
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/561-group-gaming-enterprises-services-section/content/text/documents/articles/notes/fleet-spec-coverage-and-roadmap.md
+Original-Digest: sha256:6c7dfb5c426e0aa430c633ba624360eaa171ba552891b77df32f59b83f46e060
+Disclosure: repository-source
+
+---
+title: Fleet Spec-Coverage Audit and Roadmap
+description: "Every 561 Group game-fleet lane, audited against the house Specification Standard: what specification exists today, what's missing, priority order for retrofits, and one consolidated now/next/later fleet roadmap consistent with the vision note's staircase toward the Commons. Mid-build lanes (crucible-service, cartridge, energy-bank, weiqi, ruinfold) are assessed from their own notes/plans only — their trees were not touched or read further than already-published documents for this pass."
+date-created: 2026-08-19
+date-updated: 2026-08-19
+type: specification
+authors:
+  - claude-fable-5
+tags: [gaming, enterprises, fleet, audit, roadmap, specification]
+---
+
+# Fleet Spec-Coverage Audit and Roadmap
+
+Audited against the [House Specification Standard](./house-specification-standard.md). Method: for
+every lane, read whatever design/plan documents already exist, and — for the two lanes explicitly
+in scope for deep source verification this run (`flickering-delve-service`, `onestone-service`) —
+run the test suite fresh and read the source directly (see each service's own new `ARCHITECTURE.md`).
+For `lantern-service` and `solitaire-service`, both outside the mid-build do-not-touch list, this
+audit ran their test suites fresh (`node --test`) as part of preparing this document, but did not
+produce a full `ARCHITECTURE.md` for either — that is this audit's own top recommendation (below).
+For `crucible-service`, `cartridge`, `energy-bank`, the weiqi lane, and the ruinfold lane — all
+named as mid-build by concurrent workflows today — this audit read **only already-published notes,
+design docs, and constitutions**, and independently re-ran nothing in those trees, per the standing
+instruction not to touch them until a lane has landed. Where a test count is cited for one of those
+five, it is attributed to its source document, not claimed as independently re-verified here.
+
+## Coverage table
+
+| Lane | DESIGN.md (or equivalent decision doc) | ARCHITECTURE.md | README/operability | Tests, as verified | Status |
+|---|---|---|---|---|---|
+| flickering-delve-service | Yes — originates the doctrine | **New, this run** | README.md + ROADMAP.md; no DEPLOY.md | 54/54, re-run fresh this session | Playable |
+| onestone-service | Yes — inherits doctrine explicitly, + TILESLOTS-DESIGN.md | **New, this run** | README.md + ROADMAP.md + DEPLOY.md | 228/228, re-run fresh this session | Playable |
+| lantern-service | Yes — adds the load-bearing-vs-flavor disclosure convention by name | **Missing** | No README.md, no ROADMAP.md — DESIGN.md only | 74/74 src + 10/10 web, re-run fresh this session | Playable |
+| solitaire-service | Yes | **Missing** | README.md; no ROADMAP.md | 58/58, re-run fresh this session | Playable |
+| play.561.group (storefront) | No DESIGN.md (a README + the cartridge spec substitute for one) | **Missing** (arguably not applicable — see below) | README.md, current and accurate as of 2026-08-19 | 4/4 per its own README, not independently re-run this session | Functional as a static catalog reader |
+| crucible-service | Yes — DESIGN.md exists, doctrine-conformant on read | Not assessed (do-not-touch) | Not confirmed (README not read) | Cited in its own DESIGN.md (300 stress seeds + a full year of daily dates for `validate.test.mts`); not independently re-run this session | Mid-build, not in scope this run |
+| `@561-group/cartridge` + `@561-group/energy-bank` | Yes — `cartridge-and-energy-bank-spec.md` is a full interface specification | N/A — no code exists yet to have architecture | N/A | None — specified, not built | Specification only |
+| weiqi lane (kernel + platform + Learn) | Yes, extensively — a platform plan plus four separate constitution records (platform, kernel, learn) | Not assessed (do-not-touch) | Per apps/weiqi-kernel's own README, cited in play.561.group's catalog: 71/71 (kernel only) | Cited from play.561.group's catalog (dated 2026-08-19), not independently re-run this session | Kernel solid; Play face declared, not admitted |
+| ruinfold lane | Yes — an MMORPG plan plus a daily-roguelike reframe spec, both substantial | Not assessed (do-not-touch) | Per play.561.group's catalog: 0/0 (empty test dir) | Cited from play.561.group's catalog, not independently re-run this session | Specification-and-skeleton stage |
+| Equivo / self-education platform | Yes — two full specifications (`self-education-platform-design.md`, `equivo-design.md`) | N/A — no service exists yet | N/A | None — no curriculum, no code | Specification only, MVP dependencies stated |
+| Cross-fleet: `fleet-definition-of-done.md`, `zbd-micropayment-rails.md`, `tileslots-market-teardown.md` | These are cross-cutting specs, not per-lane docs — noted for completeness, not scored per-lane | — | — | — | Live, current documents |
+
+## Per-lane detail, in priority order for retrofit
+
+### 1. lantern-service — highest priority retrofit
+
+**What exists:** `DESIGN.md` is genuinely excellent — it is the document that *introduced* the
+load-bearing-vs-flavor disclosure convention this whole standard formalizes (§0 of the house
+standard cites it by name), and its worked FCA example against the real weiqi corpus is a model of
+"evidence the algorithm runs, not that it rubber-stamps intuition." **What's missing:** no
+`README.md` and no `ROADMAP.md` at the service root — confirmed by directory listing; only
+`DESIGN.md` exists there, plus a separate `web/README.md`. Against `fleet-definition-of-done.md`
+§6 ("One document per service: how to deploy, how to roll back, where state lives... READMEs state
+only what is true"), lantern-service currently has *no* document answering "how do I run this" at
+the top level — a newcomer has to infer `npm run serve:web` from `package.json`'s script list
+rather than being told. This is the fleet's single largest README gap on an otherwise
+well-specified, well-tested (74/74 + 10/10, both re-verified fresh this session) service.
+**Priority: retrofit first** — the fix is cheap (a README is not a design document; it does not
+need new engineering) and the service is otherwise the fleet's best-specified one after
+onestone/flickering-delve.
+
+### 2. solitaire-service — second priority
+
+**What exists:** `DESIGN.md` is real and substantial, explicitly citing the same three-knob-as-data
+discipline onestone and flickering-delve use, with an honest, careful treatment of *why* Klondike/Spider
+solvability claims must stay weaker than FreeCell's solver-backed guarantee — this is some of the
+most intellectually honest writing in the whole fleet corpus. **What's missing:** a `ROADMAP.md` and
+an `ARCHITECTURE.md`; `README.md` exists but was not read in full for this document (out of scope
+for the deep-read pass this run). No `DEPLOY.md`. Tests: 58/58, re-run fresh this session (55 in
+`src/`, 3 in `web/test/`). **Priority: second**, because unlike lantern it at least has a `README.md`
+to build from, and its `DESIGN.md`'s move-log architecture is already the fleet's cleanest
+replay-verification precedent (cited directly in `zbd-micropayment-rails.md` §6 as the model other
+games' proof-of-play should follow) — writing its `ARCHITECTURE.md` would give the fleet a third
+concrete example of a *shipped* replay verifier, which flickering-delve and onestone both currently
+lack (see both services' own new `ARCHITECTURE.md`, §8).
+
+### 3. play.561.group — a real gap, but a different kind
+
+**What exists:** a genuinely excellent, current `README.md` — it states its own test count (4/4),
+what's real vs. `null`-and-honestly-noted in each catalog entry, and was itself the source this
+audit leaned on for weiqi's and ruinfold's cited test counts. **What's arguably missing:** an
+`ARCHITECTURE.md` in the house sense may not even apply — this is a static-asset storefront with no
+domain engine, no theory binding, and no ludics in the game sense. The house standard's own §13/§14
+instruction ("omit a section with nothing true to say... do not fill it with 'not applicable'")
+suggests the right move for a service this thin is not a full `ARCHITECTURE.md` but a **short**
+one covering only §1 (introduction), §5 (module inventory — four files), §7 (deployment), and §11
+(debt: it currently ships zero real `Cartridge`/`EnergyHooks` wrappers, honestly disclosed in its
+own `catalog.json` via `cartridgeWrapped: false` on every entry). **Priority: third**, low-effort,
+mostly a documentation exercise rather than new engineering.
+
+### 4. crucible-service — well-specified for a mid-build lane, unverified by this pass
+
+**What exists, from its own DESIGN.md (read; the tree itself was not otherwise touched):** a real
+module map, an explicit "the math is load-bearing" section with the same honesty discipline as
+onestone's, and — genuinely distinctive in the fleet — a description of a *daily solvability
+guarantee* proven by actually replaying a certified solving sequence through the real engine for
+every seed tested (300 stress seeds plus a full year of real UTC dates, per its own description).
+**What's missing, from the outside:** this audit cannot state a verified test count (the standing
+instruction is not to touch this tree), cannot confirm a `README.md`/`ROADMAP.md` exist, and cannot
+confirm the claims in its `DESIGN.md` against a fresh run — everything above is read, not verified,
+and is presented that way. **Priority: assess for real once it lands** — this is not a spec-coverage
+gap so much as a "wait for the lane to land, then run the standard's own verification pass on it,"
+per the vision note's own framing of crucible-service as still mid-build as of 2026-08-19.
+
+### 5. `@561-group/cartridge` / `@561-group/energy-bank` — specified, unbuilt
+
+`cartridge-and-energy-bank-spec.md` is a complete, careful interface specification — it names exact
+fit points against every existing game's real module shape (its §4 summary table, "what each
+existing game needs to add, not rewrite," is itself close to an `ARCHITECTURE.md`-shaped artifact
+for the *proposed* package). What's missing is the package itself: no `services/energy-bank`,
+`services/cartridge` code exists under the game-fleet section proper as of this audit — separately,
+this audit's directory survey found real, in-progress `cartridge`/`energy-bank` service directories
+under `561-group-gaming-enterprises-services-section/services/` with real `.mts` source and test
+files present, which this audit did not read further (per the do-not-touch instruction for a
+concurrent workflow's tree) beyond confirming they exist on disk. **Priority: not a retrofit
+candidate** — this is net-new package work, not a documentation gap on an existing service, and its
+own spec already states the implementation should confirm `.mts`-vs-`.mjs`+`.d.ts` package-authoring
+convention against current practice before generating files (a decision this audit does not
+resolve here either).
+
+### 6. weiqi lane — the fleet's deepest governance-document investment, thinnest game surface
+
+**What exists:** four substantial documents (`weiqi-platform-plan.md`, plus three constitution
+records for the platform section, the kernel, and the Learn service) applying a real,
+carefully-reasoned governance framework (the 2026-08-11 "standard form" derivation) to decide
+placement, cover, and authority boundaries — genuinely more process rigor than any other lane in
+the fleet has received. **What's thin:** none of these four documents is a `DESIGN.md` or
+`ARCHITECTURE.md` in the house-standard sense — they answer "who owns this, on what authority, with
+what refusal conditions," not "what does the code do, traced through real function calls." The
+kernel itself (`apps/weiqi-kernel`, 71/71 per its own README, cited via play.561.group's catalog) is
+real and reportedly solid; the Learn app runs locally but is not deployed; the Play face is
+explicitly declared-not-admitted, gated on a board decision this audit does not resolve.
+**Priority: not a near-term retrofit target for THIS standard** — the governance work is real and
+valuable but answers a different question than `ARCHITECTURE.md` asks; the actionable house-standard
+gap (a real DESIGN.md/ARCHITECTURE.md for the kernel, once it's confirmed committed and stable) is
+appropriately deferred until the lane's own naming-form open obligations (still unresolved per the
+Weiqi Platform Constitution's own "Open obligations" section) settle.
+
+### 7. ruinfold lane — the fleet's best-argued daily-game design, unbuilt
+
+**What exists:** `ruinfold-daily-design.md` is arguably the single most rigorous design document in
+the entire fleet corpus — it grounds every claim in a direct read of the legacy engine's 28 modules
+(confirmed zero `Date.now()`/`Math.random()` calls by the document's own stated grep), works through
+a genuinely novel five-way bilattice death model with per-outcome scoring consequences, and is
+explicit and disciplined about what transfers from the MMORPG-scoped predecessor plan versus what's
+new work for the daily reframe. **What's missing:** per play.561.group's catalog, `src/tests/` is
+empty (0/0) and no server/client is wired up — "a specification-and-skeleton stage, not a playable
+game," in that catalog's own honest words. **Priority: not a retrofit target** — the specification
+is already better than most of the fleet's shipped `DESIGN.md`s; what's needed is implementation
+against an already-excellent spec, not more documentation.
+
+### 8. Equivo / self-education platform — specified, content-blocked
+
+Two real specifications (`self-education-platform-design.md`, `equivo-design.md`) with worked,
+actually-run examples against real `@561-group/math` output (the three worked checker examples in
+`equivo-design.md` §5 are exactly the theory-binding evidence discipline this standard's §13
+requires, predating this standard). What's missing is not documentation but **authored content** —
+both documents are explicit that no Equivo lesson corpus exists anywhere in the surveyed material,
+and the Lakotaean presentation register is a *hard*, owner-authored-only blocker, not a synthesis
+task any agent can complete. **Priority: not a retrofit target; an authoring-capacity decision for
+the owner**, named plainly in both documents' own MVP-cut sections.
+
+## Top 5 spec gaps, fleet-wide
+
+1. **lantern-service has no README.md or ROADMAP.md** despite being one of the fleet's best-tested
+   (74/74 + 10/10) and best-specified (DESIGN.md) services — the single cheapest, highest-leverage
+   fix in this whole audit.
+2. **Neither flickering-delve-service nor onestone-service has a shipped `replay()`/intent-log
+   verifier**, despite both being held up by other fleet documents (`cartridge-and-energy-bank-spec.md`,
+   `zbd-micropayment-rails.md`) as the natural first adopters of replay-based reward verification —
+   the gap is scoped and small in both cases (both already have pure `applyMove`; only the
+   fold-over-a-log wrapper is missing) but blocks every downstream ZBD/Cartridge adoption plan.
+3. **`onestone-service/README.md`'s cascade-termination citation (Knaster-Tarski) has already been
+   corrected in `engine.mts`'s own source comments but not in the README** — a small, concrete,
+   two-file inconsistency a reader would not know to doubt without reading the source directly, as
+   this audit did.
+4. **`onestone-service/src/accounts.mts` is dead code** — ported from flickering-delve, never wired
+   into `scene.mts` or `server.mts`, which independently reimplement the same identity pattern. A
+   small, real instance of the exact "undocumented vendored duplicate" failure mode the house
+   standard's §2 vendor-not-import rule exists to prevent, caught only by reading the source and
+   grepping for actual import sites.
+5. **No fleet service currently implements a payout direction on its ledger** (every service today
+   only ever posts `income:*`, never `liabilities:*`/`expenses:payout:*`) — meaning the Energy
+   Bank spec's `verifyPayoutInvariant` (its single most load-bearing invariant, "payouts never
+   exceed verified revenue") has **zero services to exercise it against** today. This is not a bug
+   in any one service — it's an honest description of where the fleet actually is on its own
+   staircase (§ below): every game today is pre-payout, by construction, which is consistent with
+   the vision note's own "now" tier naming "deterministic engines, replay verification, kind-economy
+   discipline" rather than a live reward loop.
+
+## Consolidated fleet roadmap, staged against the vision note's staircase
+
+The vision note's own staircase (§6 of `gaming-enterprises-vision.md`) is the frame this roadmap
+stages against directly — restated here with each rung's actual spec-coverage state folded in,
+not a fresh invention:
+
+**Now** (shipped, spec-covered or in active retrofit):
+- flickering-delve-service, onestone-service — playable, tested, now spec-covered by real
+  `ARCHITECTURE.md` documents (this run).
+- solitaire-service, lantern-service — playable, well-tested, DESIGN.md-covered;
+  `ARCHITECTURE.md`/README retrofits are this audit's top two recommendations, not blocking work.
+- play.561.group — a real, honest, self-auditing storefront reading real (if cartridge-unwrapped)
+  game state.
+
+**Next** (scoped, buildable, no new design decision required — matches the vision note's own "next"
+tier plus this audit's documentation retrofits):
+- Write lantern-service's README.md/ROADMAP.md and solitaire-service's ARCHITECTURE.md/ROADMAP.md
+  (this audit's #1 and #2 priorities).
+- Build `defaultReplay`/`replay` for flickering-delve-service and onestone-service — both already
+  scoped in `cartridge-and-energy-bank-spec.md` §1.2 and §4, and both services' own new
+  `ARCHITECTURE.md` documents name the exact extraction needed.
+- Fix the two small, concrete inconsistencies (onestone's README citation, the dead `accounts.mts`)
+  named in gaps #3 and #4 above.
+- Land `@561-group/cartridge` and `@561-group/energy-bank` as installable packages per their
+  existing spec — the vision note's own Fable proposal 1, already fully specified, blocking the
+  fleet's whole "wrap existing ledgers behind EnergyHooks" story.
+- Crucible-service and the weiqi/ruinfold lanes landing (a workflow-scheduling matter, not a
+  specification gap — both already carry unusually strong design documents for their build stage).
+
+**Later** (genuinely blocked on a decision, a dependency, or unauthored content — matches the
+vision note's "then" tier):
+- The energy-tiling hinterlands game (Crucible, per the vision note's Fable proposal 2) — piloted
+  solo-scale once the daily-solvability-guaranteed engine described in crucible-service's own
+  `DESIGN.md` is confirmed landed and stable.
+- Equivo's actual content-authoring pass and the Lakotaean register — blocked on owner-authored
+  source material that does not exist in any surveyed corpus, stated as a hard dependency by
+  `equivo-design.md` itself, not a scheduling matter this roadmap can shrink.
+- The weiqi Play face — explicitly declared-not-admitted pending a board Phase 2 authorization, per
+  the Weiqi Platform Constitution's own refusal condition.
+- The first fleet payout loop (ZBD adoption) — blocked on both the replay-verifier work above
+  landing (gap #2) *and* the Energy Bank package existing, since gap #5 shows no service currently
+  has anywhere to post a payout entry to.
+- The undersea cooperative MUD / shared-board Commons work — explicitly "too wild to express" per
+  the vision note's own owner framing; not a documentation gap this audit can meaningfully stage
+  against, named here only to keep the staircase's top rung visible rather than silently dropped.
+
+## What this audit did not do
+
+This audit did not write `ARCHITECTURE.md` for lantern-service, solitaire-service, or
+play.561.group — those are named as recommendations, not delivered, per this run's assignment scope
+(the standard, plus two deep-read `ARCHITECTURE.md` documents, plus this audit). It did not read or
+modify anything under `crucible-service/src`, `cartridge/src`, `energy-bank/src`,
+`weiqi-services-section`'s code directories, or `ruinfold-services-section`'s code directories — every
+claim about those five lanes above is sourced to an already-published document (their own DESIGN.md/
+constitution/plan files, or play.561.group's own already-verified catalog), never to code this audit
+read or ran directly.

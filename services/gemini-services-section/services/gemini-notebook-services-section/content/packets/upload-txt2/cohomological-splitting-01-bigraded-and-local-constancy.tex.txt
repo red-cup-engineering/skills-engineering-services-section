@@ -1,0 +1,151 @@
+\subsection{Bigraded splitting and local constancy}
+
+\begin{theorem}[Bigraded two-row mapping cone (cochain level)]\label{thm:bigraded-two-row}\lean{Obsmetrologia.Bigraded.bigraded_two_row_mapping_cone}\leanok\uses{thm:settling-cohomology-h1-vanishes, thm:vanishing-h1-crdt, thm:designated-short-exact-sequence, thm:valuation}
+The bigraded settling bicomplex $C^{m,n}_{k,t}$ has only the two rows $m=0$ (truth sheaf
+$F_U^{(t)}$) and $m=1$ (inconsistency sheaf $F_U^{(\top)}$); rows $m\ge 2$ vanish. The vertical
+differential $d_v = \pi\circ\iota$ is the zero map (the truth/inconsistency supports $d_T$,
+$d_{\top}$ are disjoint), and the designated SES $0\to F_U\to F_U^{(k)}\to F_U^{(\top)}\to 0$ is
+split-exact. All three are established at the \emph{cochain} level
+(\texttt{bigraded\_two\_row\_mapping\_cone}).
+\end{theorem}
+
+\begin{theorem}[Truth--knowledge long exact sequence]\label{thm:bigraded-truth-knowledge-les}\lean{Obsmetrologia.Bigraded.truth_knowledge_graded_decomposition}\leanok\uses{thm:bigraded-two-row, thm:bigraded-truth-knowledge-decomposition, thm:settling-cohomology-h1-vanishes, thm:cech1}
+The induced long exact sequence of the two-row mapping cone \emph{degenerates} to the direct-sum
+decomposition $H^n(F_U^{(k)}) \cong H^n(F_U^{(t)}) \oplus H^n(F_U^{(\top)})$, the two bigrading axes
+of $H^{m,n}_{k,t}$ --- now proved, because all graded content is concentrated in degree 0. There
+(\cref{thm:bigraded-truth-knowledge-decomposition}) the knowledge sections are the genuine direct sum
+of the truth and $\top$ sections, with \texttt{split}/\texttt{merge} the mutually-inverse induced
+maps on real cohomology objects (not the placeholder $\texttt{Hn}:=\texttt{Unit}$); in degree 1 the
+settling cohomology $H^1$ vanishes for every \v{C}ech datum (every cocycle is a coboundary); and in
+every degree $n\ge 2$ the cohomology is the zero group. So the connecting maps all vanish and the
+only nondegenerate piece is the genuine $H^0$ direct sum --- the degenerate LES. (A non-degenerate
+graded $H^n$ for the aperiodic regime, where higher cohomology need not vanish, remains the deeper
+frontier.)
+\end{theorem}
+
+\begin{theorem}[Truth--knowledge decomposition (degree 0)]\label{thm:bigraded-truth-knowledge-decomposition}\lean{Obsmetrologia.Bigraded.truth_knowledge_section_decomposition}\leanok\uses{thm:bigraded-two-row}
+The degree-0 / global-sections case of the degenerate truth--knowledge LES, with \emph{genuine}
+objects rather than the placeholder $\texttt{Hn}:=\texttt{Unit}$. The designated sections
+$H^0(F_U^{(k)}) = \{c \mid \texttt{Vanishes}\,(dK\,v)\,c\}$ (cochains supported on the knowledge mask)
+decompose as a \textbf{direct sum} of the truth sections $H^0(F_U^{(t)})$ and the $\top$ sections
+$H^0(F_U^{(\top)})$: the maps $\texttt{split}$ (project to the $dT$- and $dTop$-parts) and
+$\texttt{merge}$ (recombine by addition) are mutually inverse, since the masks are disjoint and
+$dK = dT \sqcup dTop$. This is the $d_v=0$ splitting $F_U^{(k)} \cong F_U^{(t)} \oplus F_U^{(\top)}$
+realized on real cohomology objects; the higher-degree LES remains
+\cref{thm:bigraded-truth-knowledge-les}.
+\end{theorem}
+
+\begin{theorem}[Truth--knowledge connecting homomorphism (graded two-term carrier)]\label{thm:truth-knowledge-connecting}\lean{Obsmetrologia.Bigraded.measurement_connecting_model}\leanok\uses{thm:bigraded-truth-knowledge-les}
+The nondegenerate side of the truth--knowledge LES, on the carrier where the connecting map has
+content: a graded two-term integer complex whose truth cochains form a subcomplex (truth cells
+incident only to truth edges) but which does not split as a direct sum of complexes. The six-term
+sequence $0\to H^0_t\to H^0_k\to H^0_\top\to H^1_t\to H^1_k\to H^1_\top\to 0$ is proved in
+representative form (\texttt{graded\_two\_term\_les}): exactness at $H^0_\top$ (the connecting
+class is a truth coboundary iff the record cocycle lifts to an ambient cocycle) and at $H^1_t$
+(a truth cocycle is an ambient coboundary iff it is a connecting class plus a truth coboundary),
+with the split case forcing the connecting map to vanish
+(\texttt{connecting\_zero\_of\_split} --- the two-term analogue of $d_v=0$, so the degenerate LES
+of \cref{thm:bigraded-truth-knowledge-les} is exactly the split case). The measurement instance
+(one coherent cell, one record cell, one truth edge) has truth $H^1=\mathbb{Z}$, ambient $H^1=0$,
+and the record generator's connecting class nonzero and generating the image
+(\texttt{measurement\_connecting\_model}): discarding the record deposits one independent class
+in the truth sector --- one bit in the \texttt{landauerBits} currency. The sheaf-level graded LES
+on the \texttt{AssocSheaf} carrier (a dynamic two-valuation settling step) stays the frontier
+(\cref{thm:aperiodic-local-constancy-failure}).
+\end{theorem}
+
+\begin{theorem}[The six-term LES on cohomology objects]\label{thm:graded-les-objects}\lean{Obsmetrologia.Bigraded.GradedTwoTerm.six_term_les_objects}\leanok\uses{thm:truth-knowledge-connecting}
+The sequence of \cref{thm:truth-knowledge-connecting}, no longer in representative form: the
+degree-0 objects are the cocycle subtypes of the truth, ambient, and record complexes, the
+degree-1 objects are genuine quotients (1-cochains modulo coboundaries, as \texttt{Quotient}s
+of the coboundary setoids), the five maps $\iota^0, \pi^0, \delta, \iota^1, \pi^1$ descend to
+classes, and $0\to H^0_t\to H^0_k\to H^0_\top\to H^1_t\to H^1_k\to H^1_\top\to 0$ is exact at
+every node: $\iota^0$ injective, $\ker\pi^0 = \mathrm{im}\,\iota^0$,
+$\ker\delta = \mathrm{im}\,\pi^0$, $\ker\iota^1 = \mathrm{im}\,\delta$,
+$\ker\pi^1 = \mathrm{im}\,\iota^1$, $\pi^1$ surjective. On the measurement and quench
+carriers the connecting map is nonzero as a map between these objects
+(\texttt{measurement\_conn\_recordUnit\_ne\_zero},
+\texttt{quench\_conn\_recordSrc\_ne\_zero}): the sequence does not degenerate.
+\end{theorem}
+
+\begin{theorem}[The quench: connecting homomorphism on a settling stage]\label{thm:quench-connecting}\lean{Obsmetrologia.Bigraded.quench_connecting_model}\leanok\uses{thm:truth-knowledge-connecting}
+The graded two-term LES realized on settling data. A stage's mapping-torus complex
+(\texttt{temporalComplex}: cells in degree 0, one transition edge per cell,
+$\delta^0 c = c\circ\mathrm{step} - c$ by \texttt{delta0\_temporal}) carries the truth grading
+read from the charges (the \texttt{dTop} mask of the inconsistency sheaf, whose corpus
+definition already indexes the record sector by stage, $\Delta^{+,\top}_\tau$). A stage whose
+step preserves the inconsistency mask — freezes nothing, thaws nothing — has identically zero
+connecting map (\texttt{connecting\_zero\_of\_charge\_invariant}; the static-mask
+$d_v = 0$ carrier is this case). The quench witness (record source $\to$ truth carrier $\to$
+record sink, charges $\top, \mathbf{t}, \top$) exhibits a record cocycle whose connecting class
+is not a truth coboundary: a record value crossing the truth sector between inequivalent
+records deposits an irreducible truth-$H^1$ class. This resolves the finite-witness horn of the
+measurement dichotomy on charged settling data: the transfer from the record sector to the
+truth sector is internally priceable.
+\end{theorem}
+
+\begin{theorem}[Measurement as $J$-symmetry breaking]\label{thm:connecting-j-symmetry-breaking}\lean{Obsmetrologia.Bigraded.j_symmetry_breaking}\leanok\uses{thm:quench-connecting, thm:d4-is-dihedral}
+The connecting obstruction located against the quarter-turn gauge. On the mapping-torus carrier
+of the \texttt{negSwap} rotation itself (\texttt{jCarrier}: cells the four charges, step the
+order-4 orbit $\bot \to \mathbf{t} \to \top \to \mathbf{f} \to \bot$), every record cocycle's
+connecting class is a truth coboundary (\texttt{jCarrier\_connecting\_coboundary}): the
+rotation is invertible, what enters the record corner leaves it, and the entry and exit
+contributions cancel through an explicit potential. The quench of
+\cref{thm:quench-connecting} is this orbit cut at the record corner ($\top$ severed into its
+pre- and post-copies \texttt{src}/\texttt{sink}), and there the connecting class is a truth
+coboundary \emph{iff} the two copies carry equal values
+(\texttt{quench\_connecting\_coboundary\_iff\_records\_agree}) — the obstruction is exactly the
+failure of the record cochain to descend to the uncut carrier. The cut, not an edge deletion,
+is the load-bearing operation: deleting an edge of the orbit leaves a tree and trivializes the
+class. Irreversibility of measurement = the severing of the record's past and future copies =
+the breaking of the quarter-turn symmetry.
+\end{theorem}
+
+\begin{theorem}[Local-constancy vanishing model (strict/Scott)]\label{thm:local-constancy-model}\lean{Obsmetrologia.LocalConstancy.vanishing_regime_local_constancy_model}\leanok\uses{thm:settling-cohomology-h1-vanishes, thm:regime-cohomology-vanishes-iff, thm:closure-regime-carrier, thm:cech1, thm:cocycle, thm:coboundary}
+In the strict/Scott regime ($\texttt{cohomologyVanishes}\,r=\texttt{true}\iff r\in\{\text{strict},\text{scott}\}$),
+settling cohomology $H^1$ vanishes --- every \v{C}ech agreeing family glues to a unique global
+section --- and a predicate-locally-constant sheaf has KZ-coherent section maps. In this
+Nat-indexed, proof-irrelevant-settling model these vanishings hold \emph{unconditionally}; the
+regime hypothesis gates only the classification, not a dichotomy
+(\texttt{vanishing\_regime\_local\_constancy\_model}).
+\end{theorem}
+
+\begin{theorem}[Aperiodic failure of local constancy]\label{thm:aperiodic-local-constancy-failure}\notready\uses{thm:local-constancy-model, thm:husainov-cech-derived}
+\emph{(Open frontier --- stated, not formalized.)} In the aperiodic regime ($\kappa\ge\omega_1$),
+local constancy and $H^1$-vanishing \emph{fail}: the settling does not stabilize at any countable
+$\tau_0$, so $F_U$ is not predicate-locally-constant and its cohomology is a genuine \emph{direct
+limit} over the transfinite stabilization tower. The finite/Nat-indexed model cannot witness the
+non-vanishing side (it makes every cover acyclic, cf.\ \cref{thm:husainov-cech-derived}). Red until
+a model with genuine aperiodic non-vanishing and the direct-limit construction is built.
+\end{theorem}
+
+\begin{theorem}[The knowledge filtration as a spectral sequence]\label{thm:knowledge-spectral-sequence}\notready\uses{thm:bigraded-two-row, thm:aperiodic-local-constancy-failure, thm:regime-tower}
+The knowledge order $\bot_k < \{t,f\} < \top_k$ filters the bigraded cochain
+complex of \cref{thm:bigraded-two-row} by stage rather than by the two fixed
+rows already computed. A filtered cochain complex carries a spectral
+sequence, page $E_1$ the cohomology of the associated graded (the
+charge-shadow reading of \cref{thm:record-charge-shadow}), converging toward
+the cohomology of the full filtered object. This is not the existing
+truth/inconsistency bigrading of \cref{thm:bigraded-truth-knowledge-les},
+which is a two-row splitting at one fixed stage; it is a new grading by
+settling stage that the two-row result does not construct. No cochain
+complex indexed by settling stage, no differential $d_r$, and no page exists
+in the tree. This is the general construction \cref{thm:aperiodic-local-constancy-failure}
+needs a witness of: the aperiodic regime's genuine, non-acyclic cohomology
+is a plausible home for a spectral sequence that fails to degenerate at a
+finite page, where \cref{thm:bigraded-truth-knowledge-les} degenerates
+immediately because its indexing carries no stage filtration at all.
+\end{theorem}
+
+\begin{theorem}[Degeneration page as a regime invariant]\label{thm:degeneration-regime-invariant}\notready\uses{thm:knowledge-spectral-sequence, thm:regime-tower}
+Once \cref{thm:knowledge-spectral-sequence} exists: the claim that the page
+at which it degenerates matches the settling carrier's place in the regime
+tower (\cref{thm:regime-tower}) --- degenerating by a finite page on the
+strict-finite carrier (matching \texttt{Charge.settles\_by\_three}'s bound of
+three), at the limit page on the transfinite-bounded carrier
+(\texttt{settles\_at\_omega}), and not at all on the carrier with
+lax-idempotence slack (\cref{thm:germ-lax-slack}). The regime tower's four
+rungs are proved as settling facts about iterating a closure; this would be
+the same classification read off a spectral sequence's differentials
+instead, and the two would need to be shown to agree, not merely asserted to.
+\end{theorem}

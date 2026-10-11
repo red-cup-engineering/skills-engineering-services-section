@@ -1,0 +1,172 @@
+# NotebookLM source projection
+
+Title: weiqi/platform-plan
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/science-services-section/services/game-science-services-section/services/board-games-services-section/services/weiqi-services-section/content/text/documents/articles/notes/weiqi-platform-plan.md
+Original-Digest: sha256:13b3218a39772848aa7a0e483e8b5b18a997791d3a4503d6e66d98b1cee907ad
+Disclosure: repository-source
+
+---
+title: Weiqi Platform Plan
+description: "Audience: the 561 Group board and future implementing agents. A full-spectrum plan for building the richest weiqi web gaming platform this repository's research supports, with new-player education as the organizing principle."
+date-created: 2026-08-18
+date-updated: 2026-08-18
+type: specification
+authors:
+  - claude-fable-5
+tags: []
+---
+
+# Weiqi Platform Plan
+
+## Thesis
+
+Every major Go server treats playing and learning as separate products: you play on OGS or Fox, you learn on GoMagic or BadukPop or a book. This repository's weiqi corpus — a dependency-linked glossary, a sequenced lesson curriculum with a uniform worked-example/exercise template, and a formal OWL/SHACL ontology binding it together — is precisely the asset that lets us fuse them. The platform's differentiator is **glossary-linked play**: the rules engine recognizes the concepts the corpus defines (atari, ko, capture, connection, eye, life-and-death) as they occur on the board, and the interface surfaces the corpus's own definitions and lessons at the moment they become relevant. The game explains itself while you play it. No incumbent does this, and no incumbent has the content architecture to do it.
+
+The build motto, consistent with house doctrine: the engine is the executable form of the glossary. Each glossary term corresponds to a named predicate or event in the rules kernel, documented in both directions. Code is a perfect model of the theory, not merely working.
+
+## What we already have
+
+**Content.** Four sequenced weiqi lessons (overview → living groups and eyes → komi and handicap, with history as a parallel entry), ten dependency-linked glossary terms in three natural clusters (tactical: liberty–atari–capture–ko; scoring: territory–komi–handicap; structural: connection–eye–life-and-death), parent board-games and games curricula that position weiqi genealogically, and an eight-lesson ludics (theory of play) curriculum giving us an unusually principled design vocabulary (magic circle, paidia↔ludus, agon/alea, flow, Sutton-Smith's rhetorics).
+
+**Schema.** The Ludic ASR ontology (OWL + SHACL) with typed content classes (term, lesson, specification, text, topic) and relations (defines, requires, teaches, uses-mechanic, cites) — a machine-checkable concept graph the product can consume directly as a skill tree and hover-card API.
+
+**Infrastructure.** A provisioned Cloudflare account (Workers, D1, R2, Workers AI, DNS-edit tokens), a proven wrangler-via-GitHub-Actions deploy pattern (561.group), a second precedented deploy pattern (Node + systemd + Caddy on the box), in-house packages on a local Verdaccio registry (`@red-cup-engineering/http-server`, `organizing-with-the-semantic-web`, `561-group-website-theme`), and Stripe keys should monetization ever matter.
+
+**Governance.** The service-section constitution and corpus-normalization/move-content skills, which tell us exactly where and how the platform's parts should live.
+
+## What we do not have
+
+- **No game code anywhere.** No engine, board renderer, SGF handling, or server. The platform is a greenfield build; only infrastructure and content are reusable.
+- **An incomplete ruleset.** The corpus covers simple ko but not superko, suicide, seki, area-vs-territory scoring, pass/end-of-game procedure, dead-stone settlement, handicap placement conventions, or standard komi values. These must be authored as content *and* encoded in the kernel.
+- **No strategy or training material.** No joseki, fuseki, tesuji, yose, tsumego, rank-system explainer, or annotated games; no SGF records at all.
+- **Corpus hygiene debt.** A 174-file ludics triage inbox mixing stale weiqi duplicates with unrelated material, four inconsistent provenance conventions, missing index/landing pages and dead relative links, a missing README/package.json on the game-science ludics section, and a name collision between two `ludics-services-section` packages (play-theory vs Girard proof-theory).
+
+## Product vision: three faces, one graph
+
+1. **Play** — real-time and correspondence games, bots, clocks, ratings, handicap.
+2. **Learn** — an interactive curriculum from first stone to single-digit kyu, built from the corpus's lesson template.
+3. **Read** — the living glossary and library, served both as pages and as an API the other two faces consume.
+
+All three faces are views over one concept graph (the ASR ontology). A capture in a live game, an exercise in a lesson, and the glossary entry for "capture" are the same node seen three ways.
+
+## Pedagogy: the education architecture
+
+This is the platform's center of gravity, so it gets the most detailed treatment.
+
+**The onboarding ladder** follows proven Go pedagogy and happens to match the corpus's own dependency ordering:
+
+1. *Capture Go* (atari-go) on 7×7/9×9 — only liberties and capture, the corpus's overview lesson made playable. First session, no account required.
+2. *Full rules on 9×9* — territory, ko, passing, scoring introduced one game at a time.
+3. *13×13* — opening direction, bigger groups, first joseki-shaped ideas.
+4. *19×19* — the full game, introduced only when the player chooses it.
+
+**Lessons become interactive.** The house lesson template (Audience → Learning goal → Worked example → Exercises with collapsible answers → What comes next) ports one-to-one onto an interactive board widget: worked examples become step-through board sequences; exercises become playable problems whose "answer" reveal is a replay with commentary. The four existing lessons are the pilot conversions; the template then scales to every new lesson we author.
+
+**The concept graph is the skill tree.** The ontology's `requires`/`teaches`/`defines` relations give us mastery tracking for free: a player's profile records which concepts they have been taught, exercised, and demonstrated in live play (the kernel's semantic events provide the evidence — "you escaped atari correctly 9 of 11 times this week"). Progression, review scheduling (spaced repetition over tsumego), and lesson recommendations all read from this graph rather than an ad-hoc XP system.
+
+**Glossary-linked play, concretely.** During and after games, the kernel annotates moves with recognized events: atari given/escaped, capture, ko started/resolved, group connected/cut, eye formed/falsified, group settled/killed. Beginners get gentle real-time surfacing ("this group is in atari" with a hover-card from the glossary); everyone gets a post-game timeline of concept events; teachers get them as anchors for review comments. The annotation vocabulary *is* the glossary — every event links to its term page.
+
+**Ludics-informed design decisions**, using our own theory corpus:
+
+- *Paidia → ludus gradient*: the platform's spaces run from free sandbox (analysis board, no stakes) through casual and teaching games to ranked play; the UI makes the register of each space explicit, echoing the magic-circle lesson.
+- *Ritual marks the circle*: game start (nigiri), resignation, and post-game review are given deliberate ceremony in the UI — small, but it teaches Go culture as part of the game, the way the RPG corpus treats table culture.
+- *Flow*: bot ladder and matchmaking target the flow channel — adaptive opponent strength keeps challenge slightly above skill; the Sutton-Smith rhetorics remind us to support play-as-identity (profiles, journals) and play-as-imaginary (named puzzles, storied classic games), not only play-as-progress (ratings).
+
+**Content to author** (the education backlog, roughly in order): rules-completeness suite (superko variants, suicide, seki, area vs territory scoring, end-of-game procedure, handicap/komi tables by ruleset); a graded tsumego collection (life-and-death first, then tesuji) with SGF sources; "how ranks work" (kyu/dan, rating-to-handicap mapping — operationalizing the komi-and-handicap lesson); opening principles and first joseki on 9×9/13×13; annotated classic and instructive games; etiquette and culture guide. Each item lands as ontology-conformant markdown so the platform ingests it like the existing corpus.
+
+**Teaching humans, not just content**: teaching-game mode (free branch exploration inline, teacher stones, shared pointer), a mentor ladder pairing single-digit kyu players with beginners, and beginner-protected rooms. The tabletop-RPG section's table-culture and safety-tool material is the in-house model for how to write the community norms.
+
+## The rules kernel
+
+A pure, dependency-free TypeScript package — working name `@lenticule-science/weiqi-kernel`, final name subject to the constitution step.
+
+- Immutable position representation; Zobrist hashing; pluggable superko regimes (simple ko, positional/situational superko) and rulesets (Chinese, Japanese, AGA, New Zealand, Ing) as declared rule objects, not code forks.
+- Scoring: area and territory, dead-stone marking protocol, seki detection, komi/handicap parameterization.
+- SGF parse/serialize as a first-class module (import for tsumego/game records, export for every game played).
+- **Semantic event layer**: the annotator that recognizes glossary concepts in move sequences — the platform's signature feature lives in the kernel, not the UI.
+- Property-based tests (round-trip SGF, ko/superko invariants, scoring cross-checks against known positions), plus a corpus of regression positions drawn from the rules-completeness documents so the doctrine and the code cite each other.
+- Runs identically in Workers, Node, and the browser; published to Verdaccio.
+
+## Platform architecture
+
+**Recommendation: Cloudflare-first.** The account is fully provisioned, the deploy pattern is proven in-repo, and the shape fits:
+
+- **Workers + static assets** — site shell, lesson pages, glossary (rendered from the corpus markdown).
+- **Durable Objects** — one per live game: WebSocket hub for players/spectators, authoritative clock (absolute, Fischer, byo-yomi), move validation via the kernel, reconnection; DO alarms drive correspondence-game timers.
+- **D1** — users, game index, ratings history, learning-progress (concept-graph state).
+- **R2** — SGF archive, media, tsumego collections.
+- **Workers AI** — light NLP duties (turning analysis JSON into glossary-linked prose), not engine inference.
+
+The bare-metal Node + systemd + Caddy pattern remains precedented and is the right home for the one component Cloudflare cannot host: a KataGo analysis service (below). Phase 1 needs none of the stateful pieces and can ship as a static-assets Worker exactly like 561.group today.
+
+## Engines and AI
+
+- **Bot ladder for learners**: scripted weak bots first (random-legal, greedy-capture, simple-heuristic) — ideal for capture-go onboarding and trivially hostable in the client or a Worker; GnuGo (classically weak-but-instructive) server-side; KataGo with strength caps and human-style networks at the top.
+- **Deep review**: KataGo on owned hardware behind Caddy as a job queue (Workers enqueue, the box analyzes, results land in R2/D1). Score/ownership heatmaps, win-rate deltas, and — the differentiator — mistakes *translated into concept language* by joining KataGo output with the kernel's semantic events ("this move left the corner group with one eye" rather than "-14.2%").
+- **In-browser hints**: a small WASM engine or policy net for instant local feedback in lessons, kept deliberately weak and explainable.
+- Licensing note: GnuGo is GPL (server-side use is fine; distributing a WASM build triggers source-provision duties), KataGo's license and network-weights terms to be verified before bundling; SGF is an open format.
+
+## Interface
+
+- **The board is the product's face**: a crisp SVG board component — themeable via the 561-group theme package, faithful at 9/13/19 with star points, last-move and annotation layers (territory, ownership heatmap, concept-event badges).
+- Touch: tap-then-confirm placement with magnified preview; desktop: hover ghost stone; keyboard: full coordinate navigation.
+- Accessibility as a requirement, not a retrofit: screen-reader move announcements ("Black D4; the white stone at C3 is now in atari"), textual game state on demand, no color-only signals in overlays, `prefers-reduced-motion` respected.
+- The glossary hover-card is a single shared component used in lessons, game annotations, chat, and library pages — one graph, one card.
+
+## Ratings, matchmaking, fairness
+
+Glicko-2 with provisional-rating handling, mapped to kyu/dan for display; automatic handicap-and-komi from rating gap (the komi-and-handicap lesson, operationalized — and linked from the match screen). Matchmaking pools by board size with beginner protection. Standard server-health policies from day one of ranked play: escaper timeouts, sandbagging detection, report/moderation flow.
+
+## Community and culture
+
+Rooms (beginner-protected, teaching, open), teaching-game mode, a mentor ladder, clubs, and eventually tournaments (McMahon pairing is the natural fit) and rengo/pair go as the first variants. The code of conduct and etiquette guide are authored as corpus content in the RPG section's table-culture tradition — culture is curriculum here, not terms-of-service boilerplate.
+
+## Knowledge architecture and content operations
+
+Prerequisite hygiene, before the corpus becomes a product dependency:
+
+1. Sweep the ludics triage inbox (174 files): delete the stale weiqi duplicates, relocate the unrelated material to its owning sections, keep genuine ludics fragments.
+2. Consolidate the four provenance conventions (recovered-research dirs, `--archive-DATE` siblings, `--preexisting-glossary` siblings, inline imported-source blocks) into one declared policy.
+3. Create the missing landing pages (`weiqi` start-here linking the four lessons and ten terms) and repair dead relative links.
+4. Fix structural inconsistencies: missing README/package.json on game-science ludics, the two-ludics name collision, version mismatches.
+5. Extend the ontology with the new content classes the platform needs: `ruleset`, `tsumego`, `game-record` (SGF-backed), `curriculum-stage` — then SHACL-validate in CI so content debt cannot silently accumulate again.
+
+The publishing pipeline reuses the semantic-site pattern (markdown + frontmatter → rendered pages + JSON-LD, as the Hugo archive already demonstrated) with one addition: a build step that emits the concept graph as JSON for the client.
+
+## Governance and placement
+
+Per the service-section constitution, new sections need constituted authority, so the plan is to **materialize inside the existing `weiqi-services-section`** rather than invent parallel structure: the section gains `services/` children for the kernel and the platform app (each with a written constitution record: purpose, inputs/outputs, customers, boundary, refusal conditions), while all content stays under the section's `content/`. No speculative scaffolding — each child directory appears only when its first real artifact does. Board (user) authorization for these constitutions is an explicit gate in Phase 0.
+
+## Deployment, operations, economics
+
+Deploy via the proven wrangler + GitHub Actions pattern; DNS-edit token allows `weiqi.561.group` (or a dedicated domain — board decision). Cloudflare costs are near-zero at hobby scale and degrade gracefully (Workers paid plan, D1/R2 free tiers are generous); the KataGo box is the only real capacity cost and is deferred to Phase 3. Stripe exists if premium features (deep reviews, courses) ever warrant it — explicitly out of scope until the platform has users. Decide a public license for the content and kernel before any public launch; everything is currently UNLICENSED/private.
+
+## Roadmap
+
+Each phase ships something complete and usable on its own.
+
+**Phase 0 — Foundation.** Corpus hygiene (the five-item list above); author the rules-completeness suite; write and ratify the section constitutions; resolve the experimental-site README/package.json deployment discrepancy so the deploy story is unambiguous.
+
+**Phase 1 — Learn (the education-first MVP).** Rules kernel with semantic events; SVG board component; interactive tutorial through the capture-go ladder; the four lessons converted to interactive form; graded tsumego player; glossary with hover-cards. Entirely client-side + static assets — no accounts, no server state, deployable exactly like 561.group. A complete, excellent way to learn Go, shipped before any multiplayer complexity.
+
+**Phase 2 — Play.** Durable Object game rooms with WebSockets and clocks; D1 accounts and game archive; SGF export; scripted bots and GnuGo; casual matchmaking; correspondence play.
+
+**Phase 3 — Understand.** KataGo review service on the box; concept-language review synthesis; ratings, rated play, automatic handicap; learning-progress tracking over the concept graph.
+
+**Phase 4 — Belong.** Teaching games and mentor ladder; rooms and clubs; tournaments (McMahon); rengo; the culture curriculum in full.
+
+## Risks and mitigations
+
+- *One-person-plus-agents capacity*: phases are sized to be independently shippable; Phase 1 has no operational burden at all.
+- *Realtime complexity*: quarantined in Durable Objects behind the kernel's pure validation; correspondence mode is the fallback if live play slips.
+- *Engine hosting cost*: deferred to Phase 3; browser-weak-bots and GnuGo carry Phases 1–2.
+- *Corpus debt bleeding into product*: Phase 0 is a hard gate; SHACL validation in CI keeps it fixed.
+- *Governance friction*: constitutions are written once, early, with board sign-off, rather than renegotiated per artifact.
+
+## Board decisions requested
+
+1. Approve platform placement inside `weiqi-services-section` and the two child-section constitutions (kernel, platform app).
+2. Choose the domain (`weiqi.561.group` vs dedicated).
+3. Confirm Cloudflare-first architecture with the bare-metal box reserved for engine analysis.
+4. Set the public-license posture for kernel and content ahead of launch.
+5. Confirm education-first sequencing (Phase 1 ships before any multiplayer).

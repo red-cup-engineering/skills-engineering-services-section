@@ -1,0 +1,62 @@
+{
+  "id": "exchange-20260718-235558-768385",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Return JSON {\"summary\":string}. Summarize: Retry-After creates a shared endpoint cooldown and later jobs use fallback."
+      }
+    ],
+    "max-tokens": 100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "{\n  \"summary\": \"The Retry-After directive is used to implement a shared cooldown period for an endpoint, after which subsequent requests are fulfilled by later jobs that are triggered as fallbacks.\"\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-b0a18d13-fcdc-4f74-913c-99a0c72fc0bf",
+      "object": "chat.completion",
+      "created": 1784418958,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\n  \"summary\": \"The Retry-After directive is used to implement a shared cooldown period for an endpoint, after which subsequent requests are fulfilled by later jobs that are triggered as fallbacks.\"\n}"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.005335502,
+        "prompt_tokens": 76,
+        "prompt_time": 0.004206191,
+        "completion_tokens": 40,
+        "completion_time": 0.083168956,
+        "total_tokens": 116,
+        "total_time": 0.087375147
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_e2c608b1d6",
+      "x_groq": {
+        "id": "req_01kxvtgzcrf40sxe5p127hpqwn",
+        "seed": 546103617
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.321,
+    "denomination": "groq-api-requests"
+  }
+}

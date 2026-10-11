@@ -1,0 +1,35 @@
+{
+  "id": "urn:sha256:e2c4b43ee49ffce84a8aa116d44c613b909ed09a09dba2dda6f3255a8682ba62",
+  "type": "NotebookLMWorkspaceOffer",
+  "provider": "urn:ame:notebooklm-inference-team",
+  "customer": "urn:ame:561-group-game-engineering-notebook",
+  "title": "561 Group Game Engineering Notebook",
+  "sourceCeiling": 300,
+  "leaseHours": 720,
+  "retentionPolicy": "persistent",
+  "consideration": {
+    "model": "metered-cost-recovery",
+    "fixedFee": null,
+    "markup": "0",
+    "monetaryConversion": "none-without-an-observed-cost-oracle",
+    "meters": [
+      "notebooklm-provider-calls",
+      "source-bytes-egressed",
+      "provider-wall-time",
+      "studio-quota-consumed"
+    ],
+    "settlement": "Record provider-native quantities after execution; do not translate them into money unless an independent cost oracle supplies the rate."
+  },
+  "nonce": "a5803862-a9c8-4a5c-bf1b-d98bd7f6486c",
+  "offeredAt": "2026-08-19T18:19:23.218Z",
+  "expiresAt": "2026-08-19T18:49:23.218Z",
+  "authorityGrantedOnCompletion": [
+    "notebook-operation-custody"
+  ],
+  "authorityWithheld": [
+    "sharing",
+    "publication",
+    "governance",
+    "union-advisory-promotion"
+  ]
+}

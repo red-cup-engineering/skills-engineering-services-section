@@ -1,0 +1,409 @@
+# NotebookLM source projection
+
+Title: lantern-service/DESIGN
+Origin: /home/emsenn/info/lib/emsenn/services/561-group/services/public-services-section/services/public-computer-services-section/services/public-web-services-section/services/public-web-game-services-section/services/lantern-service/DESIGN.md
+Original-Digest: sha256:7ee01c534ada82542c973f36008bc916b6b8436abce675a79cf1617a1e939ddc
+Disclosure: repository-source
+
+# Lantern — design document (working title, owner may rename)
+
+**Digital garden + knowledge vault + Anki, gamified.** MindMaze from Microsoft Encarta,
+built modern: your vault of notes compiles into a walkable map; remembering a fact keeps its
+room lit; lit rooms and the doors out of them are the only territory you can currently walk
+into. Forget, and the frontier fogs back — the room isn't deleted, it's just not *reachable
+right now*. Every mechanic below is either doing real work on the corpus's own data, or is
+openly disclosed as flavor. See "What's load-bearing vs. flavor" before trusting any claim
+in this document about "proving" or "structural stability."
+
+## Source corpus used to ground this design
+
+Everything concrete in this doc — the FCA worked example, the card-generation rules, the
+door-extraction rules — is checked against the actual weiqi glossary/lesson corpus at
+`services/science-services-section/.../weiqi-services-section/content/text/{glossary,documents/articles/notes}/`,
+not an imagined shape. That corpus is wing one (§7). Ten terms (`glossary/terms/*.md`), one
+topic index (`glossary/topics/weiqi.md`), and a sequenced lesson set
+(`documents/articles/notes/*.md`) with real, populated `requires`, `uses-mechanic`, `cites`,
+`defines`, and body-level `[text](path)` links, plus hand-written `## Related terms` and
+`## Exercises` sections — the second of which turns out to already *be* a set of recall
+cards, verbatim, with zero generation needed (§3).
+
+## What's load-bearing vs. flavor
+
+Following the sibling service's disclosure doctrine (`onestone-service/DESIGN.md`), stated
+up front rather than left implicit:
+
+1. **The forgetting curve (§2) is real and cited, not invented for this doc.** `R(t,S) =
+   (1 + FACTOR·t/S)^DECAY` is FSRS's published power-law forgetting curve (Su et al. /
+   open-spaced-repetition project), and `DECAY=-0.5, FACTOR=19/81` are its own published
+   defaults, not values we chose. What we *did* simplify is the stability-update rule — real
+   FSRS fits ~19 weights per user; Lantern hand-sets a small fixed constant set (§2) and
+   calls this out explicitly as "FSRS-lite," never claims to be the full optimizer.
+2. **The pebble-game hall-stability check (§4) is a straight code reuse, not new math.**
+   `pebbleIndependent`, `loadBearing`, and `lamanCount` are vendored verbatim from
+   `onestone-service/src/validate.mts` (Jacobs–Hendrickson (2,3)-pebble game, Laman's plane
+   rigidity matroid). The *graph* is real and the *algorithm* is real. What's flavor is the
+   *interpretation* — "a concept-dependency graph is generically rigid" is not a claim about
+   pedagogy or cognition, it's a metaphor riding on a real, computable graph property. Said
+   plainly in §4, not left to sound like a proof about learning.
+3. **Formal Concept Analysis (§1) is genuine FCA**, not a clustering-flavored label on
+   hand-picked groups. §1 includes a worked concept lattice computed by hand against the real
+   `cites` fields in the corpus, and it produces a *different* split than the corpus author's
+   own hand-written Tactical/Scoring/Structural grouping — which is exactly what an
+   independent algorithm running on independent data should do, and is presented as evidence
+   it's actually running, not rubber-stamping intuition.
+4. **Light cones, pebble games, kata/belts** are the requested theory seasoning, applied as
+   *naming and mechanic shape*, not as physics or martial-arts-lineage claims. A "black belt"
+   kata tier is a difficulty label, not a credential.
+
+## Data model (design-level; no `src/` yet — this doc is the deliverable)
+
+```ts
+interface Room {
+  id: RoomId;              // stable id = wing-relative path
+  wingId: WingId;
+  title: string;
+  aliases: string[];       // from frontmatter `aliases`/`defines`/`teaches`
+  kind: 'term' | 'lesson' | 'topic' | (string & {}); // from frontmatter `type`, open-ended
+  description?: string;    // frontmatter `description`, used for cloze gen
+  body: string;            // raw markdown, used for Exercise/Related-terms extraction
+  attributes: Set<string>; // FCA attribute values (see §1)
+}
+
+interface Door {
+  from: RoomId;   // prerequisite
+  to: RoomId;     // dependent
+  weight: 'hard' | 'soft';
+  reason: string; // the source field or link-context, kept for card generation (§3)
+}
+
+interface Hall {
+  id: HallId;
+  intent: string[];   // the shared attribute set (FCA concept intent)
+  rooms: RoomId[];    // the concept extent
+  stable: boolean;    // §4
+}
+
+interface ReviewCard {
+  id: CardId;
+  roomId: RoomId;
+  kind: 'cloze' | 'term-from-def' | 'dependency' | 'exercise' | 'teaches';
+  front: string;
+  back: string;
+  // FSRS-lite state, §2
+  stability: number;      // days
+  difficulty: number;     // 1..10
+  lastReviewedAt?: number; // epoch day
+}
+
+interface Kata {
+  id: KataId;
+  path: RoomId[];          // ordered walk through doors
+  origin: 'auto-hall' | 'custom';
+  // kata is scheduled with the SAME FSRS-lite state shape as a ReviewCard (§5)
+  stability: number;
+  difficulty: number;
+  lastRunAt?: number;
+}
+
+interface Wing {
+  id: WingId;
+  root: string;             // filesystem path, mounted read-only
+  hardLinkFields?: string[]; // default: any frontmatter value(s) shaped like `*.md` path(s)
+  attributeFields?: string[]; // default: ['cites', 'type', 'tags']
+  groups?: { name: string; match: (attrs: Set<string>) => boolean }[]; // curator override for §1
+}
+```
+
+## 1. World model: rooms, doors, halls
+
+**Room** = one markdown file in a mounted wing. **Door** = a directed dependency edge,
+`prerequisite → dependent`. **Hall** = a formal concept (a maximal set of rooms sharing an
+exact attribute set) — genuine FCA, not a hand-drawn cluster.
+
+### Door extraction (deterministic, no NLP, corpus-agnostic)
+
+The compiler never hard-codes weiqi's field names. It applies a *shape* rule so any
+frontmattered corpus works:
+
+1. **Hard doors.** Any frontmatter key whose value is a string or array of strings that
+   resolves to another file in the same wing (relative markdown-link shape) becomes a hard
+   door, `target → this room`, direction = dependency (the room needs the target to be lit
+   before its gate, §3, can be attempted). In wing one this mechanically discovers `requires`
+   (lesson → prerequisite lesson) and `uses-mechanic` (lesson → term) without ever having
+   been told those field names.
+2. **Soft doors.** Any `[text](relative/path.md)` link inside the room's body becomes a soft
+   door — it feeds card generation and Hall-neighborhood attributes but does not itself lock
+   a gate. **Promotion rule:** if a room has *zero* hard doors (true of every term in wing
+   one — terms carry no `requires`/`uses-mechanic`), its soft doors are promoted to hard.
+   This is why `atari.md`'s `## Related terms` links to `liberty`, `capture`, `connection`
+   become real gates even though nothing in atari's frontmatter says "requires."
+3. **Not doors.** `cites`/`references` (citation, feeds §1 attributes only, see below),
+   `defines`/`aliases`/`teaches` (feed card generation, §3), self-links, and links resolving
+   outside the wing root (logged as a warning, never a crash — corpora are messy).
+
+### Halls via Formal Concept Analysis
+
+Context = `(G, M, I)`: `G` = rooms, `M` = attribute values drawn from a small declared field
+set (wing default: `cites`, `type`, `tags`), `I` = "room's frontmatter list for that field
+contains this value." A **Hall is a closed concept `(extent, intent)` with `|extent| ≥ 2`
+and `intent ≠ ∅`** — every room in the extent carries every attribute in the intent, and the
+intent is exactly the *full* set of attributes common to that extent (no more, no less;
+closure, not a superset match). Small, fixed attribute universes (tens of values, not
+thousands) make brute-force concept enumeration fine; the compiler warns and falls back to a
+capped greedy grouping past a configurable attribute-count ceiling rather than hanging.
+
+Rooms **can and do belong to more than one Hall** — this is a lattice, not a Hogwarts-house
+partition. That's a deliberate fidelity choice: forcing a false partition would be the
+"flattened for cuteness" move the honesty section above disclaims.
+
+**Worked example, wing one, attribute field = `cites`** (hand-verified against the actual
+frontmatter, not illustrative filler):
+
+| `cites` value (abbreviated) | Rooms |
+|---|---|
+| "British Go Association, How to Play Go" (BH) | atari, connection, eye, handicap, life-and-death |
+| "Encyclopaedia Britannica, Go" ∧ "NAGF, This Is Go" (BR∧NA, always co-occur here) | capture, liberty, territory |
+| "British Go Association, A. Default Rules" (BD) | ko, komi |
+| "British Go Association, What Is Go?" (BW) | handicap, komi |
+
+Closed concepts with `|extent| ≥ 2`: `Hall[BH] = {atari, connection, eye, handicap,
+life-and-death}`, `Hall[BR∧NA] = {capture, liberty, territory}`, `Hall[BD] = {ko, komi}`,
+`Hall[BW] = {handicap, komi}`. Note `handicap` and `komi` each sit in two halls — correct FCA
+behavior, and a genuinely different split from the corpus's own hand-written
+Tactical/Scoring/Structural grouping in `glossary/topics/weiqi.md` (that grouping is offered
+back to the compiler as a `groups` override in the wing manifest, for corpora whose authors
+want their own taxonomy to win over the derived one — never silently discarded).
+
+## 2. Light: FSRS-lite, the light cone, and dimming
+
+**Forgetting curve** (real, cited, unmodified):
+
+```
+R(t, S) = (1 + FACTOR · t/S) ^ DECAY
+DECAY  = -0.5
+FACTOR = 19/81 ≈ 0.234568   (= 0.9^(1/DECAY) − 1, FSRS's own published constants)
+```
+
+`t` = days since last review, `S` = current stability (days), `R` = probability of correct
+recall right now. Because `FACTOR` is *derived* from `DECAY` so that `R = 0.9` exactly when
+`t = S`, "stability ≈ days until due at 90% retention" is a structural identity of the
+formula, not a coincidence — stated because it's a genuinely nice, verifiable property, not
+asserted on faith.
+
+**Review grades**: Anki-style four-button self-grade — `Again(1) / Hard(2) / Good(3) /
+Easy(4)`.
+
+**FSRS-lite update rule** (hand-set constants; this is the disclosed simplification, not the
+19-weight optimizer):
+
+| | Again | Hard | Good | Easy |
+|---|---|---|---|---|
+| New-card initial stability `S0` (days) | 0.4 | 1.0 | 2.5 | 4.5 |
+| New-card initial difficulty `D0` (1–10, lower = easier) | 8 | 6.5 | 5 | 3 |
+| Growth multiplier `G` (existing card, success) | — | 0.5 | 1.0 | 1.6 |
+
+- **On Again (lapse):** `S' = max(S0(Again), S · 0.2)` — a fixed 20%-retention-of-prior-
+  stability lapse rule, standing in for FSRS's fuller stability-after-forgetting formula.
+- **On Hard/Good/Easy (success):** `S' = S · (1 + 1.2 · (1 − R) · G)` — bigger jumps for
+  reviews that succeeded *despite* low `R` (the "desirable difficulty" intuition FSRS is
+  built on), scaled by the grade multiplier `G` above. `R` here is `R(t, S)` computed just
+  before this review, using the pre-review `S`.
+- **Difficulty:** `D' = clip(D − 1.0 · (grade − 3), 1, 10)`.
+- **Next due date**, solving the curve for `t` at a target retention: `t(R) = S' ·
+  ((R^(1/DECAY) − 1) / FACTOR)`. Default target `R_target = 0.9` ⇒ `t = S'` exactly (see
+  above).
+
+**Light state, computed on read, no cron job needed** — every room's `R(t)` is evaluated live
+from its cards' `(S, lastReviewedAt)`:
+
+| Stage | `R(t)` range | `t` in multiples of `S` (derived from the curve above, not chosen) |
+|---|---|---|
+| Full light | `R ≥ 0.9` | `t ≤ 1.0·S` (not yet due) |
+| Embers | `0.7 ≤ R < 0.9` | `1.0·S < t ≤ 4.44·S` |
+| Dim | `0.5 ≤ R < 0.7` | `4.44·S < t ≤ 12.79·S` |
+| Fogged | `R < 0.5` | `t > 12.79·S` |
+
+The three cut points `0.9 / 0.7 / 0.5` are our design constants (flavor); the day-multiples
+they produce are a mechanical consequence of the real curve (load-bearing) — computed here,
+not separately tuned.
+
+**Light cone vs. territory** (the two progress concepts, kept strictly separate so nothing
+is ever destructively lost — the "zero dark patterns" promise starts here, not just in §6):
+
+- **Territory revealed** — every room whose gate (§3) has ever been passed. **Monotonic,
+  permanent, never shrinks.** This is what fills in the map cosmetically.
+- **Light cone** — the *currently walkable* frontier: lit-or-embers rooms plus the doors that
+  originate from them. Dims and fogged rooms drop out of the light cone (new rooms beyond a
+  fogged gate become temporarily unreachable) but stay marked as revealed territory — fog
+  hides *access to new rooms*, never erases *proof you were there*. Re-reviewing a fogged
+  room's card restores it (and everything beyond it) to the light cone immediately; nothing
+  needs to be "re-earned."
+
+## 3. Gates: card generation from frontmatter + body
+
+Entering a room the player hasn't yet gated requires clearing every generated card for that
+room once, in an ungraded practice pass; passing seeds each card straight into FSRS-lite at
+its grade's `S0`/`D0` (§2) — **the gate-pass *is* the first SRS review**, not a separate
+system bolted in front of one.
+
+**Generation rules, in priority order** (verified against real corpus text, not hypothetical):
+
+1. **Exercise extraction (verbatim, highest priority).** If the body contains a numbered/
+   bulleted question immediately followed by `<details><summary>Answer</summary>…</details>`,
+   extract it directly as a card — `front` = the question text, `back` = the trimmed details
+   content. `living-groups-and-eyes.md` alone yields two cards this way with zero synthesis,
+   e.g. front: *"Why is a connected group usually stronger than the same stones scattered
+   apart?"*, back: the corpus's own answer paragraph. This rule exists because pre-authored
+   Q/A is strictly better than generated Q/A, and this corpus already writes it.
+2. **Dependency cards from door `reason` text.** Every hard or promoted-hard door retains the
+   sentence that justified it — for terms, that's the `## Related terms` bullet's own
+   rationale clause. Example, generated with zero rewriting: front *"Why does atari depend on
+   liberty?"*, back — the file's own words — *"Atari is defined by the reduction to a single
+   remaining liberty."*
+3. **Definition cloze.** From `description` (or the body's first paragraph if no
+   `description`): find the room's own `aliases`/title text inside it (longest match,
+   case-insensitive, word-boundary) and blank it. `atari.md`: front *"___ in weiqi is the
+   state in which a stone or connected group has only one liberty remaining and is therefore
+   under immediate threat of capture."*, back *"atari."*
+4. **Term-from-definition (reversed cloze).** Same pair, direction flipped: show the
+   completed definition, ask "which term is this?" — Anki's basic-and-reversed pattern.
+5. **`teaches` recognition card**, lowest priority, used only to pad a room that produced
+   fewer than two cards from rules 1–4: *"Name one thing taught by `<title>`."*
+
+Gate minimum: **at least 1 card, at least 2 distinct card kinds where the room supports it**
+— terms typically clear rules 2–4 (3+ cards) with no exercise text to draw on; lessons
+typically clear rule 1 alone.
+
+## 4. Stability: pebble-game hall bracing (vendored from `onestone-service`)
+
+**Reuse plan.** Vendor the four pure, geometry-agnostic exports of
+`onestone-service/src/validate.mts` — `pebbleIndependent`, `lamanCount`, `meanCoordination`,
+`loadBearing` (~120 of its 249 lines; the `BoardGeometry`/`BlockerPlacement`/board-specific
+plumbing does not port) — into `lantern-service/src/validate.mts`, byte-identical bodies,
+comments preserved, doc comment amended to name Lantern's own reinterpretation. **Vendor a
+copy, not a cross-service import**: each service in this tree ships its own Dockerfile and
+deploys independently (see `onestone-service/DEPLOY.md`'s pattern); a live cross-service
+import would couple two independent deploys for four small functions with no external state.
+
+**Per-hall stability test**, run at every content-pipeline compile (§7), mirroring
+`onestone`'s own `validateLevel` pattern of combining several checks rather than trusting one:
+
+1. Build the undirected intra-hall graph: nodes = the hall's rooms, edges = doors (hard +
+   soft, deduplicated undirected) with both endpoints inside the hall.
+2. `components` = connected-component count (plain union-find over that edge list — new, not
+   in `validate.mts`, because level QA never needed it).
+3. **Stable ⟺** `components === 1` **∧** `loadBearing(nodes, edges, components)` (the hall
+   has at least one cycle beyond a bare spanning tree — cross-links, not just a prerequisite
+   chain, are what "bracing" means here) **∧** `pebbleIndependent(nodes, edgeList)` (none of
+   those cross-links is redundant bracing under the (2,3)-counting rule).
+
+**Bonus** (kept reversible, never rewrites stored review history): while a hall is stable,
+every room in it gets its *effective* stability multiplied by `1.25` when computing `t(R)`
+for the light-cone dimming schedule in §2 (the raw stored `S` is untouched). Edit the corpus
+so a door disappears and the hall loses stability — the bonus silently reverts on the next
+compile, nothing needs to be migrated or rewound.
+
+## 5. Kata: timed recall sequences, belts, spaced repeats
+
+A **kata** is a named ordered walk through doors (`Kata.path`) — auto-generated per Hall
+(topological order from the hall's earliest-dated room) or curator-authored as a custom
+path. Running a kata presents each room's next-due card in path order, timed.
+
+**Per-card score**, `Tfast` = the player's own rolling median correct-response time for that
+specific card (default 8s until they have history — self-relative, never a global reflex
+gate):
+
+| Outcome | Points |
+|---|---|
+| Good/Easy within `Tfast` | 2 |
+| Good/Easy slower than `Tfast` | 1 |
+| Hard | 0.5 |
+| Again / wrong | 0 |
+
+**Belt tiers**, by `score / maxScore` ratio, and — to avoid a one-lucky-run fluke — a tier is
+only *awarded* once it's the minimum of the player's **last 3 consecutive kata clears**:
+
+| Belt | Ratio threshold |
+|---|---|
+| White | any completion |
+| Yellow | ≥ 0.50 |
+| Orange | ≥ 0.65 |
+| Green | ≥ 0.75 |
+| Blue | ≥ 0.85 |
+| Brown | ≥ 0.92 |
+| Black | ≥ 0.97 |
+
+**Spaced kata repeats reuse §2's engine wholesale** rather than a second scheduler: a `Kata`
+carries the same `(stability, difficulty)` state shape as a `ReviewCard`. A kata clear maps
+its ratio to a synthetic grade (`<0.5→Again, 0.5–0.75→Hard, 0.75–0.92→Good, ≥0.92→Easy`) and
+runs it through the exact FSRS-lite update of §2 — "the whole kata" is scheduled for its next
+practice the same way a single fact is. One engine, two things it schedules.
+
+## 6. Modern gamification: kind by construction
+
+- **Daily lantern-walk.** Due set = every card whose `R(t) < 0.9` today, unioned with cards
+  newly crossing into "dim" (§2) at the light-cone boundary — walking those first is what
+  re-expands the frontier. Ordered into a route by a **greedy nearest-unvisited-door walk**
+  over the room graph (disclosed as a greedy heuristic, not a claimed TSP-optimal tour) so
+  the session reads as one continuous garden stroll rather than a shuffled quiz list.
+- **Kind streaks.** Counts consecutive calendar days with ≥1 review completed. One freeze
+  token earned per 7-day milestone, capped at 3 banked — auto-consumed on the first missed
+  day, no opt-in nagging, no "your streak is about to die" push notification.
+- **Progress = revealed territory (§2), permanent and monotonic** — the map view, never a
+  countdown timer or a shrinking bar.
+- **Explicit no-list**, mirroring `onestone`'s v1-scope discipline: no energy/lives gate on
+  reviewing (never blocks access to sell a refill), no rewarded ads, no leaderboard pressure
+  in v1, no streak-loss shaming copy, no LLM-generated cards (rule-based only, §3 — keeps
+  gate content honestly traceable to the room's own text, never hallucinated).
+
+## 7. Content pipeline: the wing contract
+
+A **wing** is any directory of frontmattered markdown with link-shaped fields — the compiler
+never special-cases weiqi's field names (verified in §1: it discovers `requires` and
+`uses-mechanic` purely from their *shape*, having never been told those names). Compiling a
+wing is a pure function of its directory contents:
+
+```
+Wing.root  →  walk *.md (skip node_modules/.git)
+           →  parse minimal frontmatter (hand-rolled: scalars + flat string lists only —
+              this corpus's `references:` nested-map block is deliberately NOT parsed in v1;
+              `cites` is a flat list and is all §1 needs)
+           →  extract Rooms + Doors (§1) + Cards (§3)
+           →  FCA → Halls (§1), pebble-game → stability flags (§4)
+           →  emit map.json (rooms/doors/halls/stability) + cards.json (deterministic,
+              re-buildable, cacheable — no DB needed for the compile step itself)
+```
+
+**Wing one** = the weiqi corpus read for this design. **Mounting the player's own vault** is
+the digital-garden promise, satisfied by the wing abstraction needing zero special-casing: a
+second `Wing.root` pointed at an arbitrary local directory (client-side folder picker; zero
+external deps, self-hostable) produces wing two through the identical compiler. Multiple
+wings coexist as separate map regions the player can walk between — their own notes, sitting
+next to (or replacing) the seed corpus.
+
+**House constraints honored:** pure `.mts` domain modules with `.mts.test` files under
+`node --test`, native `node src/server.mts` transport (sibling pattern), zero runtime
+dependencies, strict erasable-syntax TypeScript.
+
+## v1 scope / non-goals
+
+**In:** wing-one compile (weiqi corpus), FSRS-lite scheduling, gate card generation (all 5
+rules), hall FCA + pebble-game stability bonus, one auto-generated kata per hall with belt
+tracking, daily lantern-walk, kind streaks with freeze tokens.
+
+**Out (roadmap, not this build):** vault-mounting UI (the compiler contract supports it now;
+the folder-picker/upload flow is a later pass), custom curator-authored kata paths (auto-only
+in v1), accounts beyond token identity, multiplayer/social features, mobile app, any
+LLM-assisted card generation.
+
+## Open questions for the owner
+
+1. **Name.** "Lantern" is the working title per the task brief; the light/territory metaphor
+   is the mechanic, not the name — free to rename without touching the design.
+2. **Belt tier count/labels** (7, martial-arts-flavored) — fine as a v1 default, but is the
+   flavor wanted at all, or should tiers just be numbered?
+3. **Hall FCA attribute fields** default to `cites/type/tags` because that's what's populated
+   in wing one; once a corpus has real `tags`, should `tags` take priority over `cites` in
+   the default field list, or stay additive?
+4. **Kata path curation** — v1 ships auto-generated-per-hall only (§v1 scope); confirm that's
+   an acceptable v1 cut before custom paths are roadmapped.

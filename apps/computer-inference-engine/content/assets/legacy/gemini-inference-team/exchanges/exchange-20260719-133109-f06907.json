@@ -1,0 +1,126 @@
+{
+  "id": "exchange-20260719-133109-f06907",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are planner 4 in a competing plan pool. Produce an executable software mission DAG, not commentary."
+      },
+      {
+        "role": "user",
+        "content": "PROGRAM OBJECTIVE: Complete readablePaths confinement across every read-like agent tool. Direct read must refuse out-of-scope files without revealing bytes. list_files at the territory root must return only admitted exact files and descendants of admitted directories; an explicitly out-of-scope list base must return a structured refusal without filenames. search at the territory root must inspect only admitted files; an explicitly out-of-scope search base must return a structured refusal without matching lines. Preserve unrestricted behavior when readablePaths is absent. Implement the source and comprehensive deterministic regression test as one coupled accepted mission.\n\nCONSTRAINTS: Keep confinement logic inside src/agent-tools.mjs.; The same mission must edit source and create test/readable-paths-complete.test.mjs.; At root, list_files and search must filter each walked file through readAdmitted rather than refusing the empty relative root.; A non-root requested base is admissible only when that base itself is read-admitted.; Do not weaken direct read or writablePaths enforcement.; No out-of-scope filename, matching line, or file bytes may appear in a refusal or filtered result.; All existing tests must remain green.; Use structured refusals rather than throwing for model-selected out-of-readable-scope list and search bases.\n\nFILES: README.md, bin/abandon-mission.mjs, bin/run-mission.mjs, bin/run-program.mjs, bin/run-worker.mjs, bin/submit-mission.mjs, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-schema-escalation.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-focused.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-learned-route.json, data/mission-queue/completed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-quality-escalation.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-claude-worktype.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-registry-fixed.json, data/mission-queue/failed/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation.json, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-quality-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum-schema-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-early-candidate-quorum.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-claude-worktype.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-focused.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation-registry-fixed.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-auto-escalation.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-learned-route.json.settled, data/mission-queue/running/urn-ame-free-compute-dev-mission-2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json.settled, data/mission-queue/workers/worker-2.json, data/missions/2026/07/19/2026-07-19-complete-readable-path-confinement.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum-quality-escalation.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum-schema-escalation.json, data/missions/2026/07/19/2026-07-19-prove-early-candidate-quorum.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-auto-escalation.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-reset-learned-route.json, data/missions/2026/07/19/2026-07-19-prove-refusal-circuit-reset-semantic-acceptance.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json, data/programs/2026/07/19/2026-07-19-complete-readable-path-confinement-program.json, data/programs/2026/07/19/2026-07-19-independent-coupled-readable-path-confinement-program.json, data/programs/2026/07/19/2026-07-19-readable-path-confinement-program.json, data/route-observations/2026/07/19/2026-07-19-free-compute-dev-route-observations.jsonl, data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl, package.json, src/agent-tools.mjs, src/context.mjs, src/edits.mjs, src/escalate.mjs, src/executor.mjs, src/fabric-client.mjs, src/inference.mjs, src/mission-pipeline.mjs, src/mission-queue.mjs, src/mission-runtime.mjs, src/program-runtime.mjs, src/resolvers.mjs, src/semantic-review.mjs, src/solve-loop.mjs, src/trajectory-memory.mjs, test/agent-tools.test.mjs, test/edits.test.mjs, test/executor.test.mjs, test/fabric-client.test.mjs, test/mission-pipeline.test.mjs, test/mission-queue.test.mjs, test/mission-runtime.test.mjs, test/program-runtime.test.mjs, test/readable-paths.test.mjs, test/semantic-review.test.mjs, test/solve-loop.test.mjs\n\nAVAILABLE ACCEPTANCE KEYS (choose; never invent commands):\ncomplete-readable-scope: The implementation and its coupled test prove exact-file and directory admission, root-level filtering for list and search, structured explicit-base refusals with no protected bytes or names, unrestricted compatibility, and the full existing suite remains green.\n\nREQUIRED FOCUS COVERAGE (the union of mission focusPaths must cover every entry):\nsrc/agent-tools.mjs\ntest/readable-paths-complete.test.mjs\n\nREQUIRED ACCEPTANCE COVERAGE (use every key in at least one mission):\ncomplete-readable-scope\n\nREQUIRED COUPLED MISSIONS (for each line, one single mission—not several missions in aggregate—must use the named acceptance key and cover every listed focus path):\ncomplete-readable-scope: src/agent-tools.mjs, test/readable-paths-complete.test.mjs\n\nPRIOR CYCLE RESIDUE:\n{\"acceptance\":\"exit=1\\n\\nCould not find 'test/readable-paths-complete.test.mjs'\\n\",\"outcomes\":[{\"missionId\":\"complete-readable-path-confinement\",\"outcome\":{\"verified\":false,\"candidateVerified\":false,\"integrated\":false,\"classification\":\"unresolved\",\"changedPaths\":[],\"selectedActorId\":null,\"selectedActions\":[],\"trajectoryFingerprint\":null,\"summary\":\"no actor produced a verification-passing candidate\",\"semanticReview\":{\"type\":\"SemanticAcceptanceNotRequired\",\"accepted\":true},\"integration\":{\"integrated\":false,\"classification\":\"unresolved\"}}}]}\n\nDecompose only as much as necessary. Every mission will be executed autonomously by parallel tool-using cloud workers. Dependencies must form a DAG. Return only contracted JSON."
+      }
+    ],
+    "max-tokens": 1300,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "required": [
+              "strategy",
+              "missions"
+            ],
+            "properties": {
+              "strategy": {
+                "type": "string",
+                "minLength": 10,
+                "maxLength": 500
+              },
+              "missions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "objective",
+                    "dependsOn",
+                    "acceptanceKey",
+                    "focusPaths"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 51
+                    },
+                    "objective": {
+                      "type": "string",
+                      "minLength": 20,
+                      "maxLength": 500
+                    },
+                    "dependsOn": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "acceptanceKey": {
+                      "type": "string",
+                      "enum": [
+                        "complete-readable-scope"
+                      ]
+                    },
+                    "focusPaths": {
+                      "type": "array",
+                      "maxItems": 12,
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\n  \"strategy\": \"Implement rigorous path isolation in src/agent-tools.mjs to enforce readablePaths for list_files, search, and direct reads. Create a comprehensive test in test/readable-paths-complete.test.mjs that validates structured refusals for out-of-scope bases and filtered path discovery at the root, ensuring total conformance to the confinement specification while maintaining backward compatibility.\",\n  \"missions\": [\n    {\n      \"id\": \"complete-readable-path-confinement\",\n      \"objective\": \"Integrate readablePaths confinement logic into src/agent-tools.mjs and implement test/readable-paths-complete.test.mjs to verify exact file/directory admission, root-level filtering, structured refusals for out-of-scope bases, and legacy compatibility.\",\n      \"dependsOn\": [],\n      \"acceptanceKey\": \"complete-readable-scope\",\n      \"focusPaths\": [\n        \"src/agent-tools.mjs\",\n        \"test/readable-paths-complete.test.mjs\"\n      ]\n    }\n  ]\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\n  \"strategy\": \"Implement rigorous path isolation in src/agent-tools.mjs to enforce readablePaths for list_files, search, and direct reads. Create a comprehensive test in test/readable-paths-complete.test.mjs that validates structured refusals for out-of-scope bases and filtered path discovery at the root, ensuring total conformance to the confinement specification while maintaining backward compatibility.\",\n  \"missions\": [\n    {\n      \"id\": \"complete-readable-path-confinement\",\n      \"objective\": \"Integrate readablePaths confinement logic into src/agent-tools.mjs and implement test/readable-paths-complete.test.mjs to verify exact file/directory admission, root-level filtering, structured refusals for out-of-scope bases, and legacy compatibility.\",\n      \"dependsOn\": [],\n      \"acceptanceKey\": \"complete-readable-scope\",\n      \"focusPaths\": [\n        \"src/agent-tools.mjs\",\n        \"test/readable-paths-complete.test.mjs\"\n      ]\n    }\n  ]\n}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPcoYK3U0RJSawL4VTrObQgNV/XVhNtfJXowGGyU0KEAdiSjcAeUmIw9XY0+KH"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784467870,
+      "id": "ndFcaoLZGIGX-8YP3KLX6Q0",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 238,
+        "prompt_tokens": 2366,
+        "total_tokens": 2604
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.365,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

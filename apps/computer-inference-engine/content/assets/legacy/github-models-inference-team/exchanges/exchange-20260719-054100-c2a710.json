@@ -1,0 +1,150 @@
+{
+  "id": "exchange-20260719-054100-c2a710",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Classify the supplied work item as finance, software, or operations. Return only JSON matching the supplied schema."
+      },
+      {
+        "role": "user",
+        "content": "The weekly coordination meeting moved to Thursday and the room reservation was updated."
+      }
+    ],
+    "max-tokens": 32,
+    "params": {
+      "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "result",
+          "strict": true,
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "const": "operations"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gpt-4o-mini-2024-07-18",
+    "text": "{\"label\":\"operations\"}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "annotations": [],
+            "content": "{\"label\":\"operations\"}",
+            "refusal": null,
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784439662,
+      "id": "chatcmpl-E3EYoVGk5glm2d0d7Kpm11BAwoU0v",
+      "model": "gpt-4o-mini-2024-07-18",
+      "object": "chat.completion",
+      "prompt_filter_results": [
+        {
+          "prompt_index": 0,
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          }
+        }
+      ],
+      "service_tier": "default",
+      "system_fingerprint": "fp_965c8b9ecf",
+      "usage": {
+        "completion_tokens": 6,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "latency_checkpoint": {
+          "engine_tbt_ms": 8,
+          "engine_ttft_ms": 34,
+          "engine_ttlt_ms": 83,
+          "pre_inference_ms": 128,
+          "service_tbt_ms": 9,
+          "service_ttft_ms": 755,
+          "service_ttlt_ms": 800,
+          "total_duration_ms": 678,
+          "user_visible_ttft_ms": 627
+        },
+        "prompt_tokens": 75,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 81
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 1.319,
+    "denomination": "github-models-api-requests"
+  }
+}

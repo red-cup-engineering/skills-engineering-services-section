@@ -1,0 +1,25 @@
+{
+  "id": "exchange-20260719-020639-ff9f38",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Reply with exactly one word: PONG"
+      }
+    ],
+    "max-tokens": 16
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "Groq responded with HTTP 401 Unauthorized: {\"error\":{\"message\":\"Invalid API Key\",\"type\":\"invalid_request_error\",\"code\":\"invalid_api_key\"}}\n",
+    "unmet": [
+      "http-failure:401"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.306,
+    "denomination": "groq-api-requests"
+  }
+}

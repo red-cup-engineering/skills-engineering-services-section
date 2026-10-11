@@ -1,0 +1,95 @@
+{
+  "observedAt": "2026-08-30T16:09:08Z",
+  "perPackage": [
+    {
+      "name": "@red-cup-engineering/a2a-agent-card-key-service",
+      "declaredPin": "1.0.9",
+      "registryLatest": "1.0.8",
+      "treeSourceVersion": "1.0.9",
+      "usedExports": [
+        "./testing#ephemeralAgentCardSigning (test/a2a-source-operation.test.js)"
+      ],
+      "verdict": "registry-latest-satisfies-usage",
+      "newPin": "1.0.8"
+    },
+    {
+      "name": "@red-cup-engineering/a2a-rmn-part-service",
+      "declaredPin": "1.0.6",
+      "registryLatest": "1.0.5",
+      "treeSourceVersion": "1.0.6",
+      "usedExports": [
+        ".#extractRmnPart",
+        ".#parseA2aMessage",
+        ".#agentRmnMessage",
+        ".#userRmnMessage",
+        ".#rmnPart"
+      ],
+      "verdict": "registry-latest-satisfies-usage",
+      "newPin": "1.0.5"
+    },
+    {
+      "name": "@red-cup-engineering/a2a-rmn-task-client-service",
+      "declaredPin": "1.1.12",
+      "registryLatest": "1.1.11",
+      "treeSourceVersion": "1.1.12",
+      "usedExports": [
+        ".#sendRmnTask",
+        ".#a2aResultParts",
+        ".#discoverValidatedAgentCard"
+      ],
+      "verdict": "registry-latest-satisfies-usage",
+      "newPin": "1.1.11"
+    },
+    {
+      "name": "@red-cup-engineering/cloudflare-r2-services-section",
+      "declaredPin": "1.1.5",
+      "registryLatest": "1.1.3",
+      "treeSourceVersion": "1.1.5",
+      "usedExports": [
+        "./immutable-content-custody#createCloudflareR2ImmutableContentCustody",
+        "./r2-rest#createR2RestClient",
+        "./r2-rest#r2RestConfiguration"
+      ],
+      "verdict": "registry-latest-satisfies-usage",
+      "newPin": "1.1.3"
+    },
+    {
+      "name": "@red-cup-engineering/immutable-content-custody-service",
+      "declaredPin": "3.0.0",
+      "registryLatest": "2.0.2",
+      "treeSourceVersion": "3.0.0",
+      "usedExports": [
+        ".#IMMUTABLE_CONTENT_REFERENCE_PROFILE",
+        ".#immutableContentKey",
+        ".#createImmutableContentCustody"
+      ],
+      "verdict": "registry-latest-satisfies-usage",
+      "newPin": "2.0.2"
+    }
+  ],
+  "installResult": {
+    "summary": "npm install succeeded after regenerating package-lock.json; expect-to-fail step reproduced first, then resolved.",
+    "steps": [
+      {
+        "step": "pins-corrected, stale package-lock.json retained",
+        "outcome": "failed",
+        "detail": "npm error code E403 / 403 Forbidden - GET https://us-central1-npm.pkg.dev/five-six-one-group-dev/npm/@red-cup-engineering/witness-journal-document-service/-/witness-journal-document-service-1.0.1.tgz - The caller does not have permission. Retrying reproduced the same class of failure against a different, unrelated package each time (e.g. @lenticule-science/articulating-0.2.4.tgz), because every one of the 192 entries in the pre-existing package-lock.json carried a stale 'resolved' URL pointing at an inaccessible GCP Artifact Registry mirror, not the local Verdaccio at 127.0.0.1:4873. This is a separate, pre-existing lockfile-corruption issue from the five phantom pins, and it surfaces as soon as any package.json edit forces npm to re-walk the dependency tree."
+      },
+      {
+        "step": "package-lock.json deleted and regenerated from .npmrc-configured registries (local Verdaccio for @red-cup-engineering scope and default registry)",
+        "outcome": "succeeded",
+        "detail": "added 6 packages, removed 1 package, changed 3 packages, and audited 170 packages in 3s. All package-lock.json 'resolved' entries now point at http://127.0.0.1:4873/; the five corrected pins resolved to a2a-agent-card-key-service@1.0.8, a2a-rmn-part-service@1.0.5, a2a-rmn-task-client-service@1.1.11, cloudflare-r2-services-section@1.1.3, immutable-content-custody-service@2.0.2, matching package.json exactly."
+      }
+    ]
+  },
+  "testResult": {
+    "command": "npm test (node --test test/*.test.js test/*.test.mjs)",
+    "tests": 151,
+    "pass": 151,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 76550.327404
+  }
+}

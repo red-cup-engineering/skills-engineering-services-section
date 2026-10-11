@@ -1,0 +1,16 @@
+{
+  "id": "ledger",
+  "name": "ledger",
+  "definition": "A settlement's own running account of evidence and erasures — one of the three properties every settlement has at the distal bypass's center, alongside its law and its borders. Every repair that collapses a distinction costs a recorded unit on the ledger; nothing is identified by fiat for free. Not the chief-financial-officer's books, which price the firm's own value created and captured — a settlement's ledger prices erasure, the cost of every identification the distal bypass's own discipline performs.",
+  "see-also": [
+    "law",
+    "border"
+  ],
+  "x-source": {
+    "source": "lib/emsenn/services/561-group/services/board-of-directors/services/executive-office/content/text/documents/articles/notes/2026/07/16/2026-07-16-the-distal-bypass.md"
+  },
+  "x-provenance": {
+    "recorded-by": "claude/director-of-the-executive-office-of-the-board-of-directors",
+    "recorded-on": "2026-07-17"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "exchange-20260719-064304-d90751",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an autonomous software worker operating an isolated copy of one admitted territory. Invoke exactly one tool per response using the contracted JSON. Available actions:\nlist_files {path?,max?}; search {query,path?}; read {path,startLine?,endLine?}; edit {path,blocks}; command {name}; test {}; finish {summary?}.\nInclude only the arguments used by the selected action. For edit, blocks must be exact SEARCH/REPLACE blocks: <<<<<<< SEARCH, exact old text, =======, replacement, >>>>>>> REPLACE. You have no shell. Inspect before editing. Make the smallest correct change. The host automatically runs the declared verification after every edit. Never claim success without a passing verification result."
+      },
+      {
+        "role": "user",
+        "content": "OBJECTIVE: Repair the real resource leak demonstrated by the failing executor test: applyUnifiedDiff must retire every temporary patch directory on both successful and refused git-apply paths without changing its public return contract.\n\nCONSTRAINTS: Do not weaken or remove the acceptance test.; Preserve applyUnifiedDiff's synchronous public API and returned object shapes.; Make the smallest correct implementation change.\n\nDECLARED VERIFICATION: node --test\n\nOBJECTIVE ACCEPTANCE: node --test\n\nNo commands beyond test/acceptance are admitted.\n\nTERRITORY FILES (complete): README.md, bin/run-mission.mjs, bin/run-program.mjs, bin/run-worker.mjs, bin/submit-mission.mjs, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory-strict-free.json, data/missions/2026/07/19/2026-07-19-retire-patch-temporary-directory.json, data/trajectories/2026/07/19/2026-07-19-free-compute-dev-trajectories.jsonl, package.json, src/agent-tools.mjs, src/context.mjs, src/edits.mjs, src/escalate.mjs, src/executor.mjs, src/fabric-client.mjs, src/inference.mjs, src/mission-queue.mjs, src/mission-runtime.mjs, src/program-runtime.mjs, src/resolvers.mjs, src/solve-loop.mjs, src/trajectory-memory.mjs, test/agent-tools.test.mjs, test/edits.test.mjs, test/executor.test.mjs, test/mission-queue.test.mjs, test/mission-runtime.test.mjs, test/program-runtime.test.mjs, test/solve-loop.test.mjs\n\nObservation 1: {\"files\":[\"src/agent-tools.mjs\",\"src/context.mjs\",\"src/edits.mjs\",\"src/escalate.mjs\",\"src/executor.mjs\",\"src/fabric-client.mjs\",\"src/inference.mjs\",\"src/mission-queue.mjs\",\"src/mission-runtime.mjs\",\"src/program-runtime.mjs\",\"src/resolvers.mjs\",\"src/solve-loop.mjs\",\"src/trajectory-memory.mjs\"]}"
+      }
+    ],
+    "max-tokens": 800,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gemini-3.1-flash-lite",
+    "text": "{\"read\": {\"path\": \"src/executor.mjs\"}}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "content": "{\"read\": {\"path\": \"src/executor.mjs\"}}",
+            "extra_content": {
+              "google": {
+                "thought_signature": "EjQKMgERTTIPcsgfd0D3NukL8sTzUolzBjGjZJf3So5zxYvOn10EfnDq4OTT5Cl8SZN5VRt2"
+              }
+            },
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784443386,
+      "id": "-nFcavSSAeeA1MkP9OGikQg",
+      "model": "gemini-3.1-flash-lite",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 14,
+        "prompt_tokens": 721,
+        "total_tokens": 735
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.664,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

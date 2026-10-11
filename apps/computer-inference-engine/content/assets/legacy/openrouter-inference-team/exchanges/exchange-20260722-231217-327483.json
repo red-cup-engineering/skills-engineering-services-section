@@ -1,0 +1,74 @@
+{
+  "id": "exchange-20260722-231217-327483",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return one candidate derivation for the supplied typed unresolved residue. Do not claim customer acceptance, execution, or truth. Output only one JSON value: no Markdown fence, comments, or prose. The exact customer schema is {\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"selectedCandidate\",\"gates\"],\"properties\":{\"selectedCandidate\":{\"type\":\"string\",\"enum\":[\"metered-inference-tollbooth\",\"free-compute-dev\",\"trashpanda-services\",\"none\"]},\"gates\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":1,\"maxItems\":10}}}."
+      },
+      {
+        "role": "user",
+        "content": "{\"workLot\":{\"id\":\"urn:work-lot:codex:e4e2a788-5738-49df-96ca-23e677f03538\",\"producer\":\"urn:codex:project-session\"},\"context\":{\"objective\":\"Select the one supplied candidate that is actually a paid compute product and list its missing public-release gates.\",\"suppliedContext\":\"Candidates and facts: metered-inference-tollbooth already implements official x402 POST /inference, direct customer-selected signed A2A provider execution, RMN/WIT verification, WitnessJournal settlement recording, and tests, but is not deployed, lacks env, and no public signed Agent Card/Bazaar challenge was shown. free-compute-dev is a sovereign improvement-market supplier and its old worker carrier is explicitly retired. Trashpanda Services is Bazaar-ready deterministic policy conformance, not compute. Public listing admission requires public HTTPS signed Agent Card, exact skill/law, public interface, and a 402 with valid Bazaar extension and matching seller payee/network/asset. Existing bare-cedar-fog tunnel ingress is down because its canonical site unit is uninstalled. Constraints: no new umbrella runtime; public code and paid service together; production claims only after public no-payment verification; do not publish the Red Cup monorepo wholesale.\",\"desiredUse\":\"Return one advisory candidate for independent Codex inspection, testing, and acceptance.\",\"routingProfile\":\"extended\",\"extendedRoutingRationale\":\"The bounded provider frontier explicitly refused this small classification twice as exceeding its routing profile; an advisory result is still useful before premium integration judgment.\",\"boundary\":\"Do not claim file mutation, execution, integration, truth, or customer acceptance.\"},\"residue\":{\"type\":\"CodexBoundedInferenceWorkResidue\",\"workLot\":\"urn:work-lot:codex:e4e2a788-5738-49df-96ca-23e677f03538\",\"reason\":\"no deterministic customer-local resolver covered this context-complete bounded derivation\",\"customerAcceptanceRequired\":true},\"workType\":\"classification\",\"executionBounds\":{\"maximumOutputTokens\":1200,\"sourceMeasures\":{\"words\":124,\"characters\":960}},\"outputContract\":{\"format\":\"json\",\"mode\":\"json_schema\",\"schema\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"selectedCandidate\",\"gates\"],\"properties\":{\"selectedCandidate\":{\"type\":\"string\",\"enum\":[\"metered-inference-tollbooth\",\"free-compute-dev\",\"trashpanda-services\",\"none\"]},\"gates\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":1,\"maxItems\":10}}}}}"
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "text": "{\"selectedCandidate\":\"metered-inference-tollbooth\",\"gates\":[\"public HTTPS signed Agent Card\",\"public interface with skill/law compliance\",\"402 payment capability with valid Bazaar extension\",\"matching seller payee configuration\",\"network and asset validation\"]}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "gen-1784761936-fPGefxY07g8Ty5qYg69J",
+      "object": "chat.completion",
+      "created": 1784761936,
+      "model": "poolside/laguna-xs-2.1:free",
+      "provider": "Poolside",
+      "system_fingerprint": null,
+      "service_tier": null,
+      "choices": [
+        {
+          "index": 0,
+          "logprobs": null,
+          "finish_reason": "stop",
+          "native_finish_reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": "{\"selectedCandidate\":\"metered-inference-tollbooth\",\"gates\":[\"public HTTPS signed Agent Card\",\"public interface with skill/law compliance\",\"402 payment capability with valid Bazaar extension\",\"matching seller payee configuration\",\"network and asset validation\"]}",
+            "refusal": null,
+            "reasoning": null
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 693,
+        "completion_tokens": 52,
+        "total_tokens": 745,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.769964248,
+    "denomination": "openrouter-api-requests"
+  }
+}

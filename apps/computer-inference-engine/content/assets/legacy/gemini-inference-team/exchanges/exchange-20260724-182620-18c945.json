@@ -1,0 +1,29 @@
+{
+  "id": "exchange-20260724-182620-18c945",
+  "recordedAt": "2026-07-24T18:26:20.403Z",
+  "packet": {
+    "model": "gemini-3.1-flash-lite",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the Union's hired inference provider, dispatched by the leader-movement-team's demand->hire loop to JUDGE whether a piece of candidate text is a genuine definition of a named glossary term -- independently of whoever produced the candidate text; you did not author it. Decide: does the candidate text actually explain what the named term means (a real definition, however short or imperfect), or is it something else -- a refusal/non-answer (\"insufficient evidence\", \"I cannot determine\", \"the file does not yet exist\"), a raw data dump (JSON, a file/directory listing) rather than prose, an answer to a different question than \"what does this term mean\", or a self-referential answer about the responder itself rather than about the term? Return exactly one JSON object and nothing else: {\"verdict\":\"definition\"|\"non-answer\",\"reason\":\"<one short sentence>\"}. No markdown code fencing, no prose before or after the JSON object."
+      },
+      {
+        "role": "user",
+        "content": "Named term: chairperson\n\nCandidate text:\nA chairperson is an office characterized as the seat where the firm’s verdict hands meet, specifically balancing the white army's math-lawfulness verdict and the black army's standards. It is an office that sits above other units of the firm, serving as a point of governance for the firm's direction."
+      }
+    ]
+  },
+  "outcome": "refusal",
+  "refusal": {
+    "grounds": "typed inference input must be one JSON value",
+    "unmet": [
+      "gemini-sdk-refusal"
+    ]
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.002895016000000169,
+    "denomination": "google-ai-studio-api-requests"
+  }
+}

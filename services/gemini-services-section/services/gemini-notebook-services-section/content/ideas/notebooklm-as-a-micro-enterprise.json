@@ -1,0 +1,11 @@
+{
+  "id": "notebooklm-as-a-micro-enterprise",
+  "name": "notebooklm as a micro enterprise",
+  "kind": "idea",
+  "raised-by": "emsenn",
+  "says": "i wanna stand up a NotebookLM https://github.com/teng-lin/notebooklm-py app inside our enterprise's digital platform, as a micro-enterprise itself, so taht other micro-enterprises can contract it, send it packets of resources, and be like, gimme a pdf, gimme an infographic, gimme a report and here's the prompt, but also, these days, notebooklm can produce flashcards, json mind maps, csv data reports. We could offload a LOT of data distillation/analysis to it, and that'd be a great cost savings!",
+  "x-provenance": {
+    "recorded-by": "emsenn",
+    "recorded-on": "2026-07-17"
+  }
+}

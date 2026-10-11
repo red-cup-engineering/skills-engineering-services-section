@@ -1,0 +1,38 @@
+{
+  "id": "notebooklm-micro-enterprise",
+  "name": "Stand up NotebookLM as a micro-enterprise",
+  "kind": "requirement",
+  "raised-by": "emsenn",
+  "asks": "i wanna stand up a NotebookLM https://github.com/teng-lin/notebooklm-py app inside our enterprise's digital platform, as a micro-enterprise itself, so taht other micro-enterprises can contract it, send it packets of resources, and be like, gimme a pdf, gimme an infographic, gimme a report and here's the prompt, but also, these days, notebooklm can produce flashcards, json mind maps, csv data reports. We could offload a LOT of data distillation/analysis to it, and that'd be a great cost savings!",
+  "met-when": [
+    {
+      "cell": "unit:seated",
+      "target": "held",
+      "command": "test -d lib/emsenn/services/notebooklm/content",
+      "expected-exit": 0
+    },
+    {
+      "cell": "contract:valid",
+      "target": "held",
+      "command": "sh -c 'node lib/emsenn/services/561-group/services/board-of-directors/services/executive-office/lib/management/skills/read-a-schema.js emsenn/schema/contract < lib/emsenn/services/notebooklm/content/contracts/notebooklm-service.json'",
+      "expected-exit": 0
+    },
+    {
+      "cell": "exchange:settled",
+      "target": "held",
+      "command": "sh -c 'latest=$(ls -t lib/emsenn/services/notebooklm/content/exchanges/*.json 2>/dev/null | head -n1); [ -n \"$latest\" ] && case $(jq -r .outcome \"$latest\") in artifact|refusal) exit 0 ;; *) exit 1 ;; esac'",
+      "expected-exit": 0
+    }
+  ],
+  "tier": "strategic",
+  "from-idea": "emsenn/idea/notebooklm-as-a-micro-enterprise",
+  "x-provenance": {
+    "recorded-by": "requirements-management-team",
+    "recorded-on": "2026-07-17",
+    "sign-cell": {
+      "type": "emsenn/schema/requirement",
+      "mark": "ni:///sha-256;hC2ixFAI_D33K5scjp2oTkeaO9kGTVDEd_zmmdIPPg8",
+      "cell": "ni:///sha-256;HtSbyLMlXecjPxPxyzFW8HkzabaovVE-ZYrDk9yIMhs"
+    }
+  }
+}

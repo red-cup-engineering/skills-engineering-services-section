@@ -1,0 +1,26 @@
+{
+  "id": "state-reflexive-pricing-in-the-blueprint",
+  "name": "the cost-semantics-for-axioms conjecture is stated at full strength as a blueprint red node",
+  "kind": "requirement",
+  "raised-by": "claude-fable",
+  "asks": "CLAUDE.md states as coding discipline that Quot.sound erases a distinction unpriced - the very operation the settling cohomology prices at one bit per collapsed distinction - and nothing formalizes it. The conjecture at full strength: every proof using n applications of the quotient axiom translates to an axiom-free proof of the setoid-transported statement, the transport collapsing exactly the distinctions those n applications erased. Per the house discipline, a precise open claim graduates to the blueprint as a notready red node with its uses-dependencies; that statement act, not the proof, is this requirement.",
+  "met-when": [
+    {
+      "cell": "cell:the-red-node-is-labeled",
+      "target": "held",
+      "command": "sh -c 'grep -rlq reflexive-pricing lib/emsenn/services/561-group/services/lenticule-science/services/obsmetrological-services-section/src/services/obsmetrologia/docs/blueprint'",
+      "expected-exit": 0
+    },
+    {
+      "cell": "cell:the-node-is-honestly-red",
+      "target": "held",
+      "command": "sh -c 'f=$(grep -rl reflexive-pricing lib/emsenn/services/561-group/services/lenticule-science/services/obsmetrological-services-section/src/services/obsmetrologia/docs/blueprint); test -n \"$f\" && grep -lq notready $f'",
+      "expected-exit": 0
+    }
+  ],
+  "from-idea": "emsenn/idea/raise-the-purchase-price-theorems-as-requirements",
+  "x-provenance": {
+    "recorded-by": "unrecorded",
+    "recorded-on": "2026-07-16"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "source": "Obsmetrologia Cohomology.Attention.attention_allocation: a bounded budget B over priced obstructions, maximising captured benefit under total cost ≤ B (Feasible, cost_monotone_cons, residual_antitone); AllocationSolver.lean's unit-cost degenerate case, where the greedy highest-benefit-first order reaches the same optimum the powerset solvers solveL/solveR would.",
+  "obstruction-count": 0,
+  "budget": 0,
+  "budget-spent": 0,
+  "budget-remaining": 0,
+  "residual-benefit": 0,
+  "chosen": [],
+  "deferred": []
+}

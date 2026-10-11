@@ -1,0 +1,133 @@
+{
+  "id": "exchange-20260719-055945-afbb81",
+  "packet": {
+    "model": "openai/gpt-4o-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are one member of a parallel architecture inquiry. Return only the contracted JSON. Produce executable mechanisms, APIs, state transitions, and verification rules; do not propose organizational process or prose-only governance."
+      },
+      {
+        "role": "user",
+        "content": "Evidence: 84 Claude sessions in five days manually performed environment diagnosis, repository archaeology, architecture reconstruction, research synthesis, Lean proof work, refactors, tests, memory/skill creation, and repeated failure analysis. A transcript audit counted 2,067 direct mutations versus 190 subagent dispatches and about 30% human corrections. Prior harness research specifies carrier adapters with zero substrate intelligence, append-only prompt/tool/result capture, projected memory/context, deterministic tools, governed consolidation only after results, session heartbeats, work claim/settle, and context-compaction continuity. The existing free-compute-dev seed has deterministic resolver -> context -> model edit -> apply -> test -> feedback rounds -> expensive escalation, but only one task and no autonomous intake/decomposition/fanout/tool navigation/isolation/integration/memory. The existing LISS cheapest-sufficient fabric just demonstrated 24/24 schema-verified jobs at 24.45 useful jobs/min across Gemini and GitHub Models, with OpenRouter fallback and Claude available. Future volunteer CPU/GPU endpoints can join over Tailscale. The target is a Union-owned software-production fabric that receives territories/problems and keeps observing, decomposing, executing, verifying, integrating, and learning without a Codex or Claude conversation carrying the work.\n\nYour bounded question: Design safe candidate isolation, verification, selection, and integration into a dirty shared repository.\n\nState what is absent from the current seed, give a concrete design, and name a smallest real vertical slice."
+      }
+    ],
+    "max-tokens": 1100,
+    "params": {
+      "response_format": {
+        "type": "json_object"
+      }
+    }
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "gpt-4o-mini-2024-07-18",
+    "text": "{\n  \"absent_components\": {\n    \"autonomous_intake\": true,\n    \"decomposition\": true,\n    \"fanout_navigation\": true,\n    \"tool_isolation\": true,\n    \"memory_management\": true,\n    \"task_parallelization\": true\n  },\n  \"design\": {\n    \"mechanisms\": {\n      \"candidate_isolation\": {\n        \"api\": \"/isolate-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"candidate_id\": \"string\",\n          \"metadata\": {\n            \"context\": \"string\",\n            \"timestamp\": \"datetime\"\n          }\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"isolated_candidate_id\": \"string\"\n        }\n      },\n      \"independent_verification\": {\n        \"api\": \"/verify-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"isolated_candidate_id\": \"string\"\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"verified\": \"boolean\",\n          \"errors\": \"array\"\n        }\n      },\n      \"selection\": {\n        \"api\": \"/select-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"verified_candidates\": \"array\"\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"selected_id\": \"string\"\n        }\n      },\n      \"integration\": {\n        \"api\": \"/integrate-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"selected_id\": \"string\",\n          \"repository_id\": \"string\"\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"integration_result\": \"object\"\n        }\n      }\n    },\n    \"state_transitions\": {\n      \"candidate_isolation\": {\n        \"input\": \"candidate_data\",\n        \"output\": \"isolated_candidate\"\n      },\n      \"verification\": {\n        \"input\": \"isolated_candidate\",\n        \"output\": \"verification_status\"\n      },\n      \"selection\": {\n        \"input\": \"verified_candidates\",\n        \"output\": \"selected_candidate\"\n      },\n      \"integration\": {\n        \"input\": \"selected_candidate\",\n        \"output\": \"integration_status\"\n      }\n    },\n    \"verification_rules\": {\n      \"isolation\": {\n        \"rule\": \"Candidate must be isolated from shared state with controlled interaction.\"\n      },\n      \"verification\": {\n        \"rule\": \"All candidates must pass defined criteria before selection.\"\n      },\n      \"selection\": {\n        \"rule\": \"Only verified candidates are eligible for selection.\"\n      },\n      \"integration\": {\n        \"rule\": \"Selected candidate must be integrated with rollback capability.\"\n      }\n    }\n  },\n  \"smallest_vertical_slice\": {\n    \"title\": \"Candidate Verification Process\",\n    \"steps\": [\n      {\n        \"name\": \"Isolate Candidate\",\n        \"api_call\": \"/isolate-candidate\"\n      },\n      {\n        \"name\": \"Verify Candidate\",\n        \"api_call\": \"/verify-candidate\"\n      },\n      {\n        \"name\": \"Select Candidate\",\n        \"api_call\": \"/select-candidate\"\n      },\n      {\n        \"name\": \"Integrate Candidate\",\n        \"api_call\": \"/integrate-candidate\"\n      }\n    ]\n  }\n}",
+    "finish-reason": "stop",
+    "raw": {
+      "choices": [
+        {
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "protected_material_code": {
+              "detected": false,
+              "filtered": false
+            },
+            "protected_material_text": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          },
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "annotations": [],
+            "content": "{\n  \"absent_components\": {\n    \"autonomous_intake\": true,\n    \"decomposition\": true,\n    \"fanout_navigation\": true,\n    \"tool_isolation\": true,\n    \"memory_management\": true,\n    \"task_parallelization\": true\n  },\n  \"design\": {\n    \"mechanisms\": {\n      \"candidate_isolation\": {\n        \"api\": \"/isolate-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"candidate_id\": \"string\",\n          \"metadata\": {\n            \"context\": \"string\",\n            \"timestamp\": \"datetime\"\n          }\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"isolated_candidate_id\": \"string\"\n        }\n      },\n      \"independent_verification\": {\n        \"api\": \"/verify-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"isolated_candidate_id\": \"string\"\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"verified\": \"boolean\",\n          \"errors\": \"array\"\n        }\n      },\n      \"selection\": {\n        \"api\": \"/select-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"verified_candidates\": \"array\"\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"selected_id\": \"string\"\n        }\n      },\n      \"integration\": {\n        \"api\": \"/integrate-candidate\",\n        \"method\": \"POST\",\n        \"payload\": {\n          \"selected_id\": \"string\",\n          \"repository_id\": \"string\"\n        },\n        \"response\": {\n          \"status\": \"string\",\n          \"integration_result\": \"object\"\n        }\n      }\n    },\n    \"state_transitions\": {\n      \"candidate_isolation\": {\n        \"input\": \"candidate_data\",\n        \"output\": \"isolated_candidate\"\n      },\n      \"verification\": {\n        \"input\": \"isolated_candidate\",\n        \"output\": \"verification_status\"\n      },\n      \"selection\": {\n        \"input\": \"verified_candidates\",\n        \"output\": \"selected_candidate\"\n      },\n      \"integration\": {\n        \"input\": \"selected_candidate\",\n        \"output\": \"integration_status\"\n      }\n    },\n    \"verification_rules\": {\n      \"isolation\": {\n        \"rule\": \"Candidate must be isolated from shared state with controlled interaction.\"\n      },\n      \"verification\": {\n        \"rule\": \"All candidates must pass defined criteria before selection.\"\n      },\n      \"selection\": {\n        \"rule\": \"Only verified candidates are eligible for selection.\"\n      },\n      \"integration\": {\n        \"rule\": \"Selected candidate must be integrated with rollback capability.\"\n      }\n    }\n  },\n  \"smallest_vertical_slice\": {\n    \"title\": \"Candidate Verification Process\",\n    \"steps\": [\n      {\n        \"name\": \"Isolate Candidate\",\n        \"api_call\": \"/isolate-candidate\"\n      },\n      {\n        \"name\": \"Verify Candidate\",\n        \"api_call\": \"/verify-candidate\"\n      },\n      {\n        \"name\": \"Select Candidate\",\n        \"api_call\": \"/select-candidate\"\n      },\n      {\n        \"name\": \"Integrate Candidate\",\n        \"api_call\": \"/integrate-candidate\"\n      }\n    ]\n  }\n}",
+            "refusal": null,
+            "role": "assistant"
+          }
+        }
+      ],
+      "created": 1784440787,
+      "id": "chatcmpl-E3EqxHQtaQ8Ss5MLZEFw5z8ZK0NhZ",
+      "model": "gpt-4o-mini-2024-07-18",
+      "object": "chat.completion",
+      "prompt_filter_results": [
+        {
+          "prompt_index": 0,
+          "content_filter_results": {
+            "hate": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "jailbreak": {
+              "detected": false,
+              "filtered": false
+            },
+            "self_harm": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "sexual": {
+              "filtered": false,
+              "severity": "safe"
+            },
+            "violence": {
+              "filtered": false,
+              "severity": "safe"
+            }
+          }
+        }
+      ],
+      "service_tier": "default",
+      "system_fingerprint": "fp_965c8b9ecf",
+      "usage": {
+        "completion_tokens": 677,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": 0,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "latency_checkpoint": {
+          "engine_tbt_ms": 11,
+          "engine_ttft_ms": 35,
+          "engine_ttlt_ms": 7412,
+          "pre_inference_ms": 87,
+          "service_tbt_ms": 11,
+          "service_ttft_ms": 563,
+          "service_ttlt_ms": 7936,
+          "total_duration_ms": 7857,
+          "user_visible_ttft_ms": 477
+        },
+        "prompt_tokens": 349,
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        },
+        "total_tokens": 1026
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 8.078,
+    "denomination": "github-models-api-requests"
+  }
+}

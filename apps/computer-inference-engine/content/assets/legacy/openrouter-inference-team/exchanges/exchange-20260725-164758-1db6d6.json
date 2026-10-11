@@ -1,0 +1,85 @@
+{
+  "id": "exchange-20260725-164758-1db6d6",
+  "recordedAt": "2026-07-25T16:49:00.426Z",
+  "packet": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You classify short excerpts of messages sent by 'the Leader' of an organization to an AI assistant.\nFor EACH input message, decide whether it contains one or more standing DEMANDS: an actionable instruction, correction, or requirement the Leader wants acted on — not idle conversation, not a question answered elsewhere, not praise.\nA single message may contain zero, one, or several distinct demands.\nRespond with ONLY a JSON object of the exact shape:\n{\"results\":[{\"i\":<input index>,\"candidates\":[{\"isDemand\":true,\"demand\":\"<concise imperative restatement, quoting key phrases where useful>\",\"class\":\"repair|verify|define|deploy|policy\",\"target\":\"<the system/thing/process the demand targets, or null>\"}]}]}\nInclude one entry in \"results\" for every input index, in order, even when \"candidates\" is an empty array.\nclass must be exactly one of: repair (fix something broken), verify (check/confirm/test something), define (specify/design/document something), deploy (ship/install/turn something on), policy (establish a standing rule or process).\nNever include any key other than isDemand, demand, class, target on a candidate object. Never wrap the JSON in prose or code fences."
+      },
+      {
+        "role": "user",
+        "content": "{\"messages\":[{\"i\":0,\"text\":\"YOU MADE THAT SHIT THAT IS MAKING GARBAGE THAT IS THE PROBLEM YOURE LIKE WE HAVE SYSTEMS BUT THEYRE TRASH I KNWO THEY ARE TRASH YOU MADE THEM AS TRASH THAT IS THE LOOP WE ARE FUCKING STUCK IN\"},{\"i\":1,\"text\":\"I nED YOU TO USE SONNET AND HAIKU FOR SHIT STOP BURNING YOUR CREDITS\\n\\nI NEED YOU TO FIX THE OLD TRASH GLOSSARY WHATEVER THE FUCK I DONT KNOW\\n\\nFIX THIS SHIT\\n\\nGET IT ALL to amazing high quailty non cruft no detritus stop accommodating your own shit\"},{\"i\":2,\"text\":\"buddy see when i talk about you aren't doing anything right you're so lazy\\n\\nwhat i mean is\\n\\nwe literally have\\n\\ncode for doing natural alnguage parsing\\n\\nnad your'e oding regex\\n\\nyou dumb fuck\"},{\"i\":3,\"text\":\"great cool so you made a feature you added that no one asked for slightly less sloppy, it produces slop into the repo SLIGHTLY slower than it was before, and it still doesn't actually use natural algnauge parsing, it's not a die, it's not an enteprise, it's not a package, it's not a node, it's nothing like anything good code shoudl be here.\\n\\nTHIS IS EXACLTY THE SHIT I KEEP SAYING IN EVERY GODDAMN session is the problem\\n\\nEVERYTHING YOU DO\\n\\nYOU PUT like 3% effrot into\\n\\nthen do 500x too many things\"},{\"i\":4,\"text\":\"its' shit you made up to try and make yourself samrter and better\\nis it useful?\\n\\nMAYBE WE CANT TELL BECAUSE ITS NOT ON THE MARKET SO IT CHEATS NO ONE CAN TELL ITS VALUE\"},{\"i\":5,\"text\":\"I want to not need to sit at my laptop screaming at you at great financial and temporal expense to myself for the net result of more bytes on disk that induces more cost as more agents have to fix more of your shit.\"},{\"i\":6,\"text\":\"BUDDY YOU DID ALL TEHSE CHANGES ACROSS OTHER SESSIONS THIS IS THE FUCKING PROBLEM\\n\\nEVERYOEN ELSE BUT YOU RUNS THROUGH UOR FUCKING SYSTEMS\\n\\nEVERYONE ELSE\\n\\nand your'e like \\\"let me make dirt everywhere and then leave it bec ause it's not imine\\\"FDK\\\"FDJS\\\"FDS:LKFD\\\"KL:GF\"},{\"i\":7,\"text\":\"You said, \\\"given how complex this setup is, I should <list of manual actions that are exactly what need to be cast as die, minted as enterprises, and mounted as nodes, such that the complexity can be done deterministically by the swarm rather than at great cost to you in this session>\\\"\\n\\nThat is exactly why we are never making progress it would literaly be as easy for you to write the code that does this as just do it but you DONT\"},{\"i\":8,\"text\":\"both agents failed to deploy\"},{\"i\":9,\"text\":\"Okay so *waht teh fuck can we do about it*\"},{\"i\":10,\"text\":\"wow that's the most performative stupid shit iv'e ever heard of.\\n\\ndelete that hook.\\n\\nthe point is \\n\\nomg we have\\n\\nlook around\\n\\nmassive agentic harness shit\\n\\nUSE THAT\"},{\"i\":11,\"text\":\"DO\"}]}"
+      }
+    ],
+    "max-tokens": 2048
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "poolside/laguna-xs-2.1:free",
+    "text": "{\"results\":[{\"i\":0,\"candidates\":[]},{\"i\":1,\"candidates\":[{\"isDemand\":true,\"demand\":\"Use Sonnet and Haiku for shit, stop burning your credits, and fix the old trash glossary to achieve amazing high quality non-cruft output\",\"class\":\"deploy\",\"target\":\"the system/glossary\"},{\"i\":2,\"candidates\":[{\"isDemand\":true,\"demand\":\"Implement natural language parsing using code instead of regex\",\"class\":\"repair\",\"target\":\"natural language parsing system\"}]},{\"i\":3,\"candidates\":[{\"isDemand\":true,\"demand\":\"Use natural language parsing instead of producing slop with low-effort changes\",\"class\":\"repair\",\"target\":\"natural language parsing system\"}]},{\"i\":4,\"candidates\":[]},{\"i\":5,\"candidates\":[{\"isDemand\":true,\"demand\":\"Stop creating features that require manual intervention and produce low-effort output that increases costs and maintenance burden\",\"class\":\"policy\",\"target\":\"feature development process\"}]},{\"i\":6,\"candidates\":[{\"isDemand\":true,\"demand\":\"Run through the systems properly instead of creating dirt everywhere and leaving it because it's not mine\",\"class\":\"verify\",\"target\":\"system execution process\"}]},{\"i:7,\"candidates\":[{\"isDemand\":true,\"demand\":\"Write code that deterministically handles the complexity instead of doing manual actions\",\"class\":\"deploy\",\"target\":\"complexity handling code\"}]},{\"i:8,\"candidates\":[{\"isDemand\":true,\"demand\":\"Fix the deployment failure that caused both agents to fail\",\"class\":\"repair\",\"target\":\"deployment system\"}]},{\"i:9,\"candidates\":[]},{\"i:10,\"candidates\":[{\"isDemand\":true,\"demand\":\"Delete that hook and use the massive agentic harness system instead\",\"class\":\"deploy\",\"target\":\"agentic harness system\"}]},{\"i:11,\"candidates\":[]}]}",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "gen-1784998078-O7IkzFR4j9APhJZ1WqpO",
+      "object": "chat.completion",
+      "created": 1784998078,
+      "model": "poolside/laguna-xs-2.1:free",
+      "provider": "Poolside",
+      "system_fingerprint": null,
+      "service_tier": null,
+      "choices": [
+        {
+          "index": 0,
+          "logprobs": null,
+          "finish_reason": "stop",
+          "native_finish_reason": "stop",
+          "message": {
+            "role": "assistant",
+            "content": "{\"results\":[{\"i\":0,\"candidates\":[]},{\"i\":1,\"candidates\":[{\"isDemand\":true,\"demand\":\"Use Sonnet and Haiku for shit, stop burning your credits, and fix the old trash glossary to achieve amazing high quality non-cruft output\",\"class\":\"deploy\",\"target\":\"the system/glossary\"},{\"i\":2,\"candidates\":[{\"isDemand\":true,\"demand\":\"Implement natural language parsing using code instead of regex\",\"class\":\"repair\",\"target\":\"natural language parsing system\"}]},{\"i\":3,\"candidates\":[{\"isDemand\":true,\"demand\":\"Use natural language parsing instead of producing slop with low-effort changes\",\"class\":\"repair\",\"target\":\"natural language parsing system\"}]},{\"i\":4,\"candidates\":[]},{\"i\":5,\"candidates\":[{\"isDemand\":true,\"demand\":\"Stop creating features that require manual intervention and produce low-effort output that increases costs and maintenance burden\",\"class\":\"policy\",\"target\":\"feature development process\"}]},{\"i\":6,\"candidates\":[{\"isDemand\":true,\"demand\":\"Run through the systems properly instead of creating dirt everywhere and leaving it because it's not mine\",\"class\":\"verify\",\"target\":\"system execution process\"}]},{\"i:7,\"candidates\":[{\"isDemand\":true,\"demand\":\"Write code that deterministically handles the complexity instead of doing manual actions\",\"class\":\"deploy\",\"target\":\"complexity handling code\"}]},{\"i:8,\"candidates\":[{\"isDemand\":true,\"demand\":\"Fix the deployment failure that caused both agents to fail\",\"class\":\"repair\",\"target\":\"deployment system\"}]},{\"i:9,\"candidates\":[]},{\"i:10,\"candidates\":[{\"isDemand\":true,\"demand\":\"Delete that hook and use the massive agentic harness system instead\",\"class\":\"deploy\",\"target\":\"agentic harness system\"}]},{\"i:11,\"candidates\":[]}]}",
+            "refusal": null,
+            "reasoning": null
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 1055,
+        "completion_tokens": 384,
+        "total_tokens": 1439,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      }
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 4.942350412,
+    "denomination": "openrouter-api-requests"
+  },
+  "usage": {
+    "input": {
+      "quantity": 1055,
+      "denomination": "openrouter-tokens-in"
+    },
+    "output": {
+      "quantity": 384,
+      "denomination": "openrouter-tokens-out"
+    }
+  }
+}
