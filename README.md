@@ -1,15 +1,23 @@
-# Agent Skill Writing Service
+# Agent skill services
 
-This service owns Agent Skills `SKILL.md` projection.
-It hires the Markdown file writing service instead of serializing or writing Markdown itself.
+An executable JavaScript skill begins as a `TextFileRead`.
 
-```js
-import { writeAgentSkill } from "@red-cup-engineering/skills-services-section";
+1. `read-javascript-file-export-documentation-service` reads standard JSDoc
+   attached to exported operations.
+2. `read-javascript-file-main-guards-service` reads real
+   `if (import.meta.main)` guards.
+3. `admit-javascript-operation-skill-source-service` admits the joined reads.
+   Free JSDoc prose is the instructional body and one standard `@summary`
+   supplies the short discovery description. Private `@skill` declarations
+   are refused.
+4. `project-agent-skill-markdown-service` purely projects the
+   `SKILL.md` file.
+5. `project-agent-skill-file-projections-service` purely projects the
+   complete, ordered `TextFileCreationProjectionSet` containing
+   `<name>/SKILL.md` and the identical executable script.
+6. Generic file-projection staging and absent-path publication services write
+   that set when a caller explicitly requests materialization.
 
-await writeAgentSkill({
-  root: "lib/emsenn/content/skills/monitoring",
-  name: "monitoring-a-capability-extraction",
-  description: "Finds the implementation and consumers of a requested capability before extraction.",
-  body: "Inspect executable code and report the exact duplicate implementations.",
-});
-```
+No skill-specific service scans source text for magic substrings, parses a
+second JSDoc dialect, writes directories, overwrites files, or independently
+re-renders expected output for comparison.
