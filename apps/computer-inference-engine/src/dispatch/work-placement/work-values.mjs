@@ -34,7 +34,16 @@ export function instant(value, label) {
  * @returns {*} The admitted or derived value.
  */
 export function textSet(value, label) {
-  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || item.trim() === "")) throw new TypeError(label + " must be an array of nonempty text");
+  if (!Array.isArray(value)) throw new TypeError(label + " must be an array of nonempty text");
+  // Inspect actual positions, including holes, without trusting a custom iterator.
+  const seen = new Set();
+  for (let index = 0; index < value.length; index += 1) {
+    const item = value[index];
+    if (typeof item !== "string" || item.trim() === "") throw new TypeError(label + " must be an array of nonempty text");
+    seen.add(item);
+  }
+  if (seen.size !== value.length) throw new TypeError(label + " must not contain duplicates");
+  // Keep the original iterator/cardinality gate as an additional admission check.
   if (new Set(value).size !== value.length) throw new TypeError(label + " must not contain duplicates");
   return value;
 }

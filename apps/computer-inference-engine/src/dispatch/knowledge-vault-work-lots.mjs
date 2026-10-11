@@ -152,7 +152,7 @@ function outputSchema(kind, source, term, maximumSuggestions) {
 function objective(kind, term, maximumSuggestions) {
   if (kind === "term-normalization") return `Suggest one normalized display form for the observed knowledge-vault term ${JSON.stringify(term)}. Use only the supplied source and cite exact character spans.`;
   if (kind === "alias-suggestions") return `Suggest at most ${maximumSuggestions} aliases for the canonical knowledge-vault term ${JSON.stringify(term)}. Return no suggestion without an exact supporting character span.`;
-  if (kind === "claim-extraction") return `Extract at most ${maximumSuggestions} factual claims from the supplied source. Return only one JSON object conforming to the supplied closed output schema. Every claim quote must reproduce source text exactly, word for word. Return an empty claims array rather than an unsupported claim.`;
+  if (kind === "claim-extraction") return `Extract at most ${maximumSuggestions} factual claims from the supplied source. Return only one JSON object conforming to the supplied closed output schema. Every claim quote must reproduce source text exactly, word for word. The subject and object must each appear literally in that exact quote; preserve the source’s wording rather than substituting pronouns, aliases or paraphrases. Predicate is the relation expressed by the cited text. Return an empty claims array rather than an unsupported claim.`;
   return `Suggest at most ${maximumSuggestions} retrieval keywords grounded in the supplied knowledge-vault source. Return no keyword without an exact supporting character span.`;
 }
 

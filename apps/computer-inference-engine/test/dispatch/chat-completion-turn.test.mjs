@@ -148,7 +148,7 @@ test("a required implementation identity invokes only its exact direct configura
   const exact = descriptor("urn:ame:exact-turn", "9");
   const requiredImplementationIdentity = directEndpointConfigurationIdentity(
     directDescriptors(exact)[0],
-    { interaction: "assistant-turn", maximumOutputTokens: 8192 },
+    { interaction: "assistant-turn" },
   );
   const selected = await dispatchTurn(input({ messages: [{ role: "user", content: "continue" }] }, {
     workPlacement: { requiredImplementationIdentity },

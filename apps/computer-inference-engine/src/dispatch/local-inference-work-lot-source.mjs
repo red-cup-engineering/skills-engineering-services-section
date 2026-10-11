@@ -1,6 +1,9 @@
 /** An in-process FeltOS inference source over the admitted, observed direct-endpoint lane. */
 import { dispatchInference } from "./inference-dispatch.mjs";
-import { BOUNDED_INFERENCE_SERVICE_MODEL, METROPLAT_INFERENCE_MARKET_CUSTOMER, INFERENCE_WORK_LOT_CONFIGURATION_IDENTITY_EXTENSION, inferenceWorkLotRequest, inferenceWorkLotDelivery, unsupported } from "./inference-work-lot-source.mjs";
+import { inferenceDispatchPort } from "./inference-dispatch-port.mjs";
+import { configuredInferenceCustomer } from "./inference-dispatch-mcp-contract.mjs";
+import { setTimeout as observeLater } from "node:timers/promises";
+import { BOUNDED_INFERENCE_SERVICE_MODEL, INFERENCE_WORK_LOT_CONFIGURATION_IDENTITY_EXTENSION, inferenceWorkLotRequest, inferenceWorkLotDelivery, unsupported } from "./inference-work-lot-source.mjs";
 import { inferenceResultFromOpenAIChat } from "../openai/chat-completions/inference.mjs";
 import { inferenceObstruction, inferenceResult } from "./inference-model.mjs";
 import { inferenceSourceMove, inferenceSourceTerminal, inferenceStreamMove } from "./inference-source-kind.mjs";
@@ -19,15 +22,32 @@ function move(type, channel, sequence, body, observedAt) {
 export function localInferenceWorkLotSource({
   now = () => new Date().toISOString(),
   dispatch = dispatchInference,
+  dataRoot,
+  taskCustody,
+  observationWait = (signal) => observeLater(1000, undefined, { signal }),
   environment = process.env,
   pricingRoot,
   directDescriptors,
   workPlacement,
-  customer = METROPLAT_INFERENCE_MARKET_CUSTOMER,
+  desiredUse, workType, taskClass, requiredCapabilities, requiredQualityTiers, excludeProviders,
+  difficulty, considerationPolicy, routingProfile, extendedRoutingRationale, mode,
+  customer = configuredInferenceCustomer(environment),
   serviceModel = BOUNDED_INFERENCE_SERVICE_MODEL,
-  agentBounds = { maximumRequests: 1, maximumToolCalls: 0, maximumOutputTokens: 1024, maximumDepth: 0, maximumTokensPerRequest: 1024, maximumToolRounds: 0 },
+  agentBounds = { maximumRequests: 1, maximumToolCalls: 0, maximumDepth: 0, maximumToolRounds: 0 },
+  ...unsupportedOptions
 } = {}) {
+  if (Object.keys(unsupportedOptions).length > 0) throw new TypeError(`unsupported local work-lot options: ${Object.keys(unsupportedOptions).join(", ")}`);
+  const procurement = Object.freeze(structuredClone({
+    desiredUse, workType, taskClass, requiredCapabilities, requiredQualityTiers,
+    excludeProviders, difficulty, considerationPolicy, routingProfile, extendedRoutingRationale, mode,
+  }));
   const hostEnvironment = Object.freeze({ ...environment });
+  if (!taskCustody && (typeof dataRoot !== "string" || dataRoot.length === 0)) throw new TypeError("local inference requires its host task custody dataRoot");
+  const retainedTasks = taskCustody ?? inferenceDispatchPort({
+    environment: hostEnvironment, dataRoot,
+    dispatch: (request, options) => dispatch(request, { ...options, environment: hostEnvironment, ...(pricingRoot ? { pricingRoot } : {}), ...(directDescriptors ? { directDescriptors } : {}) }),
+  }).tasks();
+  if (typeof observationWait !== "function") throw new TypeError("local inference requires its observation wait");
   return (call, options = {}) => ({
     async *[Symbol.asyncIterator]() {
       if (call.model !== serviceModel) {
@@ -43,20 +63,39 @@ export function localInferenceWorkLotSource({
         yield failure(call, "rejected", unsupportedReasons.join("; "), now());
         return;
       }
-      const requestInput = inferenceWorkLotRequest(call, { agentBounds, workPlacement, zeroCashOnly: true }, customer);
+      const requestInput = inferenceWorkLotRequest(call, { ...procurement, agentBounds, workPlacement, zeroCashOnly: true }, customer);
       if (requestInput.reason !== undefined) {
         yield failure(call, "rejected", requestInput.reason, now());
         return;
       }
       let result;
       try {
-        result = await dispatch(requestInput, { environment: hostEnvironment, ...(pricingRoot ? { pricingRoot } : {}), ...(directDescriptors ? { directDescriptors } : {}), signal: options.signal });
+        const tasks = await retainedTasks;
+        if (!tasks) throw new Error("local inference requires native task custody");
+        const submitted = await tasks.submit({ request: requestInput, attemptKey: call.id });
+        if (typeof submitted.taskId !== "string" || !submitted.taskId || typeof submitted.inputNi !== "string" || !submitted.inputNi) throw new Error(`inference task submission: ${submitted?.outcome ?? "unknown"}; do not repeat generation`);
+        const coordinates = { taskId: submitted.taskId, inputNi: submitted.inputNi };
+        try {
+          for (;;) {
+            if (options.signal?.aborted) throw options.signal.reason ?? new Error("observation interrupted");
+            const observed = await tasks.observe(coordinates);
+            if (observed?.outcome === "provider-task-delivered") { result = observed.result; break; }
+            if (observed?.outcome !== "provider-task-pending") throw new Error(`inference task observation: ${observed?.outcome ?? "unknown"}`);
+            await observationWait(options.signal);
+          }
+        } catch (cause) {
+          const error = new Error("inference task observation stopped", { cause });
+          Object.assign(error, coordinates, options.signal?.aborted ? { code: "INFERENCE_OBSERVATION_INTERRUPTED" } : {});
+          throw error;
+        }
       } catch (error) {
-        yield failure(call, options.signal?.aborted ? "cancelled" : "unreachable", error instanceof Error ? error.message : String(error), now(), !options.signal?.aborted);
+        const interrupted = error?.code === "INFERENCE_OBSERVATION_INTERRUPTED";
+        const coordinates = typeof error?.taskId === "string" ? ` Task ${error.taskId}; input ${error.inputNi}; generation remains in task custody.` : "";
+        yield failure(call, interrupted ? "cancelled" : "unreachable", (error instanceof Error ? error.message : String(error)) + coordinates, now(), false);
         return;
       }
-      if (result.outcome !== "candidate-pending-customer-acceptance" && result.outcome !== "candidate-pending-codex-acceptance") {
-        yield failure(call, "rejected", `inference dispatch returned ${String(result.outcome)}:${String(result.disposition ?? "unavailable")}`, now());
+      if (result?.outcome !== "candidate-pending-customer-acceptance" && result.outcome !== "candidate-pending-codex-acceptance") {
+        yield failure(call, "rejected", `inference dispatch returned ${String(result?.outcome)}:${String(result?.disposition ?? "unavailable")}`, now());
         return;
       }
       if (result.integrationAccepted !== false || !result.candidate || typeof result.provider !== "string" || typeof result.configurationIdentity !== "string") {

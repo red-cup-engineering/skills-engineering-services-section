@@ -71,6 +71,7 @@
     {
       "providerId": "groq",
       "actor": "urn:ame:groq-inference-team",
+      "allowance": "groq-requests",
       "zeroCashPolicy": {
         "cashCost": "zero",
         "paidOverage": "forbidden"
@@ -125,6 +126,7 @@
     {
       "providerId": "openrouter-cohere-north-free",
       "actor": "urn:ame:openrouter-inference-team",
+      "allowance": "openrouter-requests",
       "zeroCashPolicy": {
         "cashCost": "zero",
         "paidOverage": "forbidden",
@@ -406,6 +408,7 @@
     {
       "providerId": "codex",
       "actor": "urn:ame:bare-cedar-fog-codex-inference-team",
+      "allowance": "chatgpt-codex",
       "zeroCashPolicy": {
         "cashCost": "zero",
         "paidOverage": "forbidden",
@@ -464,6 +467,7 @@
     {
       "providerId": "antigravity",
       "actor": "urn:ame:bare-cedar-fog-antigravity-inference-team",
+      "allowance": "google-ai-pro-antigravity",
       "auth": {
         "mode": "none"
       },

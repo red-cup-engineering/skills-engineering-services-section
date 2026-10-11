@@ -26,6 +26,7 @@ import { decideWorkPlacement } from "./decide-work-placement.mjs";
 import { createInferenceResourceReservations } from "./resource-reservation-execution.mjs";
 import { optimizeInferenceContext } from "./context-optimization.mjs";
 import { applyInferenceCashControl } from "./inference-cash-control.mjs";
+import { inferenceDataRootOf } from "./state-root.mjs";
 
 export { BOUNDED_INFERENCE_ROUTING_PROFILE, classifyInferenceDemand } from "./inference-demand-classification.mjs";
 
@@ -271,7 +272,7 @@ async function attemptDirectEndpointLane({ input, workLot, taskClass, customer, 
     requiredCapabilities: [...new Set(["chat",
       // Bounds make the receiver an agent only where a tool can be offered: its own, or delegation,
       // which needs depth to spend and a tool call to spend it with. A bounded single answer needs none.
-      ...(tools.length > 0 || (input.agentBounds && !input.chatCompletion && (execution.maximumDepth ?? 0) > (execution.depth ?? 0) && (execution.maximumToolCalls ?? 16) > 0) ? ["tool-calling"] : []),
+      ...(tools.length > 0 || (input.agentBounds && !input.chatCompletion && (execution.maximumDepth ?? 0) > (execution.depth ?? 0) && (execution.maximumToolCalls ?? Infinity) > 0) ? ["tool-calling"] : []),
       ...(input.chatCompletion?.response_format?.type === "json_schema" ? ["json-schema-output"] : []),
       ...(input.requiredCapabilities ?? [])])],
     requiredQualityTiers: input.requiredQualityTiers ?? [],
@@ -289,7 +290,8 @@ async function attemptDirectEndpointLane({ input, workLot, taskClass, customer, 
     measures: {},
     ...(input.workPlacement?.requiredImplementationIdentity === undefined ? {} : { requiredImplementationIdentity: input.workPlacement.requiredImplementationIdentity }),
     routePolicy: {
-      preferenceOrder: [["consideration-per-acceptance"], ["acceptance-probability"], ["latency", "resources"]],
+      // Never by latency: a slow model that is accepted is worth its time; cost per accepted result decides.
+      preferenceOrder: [["consideration-per-acceptance"], ["acceptance-probability"], ["resources"]],
       considerationPreference: [],
       reuse: "forbid",
       unknownObservations: "choice-required",
@@ -314,8 +316,9 @@ async function attemptDirectEndpointLane({ input, workLot, taskClass, customer, 
     return { descriptor, offer: { ...offer, declaredResources: [
       ...offer.declaredResources.filter((row) => !((row.resource === "requests" && row.unit === "request" && row.asset === undefined)
         || (row.resource === "output-tokens" && row.unit === "token" && row.asset === undefined))),
-      { resource: "requests", unit: "request", amount: { numerator: String(remaining.requests), denominator: "1" } },
-      { resource: "output-tokens", unit: "token", amount: { numerator: String(remaining.outputTokens), denominator: "1" } },
+      // A Resource the job leaves unbounded reserves nothing here.
+      ...(remaining.requests === undefined ? [] : [{ resource: "requests", unit: "request", amount: { numerator: String(remaining.requests), denominator: "1" } }]),
+      ...(remaining.outputTokens === undefined ? [] : [{ resource: "output-tokens", unit: "token", amount: { numerator: String(remaining.outputTokens), denominator: "1" } }]),
     ] } };
   });
   // Per-lot exclusion: a customer that assayed and refused a candidate names
@@ -356,7 +359,7 @@ async function attemptDirectEndpointLane({ input, workLot, taskClass, customer, 
   const oversizedRequests = pricingRoot ? await oversizedProviderRequests(pricingRoot, workLot, taskClass) : [];
   for (const planned of plannedOffers) {
     const remaining = execution.budget?.snapshot();
-    if (remaining && (remaining.requests < 1 || remaining.outputTokens < 1)) {
+    if (remaining && ((remaining.requests ?? Infinity) < 1 || (remaining.outputTokens ?? Infinity) < 1)) {
       refusals.push({ provider: "unselected", reason: remaining.requests < 1
         ? "shared-request-budget-exhausted" : "shared-output-token-budget-exhausted" });
       break;
@@ -369,9 +372,10 @@ async function attemptDirectEndpointLane({ input, workLot, taskClass, customer, 
     const responseFormat = input.chatCompletion?.response_format ?? (schema && input.enforceProviderSchema === true && descriptor.capabilities.includes("json-schema-output")
       ? openAiJsonSchemaResponseFormat(schema, `${taskClass.replace(/[^a-zA-Z0-9_]/gu, "_")}_output_contract`)
       : undefined);
+    const accountedOutput = [descriptor.maximumOutputTokens, execution.maximumOutputTokens].filter((value) => Number.isSafeInteger(value) && value > 0);
     const requestIdentity = jsonValueId({ model: descriptor.model, messages,
       tools, responseFormat: responseFormat ?? null, chatCompletion: input.chatCompletion ?? null,
-      maximumOutputTokens: Math.min(descriptor.maximumOutputTokens, execution.maximumOutputTokens) });
+      maximumOutputTokens: accountedOutput.length === 0 ? null : Math.min(...accountedOutput) });
     if (oversizedRequests.some((item) => item.selectedOffer === planned.offerId
       && item.configurationIdentity === selectedOffer.configurationIdentity && item.requestIdentity === requestIdentity)) {
       refusals.push({ provider: descriptor.provider, model: descriptor.model, selectedOffer: planned.offerId,
@@ -715,7 +719,7 @@ export async function dispatchInference(input, options = {}) {
 async function performInferenceDispatch(input, {
   environment = process.env, procure = procureTypedInference, resumeProcurement = resumePendingTypedInference, pendingProcurement, captureProcurement, assay = assayTypedInferenceCandidate, close = recordAssayedInferenceConsiderationClose, registerDelivery = registerInferenceDelivery, observeRefusal = observeInferenceRefusal, signal, pricingRoot = pricingRootOf(environment), account, directDescriptors, refreshDirectDescriptors = refreshDirectEndpointProviderDescriptors, directTransport, directTools = [], directToolHandlers = {}, directMcp, resourceReservations, cashControl, zeroCashOnly } = {}) {
   const dispatchStarted = performance.now();
-  const dataRoot = resolve(environment.INFERENCE_WORK_LOT_DATA_ROOT ?? resolve(ROOT, "data"));
+  const dataRoot = inferenceDataRootOf(environment);
   const providers = loadProviderAdmissions(PROVIDER_ADMISSIONS, { agentCardOverrides: providerAgentCardOverrides(environment) });
   const customerServices = loadCustomerServiceAdmissions(SERVICE_ADMISSIONS, {
     requiredRoles: ["witnessJournal"], admissionGraph: `${CUSTOMER}:service-admissions`,
@@ -754,7 +758,8 @@ async function performInferenceDispatch(input, {
   input = { ...providerInput, context: optimizedContext.suppliedContext };
   const bounds = input.agentBounds ?? {};
   const ceilings = input.workPlacement?.resourceCeilings ?? [];
-  const limits = { requests: bounds.maximumRequests ?? 16, outputTokens: bounds.maximumOutputTokens ?? 65536 };
+  // Only caller-accounted limits bind; an absent limit is not replaced by a literal.
+  const limits = { requests: bounds.maximumRequests, outputTokens: bounds.maximumOutputTokens };
   let resourcePolicyRefusal;
   for (const item of ceilings) {
     const key = item.asset === undefined && item.resource === "requests" && item.unit === "request" ? "requests"
@@ -766,18 +771,23 @@ async function performInferenceDispatch(input, {
     // Floor exact fractions because these resources are consumed in whole
     // units; clamp as BigInt before conversion so large ceilings stay exact.
     const integral = BigInt(item.amount.numerator) / BigInt(item.amount.denominator);
-    limits[key] = Number(integral < BigInt(limits[key]) ? integral : BigInt(limits[key]));
+    limits[key] = Number(limits[key] === undefined || integral < BigInt(limits[key]) ? integral : BigInt(limits[key]));
   }
   const execution = {
     env: environment,
     pricingRoot,
     zeroCashOnly: input.zeroCashOnly,
     ...(input.chatCompletion ? { interaction: "assistant-turn" } : {}),
-    budget: createToolAgentBudget({ maximumRequests: limits.requests, maximumToolCalls: bounds.maximumToolCalls ?? 16, maximumOutputTokens: limits.outputTokens }),
-    maximumOutputTokens: Math.max(1, Math.min(bounds.maximumTokensPerRequest ?? 8192, limits.outputTokens)),
+    budget: createToolAgentBudget({
+      ...(limits.requests === undefined ? {} : { maximumRequests: limits.requests }),
+      ...(bounds.maximumToolCalls === undefined ? {} : { maximumToolCalls: bounds.maximumToolCalls }),
+      ...(limits.outputTokens === undefined ? {} : { maximumOutputTokens: limits.outputTokens }),
+    }),
+    ...(bounds.maximumTokensPerRequest === undefined && limits.outputTokens === undefined ? {}
+      : { maximumOutputTokens: Math.max(1, Math.min(bounds.maximumTokensPerRequest ?? Infinity, limits.outputTokens ?? Infinity)) }),
     ...(resourcePolicyRefusal === undefined ? {} : { resourcePolicyRefusal }),
-    maximumToolCalls: bounds.maximumToolCalls ?? 16,
-    maximumToolRounds: bounds.maximumToolRounds ?? 6,
+    ...(bounds.maximumToolCalls === undefined ? {} : { maximumToolCalls: bounds.maximumToolCalls }),
+    ...(bounds.maximumToolRounds === undefined ? {} : { maximumToolRounds: bounds.maximumToolRounds }),
     maximumDepth: bounds.maximumDepth ?? 0,
     depth: 0,
     env: environment,
@@ -786,11 +796,12 @@ async function performInferenceDispatch(input, {
   const customer = input.customer ?? CODEX_CUSTOMER;
   const excluded = new Set(input.excludeProviders ?? []);
   const admittedDirect = directDescriptors.filter(({ provider }) => !excluded.has(provider) && !excluded.has(provider.replace(/^urn:ame:/u, "")));
-  // A2A offers lack measured-resource evidence, so constrained work fails closed before market contact.
+  // A2A offers lack measured-resource evidence, so constrained work, and bounded agent work whose
+  // consumption is measured exchange by exchange, fails closed before market contact.
   // Signed offers do not declare quality tiers. A tier-constrained lot may
   // use only direct offers whose declared tiers the placement law can inspect.
-  const suppliers = (resourceReservations || input.chatCompletion || input.zeroCashOnly || input.workPlacement || input.requiredQualityTiers?.length > 0 || receiverTools.tools.length > 0 ? [] : providers).filter(({ actor, id }) => !excluded.has(actor) && !excluded.has(id)).map((provider) => supplier(provider, signal));
-  if (!input.zeroCashOnly && suppliers.length === 0 && admittedDirect.length === 0) throw new Error("the work lot excluded every advertised provider");
+  const suppliers = (resourceReservations || input.chatCompletion || input.agentBounds || input.zeroCashOnly || input.workPlacement || input.requiredQualityTiers?.length > 0 || receiverTools.tools.length > 0 ? [] : providers).filter(({ actor, id }) => !excluded.has(actor) && !excluded.has(id)).map((provider) => supplier(provider, signal));
+  if (!input.zeroCashOnly && suppliers.length === 0 && admittedDirect.length === 0 && !input.agentBounds && !input.chatCompletion) throw new Error("the work lot excluded every advertised provider");
   const workType = input.workType ?? "inquiry";
   const taskClass = input.taskClass?.trim() || workType;
   const requiredCapabilities = [...new Set([

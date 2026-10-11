@@ -1,11 +1,10 @@
+import { sha256Hex } from "@red-cup-engineering/cryptographic-computer-data-engineering-services-section/integrity";
 
 /** Resolves dated account entitlement against the exact current credential.
  * @param {Array<object>} observations Private, server-owned account observations.
  * @param {{now?: Function}} options Runtime clock.
  * @returns {Function} A resolver returning only credential-free entitlement evidence.
  */
-import { sha256Hex } from "@red-cup-engineering/cryptographic-computer-data-engineering-services-section/integrity";
-
 export function createProviderAccountEntitlementResolver(observations, { now = () => Date.now() } = {}) {
   if (!Array.isArray(observations)) throw new TypeError("provider account entitlements must be an array");
   const evidence = structuredClone(observations);

@@ -9,10 +9,15 @@ import { executeReceiverToolAgent } from "./receiver-agent.mjs";
 import { sha256Hex } from "@red-cup-engineering/cryptographic-computer-data-engineering-services-section/integrity";
 import { pricingRootOf, appendProviderAvailability, latestProviderAvailability, loadObservations } from "./expected-resolution-pricing.mjs";
 import { createProviderAccountEntitlementResolver } from "./provider-account-entitlement.mjs";
-import { currentProviderAvailability, observeProviderAvailability, observeProviderHired, observeProviderObstruction, providerRemainingRequests, restoreProviderAvailability } from "./provider-availability.mjs";
+import { perishablePrice } from "@red-cup-engineering/organizing/enterprise";
+import { allowanceLedgerPath, readAllowanceLedger, recordAllowanceEvidence } from "../media/allowance-ledger.mjs";
+import { subscriptionAllowance } from "../media/subscription-allowances.mjs";
+import { currentProviderAvailability, observeProviderAvailability, observeProviderHired, observeProviderObstruction, providerRemainingRequests, providerWindowStatement, restoreProviderAvailability } from "./provider-availability.mjs";
 
 const CATALOG_ROW = Symbol("provider-catalog-row");
 const accountEntitlementVerifiers = new WeakMap();
+// Private owner custody retained at descriptor admission, never a caller execution field.
+const allowanceLedgerCustody = new WeakMap();
 const DEFAULT_ENDPOINT_CLASS = "direct-openai-compatible-endpoint";
 
 /**
@@ -244,6 +249,11 @@ function normalizeDirectEndpointDescriptor(entry, env = process.env, resolveAcco
   if (pricingRoot) restoreProviderAvailability(provider,
     latestProviderAvailability(provider, credentialSha256, { dataRoot: pricingRoot, ...(availabilityObservations ? { observations: availabilityObservations } : {}) }), { identity });
   const availability = currentProviderAvailability(provider, { identity });
+  // Each placement compares offers by consideration per accepted result, so an offer is priced by
+  // what drawing its own allowance costs now, not by a constant every offer declares alike.
+  const allowance = nonEmpty(entry.allowance);
+  const allowanceStore = allowance === null ? undefined : allowanceLedgerPath(env);
+  const share = allowanceShareOf(allowance, allowanceStore);
   const descriptor = {
     provider,
     ...(nonEmpty(entry.providerId) ? { providerId: nonEmpty(entry.providerId) } : {}),
@@ -261,10 +271,10 @@ function normalizeDirectEndpointDescriptor(entry, env = process.env, resolveAcco
       || accountEntitlement !== null,
     ...(accountEntitlement ? { accountEntitlement } : {}),
     endpointClass: nonEmpty(entry.endpointClass) ?? DEFAULT_ENDPOINT_CLASS,
-    // Advertise the same allocation enforced by the provider boundary, even
-    // when the endpoint was configured without its catalog identity.
-    maximumOutputTokens: allocateProviderOutputTokens({ providerId: entry.providerId, chatCompletionsUrl: endpoint },
-      Number.isSafeInteger(entry.maximumOutputTokens) && entry.maximumOutputTokens > 0 ? entry.maximumOutputTokens : DEFAULT_MAXIMUM_OUTPUT_TOKENS),
+    // Only a declared (or provider-policy) allocation is advertised; an endpoint
+    // that declares none offers no output ceiling and requests carry no max_tokens.
+    ...optionalOutputTokens(allocateProviderOutputTokens({ providerId: entry.providerId, chatCompletionsUrl: endpoint },
+      Number.isSafeInteger(entry.maximumOutputTokens) && entry.maximumOutputTokens > 0 ? entry.maximumOutputTokens : undefined)),
     capabilities: asList(entry.capabilities),
     qualityTiers: asList(entry.qualityTiers),
     authorityScopes: asList(entry.authorityScopes),
@@ -280,17 +290,65 @@ function normalizeDirectEndpointDescriptor(entry, env = process.env, resolveAcco
     considerationKind: nonEmpty(entry.considerationKind) ?? "credit",
     considerationAsset: nonEmpty(entry.considerationAsset) ?? `urn:ame:${provider.replace(/^urn:ame:/u, "")}:development-consideration`,
     considerationUnit: nonEmpty(entry.considerationUnit) ?? "invocation",
-    considerationAmount: exactAmount(
-      String(entry.considerationNumerator ?? "1"),
-      String(entry.considerationDenominator ?? "1"),
-    ),
+    considerationAmount: share.exhausted
+      ? exactAmount(String(entry.considerationNumerator ?? "1"), String(entry.considerationDenominator ?? "1"))
+      : pricedConsideration(String(entry.considerationNumerator ?? "1"), String(entry.considerationDenominator ?? "1"), share.price),
+    allowanceShare: Object.freeze(share),
   };
+  // A window spent out offers nothing until it turns.
+  if (share.exhausted) descriptor.availableCapacity = 0;
   const admitted = Object.freeze({
     ...descriptor,
     configurationIdentity: directEndpointConfigurationIdentity(descriptor),
   });
   if (accountEntitlement) accountEntitlementVerifiers.set(admitted, entitlementResolver);
+  if (allowanceStore !== undefined) allowanceLedgerCustody.set(admitted, allowanceStore);
   return admitted;
+}
+
+/**
+ * What drawing one more unit of a descriptor's allowance costs now (organizing `perishablePrice` read
+ * off the allowance ledger): near nothing for capacity that will lapse unspent at its window's turn,
+ * the full unit for capacity the window will spend anyway, exhausted when a window is spent out. A
+ * descriptor that names no allowance, or whose ledger cannot be read, is priced at the unit: an
+ * unknown is never free.
+ */
+function allowanceShareOf(allowanceId, storePath) {
+  if (allowanceId === null) return { price: 1, exhausted: false, allowance: null };
+  try {
+    const share = perishablePrice(readAllowanceLedger(subscriptionAllowance(allowanceId), { storePath }).reading);
+    // A window spent out has no price, only when it turns: the share is identified as content (a JSON
+    // value), so it never carries perishablePrice's unbounded price.
+    return { ...(share.exhausted ? {} : { price: share.price }), exhausted: share.exhausted, allowance: allowanceId, binding: share.binding, ...(share.until ? { until: share.until } : {}) };
+  } catch {
+    return { price: 1, exhausted: false, allowance: allowanceId, unread: true };
+  }
+}
+
+/**
+ * A response's statement of its provider's request window, as a reading of the descriptor's
+ * allowance (a `stated` meter in percent of the window), so the allowance's perishable price is read
+ * off the provider's own windows. A response stating no window records nothing; a ledger that cannot
+ * be written never fails the exchange.
+ */
+function recordWindowReading(descriptor, response, execution) {
+  const allowanceId = descriptor.allowanceShare?.allowance;
+  if (typeof allowanceId !== "string") return;
+  const at = new Date(execution.now?.() ?? Date.now()).toISOString();
+  const window = providerWindowStatement(response, at);
+  if (window === null) return;
+  const storePath = allowanceLedgerCustody.get(descriptor);
+  if (storePath === undefined) return;
+  const used = Math.round(((window.limit - window.remaining) / window.limit) * 10_000) / 100;
+  try {
+    recordAllowanceEvidence(subscriptionAllowance(allowanceId), [{ type: "reading", meter: "requests", at, used, resetsAt: window.resetsAt, source: `reading:${allowanceId}:requests:${window.resetsAt}:${used}` }], { storePath });
+  } catch { /* the reading is evidence for pricing, not a condition of the exchange */ }
+}
+
+/** The declared consideration scaled by the allowance's current price, as an exact ratio. */
+function pricedConsideration(numerator, denominator, price) {
+  const millionths = BigInt(Math.max(1, Math.round(price * 1_000_000)));
+  return exactAmount(String(BigInt(numerator) * millionths), String(BigInt(denominator) * 1_000_000n));
 }
 
 /** Rechecks account-dependent admission at each attempt rather than trusting a startup snapshot.
@@ -326,12 +384,12 @@ export function directEndpointConfigurationIdentity(descriptor, execution = {}) 
 export function directEndpointExecutionConfiguration(descriptor, execution = {}) {
   if (!descriptor || typeof descriptor !== "object") throw new TypeError("one direct endpoint descriptor is required");
   const maximumOutputTokens = allocateProviderOutputTokens({ providerId: descriptor.providerId, chatCompletionsUrl: descriptor.endpoint },
-    Math.min(descriptor.maximumOutputTokens ?? DEFAULT_MAXIMUM_OUTPUT_TOKENS, execution.maximumOutputTokens ?? DEFAULT_MAXIMUM_OUTPUT_TOKENS));
+    smallestAccountedOutputTokens(descriptor.maximumOutputTokens, execution.maximumOutputTokens));
   const protocol = descriptor.assistantProtocol ?? (isCommandEndpoint(descriptor) ? "json-envelope" : null);
   return Object.freeze({
     provider: nonEmpty(descriptor.provider), model: nonEmpty(descriptor.model),
     endpoint: nonEmpty(descriptor.endpoint), executionClass: nonEmpty(descriptor.endpointClass),
-    maximumOutputTokens,
+    ...optionalOutputTokens(maximumOutputTokens),
     ...(protocol ? { mode: `${execution.interaction ?? "tool-agent"}:${descriptor.transport ?? "http"}:${protocol}:v1` } : execution.interaction ? { mode: execution.interaction } : {}),
   });
 }
@@ -345,6 +403,15 @@ export function directEndpointExecutionConfiguration(descriptor, execution = {})
  * @param {{provider: string, accountIdentity?: string, windowIdentity?: string, durationMs?: number, networkBytes?: number}} scope
  * @returns {{scope: object, resources: ReadonlyArray<object>, partialResources: ReadonlyArray<object>, callerObservedResources: ReadonlyArray<object>, uncertainty: ReadonlyArray<string>}}
  */
+function decimalRatio(text) {
+  const [mantissa, exponent = "0"] = text.toLowerCase().split("e");
+  const [whole, fraction = ""] = mantissa.split(".");
+  const shift = BigInt(fraction.length) - BigInt(exponent);
+  const digits = BigInt(`${whole}${fraction}`);
+  return shift >= 0n ? { numerator: digits, denominator: 10n ** shift } : { numerator: digits * 10n ** -shift, denominator: 1n };
+}
+const addRatios = (left, right) => ({ numerator: left.numerator * right.denominator + right.numerator * left.denominator, denominator: left.denominator * right.denominator });
+
 export function measuredExchangeResources(exchanges, scope) {
   if (!Array.isArray(exchanges) || !scope || typeof scope.provider !== "string" || scope.provider.trim() === "") return Object.freeze({ scope: null, resources: Object.freeze([]), partialResources: Object.freeze([]), callerObservedResources: Object.freeze([]), uncertainty: Object.freeze(["measurement-scope-invalid"]) });
   const tokenReadings = [
@@ -363,11 +430,15 @@ export function measuredExchangeResources(exchanges, scope) {
     }
     return { resource, unit: "token", amount, observed };
   });
+  // The provider's own statement of what each exchange cost, summed exactly; unit and asset are the provider's.
+  const reportedCosts = exchanges.map((exchange) => exchange?.usage?.reportedCost).filter((value) => typeof value === "string");
+  const reportedCost = reportedCosts.length === 0 ? null : reportedCosts.map(decimalRatio).reduce(addRatios);
   const resources = [
     ...(exchanges.length > 0 ? [{ resource: "requests", unit: "request", amount: BigInt(exchanges.length) }] : []),
     ...tokenReadings.filter((reading) => exchanges.length > 0 && reading.observed === exchanges.length),
+    ...(reportedCost && reportedCosts.length === exchanges.length ? [{ resource: "reported-cost", unit: "provider-cost-unit", asset: scope.provider, ratio: reportedCost }] : []),
     ...(Number.isSafeInteger(scope.durationMs) && scope.durationMs >= 0 ? [{ resource: "duration", unit: "millisecond", amount: scope.durationMs }] : []),
-  ].map(({ resource, unit, amount }) => Object.freeze({ resource, unit, amount: exactNonnegativeAmount(String(amount), "1") }));
+  ].map(({ resource, unit, asset, amount, ratio }) => Object.freeze({ resource, unit, ...(asset ? { asset } : {}), amount: ratio ? exactNonnegativeAmount(String(ratio.numerator), String(ratio.denominator)) : exactNonnegativeAmount(String(amount), "1") }));
   const partialResources = tokenReadings
     .filter((reading) => reading.observed > 0 && reading.observed < exchanges.length)
     .map(({ resource, unit, amount }) => Object.freeze({ resource, unit, amount: exactNonnegativeAmount(String(amount), "1") }));
@@ -379,6 +450,8 @@ export function measuredExchangeResources(exchanges, scope) {
   for (const reading of tokenReadings) {
     if (reading.observed !== exchanges.length) uncertainty.push(reading.resource.replace("-tokens", "-token-usage-incomplete"));
   }
+  // An unreported cost is unmeasured, never zero.
+  if (exchanges.length > 0 && reportedCosts.length !== exchanges.length) uncertainty.push("provider-reported-cost-incomplete");
   if (![scope.accountIdentity, scope.windowIdentity].every((value) => typeof value === "string" && value.trim() !== "")) uncertainty.push("account-window-identity-unknown");
   if (scope.networkBytes !== undefined) uncertainty.push("network-bytes-caller-observed");
   return Object.freeze({ scope: Object.freeze({ providerIdentity: scope.provider, accountIdentity: scope.accountIdentity ?? null, windowIdentity: scope.windowIdentity ?? null, measurementCoverage: "completed-exchanges" }), resources: Object.freeze(resources), partialResources: Object.freeze(partialResources), callerObservedResources, uncertainty: Object.freeze(uncertainty) });
@@ -399,8 +472,15 @@ export function measuredExchangeResources(exchanges, scope) {
 // configPath (DIRECT_ENDPOINT_PROVIDER_CONFIG through the caller) replaces
 // the carrier; a DIRECT_ENDPOINT_PROVIDERS list replaces it too unless a
 // configPath was given explicitly, in which case the list adds entries.
-/** Output budget a direct endpoint offer carries unless its descriptor advertises one: enough for a whole fabrication work order. */
-export const DEFAULT_MAXIMUM_OUTPUT_TOKENS = 8192;
+/** The smallest output allocation a caller or provider actually accounts; undefined when none is accounted. */
+function smallestAccountedOutputTokens(...values) {
+  const accounted = values.filter((value) => Number.isSafeInteger(value) && value > 0);
+  return accounted.length === 0 ? undefined : Math.min(...accounted);
+}
+
+function optionalOutputTokens(value) {
+  return Number.isSafeInteger(value) && value > 0 ? { maximumOutputTokens: value } : {};
+}
 
 export const DEFAULT_DIRECT_ENDPOINT_PROVIDER_CONFIG = fileURLToPath(new URL("../../content/dispatch/provider-admissions/direct-endpoint-providers.json", import.meta.url));
 
@@ -463,7 +543,7 @@ export async function refreshDirectEndpointProviderDescriptors(env = process.env
 export function directEndpointOffer(descriptor, demand, execution = {}, availabilityEvidence = descriptor?.availabilityEvidence) {
   if (!descriptor) throw new Error("one direct endpoint provider descriptor is required");
   if (!demand || typeof demand.taskClass !== "string" || demand.taskClass.trim() === "") throw new Error("one demand naming a taskClass is required");
-  const configurationIdentity = directEndpointConfigurationIdentity({ ...descriptor, endpointClass: descriptor.endpointClass ?? DEFAULT_ENDPOINT_CLASS, maximumOutputTokens: descriptor.maximumOutputTokens ?? DEFAULT_MAXIMUM_OUTPUT_TOKENS }, execution);
+  const configurationIdentity = directEndpointConfigurationIdentity({ ...descriptor, endpointClass: descriptor.endpointClass ?? DEFAULT_ENDPOINT_CLASS, ...optionalOutputTokens(descriptor.maximumOutputTokens) }, execution);
   return Object.freeze({
     type: "NormalizedWorkOffer",
     id: `urn:offer:direct-endpoint:${descriptor.provider}:${configurationIdentity.split(";").at(-1)}:${demand.taskClass}`,
@@ -569,6 +649,7 @@ export async function dispatchDirectEndpointOffer(descriptor, demand, { invoke }
     // Successful admission reads establish account/model eligibility only. They
     // cannot clear a completion 429 or spend a completion request in the quota.
     // A failed admission read still obstructs this provider's next attempt.
+    recordWindowReading(descriptor, response, execution);
     let observedReading;
     if (!admissionRead || response.ok !== true) {
       observedReading = observeProviderAvailability(descriptor.provider, response, readingOptions);
@@ -591,10 +672,12 @@ export async function dispatchDirectEndpointOffer(descriptor, demand, { invoke }
     auth: descriptor.auth,
     ...(descriptor.apiKey ? { apiKey: descriptor.apiKey } : {}),
     model: descriptor.model,
+    // No fixed deadline: a long-thinking model takes minutes; the caller's signal governs cancellation.
+    timeoutMs: null,
     ...execution,
     fetchImpl: checkedFetch,
     checkAdmission: () => { if (execution.zeroCashOnly && !isDirectEndpointZeroCashEligible(descriptor)) throw new Error("zero-cash-entitlement-not-admitted"); },
-    maximumOutputTokens: directEndpointExecutionConfiguration(descriptor, execution).maximumOutputTokens,
+    ...optionalOutputTokens(directEndpointExecutionConfiguration(descriptor, execution).maximumOutputTokens),
     ...(demand.chatCompletion ? { chatCompletion: demand.chatCompletion } : {
       messages: demand.messages,
       tools: demand.tools ?? [],

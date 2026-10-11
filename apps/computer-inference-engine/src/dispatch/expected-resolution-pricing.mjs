@@ -1,9 +1,11 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { openLedgerJournal } from "../media/ledger-journal.mjs";
+import { admitJsonlOnce, readAdmittingJsonl } from "@red-cup-engineering/semiotic-eavt-services-section/admit-jsonl-once";
 import { nonnegativeHostRatio as exactNonnegativeAmount } from "@red-cup-engineering/metrologic/number/wire-ratio";
 import { canonicalJson as canonical } from "@red-cup-engineering/json-services-section/canonical-json";
 import { executionConfiguration, executionConfigurationIdentity } from "./sen-carrier.mjs";
 import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
+import { admitAgencyWorkResult } from "@red-cup-engineering/organizing/work/schema";
 import { ORDER_CHANNELS } from "@red-cup-engineering/organizing/work/staffing";
 
 /** Locate pricing state beneath an already selected data directory. */
@@ -20,16 +22,29 @@ export const pricingRootOf = (environment = process.env) => {
   const web = environment.METROPLAT_WEB_DATA_DIR;
   return typeof web === "string" && web.trim() !== "" ? resolve(dirname(web), "inference-pricing") : undefined;
 };
+/** The JSONL files the book was kept in before the one log; read once into the journal, never written. */
 export const OBSERVATIONS_FILE = "observations.jsonl";
 export const DELIVERIES_FILE = "deliveries.jsonl";
-
-function observationsPath(dataRoot) {
-  return resolve(nonempty(dataRoot, "pricing dataRoot"), OBSERVATIONS_FILE);
-}
-function deliveriesPath(dataRoot) { return resolve(nonempty(dataRoot, "pricing dataRoot"), DELIVERIES_FILE); }
+/** The kind the pricing book is kept under in the one log. */
+export const PRICING_BOOK_OBJECT_KIND = "inference.expected-resolution-pricing";
+const CATEGORIES = Object.freeze({ [DELIVERIES_FILE]: "delivery", [OBSERVATIONS_FILE]: "observation" });
 
 function nonempty(value, label) { if (typeof value !== "string" || value.trim() === "") throw new Error(`${label} must be nonempty text`); return value; }
-function readJsonl(path) { return existsSync(path) ? readFileSync(path, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line)) : []; }
+
+/**
+ * The pricing book: a semantic-record journal at `<dataRoot>/pricing-book.journal` (the one log),
+ * with deliveries and observations kept as held records in append order. JSONL files an earlier
+ * release left under `dataRoot` are admitted once, read only and in order, skipping records the
+ * journal already holds; `jsonl-admission.json` in the journal marks that so it never repeats.
+ */
+function pricingBook(dataRoot) {
+  const root = resolve(nonempty(dataRoot, "pricing dataRoot"));
+  const book = openLedgerJournal(join(root, "pricing-book"), PRICING_BOOK_OBJECT_KIND);
+  const sources = Object.entries(CATEGORIES).map(([file, category]) => ({ path: join(root, file), category }));
+  admitJsonlOnce(book, sources, { type: "PricingBookJsonlAdmission", from: root });
+  return Object.freeze({ ...book, read: (category) => readAdmittingJsonl(book, sources, category) });
+}
+const appendTo = (dataRoot, category, record) => { pricingBook(dataRoot).record(category, record); return record; };
 
 export function appendDelivery(delivery, { dataRoot } = {}) {
   if (!delivery || typeof delivery !== "object" || Array.isArray(delivery)) throw new Error("delivery must be one object");
@@ -50,10 +65,9 @@ export function appendDelivery(delivery, { dataRoot } = {}) {
   if (coordinate) return coordinate;
   const existing = deliveries.find((item) => item.id === record.id);
   if (existing) return existing;
-  const path = deliveriesPath(dataRoot); mkdirSync(dirname(path), { recursive: true }); appendFileSync(path, `${JSON.stringify(record)}\n`);
-  return record;
+  return appendTo(dataRoot, "delivery", record);
 }
-export function loadDeliveries({ dataRoot } = {}) { return readJsonl(deliveriesPath(dataRoot)); }
+export function loadDeliveries({ dataRoot } = {}) { return pricingBook(dataRoot).read("delivery"); }
 
 /** Append one observation. Preserves the caller's outcome and evidence
  * verbatim; never estimates or drops a field to force a shape. */
@@ -79,10 +93,7 @@ export function appendObservation(observation, { dataRoot } = {}) {
   // Evidence explains a judgment; the delivery identifies what was judged.
   // The same explanation can recur for distinct paid provider completions.
   const record = Object.freeze({ id: semanticId({ delivery: delivery.id, ...body }), observedAt: new Date().toISOString(), delivery: delivery.id, ...body });
-  const path = observationsPath(dataRoot);
-  mkdirSync(dirname(path), { recursive: true });
-  appendFileSync(path, `${JSON.stringify(record)}\n`);
-  return record;
+  return appendTo(dataRoot, "observation", record);
 }
 
 /** Retain an attributable refusal before delivery. Completed receiver protocol
@@ -133,14 +144,13 @@ export function appendInferenceRefusal(refusal, { dataRoot } = {}) {
     return coordinate;
   }
   const record = Object.freeze({ id: semanticId(body), observedAt: new Date().toISOString(), ...body });
-  const path = observationsPath(dataRoot); mkdirSync(dirname(path), { recursive: true }); appendFileSync(path, `${JSON.stringify(record)}\n`);
-  return record;
+  return appendTo(dataRoot, "observation", record);
 }
 
 /** Load every observation recorded so far. Absence of the file is absence of
  * observations, never an error: no observations have landed yet. */
 export function loadObservations({ dataRoot } = {}) {
-  return readJsonl(observationsPath(dataRoot));
+  return pricingBook(dataRoot).read("observation");
 }
 
 /** Provider HTTP and transport evidence share the existing private observation carrier. */
@@ -157,10 +167,7 @@ export function appendProviderAvailability(reading, credentialSha256, { dataRoot
   if (body.status !== undefined && (!Number.isInteger(body.status) || body.status < 100 || body.status > 599)) throw new TypeError("provider HTTP status must be observed");
   if (body.status === undefined) nonempty(body.reason, "non-HTTP availability reason");
   const record = Object.freeze({ id: semanticId({ ...body, observedAt: reading.observedAt }), observedAt: reading.observedAt, ...body });
-  const path = observationsPath(dataRoot);
-  mkdirSync(dirname(path), { recursive: true });
-  appendFileSync(path, `${JSON.stringify(record)}\n`);
-  return record;
+  return appendTo(dataRoot, "observation", record);
 }
 
 export function latestProviderAvailability(provider, credentialSha256, { dataRoot, observations = loadObservations({ dataRoot }) } = {}) {
@@ -181,10 +188,7 @@ export function appendReceiverOutcomeRetraction({ observationId, evidence }, { d
   }
   const body = { kind: "receiver-outcome-retraction", originalOutcome: original.id, delivery: original.delivery, outcome: "refused", evidence: reason };
   const record = Object.freeze({ id: semanticId(body), observedAt: new Date().toISOString(), ...body });
-  const file = observationsPath(dataRoot);
-  mkdirSync(dirname(file), { recursive: true });
-  appendFileSync(file, `${JSON.stringify(record)}\n`);
-  return record;
+  return appendTo(dataRoot, "observation", record);
 }
 
 /** Withdraw a receiver judgment caused by the customer's own invalid demand or state. */
@@ -200,10 +204,7 @@ export function appendReceiverOutcomeVoid({ observationId, evidence }, { dataRoo
   }
   const body = { kind: "receiver-outcome-void", originalOutcome: original.id, delivery: original.delivery, evidence: reason };
   const record = Object.freeze({ id: semanticId(body), observedAt: new Date().toISOString(), ...body });
-  const file = observationsPath(dataRoot);
-  mkdirSync(dirname(file), { recursive: true });
-  appendFileSync(file, `${JSON.stringify(record)}\n`);
-  return record;
+  return appendTo(dataRoot, "observation", record);
 }
 
 /** Original events remain readable; consumers price each delivery by its latest valid disposition. */
@@ -249,11 +250,20 @@ export function withRegisterJudgments(observations, judgments, deliveries) {
   }
   const judged = new Map(observations.filter((item) => item.kind === "receiver-outcome").map((item) => [item.receipt, item]));
   const joined = [];
+  const enriched = new Map();
   for (const [receipt, outcome] of latest) {
     const delivery = byReceipt.get(receipt);
     const prior = judged.get(receipt);
     const observedAt = outcome.at;
+    // A received execution report has its own verdict. Keep the typed report so accepting an
+    // error cannot be priced as completed work, or rewritten into a receiver/provider refusal.
+    const report = outcome.reportedResult === undefined ? {} : {
+      reportedResult: admitAgencyWorkResult(outcome.reportedResult),
+      reportVerdict: outcome.verdict, reportJudgment: outcome.id,
+    };
     if (prior !== undefined) {
+      if (outcome.reportedResult !== undefined) enriched.set(prior, Object.freeze({ ...prior, ...report }));
+      if (report.reportedResult?.kind === "skill-error") continue;
       if (prior.outcome === "accepted" && outcome.verdict === "rejected") {
         joined.push(Object.freeze({ kind: "receiver-outcome-retraction", id: outcome.id, observedAt, originalOutcome: prior.id, delivery: prior.delivery, outcome: "refused", evidence: outcome.id, register: outcome.source }));
       }
@@ -262,13 +272,16 @@ export function withRegisterJudgments(observations, judgments, deliveries) {
     joined.push(Object.freeze({
       kind: "receiver-outcome", id: outcome.id, observedAt, delivery: delivery.id, workLot: delivery.workLot, provider: delivery.provider, taskClass: delivery.taskClass,
       selectedOffer: delivery.selectedOffer, receipt, receiver: delivery.receiver, outcome: outcome.verdict === "accepted" ? "accepted" : "refused", evidence: outcome.id, register: outcome.source,
+      ...report,
       ...(delivery.configurationIdentity === undefined ? {} : { configurationIdentity: delivery.configurationIdentity }),
       ...(delivery.durationMs === undefined ? {} : { durationMs: delivery.durationMs }), ...(delivery.resources === undefined ? {} : { resources: delivery.resources }),
       ...(delivery.order === undefined ? {} : { order: delivery.order }),
     }));
   }
-  return joined.length === 0 ? observations : [...observations, ...joined];
+  return joined.length === 0 && enriched.size === 0 ? observations : [...observations.map(item => enriched.get(item) ?? item), ...joined];
 }
+
+const isExecutionFailure = observation => observation.reportedResult?.kind === "skill-error";
 
 /**
  * The orders providers have missed alike: refused by `orderChannels` or more distinct providers
@@ -279,7 +292,7 @@ export function withRegisterJudgments(observations, judgments, deliveries) {
 export function incompleteOrders(observations, { orderChannels = ORDER_CHANNELS } = {}) {
   const missedBy = new Map();
   for (const o of effectiveReceiverObservations(observations)) {
-    if (typeof o.order !== "string" || !((o.kind === "receiver-outcome" && o.outcome === "refused") || o.kind === "receiver-attempt-refusal")) continue;
+    if (isExecutionFailure(o) || typeof o.order !== "string" || !((o.kind === "receiver-outcome" && o.outcome === "refused") || o.kind === "receiver-attempt-refusal")) continue;
     if (!missedBy.has(o.order)) missedBy.set(o.order, new Set());
     missedBy.get(o.order).add(o.provider);
   }
@@ -290,12 +303,13 @@ export function incompleteOrders(observations, { orderChannels = ORDER_CHANNELS 
  * provider-versus-receiver provenance. */
 export function terminalResolutionCounts(provider, taskClass, observations, configurationIdentity = null) {
   const incomplete = incompleteOrders(observations);
-  const censored = (o) => typeof o.order === "string" && incomplete.has(o.order) && o.outcome !== "accepted";
+  const censored = (o) => !isExecutionFailure(o) && typeof o.order === "string" && incomplete.has(o.order) && o.outcome !== "accepted";
   const relevant = effectiveReceiverObservations(observations).filter((o) => !censored(o) && o.provider === provider && o.taskClass === taskClass && (configurationIdentity === null ? !o.configurationIdentity : o.configurationIdentity === configurationIdentity) && ((o.kind === "receiver-outcome" && ["accepted", "refused"].includes(o.outcome)) || ["provider-refusal", "receiver-attempt-refusal"].includes(o.kind)));
-  const receiverAcceptances = relevant.filter((o) => o.kind === "receiver-outcome" && o.outcome === "accepted").length;
-  const receiverRefusals = relevant.filter((o) => (o.kind === "receiver-outcome" && o.outcome === "refused") || o.kind === "receiver-attempt-refusal").length;
+  const receiverAcceptances = relevant.filter((o) => !isExecutionFailure(o) && o.kind === "receiver-outcome" && o.outcome === "accepted").length;
+  const receiverRefusals = relevant.filter((o) => !isExecutionFailure(o) && ((o.kind === "receiver-outcome" && o.outcome === "refused") || o.kind === "receiver-attempt-refusal")).length;
   const providerRefusals = relevant.filter((o) => o.kind === "provider-refusal").length;
-  return { receiverAcceptances, receiverRefusals, providerRefusals, successfulResolutions: receiverAcceptances, terminalResolutions: relevant.length };
+  const executionFailures = relevant.filter(isExecutionFailure).length;
+  return { receiverAcceptances, receiverRefusals, providerRefusals, ...(executionFailures === 0 ? {} : { executionFailures }), successfulResolutions: receiverAcceptances, terminalResolutions: relevant.length };
 }
 
 /** Compatibility projection for callers using the older ambiguous names. */

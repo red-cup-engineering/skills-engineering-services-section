@@ -1,13 +1,7 @@
-import { openaiChatMessageSchema, openaiChatFunctionToolSchema } from "./chat-completions/schema.mjs";
-
 /**
- * The admitted data carrier of one non-streaming OpenAI-compatible chat
+ * The admitted provider-neutral portion of one non-streaming OpenAI chat
  * completion request. Provider selection supplies the model and resource
- * bounds separately. Optional reasoning controls have supplier/model-specific
- * meanings; admission does not assert that every supplier supports them.
- * Sources: https://console.groq.com/docs/api-reference and
- * https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-ultra-550b-a55b-infer
- * https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-ultra-550b-a55b
+ * bounds separately.
  * @type {object}
  */
 const RESPONSE_FORMAT_PROPERTIES = Object.freeze({
@@ -39,9 +33,48 @@ export const CHAT_COMPLETION_TURN_INPUT_SCHEMA = Object.freeze({
   properties: {
     messages: {
       type: "array", minItems: 1,
-      items: openaiChatMessageSchema,
+      items: {
+        type: "object", required: ["role"],
+        properties: {
+          role: { enum: ["system", "developer", "user", "assistant", "tool"] },
+          content: { type: ["string", "null"] },
+          name: { type: "string", minLength: 1 },
+          tool_call_id: { type: "string", minLength: 1 },
+          tool_calls: {
+            type: "array",
+            items: {
+              type: "object", required: ["id", "type", "function"],
+              properties: {
+                id: { type: "string", minLength: 1 },
+                type: { const: "function" },
+                function: {
+                  type: "object", required: ["name", "arguments"],
+                  properties: { name: { type: "string", minLength: 1 }, arguments: { type: "string" } },
+                  additionalProperties: false,
+                },
+              },
+              additionalProperties: false,
+            },
+          },
+        },
+        additionalProperties: false,
+      },
     },
-    tools: { type: "array", items: openaiChatFunctionToolSchema },
+    tools: {
+      type: "array",
+      items: {
+        type: "object", required: ["type", "function"],
+        properties: {
+          type: { const: "function" },
+          function: {
+            type: "object", required: ["name"],
+            properties: { name: { type: "string", minLength: 1 }, description: { type: "string" }, parameters: { type: "object" }, strict: { type: "boolean" } },
+            additionalProperties: false,
+          },
+        },
+        additionalProperties: false,
+      },
+    },
     tool_choice: {
       anyOf: [
         { enum: ["auto", "none", "required"] },
@@ -50,16 +83,6 @@ export const CHAT_COMPLETION_TURN_INPUT_SCHEMA = Object.freeze({
     },
     parallel_tool_calls: { type: "boolean" },
     response_format: { anyOf: [RESPONSE_FORMAT_NON_SCHEMA, RESPONSE_FORMAT_JSON_SCHEMA] },
-    reasoning_effort: { enum: ["none", "default", "minimal", "low", "medium", "high", "xhigh", "max"] },
-    reasoning_budget: { type: "integer", minimum: 0 },
-    chat_template_kwargs: {
-      type: "object", additionalProperties: false,
-      properties: {
-        enable_thinking: { type: "boolean" },
-        medium_effort: { type: "boolean" },
-        force_nonempty_content: { type: "boolean" },
-      },
-    },
     temperature: { type: "number" },
     top_p: { type: "number" },
     seed: { type: "integer" },

@@ -3,13 +3,16 @@
 // ranking divides consideration by the posterior acceptance estimate, so the
 // two never rank independently; keeping considerationRank's ranking-group
 // semantics (below) is the only part of bare "consideration" worth keeping.
-export const WORK_PLACEMENT_CRITERIA = Object.freeze(["consideration-per-acceptance", "resources", "latency", "acceptance-probability", "expiring-resource"]);
+// Latency is observed (a placement's measured time is kept with its outcome) but never ranks a
+// placement: the market places by what an accepted result costs, not by how soon it comes.
+export const WORK_PLACEMENT_CRITERIA = Object.freeze(["consideration-per-acceptance", "resources", "acceptance-probability", "expiring-resource"]);
 const requiredCriteria = WORK_PLACEMENT_CRITERIA.filter((criterion) => criterion !== "expiring-resource");
 const criterionSet = new Set(WORK_PLACEMENT_CRITERIA);
 
 import { object, text, instant, textSet, normalizedFraction, fraction, exactAmount, compareFraction, addFraction, divideFraction, mean, dimensionKey, sameKeys, validateDimension, validateUniqueDimensions } from './work-placement/work-values.mjs';
 import { admitWorkPlacementObservationField } from './work-placement/work-observations.mjs';
 import { canonicalJson as canonical } from "@red-cup-engineering/json-services-section/canonical-json";
+import { allocateAttention } from "@red-cup-engineering/metrologic/obstruction/attention-allocation";
 export { admitWorkPlacementObservationField, workPlacementObservationRelation, workPlacementObservationType } from './work-placement/work-observations.mjs';
 
 function validatePolicy(value) {
@@ -208,8 +211,8 @@ function metrics(demand, offer, observations, reuse) {
     resources: reuse ? zeroDimensions(offer.declaredResources) : attempts.length === 0 ? new Map(offer.declaredResources.map((dimension) => [dimensionKey(dimension), dimension])) : averageObservedDimensions(attempts, "resources"),
     latency: observedLatency(attempts),
     acceptanceProbability,
-    // Best value: consideration per accepted outcome. A zero-cost dimension
-    // divides to zero, so zero-cash ties fall through to acceptanceProbability.
+    // Best value: consideration per accepted outcome. A zero dimension divides
+    // to zero, so such ties fall through to acceptanceProbability.
     considerationPerAcceptance: new Map([...consideration].map(([key, dimension]) => [key, { ...dimension, amount: divideFraction(dimension.amount, acceptanceProbability) }])),
     basis: Object.freeze({ attempts: attempts.length, accepted, receipts: Object.freeze(attempts.map((observation) => observation.receipt).sort()), qualityPrior: Object.freeze({ observations: priors.length, accepted: priorAccepted, sourceReceipts: Object.freeze(priors.map((observation) => observation.sourceReceipt).sort()) }) }),
   };
@@ -258,7 +261,6 @@ function criterionRelation(left, right, criterion, policy) {
     return vectorRelation(left.metrics.considerationPerAcceptance, right.metrics.considerationPerAcceptance, 1, policy.unknownObservations);
   }
   if (criterion === "resources") return vectorRelation(left.metrics.resources, right.metrics.resources, 1, policy.unknownObservations);
-  if (criterion === "latency") return vectorRelation(left.metrics.latency, right.metrics.latency, 1, policy.unknownObservations);
   // acceptanceProbability is the Beta(1,1) posterior mean: always defined, so
   // this criterion orders every pair with no unknownObservations fallback.
   return compareFraction(left.metrics.acceptanceProbability, right.metrics.acceptanceProbability) * -1;
@@ -367,5 +369,85 @@ export function decideWorkPlacement({ demand: demandValue, offers: offerValues, 
     attemptPlan: plan,
     refusals: Object.freeze(refusals),
     rationale: Object.freeze(["exact-feasibility-first", selected.reuse ? "exact-accepted-result-reuse-observed" : "fresh-execution-required", top.relation === "equivalent" ? "equivalent-candidates-stable-offer-id-tie-break" : "customer-ordered-pareto-selection", demand.requiredImplementationIdentity === undefined ? "provider-and-model-identities-are-provenance-only" : "required-implementation-identity-is-an-exact-feasibility-constraint"]),
+  });
+}
+
+/**
+ * Admit a finite measured work frontier, preserve each demand's existing Pareto
+ * provider decision, and allocate attention only to demands with a selected
+ * placement. This is a readout, not execution, quota reservation or acceptance.
+ *
+ * Attention cost is in one explicitly named natural-count unit. Benefit is the
+ * cardinality of explicitly identified, pairwise disjoint held obstructions.
+ * Evidence identities attribute the supplied measurements; they do not prove a
+ * promised removal has occurred. Provider money/resources are never converted
+ * into this unit. Existing receiver observations change provider placement by
+ * the established posterior/consideration law, not by inventing benefit.
+ * @param {object} request An attributed attention budget and ordered typed work candidates.
+ * @returns {object} An effect-free AttentionWorkPlacement with prospective counts and complete placement decisions.
+ */
+export function decideAttentionWorkPlacement({ budget, candidates, evaluatedAt }) {
+  object(budget, "attention budget");
+  text(budget.unit, "attention budget.unit");
+  text(budget.evidence, "attention budget.evidence");
+  const count = (value, label) => {
+    if (!Number.isSafeInteger(value) || value < 0) throw new TypeError(label + " must be a nonnegative safe integer");
+    return value;
+  };
+  count(budget.amount, "attention budget.amount");
+  if (!Array.isArray(candidates)) throw new TypeError("attention candidates must be an array");
+  const ids = new Set(), held = new Map();
+  let totalCost = 0;
+  const admitted = candidates.map((candidate) => {
+    object(candidate, "attention candidate");
+    const demand = admitTypedWorkDemand(candidate.demand);
+    if (ids.has(demand.id)) throw new TypeError("attention candidates repeat demand " + demand.id);
+    ids.add(demand.id);
+    const attention = object(candidate.attention, "candidate.attention");
+    const cost = object(attention.cost, "candidate.attention.cost");
+    if (cost.unit !== budget.unit) throw new TypeError("attention cost unit differs from budget; no denomination conversion is defined");
+    text(cost.evidence, "candidate.attention.cost.evidence");
+    totalCost += count(cost.amount, "candidate.attention.cost.amount");
+    if (!Number.isSafeInteger(totalCost)) throw new TypeError("attention total cost exceeds safe natural-count arithmetic");
+    const obstructions = object(attention.held, "candidate.attention.held");
+    text(obstructions.evidence, "candidate.attention.held.evidence");
+    textSet(obstructions.atoms, "candidate.attention.held.atoms");
+    for (const atom of obstructions.atoms) {
+      text(atom, "candidate.attention.held.atoms item");
+      if (held.has(atom)) throw new TypeError(`attention benefit is not additive: obstruction ${atom} belongs to both ${held.get(atom)} and ${demand.id}`);
+      held.set(atom, demand.id);
+    }
+    return { candidate, demand, attention, obstruction: { id: demand.id, cost: cost.amount, benefit: obstructions.atoms.length } };
+  });
+  const eligible = [], deferred = [];
+  for (const entry of admitted) {
+    const placement = decideWorkPlacement({ demand: entry.demand, offers: entry.candidate.offers,
+      observations: entry.candidate.observations ?? [], evaluatedAt });
+    const measured = Object.freeze({ demand: entry.demand.id, attention: structuredClone(entry.attention), placement });
+    if (placement.disposition === "selected") eligible.push({ ...entry, measured });
+    else deferred.push(measured);
+  }
+  // Do not sort this list: its original order is the handed exact solver's
+  // declared tie policy. readNext is the allocator's subsequent reading order.
+  const allocation = allocateAttention({ budget: budget.amount, obstructions: eligible.map((entry) => entry.obstruction) });
+  const byId = new Map(eligible.map((entry) => [entry.demand.id, entry.measured]));
+  const selected = new Set(allocation.readNext);
+  const unavailableBenefit = admitted.filter((entry) => !byId.has(entry.demand.id))
+    .reduce((sum, entry) => sum + entry.obstruction.benefit, 0);
+  return Object.freeze({
+    type: "AttentionWorkPlacement",
+    budget: Object.freeze({ ...budget }),
+    candidateOrder: Object.freeze(admitted.map((entry) => entry.demand.id)),
+    allocation,
+    planned: Object.freeze(allocation.readNext.map((id) => byId.get(id))),
+    deferred: Object.freeze(deferred),
+    unfunded: Object.freeze(eligible.filter((entry) => !selected.has(entry.demand.id)).map((entry) => entry.measured)),
+    unselected: Object.freeze({ eligible: allocation.residual, unavailable: unavailableBenefit,
+      total: allocation.residual + unavailableBenefit, interpretation: "declared-held-mass-not-yet-selected; removal-requires-receiver-evidence" }),
+    execution: "explicit-sequential-authority-and-current-resource-admission-required",
+    observedRemoval: null,
+    sharedResourcesReserved: false,
+    customerMutation: false,
+    assetSettlementClaimed: false,
   });
 }

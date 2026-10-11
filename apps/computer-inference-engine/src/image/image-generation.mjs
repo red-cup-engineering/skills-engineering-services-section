@@ -45,7 +45,7 @@ export async function callCloudflareWorkersAIImage(
  */
 export async function callWorkersAiImage(prompt, { fetchImpl = fetch, env = process.env, model = CF_WORKER_MODEL } = {}) {
   if (typeof prompt !== "string" || !prompt.trim() || prompt.length > 2048) throw new Error("image prompt must be 1-2048 characters");
-  const result = await runWorkersAiModel(model, { prompt, steps: 4 }, { env, fetchImpl, timeoutMs: 180_000 });
+  const result = await runWorkersAiModel(model, { prompt, steps: 4 }, { env, fetchImpl });
   if (typeof result.image !== "string" || !/^[A-Za-z0-9+/]+={0,2}$/u.test(result.image)) throw new Error("Workers AI returned no valid base64 image");
   return { provider: "cloudflare-workers-ai", model, base64: result.image, mimeType: "image/jpeg" };
 }

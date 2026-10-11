@@ -33,7 +33,7 @@ export function claudePrintArguments({ model, system = [], outputSchema }) {
  * Run one chat packet ({model, messages, params?: {outputSchema?}}) through claude -p.
  * @param {{executable?: string, env?: object, timeoutMs?: number}} [options]
  */
-export async function runClaudePrintExchange(packet, { executable = process.env.CLAUDE_CODE_BIN ?? "claude", env = process.env, timeoutMs = 600_000, onRateLimitStatement, signal } = {}) {
+export async function runClaudePrintExchange(packet, { executable = process.env.CLAUDE_CODE_BIN ?? "claude", env = process.env, timeoutMs = null, onRateLimitStatement, signal } = {}) {
   const record = exchangeRecorder(packet, "claude-code-cli-invocations");
   const binary = resolveExecutable(executable, env);
   if (!binary) return record.refusal(`the \`${executable}\` binary was not found; no subprocess was spawned`, ["claude-binary-absent"], 0);

@@ -50,9 +50,10 @@ const instantHeader = (headers, names, observedAt) => {
     if (typeof value !== "string" || value.trim() === "") continue;
     if (/^\d+$/u.test(value.trim())) {
       const amount = Number(value);
+      // A count of seconds to wait, an epoch in seconds, or (OpenRouter's X-RateLimit-Reset) in milliseconds.
       const epoch = name === "retry-after" || amount < 315_360_000
         ? Date.parse(observedAt) + amount * 1000
-        : amount * 1000;
+        : amount > 100_000_000_000 ? amount : amount * 1000;
       return new Date(epoch).toISOString();
     }
     if (name.startsWith("x-ratelimit-reset-")) {
@@ -64,6 +65,19 @@ const instantHeader = (headers, names, observedAt) => {
   }
   return null;
 };
+
+/**
+ * The request window a provider stated on a response, when it stated all of it: `{ limit, remaining,
+ * resetsAt }` from its rate-limit headers (Groq's x-ratelimit-*-requests, OpenRouter's X-RateLimit-*,
+ * the IETF RateLimit-* fields), or null. It is the provider's own reading of the window, never a count
+ * of the house's calls, since the account's other callers draw on the same window.
+ */
+export function providerWindowStatement(response, observedAt = new Date().toISOString()) {
+  const limit = integerHeader(response?.headers, ["x-ratelimit-limit-requests", "ratelimit-limit", "x-ratelimit-limit"]);
+  const remaining = providerRemainingRequests(response);
+  const resetsAt = instantHeader(response?.headers, ["x-ratelimit-reset-requests", "ratelimit-reset", "x-ratelimit-reset"], observedAt);
+  return limit !== null && limit > 0 && remaining !== null && resetsAt !== null ? Object.freeze({ limit, remaining, resetsAt }) : null;
+}
 
 function reading(providerIdentity, update, observedAt, identity = providerIdentity) {
   const prior = readings.get(identity);

@@ -99,13 +99,14 @@ export async function exchangeOllamaAssistantMessage(body, config = {}, request 
         ? JSON.parse(call.function.arguments || "{}") : call.function?.arguments },
     })) };
   });
-  const options = { num_ctx: config.contextTokens ?? 2048, num_predict: body.max_tokens ?? 256 };
+  // num_predict -1 lets the model finish; an explicit max_tokens is the caller's own accounting.
+  const options = { num_ctx: config.contextTokens ?? 32_768, num_predict: body.max_tokens ?? -1 };
   for (const name of ["temperature", "top_p", "seed", "stop"]) {
     if (body[name] !== undefined) options[name] = body[name];
   }
   const format = body.response_format?.type === "json_schema" ? body.response_format.json_schema?.schema
     : body.response_format?.type === "json_object" ? "json" : config.format;
-  const timeoutMs = config.timeoutMs === undefined ? 90_000 : config.timeoutMs;
+  const timeoutMs = config.timeoutMs === undefined ? null : config.timeoutMs;
   const timeoutSignal = timeoutMs === null ? undefined : AbortSignal.timeout(timeoutMs);
   const signal = config.signal && timeoutSignal ? AbortSignal.any([config.signal, timeoutSignal]) : config.signal ?? timeoutSignal;
   const refuse = (kind, reason, details = {}) => ({ ok: false, cause: { kind, reason, ...details } });
@@ -159,7 +160,9 @@ export async function exchangeOllamaAssistantMessage(body, config = {}, request 
 
 export async function executeOllamaToolExchange({
   model, messages, tools = [], toolHandlers = {}, baseUrl = DEFAULT_BASE_URL, fetchImpl = fetch,
-  timeoutMs = 90_000, maximumToolRounds = 4, maximumOutputTokens = 256, contextTokens = 2048,
+  // No fixed counts or deadline: the turn runs until the model answers or the caller's signal aborts;
+  // the context is the model's own (Ollama's 2,048-token default truncates an agent's work silently).
+  timeoutMs = null, maximumToolRounds = Infinity, maximumOutputTokens, contextTokens = 32_768,
   keepAlive = "10m", format, ...bounds
 } = {}) {
   if (!Number.isInteger(contextTokens) || contextTokens < 256) throw new TypeError("contextTokens must be an integer of at least 256");
@@ -192,7 +195,7 @@ export async function executeOllamaToolExchange({
  * models answer in content), settled as an exchange record like every provider.
  * @param {{model: string, messages: Array, "max-tokens"?: number, params?: {format?: object}}} packet
  */
-export async function runOllamaChatExchange(packet, { env = process.env, fetchImpl = fetch, contextTokens = 4_096, timeoutMs = 120_000, signal } = {}) {
+export async function runOllamaChatExchange(packet, { env = process.env, fetchImpl = fetch, contextTokens = 32_768, timeoutMs = null, signal } = {}) {
   const record = exchangeRecorder(packet, "ollama-requests");
   try {
     const completion = await executeOllamaToolExchange({

@@ -278,6 +278,14 @@ export async function exchangeProviderAssistantMessage(body, config, request, tr
   for (const field of row.omitRequestFields ?? []) delete bounded[field];
   if (policy.maximumOutputTokens) bounded.max_tokens = allocateProviderOutputTokens(config, body.max_tokens);
   if (policy.freeAccountPreflight) bounded.provider = OPENROUTER_ZERO_CASH_PROVIDER;
+  // Fields the provider row fixes on every request (OpenRouter's provider.max_price spend limit and
+  // usage.include, which makes the response carry what the call cost); a packet cannot override them.
+  if (policy.requestFields) {
+    const fixed = structuredClone(policy.requestFields);
+    for (const [field, value] of Object.entries(fixed)) {
+      bounded[field] = field === "provider" && bounded.provider && typeof bounded.provider === "object" && value && typeof value === "object" ? { ...bounded.provider, ...value } : value;
+    }
+  }
   const execute = async () => {
     if (policy.rateStateFile) await admitRateState({ statePath: join(root, "data", policy.rateStateFile), minimumIntervalMilliseconds: Number(env[policy.minimumIntervalEnvVar] ?? policy.minimumIntervalMilliseconds), signal: effective.signal });
     // Account/slot waiting is host admission time. Bound provider HTTP work only after admission.
@@ -335,6 +343,8 @@ export async function executeProviderMessage(provider, message, options = {}) {
       values.set("provider-request", { dimension: "provider-request", quantity: "1", unit: policy.requestUnit ?? `${row.providerId}-api-request` });
       for (const [dimension, field] of [["input-token", "prompt_tokens"], ["output-token", "completion_tokens"]]) if (Number.isInteger(usage[field])) values.set(dimension, { dimension, quantity: String(usage[field]), unit: "token" });
       if (policy.freeAccountPreflight) values.set("cash-expense", { dimension: "cash-expense", quantity: "0", unit: "USD" });
+      // What the provider reports this call cost, when it reports it; an unreported cost stays unmeasured.
+      if ((typeof usage.cost === "number" && Number.isFinite(usage.cost) && usage.cost >= 0) || (typeof usage.cost === "string" && usage.cost.trim() !== "")) values.set("reported-cost", { dimension: "reported-cost", quantity: String(usage.cost), unit: policy.reportedCostUnit ?? `${row.providerId}-reported-cost` });
       return [...values.values()];
     },
     ...(policy.freeAccountPreflight ? { documentExtra: { zeroCashGuard: "free-key-and-zero-price-preflight" } } : {}),

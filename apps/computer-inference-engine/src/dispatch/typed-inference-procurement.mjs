@@ -15,6 +15,7 @@ import {
 import { conformTerm } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/conformance";
 import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { jsonValueId } from "./sen-carrier.mjs";
+import { inferenceDataRootOf } from "./state-root.mjs";
 import { SOVEREIGN_CIRCUIT_INTERFACE_EXTENSION } from "@red-cup-engineering/a2a-services-section/circuit-interface";
 import { createInferenceMarketWitnessStore, createInferenceSettlementStore } from "./witness-journal-settlement-store.mjs";
 import { inferenceMarketRoundTrace } from "./market-round-witness.mjs";
@@ -286,7 +287,7 @@ async function defaultProviderInvoke(message, agentUrl, signal) {
   });
 }
 
-export async function recordTypedInferenceProcurement(result, { caller, customerServices, settlementRoot = ROOT, dataRoot = resolve(settlementRoot, "data"), at = new Date().toISOString(), store: suppliedStore, witnessStore: suppliedWitnessStore } = {}) {
+export async function recordTypedInferenceProcurement(result, { caller, customerServices, settlementRoot = ROOT, dataRoot = inferenceDataRootOf(), at = new Date().toISOString(), store: suppliedStore, witnessStore: suppliedWitnessStore } = {}) {
   if (!result?.demand || typeof result.disposition !== "string") throw new Error("a typed inference procurement outcome is required");
   if (!caller?.actor || !caip10(caller.account)) throw new Error("recording requires the sovereign customer actor and account");
   const witnessJournal = admittedService(customerServices, "witnessJournal");

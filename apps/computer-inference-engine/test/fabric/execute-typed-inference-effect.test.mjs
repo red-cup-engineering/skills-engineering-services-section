@@ -16,12 +16,12 @@ const identity = (value) => `ni:///sha-256;${createHash("sha256").update(JSON.st
 const witnessJournalCalls = [];
 
 mock.module("@red-cup-engineering/computer-inference-engine/fabric/effect-assay", {
-  exports: { async assayWitTransition() { return { witness: "ni:///sha-256;witness" }; } },
+  exports: { async assayWitTransition() { return { witness: "ni:///sha-256;witness", receipt: { id: "ni:///sha-256;wit-receipt", witness: "ni:///sha-256;witness", provider: "fixture-wit-provider" } }; } },
 });
 mock.module("@red-cup-engineering/witness-journal-document-service", {
   exports: {
     relationalWitnessJournalDocument(fields) { return fields; },
-    async recordWitnessJournalBatch(call) { witnessJournalCalls.push(call); return { recorded: true }; },
+    async recordWitnessJournalBatch(call) { witnessJournalCalls.push(call); return { recorded: true, documentNi: "ni:///sha-256;witness-journal-document" }; },
   },
 });
 
@@ -81,6 +81,9 @@ test("dry-run settles one typed effect as an exact positive FOUR cover", async (
   assert.equal(result.parts.find((part) => part.mediaType === "text/plain").text, "ready");
   assert.match(result.metadata.witnessNi, /^ni:\/\/\/sha-256;/u);
   assert.equal(witnessJournalCalls.at(-1).batch.settlement, PROVIDER_ACCOUNT);
+  assert.equal(result.metadata.witReceiptNi, "ni:///sha-256;wit-receipt");
+  assert.equal(result.metadata.witnessJournalDocumentNi, "ni:///sha-256;witness-journal-document");
+  assert.equal(witnessJournalCalls.at(-1).batch.document.witReceipt.id, result.metadata.witReceiptNi);
 });
 
 test("a provider-refused exchange settles as a witnessed refusal, not a crash", async () => {
@@ -137,12 +140,26 @@ test("an optional extra-evidence builder attaches its own message part and reach
   assert.equal(sunk.id, "exchange-1");
 });
 
-test("documentExtra reaches the witness-journal document (the OpenRouter zeroCashGuard shape)", async () => {
+test("documentExtra reaches the witness-journal document", async () => {
   const message = proposalMessage({ instruction: "Answer.", input: "2+2", model: "test-model", mode: "dry-run" });
   await executeTypedInferenceEffect(message, {
     providerLabel: "Test Provider", settlement: PROVIDER_ACCOUNT, measures,
     performInference: async () => ({ disposition: "completion", text: "ready" }),
-    documentExtra: { zeroCashGuard: "free-key-and-zero-price-preflight" },
+    documentExtra: { provenance: "fixture-provenance" },
   });
-  assert.equal(witnessJournalCalls.at(-1).batch.document.zeroCashGuard, "free-key-and-zero-price-preflight");
+  assert.equal(witnessJournalCalls.at(-1).batch.document.provenance, "fixture-provenance");
+});
+
+// Provider annotations cannot erase or replace the shared executor's received evidence.
+test("provider annotations cannot replace core received witness fields", async () => {
+  await executeTypedInferenceEffect(proposalMessage({ instruction: "Answer.", input: "in", model: "test", mode: "dry-run" }), {
+    providerLabel: "Test Provider", settlement: PROVIDER_ACCOUNT, measures,
+    performInference: async () => ({ disposition: "completion", text: "ready" }),
+    documentExtra: { type: "OtherType", witness: "foreign-witness", witReceipt: { id: "foreign-receipt" }, disposition: "refused" },
+  });
+  const document = witnessJournalCalls.at(-1).batch.document;
+  assert.equal(document.type, "InferenceExecutionWitness");
+  assert.equal(document.witness, "ni:///sha-256;witness");
+  assert.equal(document.witReceipt.id, "ni:///sha-256;wit-receipt");
+  assert.equal(document.disposition, "completion");
 });

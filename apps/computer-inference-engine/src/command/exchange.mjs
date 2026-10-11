@@ -57,7 +57,7 @@ export function exchangeRecorder(packet, denomination) {
  * Run one child process with `input` on stdin, bounded by time and output size.
  * Resolves { status, signal, stdout, stderr, error, timedOut }; never rejects.
  */
-export function runBounded(executable, args, { input = "", env = process.env, cwd, timeoutMs = 600_000, maxOutput = 16 * 1024 * 1024, onStdoutLine, signal } = {}) {
+export function runBounded(executable, args, { input = "", env = process.env, cwd, timeoutMs = null, maxOutput = 16 * 1024 * 1024, onStdoutLine, signal } = {}) {
   return new Promise((resolve) => {
     if (signal?.aborted) { resolve({ status: null, signal: "SIGKILL", stdout: "", stderr: "", cancelled: true, timedOut: false }); return; }
     let stdout = "", stderr = "", size = 0, pending = "", timedOut = false, settled = false;
@@ -66,7 +66,7 @@ export function runBounded(executable, args, { input = "", env = process.env, cw
     const child = spawn(executable, args, { cwd, env, stdio: ["pipe", "pipe", "pipe"], shell: false });
     signal?.addEventListener("abort", abort, { once: true });
     if (signal?.aborted) abort();
-    const timer = setTimeout(() => { timedOut = true; child.kill("SIGKILL"); }, timeoutMs);
+    const timer = timeoutMs === null || timeoutMs === undefined ? undefined : setTimeout(() => { timedOut = true; child.kill("SIGKILL"); }, timeoutMs);
     const take = (chunk, into) => {
       size += chunk.length;
       if (size > maxOutput) { child.kill("SIGKILL"); return; }

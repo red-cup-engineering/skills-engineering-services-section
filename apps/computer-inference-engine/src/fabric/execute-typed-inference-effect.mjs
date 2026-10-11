@@ -60,17 +60,17 @@ function resolveSettlement(settlement) {
   return value;
 }
 
-async function appendTypedInferenceWitnessJournal({ settlement, proposal, completion, evidence, witness, disposition, documentExtra }) {
+async function appendTypedInferenceWitnessJournal({ settlement, proposal, completion, evidence, witReceipt, disposition, documentExtra }) {
   const at = new Date().toISOString();
   const assertions = [
     ["urn:sen:proposal", proposal], ["urn:sen:completion", completion], ["urn:sen:evidence", evidence],
-    ["urn:sen:witness", witness], ["urn:sen:disposition", disposition], ["urn:prov:generatedAtTime", at],
+    ["urn:sen:witness", witReceipt.witness], ["urn:sen:wit-receipt", witReceipt.id], ["urn:sen:wit-provider", witReceipt.provider], ["urn:sen:disposition", disposition], ["urn:prov:generatedAtTime", at],
   ].map(([predicate, value]) => ({ subject: completion, predicate, object: { kind: "literal", value } }));
   return recordWitnessJournalBatch({
     agentUrl: requiredAgentUrl(WITNESS_JOURNAL_RDF_AGENT_ENV),
     batch: {
       settlement, graph: completion, recordedAt: at,
-      document: relationalWitnessJournalDocument({ type: "InferenceExecutionWitness", proposal, completion, evidence, witness, disposition, ...(documentExtra ?? {}) }),
+      document: relationalWitnessJournalDocument({ ...(documentExtra ?? {}), type: "InferenceExecutionWitness", proposal, completion, evidence, witness: witReceipt.witness, witReceipt, disposition }),
       assertions,
     },
   });
@@ -130,8 +130,8 @@ export async function executeTypedInferenceEffect(message, config, options = {})
   const transition = await assayWitTransition({ agentUrl: requiredAgentUrl(WIT_TRANSITION_ASSAY_AGENT_ENV), proposalCell: cell, completionCell, evidence: evidence.term });
   const completionTerm = effectBundle(completionCell, operation);
   const completion = conformTerm({ term: completionTerm, expectedType: effectBundleType(completionTerm, TYPED_INFERENCE_OPERATION_TYPE) });
-  await appendTypedInferenceWitnessJournal({
-    settlement, proposal: proposal.term, completion: completion.term, evidence: evidence.term, witness: transition.witness, disposition: performed.disposition,
+  const witnessJournal = await appendTypedInferenceWitnessJournal({
+    settlement, proposal: proposal.term, completion: completion.term, evidence: evidence.term, witReceipt: transition.receipt, disposition: performed.disposition,
     documentExtra: typeof documentExtra === "function" ? documentExtra({ marks, performed }) : documentExtra,
   });
 
@@ -139,7 +139,7 @@ export async function executeTypedInferenceEffect(message, config, options = {})
     { raw: completion.canonicalBytesBase64, metadata: { ni: completion.term }, filename: "completion.sen.cbor", mediaType: "application/sen+cbor" },
     { text: performed.text, metadata: { evidenceNi: evidence.term, disposition: performed.disposition }, mediaType: "text/plain" },
   ];
-  const metadata = { disposition: performed.disposition, proposalNi: proposal.term, completionNi: completion.term, witnessNi: transition.witness };
+  const metadata = { disposition: performed.disposition, proposalNi: proposal.term, completionNi: completion.term, witnessNi: transition.witness, witReceiptNi: transition.receipt.id, witnessJournalDocumentNi: witnessJournal.documentNi };
 
   if (typeof buildExtraEvidence === "function") {
     const extra = buildExtraEvidence({ instruction: marks.instruction, input: marks.input, model: marks.model, mode: marks.mode, startedAt, performed, error: caughtError });

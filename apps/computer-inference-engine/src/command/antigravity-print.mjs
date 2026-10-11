@@ -37,7 +37,7 @@ export function antigravityPrintArguments({ model, outputSchema }) {
  * Run one chat packet ({model, messages, params?: {outputSchema?}}) through agy.
  * @param {{executable?: string, env?: object, timeoutMs?: number}} [options]
  */
-export async function runAntigravityPrintExchange(packet, { executable = process.env.ANTIGRAVITY_BIN ?? "agy", env = process.env, timeoutMs = 600_000, signal } = {}) {
+export async function runAntigravityPrintExchange(packet, { executable = process.env.ANTIGRAVITY_BIN ?? "agy", env = process.env, timeoutMs = null, signal } = {}) {
   const record = exchangeRecorder(packet, "antigravity-cli-invocations");
   const binary = resolveExecutable(executable, env);
   if (!binary) return record.refusal(`the \`${executable}\` binary was not found; no subprocess was spawned`, ["antigravity-binary-absent"], 0);

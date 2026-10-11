@@ -2,6 +2,16 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {loadDirectEndpointProviderDescriptors,directEndpointAdmissionReasons,dispatchDirectEndpointOffer} from '../src/dispatch/direct-endpoint-provider.mjs';
+import {admitInferenceWorkRequest} from '../src/dispatch/inference-work-carriers.mjs';
+
+test('The typed inference boundary retains the caller spending guard and refuses malformed or unknown fields',()=>{
+ for(const zeroCashOnly of [true,false]){
+  const request=admitInferenceWorkRequest({objective:'Extract assayed claims from the held source',mode:'live',zeroCashOnly});
+  assert.equal(request.zeroCashOnly,zeroCashOnly);
+ }
+ for(const zeroCashOnly of ['true',1,null,{}])assert.throws(()=>admitInferenceWorkRequest({objective:'Held source',zeroCashOnly}),/schema validation/);
+ assert.throws(()=>admitInferenceWorkRequest({objective:'Held source',zeroCashOnly:true,unexpected:true}),/schema validation/);
+});
 const at=Date.parse('2026-10-07T12:00:00Z'), key='fixture-private-key';
 const descriptor={provider:'urn:ame:fixture',endpoint:'https://example.invalid/v1/chat/completions',model:'fixture',apiKey:key,capabilities:['chat']};
 const observation={type:'ProviderAccountEntitlementObservation',providerIdentity:descriptor.provider,endpoint:descriptor.endpoint,model:descriptor.model,credentialSha256:createHash('sha256').update(key).digest('hex'),accountIdentity:'projects/fixture',evidenceIdentity:'urn:fixture:account-observation',observedAt:new Date(at).toISOString(),validUntil:new Date(at+3600000).toISOString(),cashCost:'zero',paidOverage:'forbidden',billingEnabled:false,billingAccountBound:false};

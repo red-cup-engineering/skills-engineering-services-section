@@ -9,7 +9,7 @@ function required(value, name) {
 }
 
 /** Resolve a provider source from an explicit host selection without knowing the hosting product. */
-export function selectInferenceSource({ selection, env = process.env, market, now, fetch, descriptors } = {}) {
+export function selectInferenceSource({ selection, env = process.env, market, now, fetch, descriptors, dataRoot, taskCustody } = {}) {
   const chosen = selection === undefined ? "inference-work-lot.local" : required(selection, "inference source selection");
   if (chosen === "openai.chat-completions") {
     return Object.freeze({
@@ -18,14 +18,16 @@ export function selectInferenceSource({ selection, env = process.env, market, no
     });
   }
   if (chosen === "inference-work-lot.local") {
+    // Local delivery does not use the network transport; procurement remains the caller's.
+    const { agentUrl, request, ...workLotOptions } = market ?? {};
     return Object.freeze({
       provider: "inference-work-lot.local",
       source: localInferenceWorkLotSource({
-        environment: env,
+        ...workLotOptions,
+        environment: env, dataRoot, taskCustody,
         ...(now === undefined ? {} : { now }),
         pricingRoot: pricingRootOf(env),
         serviceModel: env.METROPLAT_AGENT_WORKER_MODEL ?? "metroplat/bounded-inference",
-        ...(market?.agentBounds ? { agentBounds: market.agentBounds } : {}),
         ...(descriptors === undefined ? {} : { directDescriptors: descriptors }),
       }),
     });

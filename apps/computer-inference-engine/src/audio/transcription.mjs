@@ -2,7 +2,7 @@
  * Speech transcription of audio prepared from a media file through Workers AI Whisper.
  * Timestamps are offsets into the original media, taken from Whisper's segments.
  */
-import { prepareAudioChunks } from "@red-cup-engineering/computer-media-engineering-services-section/audio";
+import { prepareAudioChunks } from "@red-cup-engineering/computer-data-engineering-services-section/media/audio";
 import { runWorkersAiModel } from "../cloudflare/workers-ai.mjs";
 
 export const TRANSCRIPTION_MODEL = "@cf/openai/whisper-large-v3-turbo";

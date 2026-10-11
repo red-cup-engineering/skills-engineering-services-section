@@ -17,8 +17,9 @@
  *
  * Every output is stored content-addressed under the house's state directory, media/<sha256>.<ext>,
  * and journaled (generations.jsonl) as a media artifact work completion naming its consumer,
- * prompt, model, credits and Flow media id. Signed URLs lapse within hours; the stored bytes are
- * the record.
+ * optional MediaNeed/destination, prompt, model, credits and Flow media id. Signed URLs lapse within
+ * hours; the stored bytes are the record. Delivery to the consumer and confirmed public use are
+ * separate receipts in deliveries.jsonl, so generation is never mistaken for distribution.
  *
  * A PUBLIC_ERROR_UNUSUAL_ACTIVITY refusal pauses new generation until the account owner
  * resolves it in Flow and explicitly resumes. Accepted clips and pending orders are retained;
@@ -62,6 +63,14 @@ export function readPacing(path = join(flowStateDir(), 'pacing.json')) {
   } catch { return { gapMs: PACING.floorMs, ...(existsSync(path)?{verificationRequired:{code:'FLOW_PACING_STATE_UNREADABLE',message:'Repair or explicitly resume the retained Flow pacing state before generating'}}:{}) }; }
 }
 
+/** Local admission for new work; accepted submissions are collected independently. */
+export function flowGenerationAdmission({env=process.env,state=flowStateDir(env)}={}) {
+ const held=readPacing(join(state,'pacing.json')).verificationRequired;
+ if(held)return {allowed:false,status:'verification-pending',reason:held};
+ if(!existsSync(storageStatePath(env)))return {allowed:false,status:'authentication-pending'};
+ return {allowed:true};
+}
+
 function writePacing(pacing, path = join(flowStateDir(), 'pacing.json')) {
   mkdirSync(dirname(path), { recursive: true });
   const temporary=path+'.'+process.pid+'.tmp';
@@ -82,6 +91,7 @@ export function admitOrder(text) {
   const rows = trimmed.startsWith('[') ? JSON.parse(trimmed) : trimmed.split('\n').filter(Boolean).map((line) => JSON.parse(line));
   return rows.map((row, index) => {
     for (const field of ['consumer', 'medium', 'prompt', 'model']) if (typeof row[field] !== 'string' || !row[field].trim()) throw new TypeError(`order line ${index + 1} needs ${field}`);
+    for (const field of ['mediaNeed', 'destination', 'allocation', 'purpose']) if (row[field] !== undefined && (typeof row[field] !== 'string' || !row[field].trim())) throw new TypeError(`order line ${index + 1}: ${field} must be nonempty text when supplied`);
     if (!['video', 'image'].includes(row.medium)) throw new TypeError(`order line ${index + 1}: medium is video or image`);
     const count = row.count ?? 1;
     if (!Number.isSafeInteger(count) || count < 1 || count > 4) throw new TypeError(`order line ${index + 1}: count is 1 to 4, as Flow makes them`);
@@ -117,7 +127,13 @@ async function keep({ flow, order, lot, url, mediaId, credits, account }) {
     providerArtifactId: mediaId, accountIdentity: account,
     resource: { model: order.kind, aspect: order.aspect, credits, path: stored.path, sha256: stored.sha256 },
   });
-  journal({ ...completion, consumer: order.consumer });
+  const lineage = {
+    ...(order.mediaNeed ? { mediaNeed: order.mediaNeed } : {}),
+    ...(order.destination ? { destination: order.destination } : {}),
+    ...(order.allocation ? { allocation: order.allocation } : {}),
+    ...(order.purpose ? { purpose: order.purpose } : {}),
+  };
+  journal({ ...completion, consumer: order.consumer, ...lineage });
   // Retain the received artifact even if Drive is temporarily unavailable; the publisher
   // can finish its transfer without regenerating or spending another provider request.
   let drive, drivePending;
@@ -125,7 +141,11 @@ async function keep({ flow, order, lot, url, mediaId, credits, account }) {
   catch { drivePending = true; } // The retained completion lets the independent publisher retry custody.
   if (drive) journal({ type: 'MediaDriveCustody', consumer: order.consumer, providerArtifactId: mediaId, sha256: stored.sha256, drive, recordedAt: new Date().toISOString() });
   if (drive && process.env.GOOGLE_FLOW_EVICT_MEDIA === '1') await releaseMediaCache(drive, stored.path);
-  return { consumer: order.consumer, mediaId, path: stored.path, bytes: bytes.length, mimeType, ...(drive ? { drive } : {}), ...(drivePending ? { drivePending } : {}) };
+  return {
+    consumer: order.consumer, mediaId, path: stored.path, bytes: bytes.length, mimeType,
+    receipt: completion.id, output: completion.output.identity, ...lineage,
+    ...(drive ? { drive } : {}), ...(drivePending ? { drivePending } : {}),
+  };
 }
 
 async function generateImages({ flow, order, lot, projectId, account, price, ask, onAttempt, onSpent, state }) {
@@ -268,7 +288,7 @@ export async function runFlowOrder(order, { projectId, dryRun = false, config = 
         results.push({ consumer: line.consumer, kind: line.kind, credits: price, fit: price === 0 ? 'free' : reading.fits[line.kind], fitting: price === 0 ? null : reading.counts[line.kind] });
         continue;
       }
-      const lot = createMediaArtifactWorkLot({ workLot: `google-flow:${line.consumer}:${randomUUID()}`, principal: line.consumer, capability: line.medium === 'video' ? 'text-to-video' : 'text-to-image', prompt: line.prompt, sources: [], outputMimeType: line.medium === 'video' ? 'video/mp4' : 'image/*' });
+      const lot = createMediaArtifactWorkLot({ workLot: line.mediaNeed ?? `google-flow:${line.consumer}:${randomUUID()}`, principal: line.consumer, capability: line.medium === 'video' ? 'text-to-video' : 'text-to-image', prompt: line.prompt, sources: [], outputMimeType: line.medium === 'video' ? 'video/mp4' : 'image/*' });
       try {
         if (line.medium === 'image' && price === 0) {
           const kept = await generateImages({ flow, order: line, lot, projectId, account: config.account, price, ask, onAttempt, onSpent, state });
@@ -343,6 +363,121 @@ export function flowImageProvider({ consumer, model = 'GEM_PIX_2', aspect = '16:
  */
 export const imageProviders = ({ consumer, aspect = '1:1', ...flow }) => [flowImageProvider({ consumer, aspect, ...flow }), ...DEFAULT_IMAGE_PROVIDERS];
 
+/**
+ * Read the provider's current catalog as a provider-neutral media offer. This is sensing only:
+ * it never mints reCAPTCHA, submits generation, or reserves allowance.
+ */
+export async function flowMediaOffer({ config = loadFlowAllowanceConfig(), open = openGoogleFlow } = {}) {
+  const flow = await open();
+  const { balance, renewsAt } = await flow.credits();
+  const catalog = await flow.models(config.tier);
+  const images = catalog.filter((row) => row.medium === 'image' && row.credits === 0).sort((a, b) => a.key.localeCompare(b.key));
+  const preferred = images.find((row) => row.key === 'GEM_PIX_2') ?? images[0] ?? null;
+  return Object.freeze({
+    type: 'MediaProviderOffer', provider: PROVIDER, observedAt: new Date().toISOString(),
+    account: config.account, balance, renewsAt,
+    capabilities: Object.freeze({
+      ...(preferred ? {
+        'image-generation': Object.freeze({
+          capability: 'image-generation', medium: 'image', units: 0,
+          model: preferred.key, supportedAspects: Object.freeze(['1:1', '9:16', '16:9', '3:4', '4:3']),
+        }),
+      } : {}),
+    }),
+  });
+}
+
+
+const readJsonl = (path) => existsSync(path) ? readFileSync(path, 'utf8').split('\n').filter(Boolean).map((line) => JSON.parse(line)) : [];
+const deliveryJournalPath = (state = flowStateDir()) => join(state, 'deliveries.jsonl');
+const generationJournalPath = (state = flowStateDir()) => join(state, 'generations.jsonl');
+const contentId = (value) => `ni:///sha-256;${createHash('sha256').update(JSON.stringify(value)).digest('base64url')}`;
+
+/**
+ * Record that one generated Flow artifact reached its declared consumer/destination. Public use is
+ * a stronger receipt and must name the observed public HTTP(S) address. This never moves bytes: the
+ * consuming service does that, then records what actually happened here.
+ */
+export function recordFlowDelivery({ completionId, consumer, destination, stage = 'delivered', publicAddress, at = new Date().toISOString() }, { state = flowStateDir() } = {}) {
+  for (const [field, value] of Object.entries({ completionId, consumer, destination })) if (typeof value !== 'string' || !value.trim()) throw new TypeError(`${field} must be nonempty text`);
+  if (!['delivered', 'public-use'].includes(stage)) throw new TypeError('delivery stage is delivered or public-use');
+  if (!Number.isFinite(Date.parse(at))) throw new TypeError('delivery at must be an instant');
+  let publicUrl;
+  if (publicAddress !== undefined) {
+    try { publicUrl = new URL(publicAddress); } catch { throw new TypeError('publicAddress must be an HTTP(S) URL'); }
+    if (!['http:', 'https:'].includes(publicUrl.protocol)) throw new TypeError('publicAddress must be an HTTP(S) URL');
+  }
+  if (stage === 'public-use' && !publicUrl) throw new TypeError('public-use requires publicAddress');
+
+  const generation = readJsonl(generationJournalPath(state)).find((entry) => entry.id === completionId);
+  if (!generation) throw new Error(`No Flow generation receipt ${completionId} exists`);
+  if (generation.consumer !== consumer) throw new Error('Delivery consumer differs from the generation receipt');
+  if (generation.destination && generation.destination !== destination) throw new Error('Delivery destination differs from the admitted Flow order');
+
+  const body = {
+    type: 'MediaArtifactDeliveryReceipt', version: 1, completionId, output: generation.output?.identity ?? null,
+    consumer, destination, stage, recordedAt: new Date(at).toISOString(),
+    ...(generation.mediaNeed ? { mediaNeed: generation.mediaNeed } : {}),
+    ...(generation.allocation ? { allocation: generation.allocation } : {}),
+    ...(generation.purpose ? { purpose: generation.purpose } : {}),
+    ...(publicUrl ? { publicAddress: publicUrl.href } : {}),
+  };
+  const receipt = Object.freeze({ id: contentId(body), ...body });
+  journal(receipt, deliveryJournalPath(state));
+  return receipt;
+}
+
+/**
+ * Current Flow media custody from append-only evidence. "undelivered" means generated bytes have no
+ * delivery/public-use receipt yet; it is the CMO's orphan-media queue, not evidence that the media
+ * is unwanted or safe to discard.
+ */
+export function flowMediaInventory({ state = flowStateDir() } = {}) {
+  const generations = readJsonl(generationJournalPath(state)).filter((entry) => entry.type === 'MediaArtifactWorkCompletion');
+  const deliveries = readJsonl(deliveryJournalPath(state)).filter((entry) => entry.type === 'MediaArtifactDeliveryReceipt');
+  const byCompletion = new Map();
+  for (const delivery of deliveries) {
+    const current = byCompletion.get(delivery.completionId);
+    if (!current || delivery.stage === 'public-use' || current.stage !== 'public-use') byCompletion.set(delivery.completionId, delivery);
+  }
+  const artifacts = generations.map((generation) => {
+    const delivery = byCompletion.get(generation.id) ?? null;
+    return Object.freeze({
+      completionId: generation.id,
+      output: generation.output?.identity ?? null,
+      providerArtifactId: generation.providerArtifactId ?? null,
+      consumer: generation.consumer,
+      mediaNeed: generation.mediaNeed ?? generation.workLot ?? null,
+      allocation: generation.allocation ?? null,
+      purpose: generation.purpose ?? null,
+      intendedDestination: generation.destination ?? null,
+      storedPath: generation.resource?.path ?? null,
+      mimeType: generation.output?.mimeType ?? null,
+      generatedAt: generation.recordedAt ?? null,
+      delivery,
+      custody: delivery?.stage ?? 'generated',
+    });
+  });
+  const pendingDir = join(state, 'orders', 'pending');
+  const pendingOrders = existsSync(pendingDir) ? readdirSync(pendingDir).filter((name) => name.endsWith('.jsonl')).sort().flatMap((name) =>
+    readJsonl(join(pendingDir, name)).map((line) => Object.freeze({
+      order: name, consumer: line.consumer, mediaNeed: line.mediaNeed ?? null, destination: line.destination ?? null,
+      allocation: line.allocation ?? null, purpose: line.purpose ?? null,
+      medium: line.medium, model: line.model, aspect: line.aspect ?? null, count: line.count ?? 1,
+    }))) : [];
+  const counts = {
+    pending: pendingOrders.reduce((sum, order) => sum + order.count, 0),
+    generated: artifacts.length,
+    delivered: artifacts.filter(({ custody }) => custody === 'delivered').length,
+    publicUse: artifacts.filter(({ custody }) => custody === 'public-use').length,
+    undelivered: artifacts.filter(({ custody }) => custody === 'generated').length,
+  };
+  return Object.freeze({
+    type: 'FlowMediaInventory', observedAt: new Date().toISOString(),
+    counts: Object.freeze(counts), pendingOrders: Object.freeze(pendingOrders), artifacts: Object.freeze(artifacts),
+  });
+}
+
 const ordersDir = (state = flowStateDir()) => join(state, 'orders');
 
 /** Queue `lines` (an order's generations) for the daily run; answers the queued file. */
@@ -354,6 +489,29 @@ export function queueFlowOrder(lines, { name = 'order', state = flowStateDir(), 
   writeFileSync(`${path}.part`, `${admitted.map(({ kind, ...line }) => JSON.stringify(line)).join('\n')}\n`);
   renameSync(`${path}.part`, path);
   return path;
+}
+
+/**
+ * Queue CMO allocations exactly once. Each line carries a stable allocation id. Pending or
+ * already-generated allocations are skipped, so a dispatcher retry cannot manufacture duplicates.
+ */
+export function queueFlowOrderOnce(lines, options = {}) {
+  const state = options.state ?? flowStateDir();
+  const admitted = admitOrder(JSON.stringify(lines));
+  if (admitted.some((line) => !line.allocation)) throw new TypeError('queueFlowOrderOnce requires allocation on every line');
+  const inventory = flowMediaInventory({ state });
+  const seen = new Set([
+    ...inventory.pendingOrders.map((row) => row.allocation),
+    ...inventory.artifacts.map((row) => row.allocation),
+  ].filter(Boolean));
+  const fresh = admitted.filter((line) => !seen.has(line.allocation));
+  if (fresh.length === 0) return Object.freeze({ queued: 0, path: null, allocations: Object.freeze([]), duplicates: Object.freeze(admitted.map((line) => line.allocation)) });
+  const path = queueFlowOrder(fresh, options);
+  return Object.freeze({
+    queued: fresh.reduce((sum, line) => sum + line.count, 0), path,
+    allocations: Object.freeze(fresh.map((line) => line.allocation)),
+    duplicates: Object.freeze(admitted.filter((line) => seen.has(line.allocation)).map((line) => line.allocation)),
+  });
 }
 
 /** The credits today's run may spend: the daily grant plus the monthly balance's even share of the days left. */
@@ -416,8 +574,8 @@ export async function runFlowQueue({ projectId, config = loadFlowAllowanceConfig
   for (const dir of [pending, claims, done]) mkdirSync(dir, { recursive: true });
   for (const name of readdirSync(claims)) if (!alive(Number(name.split('-')[0]))) recoverClaim(join(claims, name), state);
   const received=await resumeFlowSubmissions({state,open});
-  const held = readPacing(join(state, 'pacing.json')).verificationRequired;
-  if (held) return { verificationRequired: held, results: [], received, queued: readdirSync(pending).filter(name => name.endsWith('.jsonl')).flatMap(name => lines(join(pending, name))).length };
+  const admission=flowGenerationAdmission({state});
+  if (!admission.allowed) return { verificationRequired: admission.reason??{code:'FLOW_AUTHENTICATION_PENDING'}, results: [], received, queued: readdirSync(pending).filter(name => name.endsWith('.jsonl')).flatMap(name => lines(join(pending, name))).length };
   if(!readdirSync(pending).some(name=>name.endsWith('.jsonl')))return {results:[],received,queued:0};
   const claim = join(claims, `${process.pid}-${now.getTime()}`);
   mkdirSync(claim);
@@ -495,7 +653,11 @@ export function flowQueueDemand(outcome, { config = loadFlowAllowanceConfig(), s
 }
 
 if (import.meta.main) {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { project: { type: 'string' }, 'dry-run': { type: 'boolean' }, adopt: { type: 'boolean' }, consumer: { type: 'string' }, queue: { type: 'boolean' }, resume: { type: 'boolean' } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: {
+    project: { type: 'string' }, 'dry-run': { type: 'boolean' }, adopt: { type: 'boolean' },
+    consumer: { type: 'string' }, queue: { type: 'boolean' }, resume: { type: 'boolean' },
+    inventory: { type: 'boolean' }, deliver: { type: 'string' }, destination: { type: 'string' }, 'public-address': { type: 'string' },
+  } })
   if (values.resume) {
     const { verificationRequired, ...pacing } = readPacing();
     writePacing({ ...pacing, at: new Date().toISOString() });
@@ -510,7 +672,19 @@ if (import.meta.main) {
     if (process.env.NODE_JOB_DEMAND) writeFileSync(process.env.NODE_JOB_DEMAND, `${JSON.stringify({ ...flowQueueDemand(outcome, { config }), at: new Date().toISOString() })}\n`);
     process.exit(0);
   }
-  if (!positionals[0]) throw new TypeError('usage: flow-generate <order.json|-> [--project <id>] [--dry-run] | --queue | --resume | --adopt <media id>... --consumer <name>');
+  if (values.inventory) {
+    process.stdout.write(`${JSON.stringify(flowMediaInventory(), null, 2)}\n`);
+    process.exit(0);
+  }
+  if (values.deliver) {
+    const receipt = recordFlowDelivery({
+      completionId: values.deliver, consumer: values.consumer, destination: values.destination,
+      stage: values['public-address'] ? 'public-use' : 'delivered', publicAddress: values['public-address'],
+    });
+    process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
+    process.exit(0);
+  }
+  if (!positionals[0]) throw new TypeError('usage: flow-generate <order.json|-> [--project <id>] [--dry-run] | --queue | --resume | --inventory | --deliver <completion-id> --consumer <name> --destination <destination> [--public-address <url>] | --adopt <media id>... --consumer <name>');
   const config = loadFlowAllowanceConfig();
   const projectId = values.project ?? process.env.GOOGLE_FLOW_PROJECT ?? config.project;
   if (values.adopt) {

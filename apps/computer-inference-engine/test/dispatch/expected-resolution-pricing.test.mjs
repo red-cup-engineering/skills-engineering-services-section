@@ -204,7 +204,7 @@ test("recorded outcomes sharpen the next ranking", async () => {
 
 test("a judgment another register makes of an inference delivery reaches routing", async () => {
   const { withRegisterJudgments, terminalResolutionCounts } = await import("../../src/dispatch/expected-resolution-pricing.mjs");
-  const { outcomeOf, standingOutcomes } = await import("@red-cup-engineering/organizing/enterprise");
+  const { outcomeOf, standingOutcomes } = await import("@red-cup-engineering/organizing/enterprise/outcomes");
   const delivery = (receipt) => ({ id: `delivery-${receipt}`, workLot: `lot-${receipt}`, provider: "urn:ame:p", taskClass: "news-draft", selectedOffer: "urn:offer:o", receipt, receiver: "urn:ame:newsroom" });
   const deliveries = [delivery("r1"), delivery("r2"), delivery("r3")];
   const accepted = { kind: "receiver-outcome", id: "obs-r1", delivery: "delivery-r1", workLot: "lot-r1", provider: "urn:ame:p", taskClass: "news-draft", selectedOffer: "urn:offer:o", receipt: "r1", receiver: "urn:ame:newsroom", outcome: "accepted", evidence: "assay" };
@@ -219,4 +219,73 @@ test("a judgment another register makes of an inference delivery reaches routing
   // A voided verdict no longer stands.
   const voided = outcomeOf({ source: "editor", lot: "lot-r1", delivery: "r1", provider: "urn:ame:p", judge: "editor", verdict: "voided", voids: rejected.id, at: "2026-10-03T19:00:00Z", evidence: ["withdrawn"] });
   assert.equal(withRegisterJudgments([accepted], standingOutcomes([rejected, voided]), deliveries).length, 1);
+});
+
+test("the pricing book is kept in the one log; JSONL left by an earlier release is admitted once and left unchanged", async () => {
+  const { existsSync, readFileSync, writeFileSync } = await import("node:fs");
+  const { loadDeliveries, DELIVERIES_FILE, OBSERVATIONS_FILE } = await import("../../src/dispatch/expected-resolution-pricing.mjs");
+  return withTempDataRoot((dataRoot) => {
+    const earlier = { id: "urn:test:earlier-availability", observedAt: "2026-10-01T00:00:00.000Z", kind: "provider-availability", provider: "urn:ame:provider-a", credentialSha256: null, state: "available", quota: null, backoffUntil: null, reason: "earlier release" };
+    const legacy = `${JSON.stringify(earlier)}\n`;
+    writeFileSync(join(dataRoot, OBSERVATIONS_FILE), legacy);
+    const recorded = appendDelivery(delivery, { dataRoot });
+    const outcome = appendObservation(receiverOutcome(), { dataRoot });
+    assert.deepEqual(loadObservations({ dataRoot }).map((item) => item.id), [earlier.id, outcome.id]);
+    assert.deepEqual(loadDeliveries({ dataRoot }).map((item) => item.id), [recorded.id]);
+    assert.equal(readFileSync(join(dataRoot, OBSERVATIONS_FILE), "utf8"), legacy);
+    assert.equal(existsSync(join(dataRoot, DELIVERIES_FILE)), false);
+    assert.ok(existsSync(join(dataRoot, "pricing-book.journal", "jsonl-admission.json")));
+    assert.equal(loadObservations({ dataRoot }).filter((item) => item.id === earlier.id).length, 1);
+  });
+});
+
+test("accepted native error reports remain terminal attempts without fabricated receiver refusal", async () => {
+  const { withRegisterJudgments } = await import("../../src/dispatch/expected-resolution-pricing.mjs");
+  const { outcomeOf, marketJudgmentsIndexOf } = await import("@red-cup-engineering/organizing/enterprise/outcomes");
+  const { workResultFromSkillResult } = await import("@red-cup-engineering/organizing/work/schema");
+  const { skillError, skillSuccess } = await import("@red-cup-engineering/animating/becoming/doing/working/governing/skill");
+  const reportedResult = workResultFromSkillResult(skillError("Unresolvable", "Missing evidence", "recover source", "read the owner"));
+  const registered = { id: "delivery-one", ...delivery };
+  const make = (result, verdict = "accepted") => outcomeOf({
+    source: "work-discharge", lot: delivery.workLot, delivery: delivery.receipt,
+    provider: delivery.provider, judge: delivery.receiver, verdict, at: "2026-10-10T12:00:00Z", evidence: [delivery.receipt],
+    reportedResult: result, value: { amount: "4", currency: "USD", basis: "cost" },
+    market: { provider: delivery.provider, offer: delivery.selectedOffer, taskClass: delivery.taskClass, receipt: delivery.receipt },
+  });
+  const outcome = make(reportedResult);
+  const judgments = marketJudgmentsIndexOf([outcome, outcome], { at: outcome.at, digest: "fixture" }).judgments;
+  const joined = withRegisterJudgments([], judgments, [registered]);
+  assert.equal(joined.length, 1);
+  assert.equal(joined[0].outcome, "accepted");
+  assert.equal(joined[0].reportVerdict, "accepted");
+  assert.deepEqual(joined[0].reportedResult, reportedResult);
+  const expected = { receiverAcceptances: 0, receiverRefusals: 0, providerRefusals: 0, executionFailures: 1, successfulResolutions: 0, terminalResolutions: 1 };
+  assert.deepEqual(terminalResolutionCounts(delivery.provider, "t", joined), expected);
+  assert.deepEqual(terminalResolutionCounts(delivery.provider, "t", withRegisterJudgments(joined, judgments, [registered])), expected);
+  assert.equal(expectedResolutionPrice(exactAmount(80), delivery.provider, "t", joined).numerator, "240");
+  // An existing receiver observation is enriched in this read, never duplicated or rewritten.
+  const prior = { kind: "receiver-outcome", id: "original", ...receiverOutcome(), delivery: registered.id };
+  const enriched = withRegisterJudgments([prior], judgments, [registered]);
+  assert.equal(enriched.length, 1);
+  assert.equal(enriched[0].id, "original");
+  assert.equal(enriched[0].outcome, "accepted");
+  assert.equal(Object.hasOwn(prior, "reportedResult"), false);
+  assert.deepEqual(terminalResolutionCounts(delivery.provider, "t", enriched), expected);
+  const rejected = make(workResultFromSkillResult(skillSuccess({ answer: 42 })), "rejected");
+  const rejectedView = withRegisterJudgments([prior], [rejected], [registered]);
+  assert.deepEqual(terminalResolutionCounts(delivery.provider, "t", rejectedView), { receiverAcceptances: 0, receiverRefusals: 1, providerRefusals: 0, successfulResolutions: 0, terminalResolutions: 1 });
+});
+
+test("failed execution reports do not become common-order receiver refusal or disappear from the denominator", async () => {
+  const { incompleteOrders, withRegisterJudgments } = await import("../../src/dispatch/expected-resolution-pricing.mjs");
+  const { workResultFromSkillResult } = await import("@red-cup-engineering/organizing/work/schema");
+  const { skillError } = await import("@red-cup-engineering/animating/becoming/doing/working/governing/skill");
+  const reportedResult = workResultFromSkillResult(skillError("Unresolvable", "No result", "recover", "retry"));
+  const registered = { id: "delivery", ...delivery, order: "order-a" };
+  const judgment = { id: "report", at: "2026-10-10T12:00:00Z", source: "work-discharge", verdict: "rejected", reportedResult, market: { receipt: delivery.receipt } };
+  const joined = withRegisterJudgments([], [judgment], [registered]);
+  assert.equal(incompleteOrders(joined, { orderChannels: 1 }).size, 0);
+  assert.equal(terminalResolutionCounts(delivery.provider, "t", joined).terminalResolutions, 1);
+  assert.equal(terminalResolutionCounts(delivery.provider, "t", joined).receiverRefusals, 0);
+  assert.throws(() => withRegisterJudgments([], [{ ...judgment, reportedResult: { kind: "skill-error" } }], [registered]));
 });

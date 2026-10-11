@@ -22,7 +22,6 @@ export function inferenceMessage(input) {
     kind: "metroplat.inference.message",
     role: input.role,
     content: input.content,
-    ...(input.extensions === undefined ? {} : { extensions: jsonRecord(input.extensions, "inference message extensions") }),
     ...(input.name === undefined ? {} : { name: input.name }),
     ...(input.toolRequest === undefined ? {} : { toolRequest: input.toolRequest }),
     ...(input.toolMoves === undefined ? {} : { toolMoves: Object.freeze(input.toolMoves.map((move) => inferenceToolMove(move))) }),

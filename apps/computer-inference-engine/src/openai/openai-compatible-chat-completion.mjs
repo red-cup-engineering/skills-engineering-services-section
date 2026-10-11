@@ -103,7 +103,7 @@ export function configureOpenAiCompatibleRequest(config) {
  */
 export async function exchangeOpenAiCompatibleAssistantMessage(body, config, request = fetch) {
   const { exchangeProviderAssistantMessage } = await import("./provider-runtime.mjs");
-  const timeoutMs = config.timeoutMs === undefined ? 60_000 : config.timeoutMs;
+  const timeoutMs = config.timeoutMs === undefined ? null : config.timeoutMs;
   if (timeoutMs !== null && (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1)) throw new TypeError("timeoutMs must be a positive integer or null");
   return exchangeProviderAssistantMessage(body, { ...config, timeoutMs }, request, exchangeAssistantTransport);
 }

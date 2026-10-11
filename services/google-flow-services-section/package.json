@@ -26,6 +26,7 @@
     "@red-cup-engineering/http-services-section": "workspace:*",
     "@red-cup-engineering/google-drive-services-section": "workspace:*",
     "@red-cup-engineering/computer-inference-engine": "workspace:*",
-    "@red-cup-engineering/organizing": "workspace:*"
+    "@red-cup-engineering/organizing": "workspace:*",
+    "@red-cup-engineering/semiotic-eavt-services-section": "workspace:*"
   }
 }
