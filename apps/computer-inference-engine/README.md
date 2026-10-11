@@ -129,7 +129,7 @@ The check succeeds when both customer services and at least one inference
 provider present signed Agent Cards. Offline providers remain explicit in the
 report; they do not make another sovereign provider's offer disappear. A
 provider Agent Card that recently failed or errored is reported from the
-5-minute TTL liveness cache (`data/state/provider-card-liveness.json`,
+5-minute TTL liveness cache (`data/state/provider-card-liveness-state/provider-card-liveness.json`,
 `src/provider-card-liveness-cache.mjs`) rather than re-probed on every run;
 such an entry carries `cached: true` alongside its `reason`.
 
@@ -391,9 +391,9 @@ Settlement and witness-journal records live in `data/records/` and
 `createSemanticRecordJournal({ root })` in
 `src/witness-journal-settlement-store.mjs`. Expected-resolution-pricing
 observations and deliveries live in
-`data/state/expected-resolution-pricing/`, resolved through
+`data/state/expected-resolution-pricing-state/`, resolved through
 `@red-cup-engineering/data-custody-directory-service`'s
-`dataCustodyDirectory(root, "state", "expected-resolution-pricing")` in
+`dataCustodyDirectory(root, "state", "expected-resolution-pricing-state")` in
 `src/expected-resolution-pricing.mjs`. The pricing daemon's systemd unit is
 `content/deployments/bare-cedar-fog/expected-resolution-pricing.service`.
 

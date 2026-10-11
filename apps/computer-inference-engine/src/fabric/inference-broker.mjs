@@ -1,5 +1,7 @@
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, resolve } from "node:path";
+import { dataCustodyDirectory } from "@red-cup-engineering/data-custody-directory-service";
+import { inferenceStateRootOf } from "../dispatch/state-root.mjs";
 import { appendJsonl, createInferenceScheduler, observationsFromRecords, readJsonl } from "./inference-fabric.mjs";
 import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { sha256Hex } from "@red-cup-engineering/cryptographic-computer-data-engineering-services-section/integrity";
@@ -35,9 +37,12 @@ export function loadRegistry(path) {
   return { registry, registryPath, registryDigest };
 }
 
+/** A journal's lock is runtime state, kept in the state tier of the inference settlement as `<journal path with / as -->.lock`, never beside the journal. */
+export const journalLockPath = (journal, environment = process.env) => dataCustodyDirectory(inferenceStateRootOf(environment), "state", "broker-lock-state", `${resolve(journal).replace(/^\/+/u, "").replaceAll("/", "--")}.lock`);
+
 export function acquireJournalLock(journal, registryPath, recover) {
   if (!journal) return { release() {} };
-  const lock = `${journal}.lock`; mkdirSync(dirname(lock), { recursive: true });
+  const lock = journalLockPath(journal); mkdirSync(dirname(lock), { recursive: true });
   const acquire = () => { try { const descriptor = openSync(lock, "wx"); writeFileSync(descriptor, JSON.stringify({ pid: process.pid, journal, registry: registryPath, startedAt: new Date().toISOString() })); closeSync(descriptor); } catch (error) { if (error.code !== "EEXIST") throw error; let existing = {}; try { existing = JSON.parse(readFileSync(lock, "utf8")); } catch {} if (Number.isInteger(existing.pid) && pidAlive(existing.pid)) { const held = new Error(`journal lock held by live pid ${existing.pid}`); held.exitCode = 3; throw held; } if (!recover) { const stale = new Error("stale journal lock exists; rerun with --recover-stale-lock to archive it"); stale.exitCode = 3; throw stale; } renameSync(lock, `${lock}.stale-${Date.now()}`); acquire(); } };
   acquire(); let released = false;
   return { release() { if (!released) { released = true; try { unlinkSync(lock); } catch {} } } };

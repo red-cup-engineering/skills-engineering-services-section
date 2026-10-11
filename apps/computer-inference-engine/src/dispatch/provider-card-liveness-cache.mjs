@@ -6,10 +6,10 @@ const DEFAULT_TTL_MS = 5 * 60 * 1000;
 
 /**
  * @param {string} root - the owning package's absolute root directory
- * @returns {string} the durable liveness-cache file path under data/state/
+ * @returns {string} the durable liveness-cache file path, under the data/state/provider-card-liveness-state/ object
  */
 export function providerCardLivenessCachePath(root) {
-  return `${dataCustodyDirectory(root, "state")}/provider-card-liveness.json`;
+  return `${dataCustodyDirectory(root, "state", "provider-card-liveness-state")}/provider-card-liveness.json`;
 }
 
 /**

@@ -9,7 +9,7 @@ import { admitAgencyWorkResult } from "@red-cup-engineering/organizing/work/sche
 import { ORDER_CHANNELS } from "@red-cup-engineering/organizing/work/staffing";
 
 /** Locate pricing state beneath an already selected data directory. */
-export const expectedResolutionPricingRoot = (dataDirectory) => resolve(dataDirectory, "state", "expected-resolution-pricing");
+export const expectedResolutionPricingRoot = (dataDirectory) => resolve(dataDirectory, "state", "expected-resolution-pricing-state");
 
 /**
  * The node's inference pricing root: the deployment's own, else the one beside the node's web data

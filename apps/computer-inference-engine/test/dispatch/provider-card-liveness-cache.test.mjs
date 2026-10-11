@@ -62,5 +62,5 @@ test("a cached offline entry past the TTL re-probes", async () => {
 
 test("the cache file lands under data/state exactly", () => {
   const root = "/example/root";
-  assert.equal(providerCardLivenessCachePath(root), "/example/root/data/state/provider-card-liveness.json");
+  assert.equal(providerCardLivenessCachePath(root), "/example/root/data/state/provider-card-liveness-state/provider-card-liveness.json");
 });
