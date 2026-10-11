@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { nonnegativeHostRatio as exactNonnegativeAmount } from "@red-cup-engineering/metrologic/number/wire-ratio";
 import { canonicalJson as canonical } from "@red-cup-engineering/json-services-section/canonical-json";
 import { executionConfiguration, executionConfigurationIdentity } from "./sen-carrier.mjs";
-import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { ORDER_CHANNELS } from "@red-cup-engineering/organizing/work/staffing";
 
 /** Locate pricing state beneath an already selected data directory. */

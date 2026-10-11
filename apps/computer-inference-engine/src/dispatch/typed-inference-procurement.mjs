@@ -13,7 +13,7 @@ import {
   validateType,
 } from "@red-cup-engineering/computer-data-engineering-services-section/semiotic-expression-notation/typing";
 import { conformTerm } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/conformance";
-import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { jsonValueId } from "./sen-carrier.mjs";
 import { SOVEREIGN_CIRCUIT_INTERFACE_EXTENSION } from "@red-cup-engineering/a2a-services-section/circuit-interface";
 import { createInferenceMarketWitnessStore, createInferenceSettlementStore } from "./witness-journal-settlement-store.mjs";

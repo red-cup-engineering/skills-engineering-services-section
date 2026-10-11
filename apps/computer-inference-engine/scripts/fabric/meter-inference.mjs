@@ -5,7 +5,7 @@ import { conformTerm, conformTermBytes } from "@red-cup-engineering/computer-cod
 import { circuitInterfaceFromAgentCard, SOVEREIGN_CIRCUIT_INTERFACE_EXTENSION } from "@red-cup-engineering/a2a-services-section/circuit-interface";
 import { assayWitTransition, witTransitionAgentUrl } from "@red-cup-engineering/computer-inference-engine/fabric/effect-assay";
 import { effectBundle, effectBundleType } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/runtime";
-import { decodeSemantic } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { decodeSemantic } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { ACTIVITYSTREAMS_CONTEXT } from "@red-cup-engineering/activitypub-services-section/activitystreams";
 
 /**

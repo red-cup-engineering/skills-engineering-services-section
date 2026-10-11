@@ -6,7 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createServer as createNetServer } from "node:net";
 import test from "node:test";
-import { semanticBytes, semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticBytes, semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { circuitInterfaceFromAgentCard } from "@red-cup-engineering/a2a-services-section/circuit-interface";
 import { makeNiUri } from "@red-cup-engineering/uri-services-section/ni-uri";
 import { createA2aServer } from "@red-cup-engineering/a2a-services-section/a2a-server";

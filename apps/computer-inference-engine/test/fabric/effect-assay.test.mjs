@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 import { effectTerm } from "@red-cup-engineering/computer-code-engineering-services-section/semiotic-expression-notation/runtime";
-import { semanticId } from "@red-cup-engineering/computer-content-engineering-services-section/semiotic-content-address";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { artifactChecksum, assayWitTransition, completeEffect, proposeEffect, semanticBytesId, semanticJsonId, serveWitTransitionAssay, textNi } from "../../src/fabric/effect-assay.mjs";
 
 function minimalCell(overrides = {}) {
