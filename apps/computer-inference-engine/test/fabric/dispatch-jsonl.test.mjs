@@ -4,24 +4,26 @@ import { mkdtempSync, writeFileSync, readFileSync, rmSync, existsSync } from "no
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { journalLockPath } from "../../src/fabric/inference-broker.mjs";
 import { fileURLToPath } from "node:url";
 
 const cli = fileURLToPath(new URL("../../scripts/fabric/dispatch-jsonl.mjs", import.meta.url));
 test("batch CLI selects providers, expands roundtables, resumes, and releases failed-job locks", t => {
   const dir = mkdtempSync(join(tmpdir(), "inference-cli-"));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const env = { ...process.env, INFERENCE_WORK_LOT_STATE_ROOT: join(dir, "state") };
   const input = join(dir, "jobs.jsonl"), output = join(dir, "results.jsonl"), registry = join(dir, "registry.json");
   writeFileSync(registry, JSON.stringify({ endpoints: ["a", "b", "c"].map(id => ({ id, model: id, baseUrl: "http://127.0.0.1:1", auth: { mode: "none" } })) }));
   const job = { id: "review", messages: [{ role: "user", content: "Review" }] };
   writeFileSync(input, JSON.stringify(job) + "\n");
-  const run = (...flags) => spawnSync(process.execPath, [cli, "--input", input, "--output", output, "--registry", registry, "--providers", "a,c", "--roundtable", "--dry-run", ...flags], { encoding: "utf8", timeout: 10000 });
+  const run = (...flags) => spawnSync(process.execPath, [cli, "--input", input, "--output", output, "--registry", registry, "--providers", "a,c", "--roundtable", "--dry-run", ...flags], { encoding: "utf8", timeout: 10000, env });
   const first = run();
   assert.equal(first.status, 0, first.stderr);
   assert.deepEqual(readFileSync(output, "utf8").trim().split("\n").map(line => JSON.parse(line).id).sort(), ["review::a", "review::c"]);
   const resumed = run("--resume");
   assert.equal(resumed.status, 0, resumed.stderr);
   assert.equal(JSON.parse(resumed.stderr).input.skippedByResume, 2);
-  const realResume = spawnSync(process.execPath, [cli, "--input", input, "--output", output, "--registry", registry, "--providers", "a,c", "--roundtable", "--resume"], { encoding: "utf8", timeout: 10000 });
+  const realResume = spawnSync(process.execPath, [cli, "--input", input, "--output", output, "--registry", registry, "--providers", "a,c", "--roundtable", "--resume"], { encoding: "utf8", timeout: 10000, env });
   assert.equal(realResume.status, 1);
   assert.match(realResume.stderr, /execution mode changed/);
   writeFileSync(input, JSON.stringify({ ...job, messages: [{ role: "user", content: "Changed review" }] }) + "\n");
@@ -33,7 +35,8 @@ test("batch CLI selects providers, expands roundtables, resumes, and releases fa
   const refused = run();
   assert.equal(refused.status, 1);
   assert.match(refused.stderr, /no admitted preferred endpoint/);
-  assert.equal(existsSync(output + ".lock"), false);
+  assert.equal(existsSync(output + ".lock"), false, "no lock beside the journal");
+  assert.equal(existsSync(journalLockPath(output, env)), false, "the failed job released its lock in the state tier");
   rmSync(output);
   writeFileSync(input, JSON.stringify({ ...job, requiredCapabilities: ["not-offered"] }) + "\n");
   assert.equal(run().status, 1);

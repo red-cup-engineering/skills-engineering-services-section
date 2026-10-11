@@ -3,6 +3,7 @@ import JSNODE_JSON_DATA_0 from "../../content/openai/providers/catalog.json" wit
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { dataCustodyDirectory } from "@red-cup-engineering/data-custody-directory-service";
 import { spawn } from "node:child_process";
 import { setTimeout as pause } from "node:timers/promises";
 import { dispatchFreeFirstChatCompletion, runOpenAiCompatibleChatExchange, validateChatCompletionPacket, validateChatExchangeRecord } from "./openai-compatible-chat-completion.mjs";
@@ -20,6 +21,9 @@ import { runOllamaChatExchange, exchangeOllamaAssistantMessage } from "../ollama
  *  command-line agents, and Ollama's native chat. */
 import { runHordeTextExchange } from "../horde/text-exchange.mjs";
 const NATIVE_TRANSPORTS = Object.freeze({ "horde-text": runHordeTextExchange, "antigravity-print": runAntigravityPrintExchange, "claude-print": runClaudePrintExchange, "codex-exec": runCodexExecExchange, "ollama-chat": runOllamaChatExchange });
+
+/** A provider's request-slot lock and last-admission reading are runtime state: `data/state/provider-capacity-state/`. */
+const providerCapacityPath = (root, file) => dataCustodyDirectory(root, "state", "provider-capacity-state", file);
 
 const catalog = structuredClone(JSNODE_JSON_DATA_0);
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
@@ -180,7 +184,7 @@ export async function runProviderExchange(provider, packet, { resourceRoot, env 
     const allowance = providerAllowance(row);
     const exchange = allowance ? () => drawProviderAllowance(row, allowance, resolvedPacket, env, run) : run;
     const record = policy.capacityLockFile
-      ? await withProviderCapacity(resolve(env[policy.capacityLockEnvVar] ?? join(root, "data", policy.capacityLockFile)), exchange, { signal, wait: policy.capacityWait !== false })
+      ? await withProviderCapacity(resolve(env[policy.capacityLockEnvVar] ?? providerCapacityPath(root, policy.capacityLockFile)), exchange, { signal, wait: policy.capacityWait !== false })
       : await exchange();
     return finalizeProviderExchange(record, policy, root);
   }
@@ -287,7 +291,7 @@ export async function exchangeProviderAssistantMessage(body, config, request, tr
     }
   }
   const execute = async () => {
-    if (policy.rateStateFile) await admitRateState({ statePath: join(root, "data", policy.rateStateFile), minimumIntervalMilliseconds: Number(env[policy.minimumIntervalEnvVar] ?? policy.minimumIntervalMilliseconds), signal: effective.signal });
+    if (policy.rateStateFile) await admitRateState({ statePath: providerCapacityPath(root, policy.rateStateFile), minimumIntervalMilliseconds: Number(env[policy.minimumIntervalEnvVar] ?? policy.minimumIntervalMilliseconds), signal: effective.signal });
     // Account/slot waiting is host admission time. Bound provider HTTP work only after admission.
     const timeoutSignal = effective.timeoutMs == null ? undefined : AbortSignal.timeout(effective.timeoutMs);
     const admitted = { ...effective, signal: effective.signal && timeoutSignal
@@ -314,7 +318,7 @@ export async function exchangeProviderAssistantMessage(body, config, request, tr
     }
   };
   return policy.capacityLockFile
-    ? withProviderCapacity(resolve(env[policy.capacityLockEnvVar] ?? join(root, "data", policy.capacityLockFile)), execute, { signal: effective.signal })
+    ? withProviderCapacity(resolve(env[policy.capacityLockEnvVar] ?? providerCapacityPath(root, policy.capacityLockFile)), execute, { signal: effective.signal })
     : execute();
 }
 
