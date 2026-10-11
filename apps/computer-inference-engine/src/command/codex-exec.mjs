@@ -30,7 +30,7 @@ export function redactDiagnostic(text, env = process.env) {
  * @param {{executable?: string, env?: object, timeoutMs?: number}} [options]
  * @returns an exchange record; a completion's raw carries { completedSearches }
  */
-export async function runCodexExecExchange(packet, { executable = process.env.CODEX_BIN ?? "codex", env = process.env, timeoutMs = 20 * 60_000, signal } = {}) {
+export async function runCodexExecExchange(packet, { executable = process.env.CODEX_BIN ?? "codex", env = process.env, timeoutMs = null, signal } = {}) {
   const record = exchangeRecorder(packet, "codex-cli-invocations");
   const binary = resolveExecutable(executable, env);
   if (!binary) return record.refusal(`the \`${executable}\` binary was not found; no subprocess was spawned`, ["codex-binary-absent"], 0);

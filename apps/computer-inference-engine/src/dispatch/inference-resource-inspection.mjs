@@ -100,6 +100,7 @@ export async function inspectInferenceResources(input = {}, {
     eligibleProviders: providers.filter(({ reasons }) => reasons.length === 0).length,
     eligibleAccountEntitlements: accountEntitlements.filter(({ reasons }) => reasons.length === 0).length,
     reservationAccountsObserved: accounts.size,
+    inferenceRequests: 0,
     providerReadings: inferenceProviderReadings(),
   };
 }

@@ -29,7 +29,7 @@ function demand(overrides = {}) {
     outputContract: { identity: "ni:///sha-256;output" },
     measures: {},
     routePolicy: {
-      preferenceOrder: [["consideration"], ["resources"], ["latency"], ["acceptance-probability"]],
+      preferenceOrder: [["consideration-per-acceptance"], ["resources"], ["acceptance-probability"]],
       considerationPreference: [],
       considerationCeilings: [],
       resourceCeilings: [],

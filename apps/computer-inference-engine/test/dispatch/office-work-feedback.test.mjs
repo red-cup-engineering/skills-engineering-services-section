@@ -1,3 +1,4 @@
+import { configuredInferenceCustomer } from "../../src/dispatch/inference-dispatch-mcp-contract.mjs";
 import { localInferenceWorkLotSource } from "../../src/dispatch/local-inference-work-lot-source.mjs";
 import { executionConfigurationIdentity } from "../../src/dispatch/sen-carrier.mjs";
 import assert from "node:assert/strict";
@@ -6,9 +7,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { appendDelivery, loadDeliveries, loadObservations, withRegisterJudgments, terminalResolutionCounts } from "../../src/dispatch/expected-resolution-pricing.mjs";
+import { appendDelivery, loadObservations } from "../../src/dispatch/expected-resolution-pricing.mjs";
 import { workInferenceCoordinate } from "../../src/dispatch/work-inference-coordinate.mjs";
-import { outcomeJournal, outcomeOf, marketJudgmentsIndexOf } from "@red-cup-engineering/organizing/enterprise";
 import { inferenceWorkLotSource, BOUNDED_INFERENCE_SERVICE_MODEL, METROPLAT_INFERENCE_MARKET_CUSTOMER, officeWorkInferenceTaskClass } from "@red-cup-engineering/computer-inference-engine/dispatch/inference-work-lot-source";
 import { executeAgencyWorkProvider } from "@red-cup-engineering/feltos/work/agency-work-provider";
 import { inferenceProviderOperation, witnessedInferenceEncounterPort } from "@red-cup-engineering/feltos/agents/inference/rpc";
@@ -53,7 +53,7 @@ function fixture(root, source) {
       model: BOUNDED_INFERENCE_SERVICE_MODEL, inference, now: () => at, maxTurns: 2 } };
 }
 
-for (const lane of ["network", "local"]) test(`${lane} terminal delivery survives witnessed execution and receiving feedback addresses it once`, async () => {
+for (const lane of ["network", "local"]) test(`${lane} terminal delivery retains source coordinates without fabricating customer acceptance`, async () => {
   const root = mkdtempSync(path.join(tmpdir(), "metroplat-receiving-feedback-"));
   try {
     const work = "fixture-office-work";
@@ -77,7 +77,7 @@ for (const lane of ["network", "local"]) test(`${lane} terminal delivery survive
       };
     };
     const sourceOf = (mismatch = false) => lane === "local"
-      ? localInferenceWorkLotSource({ now: () => at, dispatch: (request) => deliver(request, mismatch) })
+      ? localInferenceWorkLotSource({ dataRoot: root, now: () => at, dispatch: (request) => deliver(request, mismatch) })
       : inferenceWorkLotSource({
         agentUrl: "http://127.0.0.1:8800/.well-known/agent-card.json", desiredUse: "fixture-office-inquiry", purpose: "demonstrate independently received office inference", now: () => at,
         request: async ({ request }) => ({ exchange: { inputNi: requestNi }, resultNi,
@@ -93,42 +93,24 @@ for (const lane of ["network", "local"]) test(`${lane} terminal delivery survive
     assert.notEqual(receipt, resultNi, "delivery is distinct from exchange custody");
     assert.equal(loadObservations({ dataRoot: root }).length, 0, "delivery and execution cannot accept their own product");
 
-    // Exercise the post-admission projection, whose caller separately enforces
-    // the independent receiver gate. This fixture is not a production discharge.
+    // Office receiving retains delivery provenance. It supplies no inference customer
+    // acceptance; the source coordinate is a read-only observation.
     const projection = {
       proposal: { ...outcome, work }, discharge: { id: "fixture-independent-discharge" },
-      pricingRoot: root, workProvider: setup.options.workerId, customer: METROPLAT_INFERENCE_MARKET_CUSTOMER,
+      pricingRoot: root, workProvider: setup.options.workerId,
+      customer: lane === "local" ? configuredInferenceCustomer() : METROPLAT_INFERENCE_MARKET_CUSTOMER,
     };
     const citationOnly = { ...projection, proposal: { ...projection.proposal, result: { kind: "skill-result", value: { output: "citation only" } } } };
     assert.equal(workInferenceCoordinate(citationOnly), undefined);
     const wrongDelivery = { ...projection, proposal: { ...projection.proposal, result: { kind: "skill-result", value: { ...outcome.result.value, inferenceDelivery: { ...outcome.result.value.inferenceDelivery, workLot: "urn:fixture:other-lot" } } } } };
     assert.equal(workInferenceCoordinate(wrongDelivery), undefined);
-    const market = workInferenceCoordinate(projection);
-    assert.equal(market.receipt, receipt);
-    const journal = outcomeJournal(root);
-    const accepted = outcomeOf({
-      source: "work-discharge", lot: item.scope, delivery: "urn:fixture:work-result-proposal",
-      provider: "fixture-producing-office", judge: "fixture-independent-office",
-      verdict: "accepted", at, evidence: ["fixture-independent-discharge"], market,
-    });
-    assert.equal(journal.record(accepted), 1);
-    assert.equal(journal.record(accepted), 0, "one judgment is recorded once");
-    const pricing = () => withRegisterJudgments(loadObservations({ dataRoot: root }),
-      marketJudgmentsIndexOf(journal.read()).judgments, loadDeliveries({ dataRoot: root }));
-    const [observed] = pricing();
-    assert.equal(observed.outcome, "accepted");
-    assert.equal(observed.receipt, receipt);
-    assert.equal(observed.evidence, accepted.id);
-    assert.equal(terminalResolutionCounts(market.provider, market.taskClass, pricing(), market.configuration).receiverAcceptances, 1);
-    const rejected = outcomeOf({
-      ...accepted, verdict: "rejected", at: "2026-09-08T13:00:00.000Z",
-      evidence: ["fixture-independent-rejection"], reason: "Requirement not satisfied.",
-    });
-    journal.record(rejected);
-    assert.equal(pricing()[0].outcome, "refused", "the latest independent rejection changes supplier evidence");
-    assert.equal(terminalResolutionCounts(market.provider, market.taskClass, pricing(), market.configuration).receiverAcceptances, 0);
-    assert.equal(loadObservations({ dataRoot: root }).length, 0, "receiving writes no competing pricing journal");
+    assert.equal(workInferenceCoordinate({ ...projection, customer: "urn:fixture:other-customer" }), undefined, "another customer cannot claim this delivery");
+    const coordinate = workInferenceCoordinate(projection);
+    assert.deepEqual(coordinate, { provider: configuration.provider, offer: "urn:fixture:offer",
+      taskClass: officeWorkInferenceTaskClass(work), receipt, configuration: configurationIdentity });
+    assert.deepEqual(workInferenceCoordinate(projection), coordinate, "source replay retains the same coordinate");
     const malformed = await executeAgencyWorkProvider({ ...item, scope: "work-item:malformed-feedback-fixture" }, { ...setup.options, inference: fixture(root, sourceOf(true)).options.inference });
     assert.equal(malformed.result.kind, "skill-error", "a delivery bound to another lot cannot become a finding");
+    assert.equal(loadObservations({ dataRoot: root }).length, 0, "office receiving and source replay write no inference customer outcome");
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

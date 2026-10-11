@@ -59,6 +59,7 @@
     "./media/account-artifact-capacity": "./src/media/account-artifact-capacity.mjs",
     "./media/artifact-work": "./src/media/artifact-work.mjs",
     "./media/allowance-ledger": "./src/media/allowance-ledger.mjs",
+    "./media/ledger-journal": "./src/media/ledger-journal.mjs",
     "./media/subscription-allowances": "./src/media/subscription-allowances.mjs",
     "./media/allowance-book": "./src/media/allowance-book.mjs",
     "./media/resource-prices": "./src/media/resource-prices.mjs",
@@ -91,6 +92,7 @@
     "./dispatch/inference-source-kind": "./src/dispatch/inference-source-kind.mjs",
     "./dispatch/source-selection": "./src/dispatch/source-selection.mjs",
     "./dispatch/work-inference-coordinate": "./src/dispatch/work-inference-coordinate.mjs",
+    "./dispatch/accepted-work-outcome": "./src/dispatch/accepted-work-outcome.mjs",
     "./dispatch/provider-model-catalog": "./src/dispatch/provider-model-catalog.mjs",
     "./dispatch/provider-availability": "./src/dispatch/provider-availability.mjs",
     "./dispatch/tools": "./src/dispatch/tools.mjs",
@@ -120,7 +122,8 @@
     "./tokens/usage-observations": "./src/tokens/usage-observations.mjs",
     "./openai/compatible-http-client": "./src/openai/compatible-http-client.mjs",
     "./openai/pricing/operations": "./src/openai/pricing/operations.mjs",
-    "./dispatch/operations": "./src/dispatch/operations.mjs"
+    "./dispatch/operations": "./src/dispatch/operations.mjs",
+    "./dispatch/work-placement": "./src/dispatch/decide-work-placement.mjs"
   },
   "bin": {
     "dispatch-chat-completion": "./scripts/openai/dispatch-chat-completion.mjs",
@@ -145,7 +148,8 @@
     "inference-allowance": "scripts/media/allowance-status.mjs"
   },
   "scripts": {
-    "test": "node --test \"test/**/*.test.mjs\""
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "test:legacy-sql": "node --test scripts/historical-ledger-receiving/test/*.test.mjs"
   },
   "dependencies": {
     "@red-cup-engineering/a2a-services-section": "workspace:*",
@@ -158,7 +162,6 @@
     "@red-cup-engineering/computer-content-engineering-services-section": "workspace:*",
     "@red-cup-engineering/computer-data-engineering-services-section": "workspace:*",
     "@red-cup-engineering/computer-serialized-content-engineering-services-section": "workspace:*",
-    "@red-cup-engineering/computer-media-engineering-services-section": "workspace:*",
     "@red-cup-engineering/computer-networking-engineering-services-section": "workspace:*",
     "@red-cup-engineering/computer-system-engine": "workspace:*",
     "@red-cup-engineering/computer-system-platform": "workspace:*",
@@ -186,10 +189,15 @@
     "@red-cup-engineering/uri-services-section": "workspace:*",
     "@red-cup-engineering/witness-journal-document-service": "workspace:*",
     "@red-cup-engineering/x402-services-section": "workspace:*",
-    "sharp": "0.35.4",
-    "@red-cup-engineering/computer-content-address-engineering-services-section": "workspace:*"
+    "sharp": "0.35.5",
+    "@red-cup-engineering/computer-content-address-engineering-services-section": "workspace:*",
+    "@red-cup-engineering/exact-number-data-service": "workspace:*"
   },
   "devDependencies": {
     "@red-cup-engineering/signgraph": "workspace:*"
-  }
+  },
+  "files": [
+    "**",
+    "!scripts/historical-ledger-receiving"
+  ]
 }

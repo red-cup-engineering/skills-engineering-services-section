@@ -107,7 +107,7 @@ export function requestAccountArtifactWork({ workLot, principal, capability, pro
     requiredExecutionClasses: ["interactive-account-entitlement", "asynchronous-artifact-provider"], idempotence: "idempotent",
     context: { identity: lot.id, authorityScope: "urn:scope:public-media-artifact", freshnessIdentity: `urn:freshness:${workLot}`, dataConstraints: [], custodyConstraints: [] },
     outputContract: { identity: outputIdentity }, measures: {},
-    routePolicy: { preferenceOrder: [["expiring-resource"], ["consideration-per-acceptance"], ["resources"], ["latency"], ["acceptance-probability"]], reuse: "forbid", unknownObservations: "prefer-observed", unknownAvailability: "refuse", considerationPreference: [], resourceCeilings: [] },
+    routePolicy: { preferenceOrder: [["expiring-resource"], ["consideration-per-acceptance"], ["resources"], ["acceptance-probability"]], reuse: "forbid", unknownObservations: "prefer-observed", unknownAvailability: "refuse", considerationPreference: [], resourceCeilings: [] },
   };
   const route = decideWorkPlacement({ demand, offers, evaluatedAt });
   if (route.disposition !== "selected") return Object.freeze({ disposition: route.disposition, packet: null, route });

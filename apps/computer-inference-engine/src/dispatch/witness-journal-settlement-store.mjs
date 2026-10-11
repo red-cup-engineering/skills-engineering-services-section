@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createSemanticRecordJournal } from "@red-cup-engineering/semiotic-eavt-services-section/record-semantic-record";
+import { inferenceStateRootOf } from "./state-root.mjs";
 
 const DEFAULT_ACTOR = "urn:ame:inference-work-lot-service";
 const CAIP2 = /^eip155:([1-9][0-9]*)$/u;
@@ -26,10 +27,12 @@ export function resolveLocalSettlementAccount(settlementRoot, {
   return Object.freeze({ actor, settlement: account });
 }
 
-function semanticStore({ settlementRoot, actor, caip2, settlement, objectKind }) {
+// The settlement root is read-only content (the account records); the journals are written under the
+// inference state root, never into the package.
+function semanticStore({ settlementRoot, journalRoot = inferenceStateRootOf(), actor, caip2, settlement, objectKind }) {
   if (!settlementRoot) throw new Error("settlementRoot is required");
   const account = resolveLocalSettlementAccount(settlementRoot, { actor, caip2, settlement });
-  const journal = createSemanticRecordJournal({ root: settlementRoot, objectKind });
+  const journal = createSemanticRecordJournal({ root: journalRoot, objectKind });
   return Object.freeze({
     ...account,
     records: async (category) => journal.query({ category }).map(({ record }) => record),
@@ -46,12 +49,12 @@ function semanticStore({ settlementRoot, actor, caip2, settlement, objectKind })
   });
 }
 
-export async function createInferenceSettlementStore({ settlementRoot, actor = DEFAULT_ACTOR, caip2, settlement } = {}) {
-  return semanticStore({ settlementRoot, actor, caip2, settlement, objectKind: "inference-work-lot.semantic-record.v1" });
+export async function createInferenceSettlementStore({ settlementRoot, journalRoot, actor = DEFAULT_ACTOR, caip2, settlement } = {}) {
+  return semanticStore({ settlementRoot, ...(journalRoot === undefined ? {} : { journalRoot }), actor, caip2, settlement, objectKind: "inference-work-lot.semantic-record.v1" });
 }
 
 /** V2 is an append-only market witness vocabulary. V1 procurement summaries
  * are retained and are never reinterpreted as missing per-attempt evidence. */
-export async function createInferenceMarketWitnessStore({ settlementRoot, actor = DEFAULT_ACTOR, caip2, settlement } = {}) {
-  return semanticStore({ settlementRoot, actor, caip2, settlement, objectKind: "inference-work-lot.market-witness.v2" });
+export async function createInferenceMarketWitnessStore({ settlementRoot, journalRoot, actor = DEFAULT_ACTOR, caip2, settlement } = {}) {
+  return semanticStore({ settlementRoot, ...(journalRoot === undefined ? {} : { journalRoot }), actor, caip2, settlement, objectKind: "inference-work-lot.market-witness.v2" });
 }

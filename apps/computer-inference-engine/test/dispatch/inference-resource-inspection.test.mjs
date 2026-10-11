@@ -15,6 +15,7 @@ function fixture() {
 
 test("inspection exposes explicit dimensions and filters without leaking credentials or claiming liveness", async () => {
   const result = await inspectInferenceResources({ zeroCashOnly: true, requiredCapabilities: ["json-schema-output"] }, { loadDescriptors: fixture, now });
+  assert.equal(result.inferenceRequests, 0);
   assert.equal(result.eligibleProviders, 0);
   const provider = result.providers[0];
   assert.deepEqual(provider.reasons, ["missing-capability:json-schema-output", "zero-cash-entitlement-not-admitted"]);
@@ -67,6 +68,7 @@ test("MCP inspection admits no caller-owned authority, arbitrary path, or infere
   }
   const result = await invokeInspectInferenceResources({}, { loadDescriptors: fixture, now });
   assert.equal(result.isError, false);
+  assert.equal(result.structuredContent.inferenceRequests, 0);
 });
 
 test("routine MCP inspection keeps configured-model evidence; full enumeration is explicit", async () => {
@@ -94,6 +96,7 @@ test("routine MCP inspection keeps configured-model evidence; full enumeration i
   for (const key of ["type", "providerIdentity", "observedAt", "disposition", "source"]) assert.equal(brief[key], catalog[key]);
   const withoutCatalog = ({ modelCatalog, ...provider }) => provider;
   assert.deepEqual(withoutCatalog(ordinary.structuredContent.providers[0]), withoutCatalog(enumerated.structuredContent.providers[0]));
+  assert.equal(ordinary.structuredContent.inferenceRequests, 0);
   assert.equal(observations, 2);
   assert.equal(catalog.models.length, 1000);
   assert.ok(JSON.stringify(ordinary).length < JSON.stringify(enumerated).length / 20);

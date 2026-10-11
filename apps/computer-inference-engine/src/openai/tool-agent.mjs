@@ -52,6 +52,9 @@ function usageProjection(source) {
     promptTokens: Number.isInteger(usage?.prompt_tokens) ? usage.prompt_tokens : null,
     outputTokens: Number.isInteger(usage?.completion_tokens) ? usage.completion_tokens : null,
     totalTokens: Number.isInteger(usage?.total_tokens) ? usage.total_tokens : null,
+    // What the provider says this exchange cost, as it wrote it (OpenRouter's usage.cost); never derived.
+    reportedCost: typeof usage?.cost === "number" && Number.isFinite(usage.cost) && usage.cost >= 0 ? String(usage.cost)
+      : typeof usage?.cost === "string" && /^\d+(?:\.\d+)?(?:e-?\d+)?$/iu.test(usage.cost) ? usage.cost : null,
   });
 }
 
@@ -153,9 +156,11 @@ export async function executeBoundedToolAgent({
   onEvent = async () => {},
   tools = suppliedPlatform?.operations().map((operation) => ({ type: "function", function: { name: operation.id, description: operation.description, parameters: operation.domain.schema } })) ?? [],
   toolHandlers = {},
-  maximumToolRounds = 6,
-  maximumToolCalls = 16,
-  maximumOutputTokens = 512,
+  // No fixed counts: a turn runs until the model answers, the work's signal aborts, or the shared
+  // budget (the Resource the work is accounted against) refuses. A caller may still pass a bound.
+  maximumToolRounds = Infinity,
+  maximumToolCalls = Infinity,
+  maximumOutputTokens,
   responseFormat,
   signal,
   budget = createToolAgentBudget(),
@@ -170,9 +175,10 @@ export async function executeBoundedToolAgent({
   if (typeof exchangeAssistantMessage !== "function") throw new TypeError("one receiver-supplied normalized exchange is required");
   if (typeof model !== "string" || model.length === 0) throw new TypeError("provider model is required");
   if (!Array.isArray(messages) || messages.length === 0) throw new TypeError("one nonempty message sequence is required");
-  if (!Number.isInteger(maximumToolRounds) || maximumToolRounds < 0) throw new TypeError("maximumToolRounds must be a nonnegative integer");
-  if (!Number.isInteger(maximumToolCalls) || maximumToolCalls < 0) throw new TypeError("maximumToolCalls must be a nonnegative integer");
-  if (!Number.isInteger(maximumOutputTokens) || maximumOutputTokens < 1) throw new TypeError("maximumOutputTokens must be a positive integer");
+  const count = (value) => value === Infinity || (Number.isInteger(value) && value >= 0);
+  if (!count(maximumToolRounds)) throw new TypeError("maximumToolRounds must be a nonnegative integer or unbounded");
+  if (!count(maximumToolCalls)) throw new TypeError("maximumToolCalls must be a nonnegative integer or unbounded");
+  if (maximumOutputTokens !== undefined && !(Number.isInteger(maximumOutputTokens) && maximumOutputTokens >= 1)) throw new TypeError("maximumOutputTokens must be a positive integer when given");
   if (responseFormat !== undefined && (typeof responseFormat !== "object" || responseFormat === null || Array.isArray(responseFormat))) {
     throw new TypeError("responseFormat must be one OpenAI-compatible response_format object");
   }
@@ -222,12 +228,12 @@ export async function executeBoundedToolAgent({
   for (let round = 0; ; round += 1) {
     if (signal?.aborted) return failureResidue({ provider, model: observedModel, invocations, exchanges, started, kind: "cancelled", reason: "receiver-cancelled" });
     // A request holds at most what the shared budget has left, and asks the provider for no more.
-    const hold = Math.min(maximumOutputTokens, budget.snapshot().outputTokens);
+    const hold = Math.min(maximumOutputTokens ?? Infinity, budget.snapshot().outputTokens ?? Infinity);
     if (hold < 1) return failureResidue({ provider, model: observedModel, invocations, exchanges, started, kind: "resource", reason: "shared-output-token-budget-exhausted" });
     if (!budget.reserve({ requests: 1, outputTokens: hold })) return failureResidue({ provider, model: observedModel, invocations, exchanges, started, kind: "resource", reason: "shared-request-budget-exhausted" });
     const remaining = budget.snapshot();
     const delegationAvailable = depth < maximumDepth && invocations.length < maximumToolCalls && round < maximumToolRounds
-      && remaining.toolCalls > 0 && remaining.requests > 0;
+      && (remaining.toolCalls ?? Infinity) > 0 && (remaining.requests ?? Infinity) > 0;
     const offeredTools = tools.filter((tool) => delegation === undefined || tool.function.name !== "delegate_inference" || delegationAvailable);
     const turnOfferedNames = new Set(offeredTools.map((tool) => tool.function.name));
     const exchange = await exchangeAssistantMessage({ messages: conversation, tools: offeredTools, maximumOutputTokens: hold });
@@ -237,12 +243,15 @@ export async function executeBoundedToolAgent({
       exchanges.push(Object.freeze({ finishReason: exchange.finishReason ?? null, usage: exchange.usage ?? { promptTokens: null, outputTokens: null, totalTokens: null },
         ...(exchange.message === undefined ? {} : { message: structuredClone(exchange.message) }) }));
     }
-    // Settle the hold to measured use: unmeasured output stays spent, an unanswered transport
-    // failure spent no provider request and no output.
+    // Settle the hold to measured use: an unanswered transport failure spent no provider request and
+    // no output; a provider's HTTP refusal spent the request but returned no completion, which is its
+    // own statement of the output it made (none); otherwise unmeasured output stays spent.
     const measuredOutput = exchange?.usage?.outputTokens;
+    const refusedByStatus = !answered && exchange?.cause?.kind === "http";
     budget.release?.(!answered && exchange?.cause?.kind === "transport"
       ? { requests: 1, outputTokens: hold }
-      : { outputTokens: Number.isSafeInteger(measuredOutput) && measuredOutput >= 0 ? Math.max(0, hold - measuredOutput) : 0 });
+      : refusedByStatus ? { outputTokens: hold }
+        : { outputTokens: Number.isSafeInteger(measuredOutput) && measuredOutput >= 0 ? Math.max(0, hold - measuredOutput) : 0 });
     if (!exchange?.ok) return failureResidue({ provider, model: observedModel, invocations, exchanges, started, ...(exchange?.cause ?? { kind: "protocol", reason: "normalized-exchange-invalid" }) });
     const assistant = exchange.message;
     if (assistant === null || typeof assistant !== "object") {
@@ -347,8 +356,8 @@ export async function executeBoundedToolAgent({
  * @returns {Promise<object>}
  */
 export async function executeOpenAiCompatibleToolAgent({
-  endpoint, apiKey, auth, fetchImpl = fetch, timeoutMs = 60_000,
-  temperature = 0, maximumOutputTokens = 512, responseFormat, ...options
+  endpoint, apiKey, auth, fetchImpl = fetch, timeoutMs = null,
+  temperature = 0, maximumOutputTokens, responseFormat, ...options
 } = {}) {
   const transport = { providerId: options.provider, chatCompletionsUrl: endpoint, apiKey, auth, timeoutMs, signal: options.signal, ...(options.env === undefined ? {} : { env: options.env }) };
   configureOpenAiCompatibleRequest(transport);
@@ -358,7 +367,7 @@ export async function executeOpenAiCompatibleToolAgent({
       const result = await exchangeOpenAiCompatibleAssistantMessage({
         model: options.model, messages, ...(tools.length ? { tools, tool_choice: "auto" } : {}),
         ...(responseFormat !== undefined ? { response_format: responseFormat } : {}),
-        max_tokens: bound, temperature,
+        ...(Number.isFinite(bound) ? { max_tokens: bound } : {}), temperature,
       }, transport, fetchImpl);
       return normalizeAssistantExchange(result);
     },
@@ -372,7 +381,7 @@ export async function executeOpenAiCompatibleToolAgent({
  * @returns {Promise<object>} A ReceiverOwnedAssistantTurn or residue.
  */
 export async function executeOpenAiCompatibleAssistantTurn({
-  endpoint, apiKey, auth, fetchImpl = fetch, timeoutMs = 60_000, maximumOutputTokens = 512,
+  endpoint, apiKey, auth, fetchImpl = fetch, timeoutMs = null, maximumOutputTokens,
   chatCompletion, toolHandlers, delegation, ...options
 } = {}) {
   if (toolHandlers !== undefined && Object.keys(toolHandlers).length > 0) throw new TypeError("assistant turn mode does not admit receiver handlers");
@@ -398,28 +407,29 @@ export async function executeOpenAiCompatibleAssistantTurn({
  * Create one synchronously reserved budget shared by every attempt and child.
  * @param {{maximumRequests?: number, maximumToolCalls?: number, maximumOutputTokens?: number}} [limits]
  * @returns {{reserve: (units: object) => boolean, snapshot: () => object}}
- * @throws {TypeError} When any bound is not a nonnegative safe integer.
+ * @throws {TypeError} When any bound is neither a nonnegative safe integer nor unbounded.
  */
-export function createToolAgentBudget({ maximumRequests = 32, maximumToolCalls = 32, maximumOutputTokens = 262144 } = {}) {
+export function createToolAgentBudget({ maximumRequests = Infinity, maximumToolCalls = Infinity, maximumOutputTokens = Infinity } = {}) {
+  // A bound is the amount of a Resource the work is accounted for; Infinity is a Resource the
+  // caller does not bound here (its own accounting, an allowance window, governs it elsewhere).
   const remaining = { requests: maximumRequests, toolCalls: maximumToolCalls, outputTokens: maximumOutputTokens };
-  for (const [resource, value] of Object.entries(remaining)) {
-    if (!Number.isSafeInteger(value) || value < 0) {
-      throw new TypeError(`shared budget bounds must be nonnegative safe integers: ${resource} received ${typeof value === "number" ? String(value) : typeof value}`);
-    }
-  }
+  const amount = (value) => value === Infinity || (Number.isSafeInteger(value) && value >= 0);
+  if (Object.values(remaining).some((value) => !amount(value))) throw new TypeError("shared budget bounds must be nonnegative safe integers or unbounded");
   return Object.freeze({
     reserve(units) {
-      if (!units || Object.entries(units).some(([key, value]) => !Object.hasOwn(remaining, key) || !Number.isSafeInteger(value) || value < 0 || value > remaining[key])) return false;
-      for (const [key, value] of Object.entries(units)) remaining[key] -= value;
+      if (!units || Object.entries(units).some(([key, value]) => !Object.hasOwn(remaining, key) || !amount(value) || value > remaining[key])) return false;
+      for (const [key, value] of Object.entries(units)) if (remaining[key] !== Infinity) remaining[key] -= value;
       return true;
     },
     // A reservation is a hold, not a spend: what an exchange did not measurably use returns.
     release(units) {
       for (const [key, value] of Object.entries(units ?? {})) {
-        if (Object.hasOwn(remaining, key) && Number.isSafeInteger(value) && value > 0) remaining[key] += value;
+        if (Object.hasOwn(remaining, key) && remaining[key] !== Infinity && Number.isSafeInteger(value) && value > 0) remaining[key] += value;
       }
     },
-    snapshot() { return Object.freeze({ ...remaining }); },
+    // What is left of each bounded Resource. An unbounded one has no amount left to state, so it is
+    // absent: a snapshot is evidence (identified as JSON content), and no JSON number is unbounded.
+    snapshot() { return Object.freeze(Object.fromEntries(Object.entries(remaining).filter(([, value]) => value !== Infinity))); },
   });
 }
 

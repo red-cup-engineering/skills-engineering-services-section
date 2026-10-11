@@ -1,11 +1,10 @@
-import { DatabaseSync } from "node:sqlite";
-import { mkdirSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 import { admitWorkResourceBinding, createWorkResourceReservations, workResourceAccountKey } from "../dispatch/work-placement/resource-reservations.mjs";
 import { jsonValueId } from "../dispatch/sen-carrier.mjs";
 import { admitAccountArtifactObservation, artifactUnits } from "./account-artifact-work.mjs";
+import { openLedgerJournal } from "./ledger-journal.mjs";
 
 const quantity = (value) => ({ numerator: String(value), denominator: "1" });
 /** One host-wide store, so every consumer of an account draws from the same windows. */
@@ -42,27 +41,29 @@ function bindingOf(value) {
   };
 }
 
-function openStore(path) {
-  if (typeof path !== "string" || !path.trim()) throw new TypeError("account capacity store path is required");
-  mkdirSync(dirname(path), { recursive: true });
-  const db = new DatabaseSync(path);
-  db.exec(`PRAGMA busy_timeout = 5000;
-    CREATE TABLE IF NOT EXISTS account_capacity (key TEXT PRIMARY KEY, version INTEGER NOT NULL, value TEXT NOT NULL);`);
-  const read = db.prepare("SELECT version, value FROM account_capacity WHERE key = ?");
-  const insert = db.prepare("INSERT OR IGNORE INTO account_capacity (key, version, value) VALUES (?, 1, ?)");
-  const update = db.prepare("UPDATE account_capacity SET version = version + 1, value = ? WHERE key = ? AND version = ?");
+/**
+ * The capacity store is a semantic-record journal of account windows: each compare-and-set that
+ * goes through appends the window's next version, and the highest version recorded for a key is the
+ * window as it stands. The check and the append run under the journal's writer lock. Historical custody requires explicit offline receiving.
+ */
+const OBJECT_KIND = "inference.account-capacity";
+/** The store one capacity path names: `get(key)` and `compareAndSet(key, expectedVersion, value)`. */
+export function openAccountArtifactCapacityStore(path) {
+  const journal = openLedgerJournal(path, OBJECT_KIND);
+  const current = (key) => journal.read("window").filter((row) => row.key === key).reduce((top, row) => (top === null || row.version > top.version ? row : top), null);
   return {
-    close: () => db.close(),
+    close: () => {},
     get: async (key) => {
-      const row = read.get(key);
-      return row ? { ...JSON.parse(row.value), version: row.version } : null;
+      const row = current(key);
+      return row ? { ...row.value, version: row.version } : null;
     },
-    compareAndSet: async (key, expectedVersion, value) => {
-      const serialized = JSON.stringify(value);
-      const changes = expectedVersion === null ? insert.run(key, serialized).changes : update.run(serialized, key, expectedVersion).changes;
-      if (changes !== 1) throw new Error("account-capacity-conflict");
-      return { version: expectedVersion === null ? 1 : expectedVersion + 1 };
-    },
+    compareAndSet: async (key, expectedVersion, value) => journal.exclusively(() => {
+      const version = current(key)?.version ?? null;
+      if (version !== expectedVersion) throw new Error("account-capacity-conflict");
+      const next = expectedVersion === null ? 1 : expectedVersion + 1;
+      journal.record("window", { key, version: next, value: JSON.parse(JSON.stringify(value)) });
+      return { version: next };
+    }),
   };
 }
 
@@ -104,7 +105,7 @@ async function currentBinding(store, candidate, action) {
 /** Inspect currently uncommitted account capacity after local holds and settlements. */
 export async function observeAccountArtifactCapacity(value, { storePath, evaluatedAt = new Date().toISOString() }) {
   const observation = admitAccountArtifactObservation(value);
-  const store = openStore(storePath);
+  const store = openAccountArtifactCapacityStore(storePath);
   try {
     const selected = await currentBinding(store, admitWorkResourceBinding(bindingOf(observation)), "reserve");
     if (selected.reason) return { disposition: "refused", reason: selected.reason };
@@ -118,7 +119,7 @@ export async function transitionAccountArtifactCapacity(packet, observations, { 
   const observation = observationFor(packet, observations);
   if (action === "settle" && (!Number.isSafeInteger(unitsSpent) || unitsSpent < 0 || unitsSpent > packet.quotedUnits)) throw new TypeError("spent units must fit the reserved amount");
   if (["reserve", "attempt"].includes(action) && (Date.parse(evaluatedAt) < Date.parse(observation.observedAt) || Date.parse(evaluatedAt) >= Math.min(Date.parse(observation.validUntil), Date.parse(observation.expiresAt)))) return refusal(packet, "resource-availability-evidence-not-current");
-  const store = openStore(storePath);
+  const store = openAccountArtifactCapacityStore(storePath);
   try {
     const selected = await currentBinding(store, admitWorkResourceBinding(bindingOf(observation)), action);
     if (selected.reason) return refusal(packet, selected.reason);

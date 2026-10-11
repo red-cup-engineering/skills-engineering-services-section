@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { a2aResultMetadata, a2aResultParts, bearerHeaderFromFile, sendMessage } from "@red-cup-engineering/a2a-services-section/a2a-client";
+import { a2aResultMetadata, a2aResultParts, bearerHeaderFromFile, sendMessage, getTask, TASK_STATE, isTerminalTaskState } from "@red-cup-engineering/a2a-services-section/a2a-client";
 import { discoverValidatedAgentCard, extractSenPart, resumeSenTask, senPart, sendSenTask } from "@red-cup-engineering/a2a-services-section/sen-part";
 import { SOVEREIGN_CIRCUIT_INTERFACE_EXTENSION, circuitInterfaceFromAgentCard } from "@red-cup-engineering/a2a-services-section/circuit-interface";
 import { decodeJsonValue, identifyJsonValue, jsonValueId } from "./sen-carrier.mjs";
@@ -10,7 +10,7 @@ const resultParts = a2aResultParts;
 
 /** The market's fire-and-forget submission: hires the provider and returns
  * whatever it answers with -- a completed Message or a still-nonterminal
- * Task -- without polling it to a terminal state the way sendSenTask does.
+ * Task -- without waiting for generation to finish.
  * a2a-services-section's sen-part.mjs deliberately carries no equivalent
  * (its own durable outbound-custody idempotency records were dropped with
  * it); this is that same connect-then-send step, kept local to the one
@@ -19,7 +19,7 @@ async function submitSenTask({ agentUrl, message, requireSignature = false, bear
   const input = extractSenPart(message.parts);
   const agentCard = await discoverValidatedAgentCard(agentUrl, { requireSignature, signal });
   const headers = bearerTokenFile ? bearerHeaderFromFile(bearerTokenFile) : {};
-  const task = await sendMessage(agentUrl, message, { headers, signal });
+  const task = await sendMessage(agentUrl, message, { headers, signal, configuration: { returnImmediately: true } });
   return { agentCard, taskId: task?.id, inputNi: input.ni, task };
 }
 
@@ -37,7 +37,7 @@ function attemptMessageId(attemptKey) {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
-function requestMessage(request, attemptKey) {
+export function requestMessage(request, attemptKey) {
   const bytes = requestBytes(request);
   return {
     bytes,
@@ -108,7 +108,7 @@ export async function resumeInferenceWorkLot({ agentUrl, taskId, inputNi, signal
     requireSignature: true,
     ...(signal ? { signal } : {}),
   });
-  // resumeSenTask polls the task by id alone and carries no memory of the
+  // resumeSenTask reads the task once by id and carries no memory of the
   // original request's input coordinate; the caller already holds it from
   // when it first submitted the task, so it is restored here for
   // settleInferenceExchange's request/result binding check.
@@ -242,4 +242,64 @@ export async function requestInferenceWorkBatch(jobs, options) {
   }));
   if (options.signal?.aborted) throw aborted(options.signal.reason);
   return records;
+}
+
+// read a task once and return the validated agent card and task object
+async function readSenTask({ agentUrl, taskId, signal }) {
+  if (typeof agentUrl !== "string" || !/^https?:\/\//u.test(agentUrl))
+    throw new Error("one absolute inference‑work market Agent Card URL is required");
+  if (typeof taskId !== "string" || taskId.trim() === "")
+    throw new Error("a non‑empty taskId string is required");
+
+  const agentCard = await discoverValidatedAgentCard(agentUrl, { requireSignature: true, signal });
+  const task = await getTask(agentUrl, taskId, { signal });
+  return { agentCard, task };
+}
+
+// observe the state of an already‑submitted inference work‑lot task (no polling)
+export async function observeInferenceWorkLot({ agentUrl, taskId, inputNi, customer, signal, read = readSenTask }) {
+  // argument validation
+  if (typeof agentUrl !== "string" || !/^https?:\/\//u.test(agentUrl))
+    throw new Error("one absolute inference‑work market Agent Card URL is required");
+  if (typeof taskId !== "string" || taskId.trim() === "")
+    throw new Error("a non‑empty taskId string is required");
+  if (typeof inputNi !== "string" || inputNi.trim() === "")
+    throw new Error("a non‑empty input NI string is required");
+  if (typeof customer !== "string" || customer.trim() === "")
+    throw new Error("a non‑empty customer URI string is required");
+
+  // read the task exactly once
+  const { agentCard, task } = await read({ agentUrl, taskId, signal });
+  if (!task || task.id !== taskId) throw new Error("retrieved task does not match the requested taskId");
+
+  // validate the original request appears as the first USER message
+  const firstUserMsg = (Array.isArray(task.history) ? task.history : []).find(msg => msg.role === "ROLE_USER");
+  if (!firstUserMsg) throw new Error("task history lacks a USER request message");
+  const extracted = extractSenPart(firstUserMsg.parts);
+  if (extracted.ni !== inputNi) throw new Error("the input NI in the task history does not match the supplied inputNi");
+
+  const decoded = decodeJsonValue(extracted.bytes);
+  const request = admitInferenceWorkRequest(decoded.value);
+  if (request.customer !== customer) throw new Error("the request's customer URI does not match the supplied customer");
+
+  // provider and state
+  const provider = circuitInterfaceFromAgentCard(agentCard);
+  const state = task.status?.state;
+  if (!Object.values(TASK_STATE).includes(state))
+    throw new Error("task.status.state is not a recognized TASK_STATE value");
+
+  // non‑terminal
+  if (!isTerminalTaskState(state)) {
+    return Object.freeze({ outcome: "provider-task-pending", taskId, inputNi, provider, state });
+  }
+
+  // terminal but not completed
+  if (state !== TASK_STATE.COMPLETED) {
+    return Object.freeze({ outcome: "provider-task-terminal", taskId, inputNi, provider, state, task });
+  }
+
+  // completed
+  const output = extractSenPart(a2aResultParts(task));
+  const exchange = { result: task, outputNi: output.ni, inputNi, taskId, agentCard };
+  return Object.freeze({ outcome: "provider-task-delivered", taskId, inputNi, state, ...settleInferenceExchange(exchange) });
 }

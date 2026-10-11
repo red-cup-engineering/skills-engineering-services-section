@@ -5,34 +5,153 @@
 // surfaces are not modeled here.
 
 import { operation } from "@red-cup-engineering/computer-system-engine/rpc/operation";
-
+import { schemaFrom } from "@red-cup-engineering/json-schema-services-section/contracts";
 import { cut as cutWasiInvocation, grant as grantWasi, invoke as invokeWasi, preopen } from "@red-cup-engineering/playing/wasi";
 
 import { act, perceive } from "@red-cup-engineering/animating/becoming/doing/working/governing/agent";
 
-// The native wire codec owns these shapes and validators for every consumer.
-// Keep the public simulation names as bindings to that carrier.
-export {
-  openaiChatToolCallSchema as OpenAiChatToolCallSchema,
-  openaiChatMessageSchema as OpenAiChatMessageSchema,
-  openaiChatFunctionToolSchema as OpenAiChatFunctionToolSchema,
-  openaiResponseFormatSchema as OpenAiResponseFormatSchema,
-  openaiChatCompletionRequestSchema as OpenAiChatCompletionRequestSchema,
-  openaiChatCompletionSchema as OpenAiChatCompletionSchema,
-} from "./chat-completions/schema.mjs";
-import {
-  openaiChatToolCallContract as openAiChatToolCallCarrier,
-  openaiChatMessageContract as openAiChatMessageCarrier,
-  openaiChatFunctionToolContract as openAiChatFunctionToolCarrier,
-  openaiResponseFormatContract as openAiResponseFormatCarrier,
-  openaiChatCompletionRequestContract as openAiChatCompletionRequestCarrier,
-  openaiChatCompletionContract as openAiChatCompletionCarrier,
-} from "./chat-completions/schema.mjs";
-export {
-  openAiChatToolCallCarrier, openAiChatMessageCarrier,
-  openAiChatFunctionToolCarrier, openAiResponseFormatCarrier,
-  openAiChatCompletionRequestCarrier, openAiChatCompletionCarrier,
+const roleSchema = { enum: ["system", "user", "assistant", "tool"] };
+const finishReasonSchema = { enum: ["stop", "length", "tool_calls", "content_filter", "function_call"] };
+
+export const OpenAiChatToolCallSchema = {
+  $id: "animating/writing/openai-chat/tool-call",
+  title: "OpenAIChatToolCall",
+  type: "object",
+  required: ["id", "type", "function"],
+  additionalProperties: false,
+  properties: {
+    id: { type: "string", minLength: 1 },
+    type: { const: "function" },
+    function: {
+      type: "object",
+      required: ["name", "arguments"],
+      additionalProperties: false,
+      properties: {
+        name: { type: "string", minLength: 1 },
+        arguments: { type: "string" },
+      },
+    },
+  },
 };
+
+export const OpenAiChatMessageSchema = {
+  $id: "animating/writing/openai-chat/message",
+  title: "OpenAIChatMessage",
+  type: "object",
+  required: ["role", "content"],
+  additionalProperties: false,
+  properties: {
+    role: roleSchema,
+    content: { type: ["string", "null"] },
+    name: { type: "string" },
+    tool_call_id: { type: "string" },
+    tool_calls: { type: "array", items: OpenAiChatToolCallSchema },
+  },
+};
+
+export const OpenAiChatFunctionToolSchema = {
+  $id: "animating/writing/openai-chat/function-tool",
+  title: "OpenAIChatFunctionTool",
+  type: "object",
+  required: ["type", "function"],
+  additionalProperties: false,
+  properties: {
+    type: { const: "function" },
+    function: {
+      type: "object",
+      required: ["name"],
+      additionalProperties: false,
+      properties: {
+        name: { type: "string", minLength: 1 },
+        description: { type: "string" },
+        parameters: { type: "object", additionalProperties: {} },
+      },
+    },
+  },
+};
+
+export const OpenAiResponseFormatSchema = {
+  $id: "animating/writing/openai-chat/response-format",
+  title: "OpenAIResponseFormat",
+  type: "object",
+  required: ["type"],
+  additionalProperties: false,
+  properties: {
+    type: { enum: ["text", "json_object", "json_schema"] },
+    json_schema: {
+      type: "object",
+      required: ["name", "schema"],
+      additionalProperties: false,
+      properties: {
+        name: { type: "string", minLength: 1 },
+        description: { type: "string" },
+        strict: { type: "boolean" },
+        schema: { type: "object", additionalProperties: {} },
+      },
+    },
+  },
+};
+
+export const OpenAiChatCompletionRequestSchema = {
+  $id: "animating/writing/openai-chat/completion-request",
+  title: "OpenAIChatCompletionRequest",
+  type: "object",
+  required: ["model", "messages"],
+  additionalProperties: true,
+  properties: {
+    model: { type: "string", minLength: 1 },
+    messages: { type: "array", minItems: 1, items: OpenAiChatMessageSchema },
+    temperature: { type: "number" },
+    max_tokens: { type: "number" },
+    tools: { type: "array", items: OpenAiChatFunctionToolSchema },
+    tool_choice: {},
+    response_format: OpenAiResponseFormatSchema,
+    stream: { type: "boolean" },
+  },
+};
+
+export const OpenAiChatCompletionSchema = {
+  $id: "animating/writing/openai-chat/completion",
+  title: "OpenAIChatCompletion",
+  type: "object",
+  required: ["id", "object", "created", "model", "choices"],
+  additionalProperties: false,
+  properties: {
+    id: { type: "string", minLength: 1 },
+    object: { const: "chat.completion" },
+    created: { type: "integer", minimum: 0 },
+    model: { type: "string", minLength: 1 },
+    choices: {
+      type: "array",
+      items: {
+        type: "object",
+        required: ["index", "message", "finish_reason"],
+        additionalProperties: false,
+        properties: {
+          index: { type: "integer", minimum: 0 },
+          message: OpenAiChatMessageSchema,
+          finish_reason: finishReasonSchema,
+        },
+      },
+    },
+    usage: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        prompt_tokens: { type: "integer", minimum: 0 },
+        completion_tokens: { type: "integer", minimum: 0 },
+        total_tokens: { type: "integer", minimum: 0 },
+      },
+    },
+  },
+};
+
+export const openAiChatToolCallCarrier = schemaFrom(OpenAiChatToolCallSchema);
+export const openAiChatMessageCarrier = schemaFrom(OpenAiChatMessageSchema);
+export const openAiChatFunctionToolCarrier = schemaFrom(OpenAiChatFunctionToolSchema);
+export const openAiResponseFormatCarrier = schemaFrom(OpenAiResponseFormatSchema);
+export const openAiChatCompletionRequestCarrier = schemaFrom(OpenAiChatCompletionRequestSchema);
+export const openAiChatCompletionCarrier = schemaFrom(OpenAiChatCompletionSchema);
 
 export const OPENAI_CHAT_COMPLETIONS_VERB = "v1/chat/completions";
 export const OPENAI_CHAT_COMPLETIONS_PATH = "/v1/chat/completions";

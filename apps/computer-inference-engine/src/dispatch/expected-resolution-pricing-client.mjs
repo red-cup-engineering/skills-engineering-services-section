@@ -3,8 +3,8 @@
 // outcomes and refusals. The observations live under a pricing data root, read and written in
 // process through ./expected-resolution-pricing.mjs.
 import { pricingRootOf, appendDelivery, appendObservation, appendInferenceRefusal, appendReceiverOutcomeVoid, effectiveReceiverObservations, loadDeliveries, loadObservations, rankOffers, withRegisterJudgments } from "./expected-resolution-pricing.mjs";
-import { readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { appendFileSync, mkdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join } from "node:path";
 export { expectedResolutionPricingRoot, pricingRootOf } from "./expected-resolution-pricing.mjs";
 import { a2aExecutionConfiguration, executionConfigurationIdentity, jsonValueId } from "./sen-carrier.mjs";
 import { canonicalJson } from "@red-cup-engineering/json-services-section/canonical-json";
@@ -55,14 +55,45 @@ function indexedJudgments(path) {
 }
 
 /**
+ * Where judgments told at the source wait for the daily fold: a row file beside the index, one judgment
+ * a line, so an editor's verdict teaches routing at once rather than at the next readout. The readout's
+ * fold carries the same judgments (same ids, latest per delivery), so the two never disagree.
+ */
+export const liveJudgmentsPath = (indexPath = marketJudgmentsPath()) => (typeof indexPath === "string" && indexPath.trim() !== "" ? join(dirname(indexPath), "market-judgments-live.jsonl") : undefined);
+
+/** Tell one judgment of an inference delivery (`{id, source, verdict, at, judge, market}`) where routing reads it. */
+export function tellLiveMarketJudgment(judgment, { judgmentsPath = marketJudgmentsPath() } = {}) {
+  const path = liveJudgmentsPath(judgmentsPath);
+  if (path === undefined) return { told: 0, reason: "no-judgments-index" };
+  if (typeof judgment?.id !== "string" || typeof judgment?.market?.receipt !== "string" || !["accepted", "rejected"].includes(judgment.verdict)) return { told: 0, reason: "not-a-market-judgment" };
+  mkdirSync(dirname(path), { recursive: true });
+  const { id, source, verdict, at, judge, market } = judgment;
+  appendFileSync(path, `${JSON.stringify({ id, source, verdict, at, judge, market })}\n`);
+  return { told: 1, path };
+}
+
+function liveJudgments(path) {
+  if (path === undefined) return [];
+  try { statSync(path); } catch { return []; }
+  const judgments = [];
+  try {
+    for (const line of readFileSync(path, "utf8").split("\n")) {
+      if (line.trim() === "") continue;
+      try { judgments.push(JSON.parse(line)); } catch { /* a torn row is no judgment */ }
+    }
+  } catch (error) { console.error(`[inference-pricing] live judgments at ${path} unread: ${error instanceof Error ? error.message : String(error)}`); }
+  return judgments;
+}
+
+/**
  * What routing learns from: the pricing root's observations with the judgments other registers made
- * of the same deliveries, from the market-judgments index (`marketJudgmentsPath`). With no index,
- * the observations alone.
+ * of the same deliveries, from the market-judgments index (`marketJudgmentsPath`) and the live rows
+ * beside it. With neither, the observations alone.
  */
 export function loadRoutingObservations(pricingRoot, { judgmentsPath = marketJudgmentsPath() } = {}) {
   const observations = loadObservations({ dataRoot: pricingRoot });
   if (typeof judgmentsPath !== "string" || judgmentsPath.trim() === "") return observations;
-  const judgments = indexedJudgments(judgmentsPath);
+  const judgments = [...indexedJudgments(judgmentsPath), ...liveJudgments(liveJudgmentsPath(judgmentsPath))];
   return judgments.length === 0 ? observations : withRegisterJudgments(observations, judgments, loadDeliveries({ dataRoot: pricingRoot }));
 }
 

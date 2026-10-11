@@ -21,8 +21,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { admitAllowance, admitAllowanceEvidence, entityAllowanceBookOf } from "@red-cup-engineering/organizing/enterprise";
-import { allowanceLedgerDeclarations, allowanceLedgerPath, allowanceLedgerUse } from "./allowance-ledger.mjs";
-import { DatabaseSync } from "node:sqlite";
+import { allowanceLedgerDeclarations, allowanceLedgerEvidence, allowanceLedgerPath, allowanceLedgerUse } from "./allowance-ledger.mjs";
 
 const COMMODITY = /^[A-Z][A-Z0-9'._-]{0,22}[A-Z0-9]$/u;
 
@@ -123,11 +122,7 @@ function declarations(entries, units, opened) {
 
 /** Every reading the ledger holds for an allowance, admitted (the ledger keeps them as evidence). */
 function readingsOf(storePath, id) {
-  const db = new DatabaseSync(storePath, { readOnly: true });
-  try {
-    return admitAllowanceEvidence(db.prepare("SELECT entry FROM allowance_evidence WHERE allowance = ? ORDER BY at").all(id)
-      .map(({ entry }) => JSON.parse(entry)).filter((entry) => entry.type === "reading"));
-  } finally { db.close(); }
+  return admitAllowanceEvidence(allowanceLedgerEvidence(id, { storePath }).filter((entry) => entry.type === "reading"));
 }
 
 /**

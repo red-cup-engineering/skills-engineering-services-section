@@ -4,6 +4,7 @@ import { validateSchemaInstance } from "@red-cup-engineering/json-schema-service
 import { createInferenceSettlementStore } from "./witness-journal-settlement-store.mjs";
 import { jsonValueId } from "./sen-carrier.mjs";
 
+import { inferenceDataRootOf } from "./state-root.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ni = (value) => jsonValueId(value);
 function candidateText(procurement) { return procurement?.settlement?.candidate; }
@@ -219,7 +220,7 @@ function projectedTextCandidate(text, contract) {
   }
   return { value: text, source: text, carrier: "entire-text-output", problem: null, parsedCandidateCount: 1, validCandidateCount: 1 };
 }
-export async function assayTypedInferenceCandidate(procurement, { customer = "urn:ame:inference-work-lot-service", customerServices, settlementRoot = ROOT, dataRoot = resolve(settlementRoot, "data"), at = new Date().toISOString(), store: suppliedStore } = {}) {
+export async function assayTypedInferenceCandidate(procurement, { customer = "urn:ame:inference-work-lot-service", customerServices, settlementRoot = ROOT, dataRoot = inferenceDataRootOf(), at = new Date().toISOString(), store: suppliedStore } = {}) {
   if (procurement?.type !== "TypedSenInferenceProcurement" || procurement.disposition !== "candidate-pending-customer-assay") throw new Error("customer assay requires one pending typed inference candidate");
   if (!/^urn:/u.test(customer)) throw new Error("customer assay requires the owning customer's stable URN");
   const schema = procurement.demand?.outputContract?.schema;

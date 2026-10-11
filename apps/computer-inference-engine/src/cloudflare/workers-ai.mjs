@@ -25,7 +25,7 @@ async function boundedJson(response, limit) {
  * @param {object} body the model's input
  * @param {{env?: object, fetchImpl?: typeof fetch, timeoutMs?: number, responseLimit?: number}} [options]
  */
-export async function runWorkersAiModel(model, body, { env = process.env, fetchImpl = fetch, timeoutMs = 300_000, responseLimit = 12 * 1024 * 1024 } = {}) {
+export async function runWorkersAiModel(model, body, { env = process.env, fetchImpl = fetch, timeoutMs = null, responseLimit = 12 * 1024 * 1024 } = {}) {
   if (!/^@cf\/[\w.-]+\/[\w.-]+$/u.test(model)) throw new Error(`Invalid Workers AI model: ${model}`);
   if (typeof env.AI?.run === "function") {
     const result = await env.AI.run(model, body);
@@ -38,7 +38,7 @@ export async function runWorkersAiModel(model, body, { env = process.env, fetchI
     method: "POST",
     headers: { Authorization: `Bearer ${env.API_KEY_CLOUDFLARE_WORKERS_AI}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(timeoutMs),
+    ...(timeoutMs === null || timeoutMs === undefined ? {} : { signal: AbortSignal.timeout(timeoutMs) }),
   });
   const contentType = response.headers?.get?.("content-type") ?? "";
   if (response.ok && /^(?:audio|image)\//u.test(contentType)) return Buffer.from(await response.arrayBuffer());

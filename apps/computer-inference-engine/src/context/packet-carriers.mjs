@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
-import { admitSchema } from "@red-cup-engineering/json-schema-services-section/admit-schema";
+import { createSchema } from "@red-cup-engineering/json-schema-services-section";
 import { validateSchemaInstance } from "@red-cup-engineering/json-schema-services-section/validate-schema-instance";
 
 function schema(name) {
-  return admitSchema({ schema: JSON.parse(readFileSync(new URL(`../../content/context/schemas/${name}.schema.json`, import.meta.url), "utf8")) }).schema;
+  return createSchema(JSON.parse(readFileSync(new URL(`../../content/context/schemas/${name}.schema.json`, import.meta.url), "utf8"))).schema;
 }
 
 export const CONTEXT_PACKET_REQUEST_SCHEMA = schema("request");

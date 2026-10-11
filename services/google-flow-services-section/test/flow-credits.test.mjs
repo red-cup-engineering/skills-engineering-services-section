@@ -21,3 +21,25 @@ test("a balance is split daily-first and paced to spend the month by renewal", (
   assert.equal(report.counts.veo_3_1_t2v_fast.lo, 52);
   assert.equal(report.pace.creditsPerDay.lo, 217);
 });
+
+test("credit readings are kept in the one log; a JSONL left by an earlier release is admitted once and left unchanged", async () => {
+  const { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { appendCreditReading, readCreditJournal, creditJournalRoot } = await import("@red-cup-engineering/google-flow-services-section/flow-credits");
+  const dir = mkdtempSync(join(tmpdir(), "flow-credits-"));
+  try {
+    const path = join(dir, "credit-readings.jsonl");
+    const earlier = { at: "2026-10-03T01:27:40Z", balance: 1050, renewsAt: "2026-10-08T16:51:25.667Z" };
+    const legacy = `${JSON.stringify(earlier)}\n`;
+    writeFileSync(path, legacy);
+    const next = { at: "2026-10-04T01:27:40Z", balance: 990, renewsAt: "2026-10-08T16:51:25.667Z" };
+    appendCreditReading(next, path);
+    assert.deepEqual(readCreditJournal(path), [earlier, next]);
+    assert.equal(readFileSync(path, "utf8"), legacy);
+    assert.ok(existsSync(join(creditJournalRoot(path), "jsonl-admission.json")));
+    assert.deepEqual(readCreditJournal(path), [earlier, next]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

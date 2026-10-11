@@ -153,6 +153,12 @@ function workPlacementOf(call, options)
 
 /** One request policy for local and network delivery of the same inference call. */
 export function inferenceWorkLotRequest(call, options, customer = options.customer ?? METROPLAT_INFERENCE_MARKET_CUSTOMER) {
+  for (const name of ["excludeProviders", "requiredQualityTiers"]) {
+    const value = options[name];
+    if (value !== undefined && (!Array.isArray(value) || value.some(entry => typeof entry !== "string" || entry.trim() === ""))) {
+      throw new TypeError(`${name} must be an array of nonempty strings`);
+    }
+  }
   const placement = workPlacementOf(call, options);
   if (placement.reason !== undefined) return placement;
   const workPlacement = placement.workPlacement;
@@ -165,11 +171,13 @@ export function inferenceWorkLotRequest(call, options, customer = options.custom
     : Object.freeze(Object.fromEntries(Object.entries(wire).filter(([name]) => name !== "response_format")));
   return Object.freeze({
     objective: objectiveOf(call),
-    desiredUse: options.desiredUse,
+    ...(options.desiredUse === undefined ? {} : { desiredUse: options.desiredUse }),
     workType: options.workType ?? "chat",
     taskClass: call.caller?.transport === "agent-worker" && call.caller.work !== undefined
       ? officeWorkInferenceTaskClass(call.caller.work) : options.taskClass ?? "metroplat/bounded-inference",
     requiredCapabilities: Object.freeze([...(options.requiredCapabilities ?? [])]),
+    ...(options.requiredQualityTiers === undefined ? {} : { requiredQualityTiers: Object.freeze([...options.requiredQualityTiers]) }),
+    ...(options.excludeProviders === undefined ? {} : { excludeProviders: Object.freeze([...options.excludeProviders]) }),
     ...(options.difficulty === undefined ? {} : { difficulty: options.difficulty }),
     customer,
     workLotId: call.id,

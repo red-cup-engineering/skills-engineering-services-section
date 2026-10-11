@@ -92,12 +92,62 @@ export function encodeWitTransitionAssayRequest({ proposalCell, completionCell, 
   return witRecord({ type: "WitTransitionAssayRequest", proposalCell: witCell(proposalCell, "proposalCell"), completionCell: witCell(completionCell, "completionCell"), evidence });
 }
 
-/** A provider's receipt, admitted only when it is exact current semantic content. */
-export function decodeWitTransitionAssayReceipt(value) {
+/** The mathematical view of one request; this does not author a provider receipt.
+ * Measures may change, while the original provider contract's stable fields do not.
+ */
+function witTransitionOf(request) {
+  if (!isWitRecord(request) || request.type !== "WitTransitionAssayRequest") witFail("malformed-wit-transition", "WIT transition request must be exact addressed semantic JSON");
+  const proposal = witCell(request.proposalCell, "proposalCell"), completion = witCell(request.completionCell, "completionCell");
+  if (!NI.test(request.evidence ?? "")) witFail("malformed-wit-transition", "transition evidence must be semantic content identity");
+  const articulatedAxis = witnessBit(proposal.outcome, completion.outcome);
+  for (const field of STABLE_CELL_FIELDS) if (!isDeepStrictEqual(proposal[field], completion[field])) witFail("malformed-effect-transition", `${field} changed across one effect transition`);
+  if (completion.evidenceRoot !== request.evidence) witFail("malformed-effect-transition", "completion evidenceRoot must equal the WIT evidence identity");
+  return { proposal, completion, proposalId: witIdentified(proposal).token, completionId: witIdentified(completion).token, articulatedAxis };
+}
+
+function immutableRecord(value) {
+  if (value !== null && typeof value === "object") {
+    for (const child of Object.values(value)) immutableRecord(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+/** Admit the provider's semantic receipt and its FOUR-cover witness.
+ * With a request, also receive the exact transition commissioned by the caller.
+ * Content addressing proves byte/term identity; it alone proves neither this
+ * relation nor independent observation of the evidence's real-world referent.
+ */
+export function decodeWitTransitionAssayReceipt(value, { request } = {}) {
+  const keysAre = (record, keys) => record !== null && typeof record === "object" && !Array.isArray(record)
+    && Object.keys(record).sort().join(" ") === keys.split(" ").sort().join(" ");
+  if (!keysAre(value, "id kind profile provider request proposal completion evidence witness witnessTerm outcome")
+      || !keysAre(value.witnessTerm, "id type proposal completion evidence before after articulatedAxis")) {
+    witFail("malformed-wit-transition", "WIT receipt must contain only the provider profile's receipt and witness coordinates");
+  }
   if (!isWitRecord(value) || value.kind !== "WitTransitionAssayReceipt" || value.profile !== WIT_TRANSITION_ASSAY_PROFILE || !CAIP10.test(value.provider ?? "") || !isWitRecord(value.witnessTerm) || value.witness !== value.witnessTerm.id) {
     witFail("malformed-wit-transition", "WIT transition receipt is not exact current semantic content");
   }
-  return Object.freeze(value);
+  const witness = value.witnessTerm;
+  if (witness.type !== "WitTransitionWitness" || !NI.test(value.request ?? "")
+      || ["proposal", "completion", "evidence"].some(field => !NI.test(value[field] ?? "") || witness[field] !== value[field])) {
+    witFail("malformed-wit-transition", "WIT receipt and witness must name the same transition and evidence");
+  }
+  const before = witFour(witness.before, "witness.before"), after = witFour(witness.after, "witness.after");
+  if (witness.articulatedAxis !== witnessBit(before, after)
+      || !isDeepStrictEqual(witFour(value.outcome, "receipt.outcome"), after)) {
+    witFail("malformed-wit-transition", "WIT receipt outcome and articulated axis must describe its exact FOUR cover");
+  }
+  if (request !== undefined) {
+    const transition = witTransitionOf(request);
+    if (value.request !== request.id || value.proposal !== transition.proposalId || value.completion !== transition.completionId
+        || value.evidence !== request.evidence || !isDeepStrictEqual(before, transition.proposal.outcome)
+        || !isDeepStrictEqual(after, transition.completion.outcome)) {
+      witFail("mismatched-wit-receipt", "WIT transition receipt does not witness the exact requested transition");
+    }
+  }
+  // Detach admitted evidence from the caller's mutable decoded object.
+  return immutableRecord(structuredClone(value));
 }
 
 /** Hires the WIT transition provider at agentUrl to assay one proposal→completion
@@ -110,8 +160,7 @@ export async function assayWitTransition({ agentUrl: url, proposalCell, completi
   };
   const exchange = await send({ agentUrl: url, message, requireSignature: true, ...(signal ? { signal } : {}) });
   const output = extractSenPart(a2aResultParts(exchange.result));
-  const receipt = decodeWitTransitionAssayReceipt(admitJsonSemanticContent({ bytes: output.bytes, objectKind: WIT_OBJECT_KIND }).value);
-  if (receipt.request !== request.id) throw new Error("WIT transition receipt does not bind the exact request");
+  const receipt = decodeWitTransitionAssayReceipt(admitJsonSemanticContent({ bytes: output.bytes, objectKind: WIT_OBJECT_KIND }).value, { request });
   return { ...receipt, receipt, receiptNi: receipt.id, exchange };
 }
 
@@ -119,13 +168,7 @@ export async function assayWitTransition({ agentUrl: url, proposalCell, completi
  * same effect, completed with the named evidence, receipted by providerAccount. */
 export function witnessWitTransition(request, { providerAccount } = {}) {
   if (!CAIP10.test(providerAccount ?? "")) witFail("missing-wit-provider", "WIT transition assay requires the deployed provider's CAIP-10 account");
-  if (!isWitRecord(request) || request.type !== "WitTransitionAssayRequest") witFail("malformed-wit-transition", "WIT transition request must be exact addressed semantic JSON");
-  const proposal = witCell(request.proposalCell, "proposalCell"), completion = witCell(request.completionCell, "completionCell");
-  if (!NI.test(request.evidence ?? "")) witFail("malformed-wit-transition", "transition evidence must be semantic content identity");
-  const articulatedAxis = witnessBit(proposal.outcome, completion.outcome);
-  for (const field of STABLE_CELL_FIELDS) if (!isDeepStrictEqual(proposal[field], completion[field])) witFail("malformed-effect-transition", `${field} changed across one effect transition`);
-  if (completion.evidenceRoot !== request.evidence) witFail("malformed-effect-transition", "completion evidenceRoot must equal the WIT evidence identity");
-  const proposalId = witIdentified(proposal).token, completionId = witIdentified(completion).token;
+  const { proposal, completion, proposalId, completionId, articulatedAxis } = witTransitionOf(request);
   const witnessTerm = witRecord({ type: "WitTransitionWitness", proposal: proposalId, completion: completionId, evidence: request.evidence, before: proposal.outcome, after: completion.outcome, articulatedAxis });
   return witRecord({ kind: "WitTransitionAssayReceipt", profile: WIT_TRANSITION_ASSAY_PROFILE, provider: providerAccount, request: request.id, proposal: proposalId, completion: completionId, evidence: request.evidence, witness: witnessTerm.id, witnessTerm, outcome: completion.outcome });
 }

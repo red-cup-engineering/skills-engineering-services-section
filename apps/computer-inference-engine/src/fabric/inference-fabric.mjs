@@ -162,7 +162,7 @@ export async function invokeEndpoint(endpoint, job, options = {}) {
   }, {
     providerId: endpoint.id, chatCompletionsUrl: url,
     apiKey: environment[endpoint.apiKeyEnv], auth: endpoint.auth ?? (endpoint.apiKeyEnv ? undefined : { mode: "none" }),
-    timeoutMs: options.timeoutMs ?? endpoint.timeoutMs ?? 120000,
+    timeoutMs: options.timeoutMs ?? endpoint.timeoutMs,
     signal: options.signal,
   }, options.request ?? fetch);
   if (!exchange.ok) {
@@ -195,10 +195,10 @@ export async function invokeHarness(endpoint, job, options = {}) { if (options.s
   const capture = (target) => (chunk) => { const remaining = Math.max(0, limit - outputBytes); if (remaining) target.push(chunk.subarray(0, remaining)); outputBytes += chunk.length; if (outputBytes > limit) exceeded = true; };
   child.stdout.on("data", capture(out)); child.stderr.on("data", capture(err));
   const signalTree = (signal) => { try { if (grouped && child.pid) process.kill(-child.pid, signal); else child.kill(signal); } catch {} };
-  const timeoutMs = options.timeoutMs ?? endpoint.timeoutMs ?? 120000, graceMs = options.timeoutGraceMs ?? endpoint.timeoutGraceMs ?? 250; let timedOut = false, cancelled = false;
+  const timeoutMs = options.timeoutMs ?? endpoint.timeoutMs, graceMs = options.timeoutGraceMs ?? endpoint.timeoutGraceMs ?? 250; let timedOut = false, cancelled = false;
   let kill;
   const terminate = () => { signalTree("SIGTERM"); kill ??= setTimeout(() => { if (child.exitCode === null) signalTree("SIGKILL"); }, graceMs); };
-  const timeout = setTimeout(() => { timedOut = true; terminate(); }, timeoutMs);
+  const timeout = timeoutMs == null ? undefined : setTimeout(() => { timedOut = true; terminate(); }, timeoutMs);
   const abort = () => { cancelled = true; terminate(); };
   options.signal?.addEventListener("abort", abort, { once: true });
   let code; try { code = await new Promise((resolve, reject) => { child.once("close", resolve); child.once("error", reject); }); }
@@ -213,11 +213,11 @@ const positiveInteger = (value, fallback, label) => { const selected = value ?? 
 const schedulerRefusal = (id, type) => ({ id: typeof id === "string" ? id : null, attempts: [], refusal: { type }, latencyMs: 0, scheduler: { admitted: false } });
 const abortableInvocation = async (invoke, endpoint, job, options) => {
   if (options.signal?.aborted) throw cancellation();
-  const controller = new AbortController(), timeoutMs = options.timeoutMs ?? endpoint.timeoutMs ?? 120000;
+  const controller = new AbortController(), timeoutMs = options.timeoutMs ?? endpoint.timeoutMs;
   const abort = () => controller.abort(); let rejectCancelled = () => {};
   options.signal?.addEventListener("abort", abort, { once: true });
   let timer;
-  const timeout = new Promise((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new EndpointRefusal(`endpoint timed out after ${timeoutMs}ms`, { retryable: true })); }, timeoutMs); });
+  const timeout = timeoutMs == null ? new Promise(() => {}) : new Promise((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new EndpointRefusal(`endpoint timed out after ${timeoutMs}ms`, { retryable: true })); }, timeoutMs); });
   const cancelled = new Promise((_, reject) => { rejectCancelled = () => reject(cancellation()); options.signal?.addEventListener("abort", rejectCancelled, { once: true }); });
   try { return await Promise.race([Promise.resolve().then(() => invoke(endpoint, job, { ...options, signal: controller.signal })), timeout, cancelled]); }
   finally { clearTimeout(timer); options.signal?.removeEventListener("abort", abort); options.signal?.removeEventListener("abort", rejectCancelled); }

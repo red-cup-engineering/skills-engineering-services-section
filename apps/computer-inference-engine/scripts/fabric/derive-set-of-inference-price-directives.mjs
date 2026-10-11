@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { parseDecimal } from "@red-cup-engineering/computer-data-engineering-services-section/number/decimal-string";
+import { parseDecimal } from "@red-cup-engineering/exact-number-data-service/decimal-string";
 import { runJavascriptNodeOperation } from "@red-cup-engineering/javascript-node-services-section/operation";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/u;

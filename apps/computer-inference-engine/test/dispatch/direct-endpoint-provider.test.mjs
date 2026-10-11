@@ -112,6 +112,19 @@ test("the provider admission carrier resolves external bearer credentials only b
   assert.deepEqual(loadDirectEndpointProviderDescriptors(env).map(({ provider }) => provider), descriptors.map(({ provider }) => provider));
 });
 
+test("a call's cost is the provider's own report, summed exactly, and an unreported cost stays unmeasured", () => {
+  const reported = measuredExchangeResources([
+    { usage: { promptTokens: 10, outputTokens: 2, totalTokens: 12, reportedCost: "0.00015" } },
+    { usage: { promptTokens: 5, outputTokens: 1, totalTokens: 6, reportedCost: "0" } },
+  ], { provider: "urn:ame:fixture" });
+  assert.deepEqual(reported.resources.find(({ resource }) => resource === "reported-cost"),
+    { resource: "reported-cost", unit: "provider-cost-unit", asset: "urn:ame:fixture", amount: { numerator: "3", denominator: "20000" } });
+  assert.ok(!reported.uncertainty.includes("provider-reported-cost-incomplete"));
+  const unreported = measuredExchangeResources([{ usage: { promptTokens: 10, outputTokens: 2, totalTokens: 12, reportedCost: null } }], { provider: "urn:ame:fixture" });
+  assert.equal(unreported.resources.find(({ resource }) => resource === "reported-cost"), undefined);
+  assert.ok(unreported.uncertainty.includes("provider-reported-cost-incomplete"));
+});
+
 test("Codex is admitted as one bounded local command provider, not a duplicate endpoint", async () => {
   const { loadDirectEndpointProviderDescriptors } = await import("../../src/dispatch/direct-endpoint-provider.mjs");
   const configPath = resolve(import.meta.dirname, "../../content/dispatch/provider-admissions/direct-endpoint-providers.json");
@@ -193,6 +206,16 @@ test("dispatchDirectEndpointOffer calls the injected transport with the descript
   assert.equal(calls[0].toolHandlers.observe, handler);
   assert.equal(result.toolInvocations[0].name, "observe");
   assert.equal(result.exchanges[0].usage.totalTokens, 9);
+  assert.equal(descriptor.maximumOutputTokens, undefined, "an endpoint that declares no output allocation advertises none");
+  assert.equal(Object.hasOwn(calls[0], "maximumOutputTokens"), false, "no accounted allocation means the transport receives no output ceiling");
+});
+
+test("a caller-accounted output allocation reaches the transport and no literal default stands in for an absent one", async () => {
+  const descriptor = loadDirectEndpointProviderDescriptor(FULL_ENV);
+  const calls = [];
+  const invoke = async (call) => { calls.push(call); return { type: "ReceiverOwnedToolAgentCompletion", provider: "local-ollama-team", model: "gemma3:4b", text: "ok", durationMs: 1, invocations: [], exchanges: [] }; };
+  await dispatchDirectEndpointOffer(descriptor, { messages: [{ role: "user", content: "hi" }], execution: { maximumOutputTokens: 77 } }, { invoke });
+  assert.equal(calls[0].maximumOutputTokens, 77);
 });
 
 test("a transport failure throws rather than silently falling back to another answer", async () => {
@@ -307,7 +330,7 @@ test("the canonical exchange projector preserves observed zero token counters an
     { resource: "duration", unit: "millisecond", amount: { numerator: "4", denominator: "1" } },
   ]);
   assert.deepEqual(measured.partialResources, []);
-  assert.deepEqual(measured.uncertainty, ["account-window-identity-unknown"]);
+  assert.deepEqual(measured.uncertainty, ["provider-reported-cost-incomplete", "account-window-identity-unknown"]);
 });
 
 test("dispatchDirectEndpointOffer forwards an explicit responseFormat to the transport verbatim", async () => {

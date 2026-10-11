@@ -818,7 +818,7 @@ test("a fresh market with equal-consideration direct offers and no observations 
     directDescriptors: descriptors,
     directTransport: async (call) => {
       attempted.push(call.endpoint);
-      assert.equal(call.maximumOutputTokens, 8192, "a direct offer carries the supplier's advertised output budget, never the transport's 512 chat default");
+      assert.equal(call.maximumOutputTokens, undefined, "a direct offer with no accounted output allocation hands the transport no ceiling");
       if (call.endpoint === "http://127.0.0.1:1/v1") throw new Error("first provider down");
       return { type: "ReceiverOwnedToolAgentCompletion", text: JSON.stringify({ operation: "normalize", basis: "second answered" }), model: "second-model", durationMs: 3, invocations: [], exchanges: [{ finishReason: "stop", usage: { promptTokens: 1, outputTokens: 1, totalTokens: 2 } }] };
     },

@@ -17,9 +17,6 @@ import {
   openaiChatCompletionRequest,
 } from "./codec.mjs";
 
-const OPENAI_CHAT_MESSAGE_EXTENSIONS = "openai.chat-completions.message.extensions";
-const MESSAGE_FIELDS = new Set(["role", "content", "name", "tool_call_id", "tool_calls"]);
-
 const OPENAI_CHAT_TOOL_CALL_EXTRA_CONTENT = "openai.chat-completions.tool-call.extra-content";
 
 function streamedStop(reason) {
@@ -115,9 +112,7 @@ function extraContentOf(move) {
 }
 
 function messageFromWire(message) {
-  const extensions = Object.fromEntries(Object.entries(message).filter(([key]) => !MESSAGE_FIELDS.has(key)));
   return inferenceMessage({
-    ...(Object.keys(extensions).length ? { extensions: { [OPENAI_CHAT_MESSAGE_EXTENSIONS]: extensions } } : {}),
     role: message.role,
     content: message.content ?? null,
     ...(message.name === undefined ? {} : { name: message.name }),
@@ -127,8 +122,6 @@ function messageFromWire(message) {
 }
 
 function messageToWire(message) {
-  const extensions = message.extensions?.[OPENAI_CHAT_MESSAGE_EXTENSIONS] ?? {};
-  if (extensions === null || typeof extensions !== "object" || Array.isArray(extensions) || Object.keys(extensions).some(key => MESSAGE_FIELDS.has(key))) throw new TypeError("OpenAI message extensions cannot override canonical message fields");
   const toolCalls = message.toolMoves?.map((move) => {
     const extraContent = extraContentOf(move);
     return Object.freeze({
@@ -139,7 +132,6 @@ function messageToWire(message) {
     });
   });
   return Object.freeze({
-    ...requireJsonValue(extensions, "OpenAI message extensions"),
     role: message.role,
     content: message.content,
     ...(message.name === undefined ? {} : { name: message.name }),
