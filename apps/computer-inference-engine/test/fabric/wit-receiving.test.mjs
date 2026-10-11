@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { admitJsonSemanticContent, EMPTY_WITNESS_ROOT, identifyJsonSemanticContent } from "@red-cup-engineering/computer-content-engineering-services-section/semantic-content-identity";
+import { admitJsonSemanticContent, EMPTY_WITNESS_ROOT, identifyJsonSemanticContent } from "@red-cup-engineering/computer-content-address-engineering-services-section/semantic-content-identity";
 import { agentSenMessage, extractSenPart } from "@red-cup-engineering/a2a-services-section/sen-part";
 import { readingOfWire, witFlux } from "@red-cup-engineering/computer-data-engineering-services-section/four";
 import { assayWitTransition, decodeWitTransitionAssayReceipt, encodeWitTransitionAssayRequest, witnessWitTransition, textNi } from "../../src/fabric/effect-assay.mjs";
