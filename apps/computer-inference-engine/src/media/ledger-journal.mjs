@@ -1,6 +1,6 @@
 /**
- * The media ledgers' one log: each ledger is a semantic-record journal (a witness journal of told,
- * content-addressed records) beside the name its SQLite store had, and nothing is updated in place.
+ * The media ledgers' one log: each ledger is a semiotic-eavt store (content-addressed records, each
+ * with the instant it was recorded at) beside the name its SQLite store had, and nothing is updated in place.
  * A ledger named `…/allowance-ledger.sqlite` keeps its journal at `…/allowance-ledger.journal`; historical
  * SQL file is received only through a separate explicit offline tool. Runtime opening does not
  * read or convert original SQL custody.
@@ -13,9 +13,8 @@
 import {assertNativeLedgerCustody} from "./native-ledger-custody.mjs";
 import { mkdirSync, rmSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { createSemanticRecordJournal } from "@red-cup-engineering/semiotic-eavt-services-section/record-semantic-record";
+import { each, put } from "@red-cup-engineering/semiotic-eavt-services-section/store";
 
-export const HELD = Object.freeze({ for: true, against: false });
 const LOCK_STALE_MS = 30_000;
 const LOCK_WAIT_MS = 15_000;
 const pause = new Int32Array(new SharedArrayBuffer(4));
@@ -37,16 +36,17 @@ function instants() {
 }
 const recordedAt = instants();
 
-/** One ledger's journal: `record(category, record)` appends a held record; `read(category)` folds them in append order. */
-export function openLedgerJournal(storePath, objectKind) {
+/** One ledger's journal: `record(category, record)` appends a record; `read(category)` folds them in append order. A category is a store type. */
+export function openLedgerJournal(storePath) {
   assertNativeLedgerCustody(storePath);
   const root = ledgerJournalRoot(storePath);
   mkdirSync(root, { recursive: true });
-  const journal = createSemanticRecordJournal({ root, objectKind });
   return Object.freeze({
     root,
-    record: (category, record) => journal.record({ category, recordedAt: recordedAt(), told: HELD, record }),
-    read: (category) => journal.query({ category }).filter((row) => row.told?.for && !row.told?.against).map((row) => row.record),
+    // A record is held with the instant it was recorded at; unreadable storage is refused, never skipped.
+    record: (category, record) => put(root, category, { at: recordedAt(), record }),
+    read: (category) => [...each(root, category, { strict: true })].map(({ record }) => record)
+      .sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0)).map(({ record }) => record),
     exclusively: (work) => exclusively(root, work),
   });
 }

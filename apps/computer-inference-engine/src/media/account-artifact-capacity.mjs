@@ -46,10 +46,9 @@ function bindingOf(value) {
  * goes through appends the window's next version, and the highest version recorded for a key is the
  * window as it stands. The check and the append run under the journal's writer lock. Historical custody requires explicit offline receiving.
  */
-const OBJECT_KIND = "inference.account-capacity";
 /** The store one capacity path names: `get(key)` and `compareAndSet(key, expectedVersion, value)`. */
 export function openAccountArtifactCapacityStore(path) {
-  const journal = openLedgerJournal(path, OBJECT_KIND);
+  const journal = openLedgerJournal(path);
   const current = (key) => journal.read("window").filter((row) => row.key === key).reduce((top, row) => (top === null || row.version > top.version ? row : top), null);
   return {
     close: () => {},

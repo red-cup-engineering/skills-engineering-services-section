@@ -37,7 +37,7 @@ export function catalogRowToPricingOffer(row, nominalTokens = DEFAULT_NOMINAL_TO
  * verified delivery (the best evidence this adapter has -- no further
  * receiver-side assay exists for free-first chat completions); a refusal
  * counts as an observed non-verified attempt.
- * @param {{record: {provider: string, outcome: "completion"|"refusal"}}} purchaseRecord - one row from `journal.query({category: "inference-purchased"})`.
+ * @param {{record: {provider: string, outcome: "completion"|"refusal"}}} purchaseRecord - one row from `readInferencePurchases`.
  * @param {string} taskClass
  * @returns {{provider: string, taskClass: string, outcome: "verified"|"refused"}}
  */

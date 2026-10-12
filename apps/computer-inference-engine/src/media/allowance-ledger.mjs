@@ -52,14 +52,13 @@ const instant = (value, what) => {
 };
 const sourceOf = (entry) => entry.source ?? `sha256:${createHash("sha256").update(JSON.stringify(entry)).digest("hex")}`;
 
-const OBJECT_KIND = "inference.allowance-ledger";
 const plain = (value) => JSON.parse(JSON.stringify(value));
 const byAt = (a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0);
 /** The last record per key, in the order each key was first seen. */
 const latest = (records, keyOf) => { const held = new Map(); for (const record of records) held.set(keyOf(record), record); return [...held.values()]; };
 
 function openLedger(path) {
-  const journal = openLedgerJournal(path, OBJECT_KIND);
+  const journal = openLedgerJournal(path);
   const evidenceOf = (allowance) => latest(journal.read("evidence").filter((row) => row.allowance === allowance).reverse(), (row) => row.source).reverse().sort(byAt);
   const holdsOf = (allowance) => latest(journal.read("hold").filter((row) => allowance === undefined || row.allowance === allowance), (row) => row.id);
   const declarationsOf = () => latest(journal.read("declaration"), (row) => row.allowance);

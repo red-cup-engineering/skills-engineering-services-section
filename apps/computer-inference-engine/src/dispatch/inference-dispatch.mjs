@@ -656,7 +656,7 @@ export async function createPendingInferenceProcurementCustody({ store: supplied
       const records = await store.records(PENDING_PROCUREMENT_CATEGORY);
       const matches = records.filter((record) => record?.type === "PendingTypedInferenceProviderTask"
         && record.version === 1 && record.parentTaskId === parentTaskId && record.requestNi === requestNi);
-      const latest = matches.at(-1)?.procurement;
+      const latest = matches.sort((a, b) => String(a.recordedAt).localeCompare(String(b.recordedAt))).at(-1)?.procurement;
       return latest?.disposition === "provider-task-pending" ? latest : null;
     },
     async record({ parentTaskId, requestNi, procurement, recordedAt = new Date().toISOString() }) {
@@ -668,6 +668,7 @@ export async function createPendingInferenceProcurementCustody({ store: supplied
         record: {
           type: "PendingTypedInferenceProviderTask",
           version: 1,
+          recordedAt,
           parentTaskId,
           requestNi,
           demand: demandCommitment(procurement.demand),

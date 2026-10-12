@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { createSemanticRecordJournal } from "@red-cup-engineering/semiotic-eavt-services-section/record-semantic-record";
+import { each, has, put } from "@red-cup-engineering/semiotic-eavt-services-section/store";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { inferenceStateRootOf } from "./state-root.mjs";
 
 const DEFAULT_ACTOR = "urn:ame:inference-work-lot-service";
@@ -29,32 +30,33 @@ export function resolveLocalSettlementAccount(settlementRoot, {
 
 // The settlement root is read-only content (the account records); the journals are written under the
 // inference state root, never into the package.
-function semanticStore({ settlementRoot, journalRoot = inferenceStateRootOf(), actor, caip2, settlement, objectKind }) {
+// A category names the store type its records are held under: `typed-inference.procurement` is `typed-inference-procurement`.
+const typeOf = (category) => category.replace(/\.v\d+$/u, "").replaceAll(".", "-");
+
+function semanticStore({ settlementRoot, journalRoot = inferenceStateRootOf(), actor, caip2, settlement }) {
   if (!settlementRoot) throw new Error("settlementRoot is required");
   const account = resolveLocalSettlementAccount(settlementRoot, { actor, caip2, settlement });
-  const journal = createSemanticRecordJournal({ root: journalRoot, objectKind });
   return Object.freeze({
     ...account,
-    records: async (category) => journal.query({ category }).map(({ record }) => record),
-    async record({ category, recordedAt, record, told = { for: true, against: false }, relation }) {
-      const projection = journal.record({ category, recordedAt, record, told, ...(relation ? { relation } : {}) });
+    records: async (category) => [...each(journalRoot, typeOf(category))].map(({ record }) => record),
+    async record({ category, record }) {
+      const type = typeOf(category), appended = !has(journalRoot, type, semanticId(record)), id = put(journalRoot, type, record);
       return Object.freeze({
-        digest: projection.id,
-        documentNi: projection.id,
-        appended: projection.appended,
-        reference: Object.freeze({ profile: "org.red-cup-engineering.semantic-record-journal.v1", root: journal.root, id: projection.id }),
-        told: projection.told,
+        digest: id,
+        documentNi: id,
+        appended,
+        reference: Object.freeze({ profile: "org.red-cup-engineering.semiotic-eavt-store.v1", root: journalRoot, id }),
       });
     },
   });
 }
 
 export async function createInferenceSettlementStore({ settlementRoot, journalRoot, actor = DEFAULT_ACTOR, caip2, settlement } = {}) {
-  return semanticStore({ settlementRoot, ...(journalRoot === undefined ? {} : { journalRoot }), actor, caip2, settlement, objectKind: "inference-work-lot.semantic-record.v1" });
+  return semanticStore({ settlementRoot, ...(journalRoot === undefined ? {} : { journalRoot }), actor, caip2, settlement });
 }
 
 /** V2 is an append-only market witness vocabulary. V1 procurement summaries
  * are retained and are never reinterpreted as missing per-attempt evidence. */
 export async function createInferenceMarketWitnessStore({ settlementRoot, journalRoot, actor = DEFAULT_ACTOR, caip2, settlement } = {}) {
-  return semanticStore({ settlementRoot, ...(journalRoot === undefined ? {} : { journalRoot }), actor, caip2, settlement, objectKind: "inference-work-lot.market-witness.v2" });
+  return semanticStore({ settlementRoot, ...(journalRoot === undefined ? {} : { journalRoot }), actor, caip2, settlement });
 }

@@ -1,6 +1,6 @@
 import { operation } from "@red-cup-engineering/computer-system-engine/rpc/operation";
 
-import { journal } from "@red-cup-engineering/computer-system-engine/journal/journal";
+import { logDates, readLog } from "@red-cup-engineering/semiotic-eavt-services-section/store";
 import { inferenceCostObservationCollector } from "@red-cup-engineering/computer-inference-engine/openai/pricing/inference-cost-observations";
 
 function operationDate(binding, input) {
@@ -15,16 +15,15 @@ export function readInferenceCostReadout(
   binding,
   date,
 ) {
-  const logPath = journal.feed(binding.dataRoot, "openai-chat-completions", date, { subject: "openai-chat-completions" });
-  if (!journal.sourceStatus(logPath).exists) return undefined;
+  // The feed is the `openai-chat-completions` log of the settlement root: one line `{at, e, a, v}` per recorded fact.
+  if (![...logDates(binding.dataRoot, "openai-chat-completions")].includes(date)) return undefined;
   const collector = inferenceCostObservationCollector();
   let rows = 0;
   try {
-    const folded = journal.scan(logPath, undefined, (_accum, row) => {
-      collector.push(row);
-      return undefined;
-    });
-    rows = folded.rows;
+    for (const { line } of readLog(binding.dataRoot, "openai-chat-completions", date)) {
+      collector.push([line.e, line.a, line.v]);
+      rows += 1;
+    }
   } catch {
     return undefined;
   }
@@ -43,7 +42,7 @@ export function openAIPricingOperations(binding) {
       inputFormat: "json",
       outputFormat: "json",
       summary: "Settle recorded OpenAI chat-completion inference cost.",
-      description: "Domain: { date? }. Folds the openai-chat-completions statement feed into worker, model, total, and conservation cost readouts.",
+      description: "Domain: { date? }. Folds the openai-chat-completions log into worker, model, total, and conservation cost readouts.",
       run: (input) => readInferenceCostReadout(binding, operationDate(binding, input)) ?? null,
     }),
   ]);
