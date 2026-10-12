@@ -50,6 +50,8 @@ import { openGoogleFlow, storageStatePath } from './google-flow-client.mjs';
 import { videoModelKey } from './flow-protocol.mjs';
 import { appendCreditReading, balanceEvidence, creditJournalPath, flowAllowance, loadFlowAllowanceConfig } from './flow-credits.mjs';
 
+// Exit status of a run that a person must unblock (EX_TEMPFAIL): the job is not done, and retrying alone will not do it.
+export const HELD_FOR_A_PERSON = 75;
 const PROVIDER = 'urn:ame:google-flow';
 const EXTENSION = { 'video/mp4': 'mp4', 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
 const PACING = Object.freeze({ floorMs: 60_000, ceilingMs: 600_000, refused: 2, accepted: 0.98 });
@@ -670,6 +672,12 @@ if (import.meta.main) {
     process.stdout.write(`${JSON.stringify(outcome, null, 2)}\n`);
     // The node job's demand reading (node-runtime-release-promotion-service writeNodeJobDemand's file).
     if (process.env.NODE_JOB_DEMAND) writeFileSync(process.env.NODE_JOB_DEMAND, `${JSON.stringify({ ...flowQueueDemand(outcome, { config }), at: new Date().toISOString() })}\n`);
+    // A held queue generated nothing: it is not a success. The unit fails, so health and the host see it, and the
+    // message names the step only a person can take (Flow refused the account; a person reviews it in Flow).
+    if (outcome.verificationRequired) {
+      process.stderr.write(`Flow generation is held (${outcome.verificationRequired.code}, since ${outcome.verificationRequired.observedAt ?? "unknown"}): a person reviews the refusal in Flow, then runs flow-generate --resume.\n`);
+      process.exit(HELD_FOR_A_PERSON);
+    }
     process.exit(0);
   }
   if (values.inventory) {
