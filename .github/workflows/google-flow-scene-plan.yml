@@ -1,0 +1,30 @@
+name: Google Flow scene planning
+on:
+  push:
+    paths:
+      - 'services/google-flow-services-section/src/flow-scene-plan.mjs'
+      - 'services/google-flow-services-section/src/flow-protocol.mjs'
+      - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
+      - 'services/google-flow-services-section/package.json'
+      - '.github/workflows/google-flow-scene-plan.yml'
+  pull_request:
+    paths:
+      - 'services/google-flow-services-section/src/flow-scene-plan.mjs'
+      - 'services/google-flow-services-section/src/flow-protocol.mjs'
+      - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
+      - 'services/google-flow-services-section/package.json'
+      - '.github/workflows/google-flow-scene-plan.yml'
+permissions:
+  contents: read
+jobs:
+  flow-scene-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Pure catalog, quote and hold-boundary tests
+        run: |
+          node --check services/google-flow-services-section/src/flow-scene-plan.mjs
+          node --test services/google-flow-services-section/test/flow-scene-plan.test.mjs

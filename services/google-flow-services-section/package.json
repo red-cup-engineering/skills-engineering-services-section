@@ -10,7 +10,8 @@
     "./flow-generate": "./src/flow-generate.mjs",
     "./flow-credits": "./src/flow-credits.mjs",
     "./package.json": "./package.json",
-    "./google-flow-client": "./src/google-flow-client.mjs"
+    "./google-flow-client": "./src/google-flow-client.mjs",
+    "./flow-scene-plan": "./src/flow-scene-plan.mjs"
   },
   "bin": {
     "flow-generate": "./src/flow-generate.mjs",
