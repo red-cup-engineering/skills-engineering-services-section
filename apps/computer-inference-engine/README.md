@@ -385,11 +385,9 @@ every dead lane.
 
 ## Data custody
 
-Settlement and witness-journal records live in `data/records/` and
-`data/logs/`, written by
-`@red-cup-engineering/semiotic-eavt-services-section` through
-`createSemanticRecordJournal({ root })` in
-`src/witness-journal-settlement-store.mjs`. Expected-resolution-pricing
+Settlement and witness-journal records live in `data/records/`, written by
+`@red-cup-engineering/semiotic-eavt-services-section` through its `./store`
+(`put`) in `src/dispatch/witness-journal-settlement-store.mjs`.
 observations and deliveries live in
 `data/state/expected-resolution-pricing-state/`, resolved through
 `@red-cup-engineering/data-custody-directory-service`'s

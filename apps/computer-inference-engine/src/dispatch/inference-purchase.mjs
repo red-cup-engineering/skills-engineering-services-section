@@ -1,12 +1,12 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createSemanticRecordJournal } from "@red-cup-engineering/semiotic-eavt-services-section/record-semantic-record";
+import { each, has, put } from "@red-cup-engineering/semiotic-eavt-services-section/store";
+import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
 import { loadCustomerAdmissions } from "./provider-admission.mjs";
 
-export const INFERENCE_PURCHASED_CATEGORY = "inference-purchased";
+/** The store type of a purchase: the record is the event and the time `at` it was recorded. */
+export const INFERENCE_PURCHASE_TYPE = "inference-purchase";
 export const INFERENCE_PURCHASED_EVENT_TYPE = "inference-work-lot/purchase";
-export const INFERENCE_PURCHASE_OBJECT_KIND = "inference-work-lot.purchase.v1";
-const LEGACY_HARNESS_OBJECT_KIND = "bare-cedar-fog.harness-lifecycle-event.v1";
 const CUSTOMER_ADMISSIONS = fileURLToPath(new URL("../../content/dispatch/customer-admissions/admitted-customers.json", import.meta.url));
 const MARKET = "urn:ame:inference-work-lot-service";
 
@@ -45,10 +45,6 @@ function purchaseUsage(value) {
   return Object.keys(sides).length ? sides : undefined;
 }
 
-export function openInferencePurchaseJournal({ root }) {
-  return createSemanticRecordJournal({ root: resolve(requiredText(root, "root")), objectKind: INFERENCE_PURCHASE_OBJECT_KIND });
-}
-
 /** One measured exchange purchase, owned by inference rather than by an agent harness. */
 export function recordInferencePurchase({ root, actor, turnId, provider, model, outcome, latencySeconds, price, exchangeId, usage, recordedAt = new Date().toISOString() }) {
   const customer = requiredText(actor, "actor");
@@ -74,28 +70,22 @@ export function recordInferencePurchase({ root, actor, turnId, provider, model, 
     price: exactPrice,
     ...(measuredUsage === undefined ? {} : { usage: measuredUsage }),
   });
-  const result = openInferencePurchaseJournal({ root }).record({
-    category: INFERENCE_PURCHASED_CATEGORY,
-    record: event,
-    recordedAt,
-    told: { for: true, against: false },
-    relation: { subject: customer, predicate: INFERENCE_PURCHASED_CATEGORY, object: providerId },
-  });
-  return Object.freeze({ ...result, event, recordedAt });
+  const home = resolve(requiredText(root, "root")), held = { ...event, at: recordedAt };
+  const appended = !has(home, INFERENCE_PURCHASE_TYPE, semanticId(held));
+  return Object.freeze({ id: put(home, INFERENCE_PURCHASE_TYPE, held), appended, event, recordedAt });
 }
 
-/** Read new purchases and historical harness purchases without copying old records. */
+/** Read the purchases held under `root` as `{id, recordedAt, record}`, oldest first. */
 export function readInferencePurchases({ root }) {
-  const current = openInferencePurchaseJournal({ root }).query({ category: INFERENCE_PURCHASED_CATEGORY });
-  const legacy = createSemanticRecordJournal({ root: resolve(root), objectKind: LEGACY_HARNESS_OBJECT_KIND }).query({ category: INFERENCE_PURCHASED_CATEGORY });
   const byExchange = new Map();
-  for (const row of [...legacy, ...current]) {
+  for (const { address, record: { at, ...record } } of each(resolve(requiredText(root, "root")), INFERENCE_PURCHASE_TYPE)) {
+    const row = { id: address, recordedAt: at, record };
     const key = `${row.record?.actor}\u0000${row.record?.exchangeId}`;
     const prior = byExchange.get(key);
     if (prior && JSON.stringify({ ...prior.record, type: undefined }) !== JSON.stringify({ ...row.record, type: undefined })) {
       throw new Error(`conflicting inference purchase records for ${key}`);
     }
-    byExchange.set(key, row);
+    if (!prior || row.recordedAt < prior.recordedAt) byExchange.set(key, row);
   }
   return [...byExchange.values()].sort((a, b) => String(a.recordedAt).localeCompare(String(b.recordedAt)));
 }

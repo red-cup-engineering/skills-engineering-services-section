@@ -1,6 +1,5 @@
 import { dirname, join, resolve } from "node:path";
 import { openLedgerJournal } from "../media/ledger-journal.mjs";
-import { admitJsonlOnce, readAdmittingJsonl } from "@red-cup-engineering/semiotic-eavt-services-section/admit-jsonl-once";
 import { nonnegativeHostRatio as exactNonnegativeAmount } from "@red-cup-engineering/metrologic/number/wire-ratio";
 import { canonicalJson as canonical } from "@red-cup-engineering/json-services-section/canonical-json";
 import { executionConfiguration, executionConfigurationIdentity } from "./sen-carrier.mjs";
@@ -22,27 +21,15 @@ export const pricingRootOf = (environment = process.env) => {
   const web = environment.METROPLAT_WEB_DATA_DIR;
   return typeof web === "string" && web.trim() !== "" ? resolve(dirname(web), "inference-pricing") : undefined;
 };
-/** The JSONL files the book was kept in before the one log; read once into the journal, never written. */
-export const OBSERVATIONS_FILE = "observations.jsonl";
-export const DELIVERIES_FILE = "deliveries.jsonl";
-/** The kind the pricing book is kept under in the one log. */
-export const PRICING_BOOK_OBJECT_KIND = "inference.expected-resolution-pricing";
-const CATEGORIES = Object.freeze({ [DELIVERIES_FILE]: "delivery", [OBSERVATIONS_FILE]: "observation" });
 
 function nonempty(value, label) { if (typeof value !== "string" || value.trim() === "") throw new Error(`${label} must be nonempty text`); return value; }
 
 /**
- * The pricing book: a semantic-record journal at `<dataRoot>/pricing-book.journal` (the one log),
- * with deliveries and observations kept as held records in append order. JSONL files an earlier
- * release left under `dataRoot` are admitted once, read only and in order, skipping records the
- * journal already holds; `jsonl-admission.json` in the journal marks that so it never repeats.
+ * The pricing book: a ledger journal at `<dataRoot>/pricing-book.journal` (the one log),
+ * with deliveries and observations kept as held records in append order.
  */
 function pricingBook(dataRoot) {
-  const root = resolve(nonempty(dataRoot, "pricing dataRoot"));
-  const book = openLedgerJournal(join(root, "pricing-book"), PRICING_BOOK_OBJECT_KIND);
-  const sources = Object.entries(CATEGORIES).map(([file, category]) => ({ path: join(root, file), category }));
-  admitJsonlOnce(book, sources, { type: "PricingBookJsonlAdmission", from: root });
-  return Object.freeze({ ...book, read: (category) => readAdmittingJsonl(book, sources, category) });
+  return openLedgerJournal(join(resolve(nonempty(dataRoot, "pricing dataRoot")), "pricing-book"));
 }
 const appendTo = (dataRoot, category, record) => { pricingBook(dataRoot).record(category, record); return record; };
 
