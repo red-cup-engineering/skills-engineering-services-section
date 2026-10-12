@@ -8,10 +8,11 @@ import {
   DEFAULT_TOKEN_USAGE_RESOURCE_KIND,
   DEFAULT_TOKEN_USAGE_UNIT,
   composeTokenUsageCostEstimates,
+  composeTokenUsageGenAiAttributes,
+  composeTokenUsageBreakdown,
   tokenUsageMeasurement,
   tokenUsageCostRatesFor,
   tokenUsageCostEstimate,
-  tokenUsageBreakdown,
   tokenUsageGenAiAttributes,
   tokenUsageCounts,
 } from "./core.mjs";
@@ -62,6 +63,7 @@ function cellFor(cells, key, event) {
     rateLimitEvents: 0,
     duplicateEvents: 0,
     usages: [],
+    usageEvents: [],
     costEstimates: [],
   };
   if (agentId !== undefined) cell.agentId = agentId;
@@ -77,6 +79,7 @@ function pushCell(cells, key, event, usageKind, usage, costEstimate) {
   if (usageKind === "turn") {
     cell.turns += 1;
     cell.usages.push(usage);
+    cell.usageEvents.push({ usage, provider: event.provider });
     if (costEstimate !== undefined) {
       cell.pricedTurns += 1;
       cell.costEstimates.push(costEstimate);
@@ -95,8 +98,8 @@ function ratio(numerator, denominator) {
  * tokens, is what the turn costs. Anthropic counts cache reads and writes beside its uncached
  * input; OpenAI counts its cached input within `inputTokens`, so the sum holds for both.
  */
-function turnContextTokens(usage) {
-  return usage.inputTokens + usage.cacheCreationInputTokens + usage.cacheReadInputTokens;
+function turnContextTokens(usage, provider) {
+  return tokenUsageGenAiAttributes(usage, { provider })["gen_ai.usage.input_tokens"];
 }
 
 /** Context bands turns are grouped by; past 200k a session re-reads more than a capped window holds. */
@@ -177,8 +180,8 @@ function tokenUsageAverages(total, turns) {
 }
 
 function tokenUsageRatios(breakdown) {
-  const cacheHitRatio = ratio(breakdown.cachedInputTokens + breakdown.cacheReadInputTokens, breakdown.totalInputTokens);
-  const cacheWriteRatio = ratio(breakdown.cacheCreationInputTokens, breakdown.totalInputTokens);
+  const cacheHitRatio = ratio(breakdown.totalCachedInputTokens, breakdown.totalInputTokens);
+  const cacheWriteRatio = ratio(breakdown.totalCacheCreationInputTokens, breakdown.totalInputTokens);
   const reasoningOutputRatio = ratio(breakdown.reasoningOutputTokens, breakdown.outputTokens);
   return Object.freeze({
     ...(cacheHitRatio === undefined ? {} : { cacheHitRatio }),
@@ -190,7 +193,7 @@ function tokenUsageRatios(breakdown) {
 function freezeCell(cell) {
   const measurement = tokenUsageMeasurement(cell.usages);
   const { total } = measurement;
-  const breakdown = tokenUsageBreakdown(total);
+  const breakdown = composeTokenUsageBreakdown(cell.usageEvents);
   const costEstimate = cell.costEstimates.length === 0 ? undefined : composeTokenUsageCostEstimates(cell.costEstimates, [`cell:${cell.key}`]);
   const pricingCoverage = ratio(cell.pricedTurns, cell.turns);
   return Object.freeze({
@@ -217,7 +220,7 @@ function freezeCell(cell) {
     duplicateEvents: cell.duplicateEvents,
     ...measurement,
     usageBreakdown: breakdown,
-    genAiAttributes: tokenUsageGenAiAttributes(total),
+    genAiAttributes: composeTokenUsageGenAiAttributes(cell.usageEvents),
     ...(costEstimate === undefined ? {} : { costEstimate }),
   });
 }
@@ -247,6 +250,7 @@ export function agentSessionTokenUsageObservationCollector(options = {}) {
   const statementRows = [];
   const rateLimitEventsObserved = [];
   const usages = [];
+  const usageEvents = [];
   const costEstimates = [];
   let rows = 0;
   let events = 0;
@@ -289,6 +293,7 @@ export function agentSessionTokenUsageObservationCollector(options = {}) {
     if (usageKind === "turn") {
       turns += 1;
       usages.push(usage);
+      usageEvents.push({ usage, provider });
     }
     const rates = usageKind === "turn" && tokenCostRateTable !== undefined
       ? tokenUsageCostRatesFor({
@@ -301,7 +306,7 @@ export function agentSessionTokenUsageObservationCollector(options = {}) {
         usage,
       }, tokenCostRateTable)
       : undefined;
-    const costEstimate = rates === undefined ? undefined : tokenUsageCostEstimate(usage, rates);
+    const costEstimate = rates === undefined ? undefined : tokenUsageCostEstimate(usage, rates, { provider });
     if (costEstimate !== undefined) {
       pricedTurns += 1;
       costEstimates.push(costEstimate);
@@ -316,7 +321,7 @@ export function agentSessionTokenUsageObservationCollector(options = {}) {
     pushCell(bySession, `${provider}/${surface}/${sessionId}`, value, usageKind, usage, costEstimate);
     pushCell(byModel, `${provider}/${surface}/${model ?? "unknown-model"}`, value, usageKind, usage, costEstimate);
     if (usageKind === "turn") {
-      const context = turnContextTokens(usage);
+      const context = turnContextTokens(usage, provider);
       if (Number.isFinite(context)) contexts.push(context);
       pushCell(byContext, Number.isFinite(context) ? contextBandOf(context) : "context:unknown", value, usageKind, usage, costEstimate);
     }
@@ -325,7 +330,7 @@ export function agentSessionTokenUsageObservationCollector(options = {}) {
     const contextWindows = Object.freeze([...modelContextWindows].sort((left, right) => left - right));
     const measurement = tokenUsageMeasurement(usages);
     const { total } = measurement;
-    const breakdown = tokenUsageBreakdown(total);
+    const breakdown = composeTokenUsageBreakdown(usageEvents);
     const costEstimate = costEstimates.length === 0 ? undefined : composeTokenUsageCostEstimates(costEstimates, ["settlement:agent-session-token-usage"]);
     const pricingCoverage = ratio(pricedTurns, turns);
     const contextWindow = contextWindows.length === 1 ? contextWindows[0] : undefined;
@@ -363,7 +368,7 @@ export function agentSessionTokenUsageObservationCollector(options = {}) {
       duplicateEvents,
       ...measurement,
       usageBreakdown: breakdown,
-      genAiAttributes: tokenUsageGenAiAttributes(total),
+      genAiAttributes: composeTokenUsageGenAiAttributes(usageEvents),
       ...(costEstimate === undefined ? {} : { costEstimate }),
       ...(contextTokens === undefined ? {} : { contextTokens }),
       ...(contextWindow === undefined ? {} : { modelContextWindow: contextWindow }),
@@ -404,3 +409,4 @@ export function agentSessionTokenUsageObservationsOfRows(rows, options = {}) {
   for (const row of rows) collector.push(row);
   return collector.read();
 }
+

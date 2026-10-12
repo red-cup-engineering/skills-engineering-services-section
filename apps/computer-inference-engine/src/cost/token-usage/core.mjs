@@ -12,6 +12,7 @@ export const DEFAULT_TOKEN_USAGE_UNIT = "token";
 export const ZERO_TOKEN_USAGE = Object.freeze({
   inputTokens: 0,
   cachedInputTokens: 0,
+  cacheWriteInputTokens: 0,
   cacheCreationInputTokens: 0,
   cacheReadInputTokens: 0,
   outputTokens: 0,
@@ -98,7 +99,7 @@ export function tokenUsageCostRatesFor(query, table) {
   return table.defaultRates;
 }
 
-export function tokenUsageCostEstimate(usage, rates) {
+export function tokenUsageCostEstimate(usage, rates, { provider } = {}) {
   if (rates.totalMicrodollarsPerMillionTokens !== undefined) {
     if (!Number.isSafeInteger(usage.totalTokens) || usage.totalTokens < 0) return undefined;
     const totalRate = nonnegativeRate(rates.totalMicrodollarsPerMillionTokens, "total token rate");
@@ -121,31 +122,52 @@ export function tokenUsageCostEstimate(usage, rates) {
   if (rates.inputMicrodollarsPerMillionTokens === undefined || rates.outputMicrodollarsPerMillionTokens === undefined) {
     throw new TypeError("tokenUsageCostEstimate: expected total rate or both input and output rates");
   }
-  // A component price is complete only when every component it charges is known.
-  if (Object.keys(ZERO_TOKEN_USAGE).filter((field) => field !== "totalTokens")
-    .some((field) => !Number.isSafeInteger(usage[field]) || usage[field] < 0)) return undefined;
+  const known = (field) => Number.isSafeInteger(usage[field]) && usage[field] >= 0;
   const inputRate = nonnegativeRate(rates.inputMicrodollarsPerMillionTokens, "input rate");
   const outputRate = nonnegativeRate(rates.outputMicrodollarsPerMillionTokens, "output rate");
   const cachedInputRate = rates.cachedInputMicrodollarsPerMillionTokens === undefined
-    ? inputRate
-    : nonnegativeRate(rates.cachedInputMicrodollarsPerMillionTokens, "cached input rate");
+    ? inputRate : nonnegativeRate(rates.cachedInputMicrodollarsPerMillionTokens, "cached input rate");
   const cacheCreationRate = rates.cacheCreationInputMicrodollarsPerMillionTokens === undefined
-    ? inputRate
-    : nonnegativeRate(rates.cacheCreationInputMicrodollarsPerMillionTokens, "cache creation input rate");
+    ? inputRate : nonnegativeRate(rates.cacheCreationInputMicrodollarsPerMillionTokens, "cache creation input rate");
   const cacheReadRate = rates.cacheReadInputMicrodollarsPerMillionTokens === undefined
-    ? cachedInputRate
-    : nonnegativeRate(rates.cacheReadInputMicrodollarsPerMillionTokens, "cache read input rate");
+    ? cachedInputRate : nonnegativeRate(rates.cacheReadInputMicrodollarsPerMillionTokens, "cache read input rate");
+  const cacheWriteRate = rates.cacheWriteInputMicrodollarsPerMillionTokens === undefined
+    ? inputRate : nonnegativeRate(rates.cacheWriteInputMicrodollarsPerMillionTokens, "cache write input rate");
   const reasoningRate = rates.reasoningOutputMicrodollarsPerMillionTokens === undefined
-    ? outputRate
-    : nonnegativeRate(rates.reasoningOutputMicrodollarsPerMillionTokens, "reasoning output rate");
-  const components = Object.freeze([
-    costComponent("uncached-input", Math.max(0, usage.inputTokens - usage.cachedInputTokens), inputRate),
-    costComponent("cached-input", usage.cachedInputTokens, cachedInputRate),
-    costComponent("cache-creation-input", usage.cacheCreationInputTokens, cacheCreationRate),
-    costComponent("cache-read-input", usage.cacheReadInputTokens, cacheReadRate),
-    costComponent("output", Math.max(0, usage.outputTokens - usage.reasoningOutputTokens), outputRate),
-    costComponent("reasoning-output", usage.reasoningOutputTokens, reasoningRate),
-  ]);
+    ? outputRate : nonnegativeRate(rates.reasoningOutputMicrodollarsPerMillionTokens, "reasoning output rate");
+  if (!known("inputTokens") || !known("outputTokens")) return undefined;
+  const parts = [];
+  const add = (kind, tokens, rate) => parts.push(costComponent(kind, tokens, rate));
+  // Native provider categories are different bases, not absent observations of zero.
+  if (provider === "anthropic") {
+    if (!known("cacheCreationInputTokens") || !known("cacheReadInputTokens")) return undefined;
+    add("uncached-input", usage.inputTokens, inputRate);
+    add("cache-creation-input", usage.cacheCreationInputTokens, cacheCreationRate);
+    add("cache-read-input", usage.cacheReadInputTokens, cacheReadRate);
+  } else {
+    // OpenAI cached/read and cache-write tokens are subsets of inputTokens.
+    // Unidentified legacy callers retain their additive cache categories.
+    if (provider !== "openai" && (!known("cacheCreationInputTokens") || !known("cacheReadInputTokens"))) return undefined;
+    if (!known("cachedInputTokens") && cachedInputRate !== inputRate) return undefined;
+    if (provider === "openai" && !known("cacheWriteInputTokens") && cacheWriteRate !== inputRate) return undefined;
+    const cached = known("cachedInputTokens") ? usage.cachedInputTokens : 0;
+    const written = provider === "openai" && known("cacheWriteInputTokens") ? usage.cacheWriteInputTokens : 0;
+    if (BigInt(cached) + BigInt(written) > BigInt(usage.inputTokens)) return undefined;
+    add(known("cachedInputTokens") ? "uncached-input" : "input", usage.inputTokens - cached - written, inputRate);
+    if (known("cachedInputTokens")) add("cached-input", cached, cachedInputRate);
+    if (provider === "openai" && known("cacheWriteInputTokens")) add("cache-write-input", written, cacheWriteRate);
+    if (provider !== "openai") {
+      add("cache-creation-input", usage.cacheCreationInputTokens, cacheCreationRate);
+      add("cache-read-input", usage.cacheReadInputTokens, cacheReadRate);
+    }
+  }
+  if (!known("reasoningOutputTokens") && reasoningRate !== outputRate) return undefined;
+  if (known("reasoningOutputTokens")) {
+    if (usage.reasoningOutputTokens > usage.outputTokens) return undefined;
+    add("output", usage.outputTokens - usage.reasoningOutputTokens, outputRate);
+    add("reasoning-output", usage.reasoningOutputTokens, reasoningRate);
+  } else add("output", usage.outputTokens, outputRate);
+  const components = Object.freeze(parts);
   const numerator = components.reduce((sum, component) =>
     sum + BigInt(component.tokens) * BigInt(component.microdollarsPerMillionTokens), 0n);
   const totalMicrodollars = Number(numerator) / Number(MICRODOLLAR_RATE_DENOMINATOR);
@@ -156,10 +178,9 @@ export function tokenUsageCostEstimate(usage, rates) {
     dollars: totalMicrodollars / MICRODOLLARS_PER_DOLLAR,
     components,
     evidence: Object.freeze([
-      "input-minus-cached priced as uncached input",
-      "cached input priced separately",
-      "cache creation/read input priced separately",
-      "reasoning output priced separately from non-reasoning output",
+      `input-accounting:${provider === "openai" ? "inclusive-cache" : provider === "anthropic" ? "separate-cache" : "legacy-mixed"}`,
+      "unknown breakdown allowed only when its rate equals the containing total rate",
+      "reasoning output is a subset of output; cached OpenAI input is a subset of input",
     ]),
   });
 }
@@ -217,31 +238,66 @@ export function tokenUsageMeasurement(events) {
     const amount = observed.reduce((sum, usage) => sum + BigInt(usage[field]), 0n);
     usageCoverage[field] = Object.freeze({ observed: observed.length, expected: rows.length, exactSum: String(amount) });
     if (amount > BigInt(Number.MAX_SAFE_INTEGER)) continue;
-    if (observed.length === rows.length) total[field] = Number(amount);
+    if (rows.length > 0 && observed.length === rows.length) total[field] = Number(amount);
     else if (observed.length > 0) partialTotal[field] = Number(amount);
   }
   return Object.freeze({ total: Object.freeze(total), partialTotal: Object.freeze(partialTotal), usageCoverage: Object.freeze(usageCoverage) });
 }
 
-export function tokenUsageBreakdown(usage) {
-  return finiteFields({ ...tokenUsageCounts(usage),
-    uncachedInputTokens: Math.max(0, usage.inputTokens - usage.cachedInputTokens),
-    totalInputTokens: usage.inputTokens + usage.cacheCreationInputTokens + usage.cacheReadInputTokens });
+export function tokenUsageBreakdown(usage, { provider } = {}) {
+  const counts = tokenUsageCounts(usage);
+  const attributes = tokenUsageGenAiAttributes(counts, { provider });
+  const uncached = provider === "anthropic" ? counts.inputTokens
+    : provider === "openai" ? counts.inputTokens - counts.cachedInputTokens - counts.cacheWriteInputTokens
+    : counts.inputTokens - counts.cachedInputTokens;
+  return finiteFields({ ...counts,
+    ...(uncached >= 0 ? { uncachedInputTokens: uncached } : {}),
+    totalInputTokens: attributes["gen_ai.usage.input_tokens"],
+    totalCachedInputTokens: attributes["gen_ai.usage.cache_read.input_tokens"],
+    totalCacheCreationInputTokens: attributes["gen_ai.usage.cache_creation.input_tokens"],
+  });
+}
+
+/** Derived totals use per-provider projections; raw native count coverage stays separate. */
+export function composeTokenUsageBreakdown(events) {
+  const rawTotal = tokenUsageMeasurement(events.map(({ usage }) => usage)).total;
+  const projections = events.map(({ usage, provider }) => tokenUsageBreakdown(usage, { provider }));
+  const derived = composeCompleteNumericRecords(projections.map((record) => Object.fromEntries(
+    ["uncachedInputTokens", "totalInputTokens", "totalCachedInputTokens", "totalCacheCreationInputTokens"]
+      .filter((key) => Object.hasOwn(record, key)).map((key) => [key, record[key]]))));
+  return Object.freeze({ ...rawTotal, ...derived });
 }
 
 function finiteFields(record) {
   return Object.freeze(Object.fromEntries(Object.entries(record).filter(([, value]) => Number.isSafeInteger(value))));
 }
 
-export function tokenUsageGenAiAttributes(usage) {
+export function tokenUsageGenAiAttributes(usage, { provider } = {}) {
+  const counts = tokenUsageCounts(usage);
   return finiteFields({
-    "gen_ai.usage.input_tokens": usage.inputTokens + usage.cacheCreationInputTokens + usage.cacheReadInputTokens,
-    "gen_ai.usage.output_tokens": usage.outputTokens,
-    "gen_ai.usage.cache_read.input_tokens": usage.cachedInputTokens + usage.cacheReadInputTokens,
-    "gen_ai.usage.cache_creation.input_tokens": usage.cacheCreationInputTokens,
-    "gen_ai.usage.reasoning.output_tokens": usage.reasoningOutputTokens,
-    "metroplat.usage.total_tokens": usage.totalTokens,
+    "gen_ai.usage.input_tokens": provider === "openai" ? counts.inputTokens
+      : counts.inputTokens + counts.cacheCreationInputTokens + counts.cacheReadInputTokens,
+    "gen_ai.usage.output_tokens": counts.outputTokens,
+    "gen_ai.usage.cache_read.input_tokens": provider === "openai" ? counts.cachedInputTokens
+      : provider === "anthropic" ? counts.cacheReadInputTokens : counts.cachedInputTokens + counts.cacheReadInputTokens,
+    "gen_ai.usage.cache_creation.input_tokens": provider === "openai" ? counts.cacheWriteInputTokens : counts.cacheCreationInputTokens,
+    "gen_ai.usage.reasoning.output_tokens": counts.reasoningOutputTokens,
+    "metroplat.usage.total_tokens": counts.totalTokens,
   });
+}
+
+/** Project each provider before summing; a mixed cohort has no single native basis. */
+export function composeTokenUsageGenAiAttributes(events) {
+  return composeCompleteNumericRecords(events.map(({ usage, provider }) => tokenUsageGenAiAttributes(usage, { provider })));
+}
+
+function composeCompleteNumericRecords(projections) {
+  if (projections.length === 0) return Object.freeze({});
+  return Object.freeze(Object.fromEntries(Object.keys(projections[0]).flatMap((field) => {
+    if (!projections.every((record) => Object.hasOwn(record, field))) return [];
+    const sum = projections.reduce((amount, record) => amount + BigInt(record[field]), 0n);
+    return sum <= BigInt(Number.MAX_SAFE_INTEGER) ? [[field, Number(sum)]] : [];
+  })));
 }
 
 export function jsonUsage(value, label) {
@@ -276,8 +332,8 @@ export function tokenUsageSummary(input) {
     turns: turnEvents.length,
     ...(input.cumulative === undefined ? {} : { cumulative: input.cumulative }),
     ...measurement,
-    usageBreakdown: tokenUsageBreakdown(total),
-    genAiAttributes: tokenUsageGenAiAttributes(total),
+    usageBreakdown: tokenUsageBreakdown(total, { provider: input.provider }),
+    genAiAttributes: tokenUsageGenAiAttributes(total, { provider: input.provider }),
     ...(input.modelContextWindow === undefined ? {} : { modelContextWindow: input.modelContextWindow }),
     models,
     requests,
@@ -292,3 +348,4 @@ export function tokenUsageSummary(input) {
     ]),
   });
 }
+

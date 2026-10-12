@@ -21,22 +21,13 @@ import {
   agentSessionTokenUsageObservationsOfRows,
 } from "../../src/cost/token-usage/observations.mjs";
 
-test("tokenUsageCounts admits nonnegative integers and totals input+output when totalTokens is absent", () => {
-  const usage = tokenUsageCounts({ inputTokens: 5, outputTokens: 2 });
-  assert.deepEqual(usage, {
-    inputTokens: 5,
-    cachedInputTokens: 0,
-    cacheCreationInputTokens: 0,
-    cacheReadInputTokens: 0,
-    outputTokens: 2,
-    reasoningOutputTokens: 0,
-    totalTokens: 7,
-  });
-  assert.deepEqual(tokenUsageCounts({}), ZERO_TOKEN_USAGE);
+test("tokenUsageCounts retains observed counts without inventing missing counts", () => {
+  assert.deepEqual(tokenUsageCounts({ inputTokens: 5, outputTokens: 2 }), { inputTokens: 5, outputTokens: 2 });
+  assert.deepEqual(tokenUsageCounts({}), {});
 });
 
 test("tokenUsageCostEstimate prices input/output separately and rejects a rate-free query", () => {
-  const usage = tokenUsageCounts({ inputTokens: 1_000_000, outputTokens: 500_000 });
+  const usage = tokenUsageCounts({ ...ZERO_TOKEN_USAGE, inputTokens: 1_000_000, outputTokens: 500_000 });
   const estimate = tokenUsageCostEstimate(usage, {
     inputMicrodollarsPerMillionTokens: 3_000_000,
     outputMicrodollarsPerMillionTokens: 15_000_000,
@@ -47,7 +38,7 @@ test("tokenUsageCostEstimate prices input/output separately and rejects a rate-f
 });
 
 test("tokenUsageCostEstimate exact rational tracks fractional microdollars a float would lose", () => {
-  const usage = tokenUsageCounts({ inputTokens: 3, outputTokens: 0 });
+  const usage = tokenUsageCounts({ ...ZERO_TOKEN_USAGE, inputTokens: 3, outputTokens: 0 });
   const estimate = tokenUsageCostEstimate(usage, { inputMicrodollarsPerMillionTokens: 1, outputMicrodollarsPerMillionTokens: 1 });
   const component = estimate.components.find((c) => c.kind === "uncached-input");
   assert.equal(component.exactMicrodollars, "3/1000000");
@@ -77,7 +68,7 @@ test("tokenUsageCostRatesFor selects the first matching entry, falling back to d
 });
 
 test("tokenUsageBreakdown and tokenUsageGenAiAttributes derive from counts consistently", () => {
-  const usage = tokenUsageCounts({ inputTokens: 10, cachedInputTokens: 4, cacheReadInputTokens: 4, outputTokens: 6, reasoningOutputTokens: 2 });
+  const usage = tokenUsageCounts({ inputTokens: 10, cachedInputTokens: 4, cacheCreationInputTokens: 0, cacheReadInputTokens: 4, outputTokens: 6, reasoningOutputTokens: 2 });
   const breakdown = tokenUsageBreakdown(usage);
   assert.equal(breakdown.uncachedInputTokens, 6);
   assert.equal(breakdown.totalInputTokens, 14); // inputTokens(10) + cacheCreationInputTokens(0) + cacheReadInputTokens(4)
@@ -103,7 +94,7 @@ test("tokenUsageSummary composes turn events into a total and lists distinct mod
   ];
   const summary = tokenUsageSummary({ provider: "anthropic", surface: "messages", source: "s", rows: 1, rawEvents: events });
   assert.equal(summary.turns, 1);
-  assert.equal(summary.total.totalTokens, 7);
+  assert.equal(summary.total.totalTokens, undefined);
   assert.deepEqual(summary.models, ["claude-test"]);
   assert.deepEqual(summary.requests, ["req-1"]);
 });
@@ -191,7 +182,7 @@ test("the collector prices turns when a cost-rate table is supplied", () => {
       source: "s",
       row: 0,
       usageKind: "turn",
-      usage: tokenUsageCounts({ inputTokens: 1_000_000, outputTokens: 0 }),
+      usage: tokenUsageCounts({ inputTokens: 1_000_000, outputTokens: 0, totalTokens: 1_000_000 }),
       evidence: [],
     },
     "2026-09-11",
@@ -201,3 +192,4 @@ test("the collector prices turns when a cost-rate table is supplied", () => {
   assert.ok(readout.costEstimate);
   assert.equal(readout.costEstimate.totalMicrodollars, 10);
 });
+

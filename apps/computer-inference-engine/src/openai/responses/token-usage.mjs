@@ -7,6 +7,7 @@ export function openaiResponseUsageCounts(usage) {
   return tokenUsageCounts({
     inputTokens: usage?.input_tokens,
     cachedInputTokens: usage?.input_tokens_details?.cached_tokens,
+    cacheWriteInputTokens: usage?.input_tokens_details?.cache_write_tokens,
     outputTokens: usage?.output_tokens,
     reasoningOutputTokens: usage?.output_tokens_details?.reasoning_tokens,
     totalTokens: usage?.total_tokens,
@@ -62,3 +63,4 @@ export function openaiResponseTokenUsage(
     evidence: Object.freeze(["source:openai-responses-usage"]),
   });
 }
+
