@@ -149,7 +149,8 @@
   },
   "scripts": {
     "test": "node --test \"test/**/*.test.mjs\"",
-    "test:legacy-sql": "node --test scripts/historical-ledger-receiving/test/*.test.mjs"
+    "test:legacy-sql": "node --test scripts/historical-ledger-receiving/test/*.test.mjs",
+    "test:package": "node --test test/package/distribution.test.mjs"
   },
   "dependencies": {
     "@red-cup-engineering/a2a-services-section": "workspace:*",
@@ -197,7 +198,26 @@
     "@red-cup-engineering/signgraph": "workspace:*"
   },
   "files": [
-    "**",
-    "!scripts/historical-ledger-receiving"
+    "src/**/*.mjs",
+    "scripts/**/*.mjs",
+    "!scripts/historical-ledger-receiving",
+    "content/allowances/chatgpt-codex.json",
+    "content/allowances/claude-max.json",
+    "content/allowances/google-ai-pro-antigravity.json",
+    "content/allowances/groq-requests.json",
+    "content/allowances/openrouter-requests.json",
+    "content/context/schemas/refusal.schema.json",
+    "content/context/schemas/request.schema.json",
+    "content/context/schemas/result.schema.json",
+    "content/dispatch/agent-cards/inference-work-lot-market.json",
+    "content/dispatch/customer-admissions/admitted-customers.json",
+    "content/dispatch/provider-admissions/direct-endpoint-providers.json",
+    "content/dispatch/provider-admissions/inference-providers.json",
+    "content/dispatch/provider-admissions/semantic-services.json",
+    "content/dispatch/schemas/inference-work-refusal.schema.json",
+    "content/dispatch/schemas/inference-work-request.schema.json",
+    "content/dispatch/schemas/inference-work-result.schema.json",
+    "content/openai/providers/catalog.json",
+    "content/openai/schemas/inference-exchange.schema.json"
   ]
 }
