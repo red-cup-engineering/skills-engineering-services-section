@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { tokenUsageCounts, tokenUsageCostEstimate, tokenUsageGenAiAttributes, composeTokenUsageGenAiAttributes, tokenUsageSummary, tokenUsageMeasurement } from '../../src/cost/token-usage/core.mjs';
+import { tokenUsageBreakdown, composeTokenUsageBreakdown, tokenUsageCounts, tokenUsageCostEstimate, tokenUsageGenAiAttributes, composeTokenUsageGenAiAttributes, tokenUsageSummary, tokenUsageMeasurement } from '../../src/cost/token-usage/core.mjs';
 import { agentSessionTokenUsageObservationsOfRows } from '../../src/cost/token-usage/observations.mjs';
 import { agentSessionTokenUsageStatementRows } from '../../src/cost/token-usage/persistence.mjs';
 import { openaiResponseUsageCounts } from '../../src/openai/responses/token-usage.mjs';
@@ -101,4 +101,28 @@ test('existing EAVT collector prices and projects mixed providers without losing
   assert.equal(rows[1][2].genAiAttributes['gen_ai.usage.input_tokens'], 100);
   assert.equal(rows[3][2].genAiAttributes['gen_ai.usage.input_tokens'], 110);
   assert.equal(result.contextTokens.peak, 110);
+});
+
+
+test('provider breakdowns and ratios use the same cache-inclusive basis as telemetry', () => {
+  const written = { inputTokens: 100, cachedInputTokens: 20, cacheWriteInputTokens: 10, outputTokens: 5 };
+  const a = tokenUsageBreakdown(written, { provider: 'openai' });
+  assert.equal(a.uncachedInputTokens, 70);
+  assert.equal(a.totalInputTokens, 100);
+  assert.equal(a.totalCachedInputTokens, 20);
+  assert.equal(a.totalCacheCreationInputTokens, 10);
+  assert.equal(tokenUsageBreakdown(openai, { provider: 'openai' }).uncachedInputTokens, undefined, 'unreported cache-write detail is not measured zero');
+  assert.equal(tokenUsageBreakdown(anthropic, { provider: 'anthropic' }).uncachedInputTokens, 60);
+  const events = [{ provider: 'openai', usage: written }, { provider: 'anthropic', usage: anthropic }];
+  const combined = composeTokenUsageBreakdown(events);
+  assert.equal(combined.uncachedInputTokens, 130);
+  assert.equal(combined.totalInputTokens, 210);
+  assert.equal(combined.totalCachedInputTokens, 60);
+  assert.equal(combined.totalCacheCreationInputTokens, 20);
+  const rows = events.map((event, row) => [{}, {}, { ...event, kind: 'metroplat.agent-session.token-usage-event', surface: 'fixture', source: 'fixture', row, usageKind: 'turn' }, '2026-10-12']);
+  const result = agentSessionTokenUsageObservationsOfRows(rows);
+  assert.equal(result.usageBreakdown.uncachedInputTokens, 130);
+  assert.equal(result.usageBreakdown.totalInputTokens, result.genAiAttributes['gen_ai.usage.input_tokens']);
+  assert.equal(result.cacheHitRatio, 60 / 210);
+  assert.equal(result.cacheWriteRatio, 20 / 210);
 });

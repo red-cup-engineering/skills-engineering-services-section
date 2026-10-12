@@ -3,7 +3,7 @@
 ## Requirement and existing owner
 
 The existing `offload-work-to-free-cloud-endpoints-and-scripts` requirement
-(`../../content/requirements/offload-work-to-free-cloud-endpoints-and-scripts.json`)
+(`../../../content/requirements/offload-work-to-free-cloud-endpoints-and-scripts.json`)
 needs comparable, attributable observations before work can be routed by cost.
 This refinement qualifies the existing token-usage core, provider adapter and
 EAVT collector; it does not add another broker, journal or accounting service.

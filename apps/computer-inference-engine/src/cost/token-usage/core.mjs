@@ -244,10 +244,28 @@ export function tokenUsageMeasurement(events) {
   return Object.freeze({ total: Object.freeze(total), partialTotal: Object.freeze(partialTotal), usageCoverage: Object.freeze(usageCoverage) });
 }
 
-export function tokenUsageBreakdown(usage) {
-  return finiteFields({ ...tokenUsageCounts(usage),
-    uncachedInputTokens: Math.max(0, usage.inputTokens - usage.cachedInputTokens),
-    totalInputTokens: usage.inputTokens + usage.cacheCreationInputTokens + usage.cacheReadInputTokens });
+export function tokenUsageBreakdown(usage, { provider } = {}) {
+  const counts = tokenUsageCounts(usage);
+  const attributes = tokenUsageGenAiAttributes(counts, { provider });
+  const uncached = provider === "anthropic" ? counts.inputTokens
+    : provider === "openai" ? counts.inputTokens - counts.cachedInputTokens - counts.cacheWriteInputTokens
+    : counts.inputTokens - counts.cachedInputTokens;
+  return finiteFields({ ...counts,
+    ...(uncached >= 0 ? { uncachedInputTokens: uncached } : {}),
+    totalInputTokens: attributes["gen_ai.usage.input_tokens"],
+    totalCachedInputTokens: attributes["gen_ai.usage.cache_read.input_tokens"],
+    totalCacheCreationInputTokens: attributes["gen_ai.usage.cache_creation.input_tokens"],
+  });
+}
+
+/** Derived totals use per-provider projections; raw native count coverage stays separate. */
+export function composeTokenUsageBreakdown(events) {
+  const rawTotal = tokenUsageMeasurement(events.map(({ usage }) => usage)).total;
+  const projections = events.map(({ usage, provider }) => tokenUsageBreakdown(usage, { provider }));
+  const derived = composeCompleteNumericRecords(projections.map((record) => Object.fromEntries(
+    ["uncachedInputTokens", "totalInputTokens", "totalCachedInputTokens", "totalCacheCreationInputTokens"]
+      .filter((key) => Object.hasOwn(record, key)).map((key) => [key, record[key]]))));
+  return Object.freeze({ ...rawTotal, ...derived });
 }
 
 function finiteFields(record) {
@@ -270,7 +288,10 @@ export function tokenUsageGenAiAttributes(usage, { provider } = {}) {
 
 /** Project each provider before summing; a mixed cohort has no single native basis. */
 export function composeTokenUsageGenAiAttributes(events) {
-  const projections = events.map(({ usage, provider }) => tokenUsageGenAiAttributes(usage, { provider }));
+  return composeCompleteNumericRecords(events.map(({ usage, provider }) => tokenUsageGenAiAttributes(usage, { provider })));
+}
+
+function composeCompleteNumericRecords(projections) {
   if (projections.length === 0) return Object.freeze({});
   return Object.freeze(Object.fromEntries(Object.keys(projections[0]).flatMap((field) => {
     if (!projections.every((record) => Object.hasOwn(record, field))) return [];
@@ -311,7 +332,7 @@ export function tokenUsageSummary(input) {
     turns: turnEvents.length,
     ...(input.cumulative === undefined ? {} : { cumulative: input.cumulative }),
     ...measurement,
-    usageBreakdown: tokenUsageBreakdown(total),
+    usageBreakdown: tokenUsageBreakdown(total, { provider: input.provider }),
     genAiAttributes: tokenUsageGenAiAttributes(total, { provider: input.provider }),
     ...(input.modelContextWindow === undefined ? {} : { modelContextWindow: input.modelContextWindow }),
     models,

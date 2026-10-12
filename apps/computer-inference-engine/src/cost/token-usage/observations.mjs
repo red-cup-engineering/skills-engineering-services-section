@@ -9,10 +9,10 @@ import {
   DEFAULT_TOKEN_USAGE_UNIT,
   composeTokenUsageCostEstimates,
   composeTokenUsageGenAiAttributes,
+  composeTokenUsageBreakdown,
   tokenUsageMeasurement,
   tokenUsageCostRatesFor,
   tokenUsageCostEstimate,
-  tokenUsageBreakdown,
   tokenUsageGenAiAttributes,
   tokenUsageCounts,
 } from "./core.mjs";
@@ -180,8 +180,8 @@ function tokenUsageAverages(total, turns) {
 }
 
 function tokenUsageRatios(breakdown) {
-  const cacheHitRatio = ratio(breakdown.cachedInputTokens + breakdown.cacheReadInputTokens, breakdown.totalInputTokens);
-  const cacheWriteRatio = ratio(breakdown.cacheCreationInputTokens, breakdown.totalInputTokens);
+  const cacheHitRatio = ratio(breakdown.totalCachedInputTokens, breakdown.totalInputTokens);
+  const cacheWriteRatio = ratio(breakdown.totalCacheCreationInputTokens, breakdown.totalInputTokens);
   const reasoningOutputRatio = ratio(breakdown.reasoningOutputTokens, breakdown.outputTokens);
   return Object.freeze({
     ...(cacheHitRatio === undefined ? {} : { cacheHitRatio }),
@@ -193,7 +193,7 @@ function tokenUsageRatios(breakdown) {
 function freezeCell(cell) {
   const measurement = tokenUsageMeasurement(cell.usages);
   const { total } = measurement;
-  const breakdown = tokenUsageBreakdown(total);
+  const breakdown = composeTokenUsageBreakdown(cell.usageEvents);
   const costEstimate = cell.costEstimates.length === 0 ? undefined : composeTokenUsageCostEstimates(cell.costEstimates, [`cell:${cell.key}`]);
   const pricingCoverage = ratio(cell.pricedTurns, cell.turns);
   return Object.freeze({
@@ -330,7 +330,7 @@ export function agentSessionTokenUsageObservationCollector(options = {}) {
     const contextWindows = Object.freeze([...modelContextWindows].sort((left, right) => left - right));
     const measurement = tokenUsageMeasurement(usages);
     const { total } = measurement;
-    const breakdown = tokenUsageBreakdown(total);
+    const breakdown = composeTokenUsageBreakdown(usageEvents);
     const costEstimate = costEstimates.length === 0 ? undefined : composeTokenUsageCostEstimates(costEstimates, ["settlement:agent-session-token-usage"]);
     const pricingCoverage = ratio(pricedTurns, turns);
     const contextWindow = contextWindows.length === 1 ? contextWindows[0] : undefined;
