@@ -48,7 +48,7 @@ function eventValue(event) {
   return jsonUsage({
     ...event,
     usageBreakdown: tokenUsageBreakdown(event.usage),
-    genAiAttributes: tokenUsageGenAiAttributes(event.usage),
+    genAiAttributes: tokenUsageGenAiAttributes(event.usage, { provider: event.provider }),
   }, "agent session token usage event");
 }
 
@@ -81,7 +81,7 @@ function summaryValue(summary) {
     ...summaryWithoutRawEvents,
     rawEventCount: summary.rawEventCount ?? summary.rawEvents.length,
     usageBreakdown: tokenUsageBreakdown(summary.total),
-    genAiAttributes: tokenUsageGenAiAttributes(summary.total),
+    genAiAttributes: tokenUsageGenAiAttributes(summary.total, { provider: summary.provider }),
   }, "agent session token usage summary");
 }
 
@@ -101,3 +101,4 @@ export function agentSessionTokenUsageStatementRows(summary, at) {
     })),
   ]);
 }
+
