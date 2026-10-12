@@ -15,4 +15,4 @@ nor a machine actor is a competing harness implementation.
 
 | Actor | Operation | Boundary |
 | --- | --- | --- |
-| `codex-harness-projection-service` | `project-office-context <project-office.json>` | Source-owned office/duties/skill closure to one generated repository-local context; no copied skill corpus, template configuration or authority grant |
+| `@red-cup-engineering/codex-harness-projection-service` (held in agent-harness-computer-system-engineering-services-section, not here) | `project-office-context <project-office.json>` | Source-owned office/duties/skill closure to one generated repository-local context; no copied skill corpus, template configuration or authority grant |
