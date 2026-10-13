@@ -58,6 +58,8 @@ test('Flow inventory distinguishes generated, delivered, and public-use custody'
   let inventory = flowMediaInventory({ state });
   assert.deepEqual(inventory.counts, { pending: 0, generated: 1, delivered: 0, publicUse: 0, undelivered: 1 });
   assert.equal(inventory.artifacts[0].custody, 'generated');
+  assert.equal(inventory.artifacts[0].provider, 'urn:ame:google-flow',
+    'the provider-neutral film studio must not guess provider accounting');
   assert.equal(inventory.artifacts[0].allocation, 'media-allocation-1');
   assert.equal(inventory.artifacts[0].purpose, 'short-form-discovery');
   assert.equal(inventory.artifacts[0].generationModeClaim,'ingredients-to-video');

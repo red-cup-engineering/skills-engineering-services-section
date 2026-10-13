@@ -492,6 +492,10 @@ export function flowMediaInventory({ state = flowStateDir() } = {}) {
     const delivery = byCompletion.get(generation.id) ?? null;
     return Object.freeze({
       completionId: generation.id,
+      // This inventory reads only this Google Flow custody journal. Export its
+      // actual provider identity so downstream multi-provider studios can
+      // distinguish subscription credits from paid API USD or unknown units.
+      provider: PROVIDER,
       output: generation.output?.identity ?? null,
       providerArtifactId: generation.providerArtifactId ?? null,
       consumer: generation.consumer,
