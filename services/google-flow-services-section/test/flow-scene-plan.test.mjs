@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {flowTextVideoOptions,planFlowTextVideoShot,planFlowReferencedSceneTrial} from '../src/flow-scene-plan.mjs';
+import {flowTextVideoOptions,planFlowTextVideoShot,planFlowReferencedSceneTrial,admitFlowVideoAdoption} from '../src/flow-scene-plan.mjs';
 const observed=()=>[
   {key:'veo_3_1_t2v_lite',medium:'video',credits:10,seconds:8},
   {key:'veo_3_1_t2v_fast',medium:'video',credits:20,seconds:8},
@@ -119,4 +119,25 @@ test('Do not confuse old text-video wire capability with UI-only reference foota
  assert.ok(!p.candidates.some(x=>x.modelKey.includes('quality')));
  const six=planFlowReferencedSceneTrial({...args,shots:[{id:'short',seconds:6,prompt:'original short'}]});
  assert.equal(six.status,'HELD_NO_OBSERVED_UI_MODEL');
+});
+
+
+test('adopting genuine Flow UI footage preserves source identity but no fabricated modality attestation',()=>{
+ const trial=planFlowReferencedSceneTrial(referenceTrial());
+ const adoption=admitFlowVideoAdoption({
+   consumer:trial.consumer,sourceNi:trial.sourceNi,
+   mediaNeed:'urn:media-need:causeway:three-shrimp-shot-one',
+   destination:trial.destination,allocation:'rill-camera-a',purpose:'original-short-fiction',
+   generationMode:'ingredients-to-video'
+ });
+ assert.match(adoption.sourceNi,/^ni:\/\/\/sha-256;[A-Za-z0-9_-]{43}$/u);
+ assert.equal(adoption.observationStatus,'OPERATOR_CLAIMS_NOT_PROVIDER_ATTESTATIONS');
+ assert.equal(adoption.generationModeClaim,'ingredients-to-video');
+ assert.equal(adoption.mediaNeed,'urn:media-need:causeway:three-shrimp-shot-one');
+ assert.equal(adoption.allocation,'rill-camera-a');
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'causeway',sourceNi:'not-a-source'}),/content-addressed NI/u);
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'causeway',generationMode:'evidence-of-approved-canon'}),/bounded known description/u);
+ const legacy=admitFlowVideoAdoption({consumer:'causeway'});
+ assert.equal(legacy.sourceNi,null);
+ assert.equal(legacy.generationModeClaim,null);
 });
