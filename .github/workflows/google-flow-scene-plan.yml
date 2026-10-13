@@ -6,6 +6,7 @@ on:
       - 'services/google-flow-services-section/src/flow-generate.mjs'
       - 'services/google-flow-services-section/src/flow-protocol.mjs'
       - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
+      - 'services/google-flow-services-section/test/flow-delivery.test.mjs'
       - 'services/google-flow-services-section/package.json'
       - 'apps/computer-inference-engine/src/media/gemini-veo-video.mjs'
       - 'apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs'
@@ -20,6 +21,7 @@ on:
       - 'services/google-flow-services-section/src/flow-generate.mjs'
       - 'services/google-flow-services-section/src/flow-protocol.mjs'
       - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
+      - 'services/google-flow-services-section/test/flow-delivery.test.mjs'
       - 'services/google-flow-services-section/package.json'
       - 'apps/computer-inference-engine/src/media/gemini-veo-video.mjs'
       - 'apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs'
@@ -42,6 +44,10 @@ jobs:
         run: |
           node --check services/google-flow-services-section/src/flow-scene-plan.mjs
           node --check services/google-flow-services-section/src/flow-generate.mjs
+          # The delivery test imports internal workspace packages which are
+          # available only in the integrated Red Cup/BCF runtime, not this
+          # standalone repository's zero-install provider-check workflow.
+          node --check services/google-flow-services-section/test/flow-delivery.test.mjs
           node --test services/google-flow-services-section/test/flow-scene-plan.test.mjs
           node --check apps/computer-inference-engine/src/media/gemini-veo-video.mjs
           node --check apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs

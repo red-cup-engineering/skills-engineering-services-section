@@ -37,7 +37,7 @@
  *
  * `--dry-run` reads the balance and the allowance and says which generations fit, spending nothing.
  */
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { createHash, randomUUID } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -320,14 +320,21 @@ export async function runFlowOrder(order, { projectId, dryRun = false, config = 
  * Keep `mediaIds`, clips already made in the project, for `consumer`: each finished one is stored
  * and journaled as a generation's output is. Answers what was kept or why not.
  */
+/** Operator-held input manifest, not proof of what the Flow UI actually used. */
+function readOperatorReferences(path){
+  const info=statSync(path);
+  if(!info.isFile()||info.size>24000)throw new TypeError('Flow UI reference claims file must be <=24KB');
+  return JSON.parse(readFileSync(path,'utf8'));
+}
+
 export async function adoptFlowMedia(mediaIds, {
   consumer, projectId, config = loadFlowAllowanceConfig(), sourceNi = null,
   mediaNeed = null, destination = null, allocation = null, purpose = null,
-  generationMode = null, promptText = null, open = openGoogleFlow,
+  generationMode = null, referenceImages = null, promptText = null, open = openGoogleFlow,
 } = {}) {
   // These inputs are claims from an operator, not provider attestations.
   const ctx = admitFlowVideoAdoption({ consumer, sourceNi, mediaNeed, destination,
-    allocation, purpose, generationMode });
+    allocation, purpose, generationMode, referenceImages });
   if(promptText!==null && (typeof promptText!=='string'||!promptText.trim()||promptText.length>6000))
     throw new TypeError('original production prompt claim must be 1–6000 characters');
   const flow = await open();
@@ -349,7 +356,10 @@ export async function adoptFlowMedia(mediaIds, {
           reason:'Provide an exact prompt claim or retrieve it from Flow before receiving this movie' }); continue;
       }
       const kind = row.model ?? 'unknown-provider-model';
-      const sources=ctx.sourceNi?[{identity:ctx.sourceNi,role:'operator-asserted-source'}]:[];
+      const sources=[...(ctx.sourceNi?[{identity:ctx.sourceNi,role:'operator-asserted-source'}]:[]),
+        ...(ctx.referenceImageClaims??[]).map(ref=>({identity:ref.identity,
+          role:'operator-asserted-reference-image',label:ref.label,
+          kind:ref.kind,rightsRef:ref.rightsRef}))];
       const lot = createMediaArtifactWorkLot({
         workLot: ctx.mediaNeed ?? ('google-flow:'+consumer+':'+mediaId), principal: consumer,
         // Flow UI clips may be reference-conditioned, interpolated or edited.
@@ -489,8 +499,16 @@ export function flowMediaInventory({ state = flowStateDir() } = {}) {
       allocation: generation.allocation ?? null,
       purpose: generation.purpose ?? null,
       intendedDestination: generation.destination ?? null,
+      generationModeClaim: generation.generationModeClaim ?? null,
+      referenceImageClaims: (generation.sources??[]).filter(source=>source.role==='operator-asserted-reference-image'),
+      sourceIdentities: (generation.sources??[]).filter(source=>source.role==='operator-asserted-source').map(source=>source.identity),
       storedPath: generation.resource?.path ?? null,
       mimeType: generation.output?.mimeType ?? null,
+      providerModel: generation.resource?.model ?? null,
+      // From the observed Flow price catalog at order time, NOT a settled
+      // currency debit or a Gemini Developer API dollar amount.
+      quotedFlowCredits: Number.isFinite(generation.resource?.credits)&&
+        generation.resource.credits>=0 ? generation.resource.credits : null,
       generatedAt: generation.recordedAt ?? null,
       delivery,
       custody: delivery?.stage ?? 'generated',
@@ -699,7 +717,7 @@ if (import.meta.main) {
     consumer: { type: 'string' }, queue: { type: 'boolean' }, resume: { type: 'boolean' },
     inventory: { type: 'boolean' }, deliver: { type: 'string' }, destination: { type: 'string' }, 'public-address': { type: 'string' },
     'source-ni': { type:'string' }, 'media-need': { type:'string' }, allocation: { type:'string' }, purpose: { type:'string' },
-    'mode-claim': { type:'string' }, 'prompt-file': { type:'string' },
+    'mode-claim': { type:'string' }, 'prompt-file': { type:'string' }, 'references-file': { type:'string' },
   } })
   if (values.resume) {
     const { verificationRequired, ...pacing } = readPacing();
@@ -741,6 +759,7 @@ if (import.meta.main) {
       sourceNi: values['source-ni'] ?? null,mediaNeed: values['media-need'] ?? null,
       destination:values.destination ?? null,allocation:values.allocation ?? null,purpose:values.purpose ?? null,
       generationMode:values['mode-claim'] ?? null,
+      referenceImages:values['references-file'] ? readOperatorReferences(values['references-file']) : null,
       promptText:values['prompt-file'] ? readFileSync(values['prompt-file'],'utf8').trim():null,
     }), null, 2)}\n`);
     process.exit(0);

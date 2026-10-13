@@ -141,3 +141,34 @@ test('adopting genuine Flow UI footage preserves source identity but no fabricat
  assert.equal(legacy.sourceNi,null);
  assert.equal(legacy.generationModeClaim,null);
 });
+
+test('adopted cinematic Flow shot binds exact operator-declared visual identities without provider spoofing',()=>{
+ const sourceNi='ni:///sha-256;'+'D'.repeat(43);
+ const refs=[
+   {label:'rill',kind:'character',identity:'ni:///sha-256;'+'A'.repeat(43),
+    rightsRef:'causeway:original-look-review'},
+   {label:'temple',kind:'environment',identity:'ni:///sha-256;'+'C'.repeat(43),
+    rightsRef:'causeway:original-temple-rights'}
+ ];
+ const a=admitFlowVideoAdoption({
+  consumer:'causeway-public-fiction',sourceNi,referenceImages:refs,
+  generationMode:'ingredients-to-video',mediaNeed:'urn:need:shot-one',
+  allocation:'causeway:first-angle',purpose:'shot-rill-wakes'
+ });
+ assert.equal(a.referenceImageClaims.length,2);
+ assert.deepEqual(a.referenceImageClaims.map(r=>r.label),['rill','temple']);
+ assert.equal(a.referenceImageClaims[0].rightsRef,'causeway:original-look-review');
+ assert.equal(a.observationStatus,'OPERATOR_CLAIMS_NOT_PROVIDER_ATTESTATIONS');
+ assert.equal(admitFlowVideoAdoption({consumer:'other'}).referenceImageClaims,null);
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'fiction',referenceImages:refs}),/require a source NI/u);
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'fiction',sourceNi,referenceImages:refs,
+  generationMode:'text-to-video'}),/cannot claim referenced ingredients/u);
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'fiction',sourceNi,referenceImages:[
+  {...refs[0],identity:'not-a-hash'}]}),/exact SHA-256 NI/u);
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'fiction',sourceNi,referenceImages:[
+  refs[0],{...refs[0]}]}),/unique stable slugs/u);
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'fiction',sourceNi,referenceImages:[
+  {...refs[0],rightsRef:''}]}),/rights claim/u);
+ assert.throws(()=>admitFlowVideoAdoption({consumer:'fiction',sourceNi,referenceImages:[]}),
+  /1–3 image identities/u);
+});

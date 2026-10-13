@@ -45,7 +45,13 @@ test('Flow inventory distinguishes generated, delivered, and public-use custody'
     destination: 'koios.news article oracle-bone-ai',
     allocation: 'media-allocation-1',
     purpose: 'short-form-discovery',
-    resource: { path: '/state/media/example.mp4' },
+    generationModeClaim:'ingredients-to-video',
+    sources:[
+      {identity:'ni:///sha-256;'+'D'.repeat(43),role:'operator-asserted-source'},
+      {identity:'ni:///sha-256;'+'A'.repeat(43),role:'operator-asserted-reference-image',
+        label:'rill',kind:'character',rightsRef:'test:original-reference-rights'},
+    ],
+    resource: { path: '/state/media/example.mp4',credits:10,model:'veo_3_1_r2v_lite' },
     recordedAt: '2026-10-04T16:00:00.000Z',
   })}\n`);
 
@@ -54,6 +60,13 @@ test('Flow inventory distinguishes generated, delivered, and public-use custody'
   assert.equal(inventory.artifacts[0].custody, 'generated');
   assert.equal(inventory.artifacts[0].allocation, 'media-allocation-1');
   assert.equal(inventory.artifacts[0].purpose, 'short-form-discovery');
+  assert.equal(inventory.artifacts[0].generationModeClaim,'ingredients-to-video');
+  assert.deepEqual(inventory.artifacts[0].sourceIdentities,
+    ['ni:///sha-256;'+'D'.repeat(43)]);
+  assert.equal(inventory.artifacts[0].referenceImageClaims[0].label,'rill');
+  assert.equal(inventory.artifacts[0].referenceImageClaims[0].rightsRef,'test:original-reference-rights');
+  assert.equal(inventory.artifacts[0].quotedFlowCredits,10);
+  assert.equal(inventory.artifacts[0].providerModel,'veo_3_1_r2v_lite');
 
   const delivered = recordFlowDelivery({
     completionId,

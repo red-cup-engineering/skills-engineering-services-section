@@ -138,7 +138,7 @@ export function planFlowReferencedSceneTrial({
  */
 export function admitFlowVideoAdoption({
   consumer, sourceNi=null, mediaNeed=null, destination=null,
-  allocation=null, purpose=null, generationMode=null,
+  allocation=null, purpose=null, generationMode=null, referenceImages=null,
 }={}){
   const owner=requireText(consumer,'Flow media consumer');
   const optional=(s,label)=>s===null?null:requireText(s,label);
@@ -148,6 +148,29 @@ export function admitFlowVideoAdoption({
   const mode=optional(generationMode,'operator generation-mode claim');
   if(mode!==null&&!['text-to-video','ingredients-to-video','frames-to-video','video-edit','unknown'].includes(mode))
     throw new TypeError('adoption generation mode must be a bounded known description');
+  // This is the operator's claim about exact image identities used in the
+  // signed-in Flow UI. The media read alone cannot attest UI ingredient bytes.
+  let referenced=null;
+  if(referenceImages!==null){
+    if(!Array.isArray(referenceImages)||referenceImages.length<1||referenceImages.length>3)
+      throw new TypeError('adoption referenceImages require 1–3 image identities');
+    if(source===null)throw new TypeError('adoption referenceImages require a source NI');
+    if(mode==='text-to-video')throw new TypeError('text-to-video cannot claim referenced ingredients');
+    const labels=new Set();
+    referenced=Object.freeze(referenceImages.map((r,i)=>{
+      if(!record(r))throw new TypeError('reference image '+i+' must be an object');
+      const label=requireText(r.label,'reference image label');
+      if(!/^[a-z][a-z0-9-]{0,79}$/u.test(label)||labels.has(label))
+        throw new TypeError('reference image labels must be unique stable slugs');
+      labels.add(label);
+      if(!['character','environment','object'].includes(r.kind))
+        throw new TypeError('reference image requires character/environment/object kind');
+      if(!/^ni:\/\/\/sha-256;[A-Za-z0-9_-]{43}$/u.test(r.identity))
+        throw new TypeError('reference image identity must be exact SHA-256 NI');
+      return Object.freeze({label,kind:r.kind,identity:r.identity,
+        rightsRef:requireText(r.rightsRef,'reference image rights claim')});
+    }));
+  }
   return Object.freeze({
     consumer:owner,sourceNi:source,
     mediaNeed:optional(mediaNeed,'media need'),
@@ -155,6 +178,7 @@ export function admitFlowVideoAdoption({
     allocation:optional(allocation,'media allocation'),
     purpose:optional(purpose,'media purpose'),
     generationModeClaim:mode,
+    referenceImageClaims:referenced,
     observationStatus:'OPERATOR_CLAIMS_NOT_PROVIDER_ATTESTATIONS',
   });
 }
