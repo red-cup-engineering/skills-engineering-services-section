@@ -680,13 +680,16 @@ export function flowQueueDemand(outcome, { config = loadFlowAllowanceConfig(), s
   const queued = existsSync(pending) ? readdirSync(pending).filter((name) => name.endsWith('.jsonl')).flatMap((name) => lines(join(pending, name))).length : 0;
   if (outcome.verificationRequired || readPacing(join(state, 'pacing.json')).verificationRequired) return { pending: 0, watch: [pending, join(state, 'pacing.json')] };
   const refused = (outcome.results ?? []).some((result) => /UNUSUAL_ACTIVITY|withheld|token/iu.test(`${result.failed ?? ''} ${result.refused ?? ''}`));
-  const daily = config.meters.find(({ id }) => id === 'daily');
-  const nextDay = daily ? (() => {
-    const anchor = Date.parse(daily.anchor);
-    const turns = Math.floor((now.getTime() - anchor) / 86_400_000) + 1;
-    return new Date(anchor + turns * 86_400_000).toISOString();
-  })() : undefined;
-  const nextAt = queued === 0 ? undefined : refused ? new Date(now.getTime() + readPacing(join(state,'pacing.json')).gapMs).toISOString() : outcome.deferredForPacing ? new Date(now.getTime()+20*60_000).toISOString() : nextDay;
+  // Google's current Flow help says the daily grant's refresh is triggered by
+  // first generation. An old account setup guessed Pacific midnight, which is
+  // NOT evidence of this account's next grant. Recheck observed balance rather
+  // than sleeping through a real refresh because that guess was wrong.
+  const nextObservedCreditCheck = new Date(now.getTime()+2*60*60_000).toISOString();
+  const nextAt = queued === 0 ? undefined : refused
+    ? new Date(now.getTime() + readPacing(join(state,'pacing.json')).gapMs).toISOString()
+    : outcome.deferredForPacing
+      ? new Date(now.getTime()+20*60_000).toISOString()
+      : nextObservedCreditCheck;
   return { pending: 0, ...(nextAt === undefined ? {} : { nextAt }), watch: [pending] };
 }
 
