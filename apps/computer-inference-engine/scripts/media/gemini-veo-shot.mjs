@@ -5,7 +5,7 @@
  * it is neither a story bible nor an authorization to spend or publish.
  *
  * preview SPEC.json
- * submit SPEC.json PRIVATE_JOB_DIR --approve-paid --max-usd 0.80 --operator REF
+ * submit SPEC.json PRIVATE_JOB_DIR --approve-paid --max-usd 0.80 --operator REF [--provider-requalified PROVIDER-EVIDENCE-REF]
  * receive PRIVATE_JOB_DIR                 (read-only provider status)
  * receive PRIVATE_JOB_DIR --download      (retrieve and hash completed video)
  *
@@ -16,7 +16,8 @@ import {createHash} from 'node:crypto';
 import {existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync, openSync, closeSync} from 'node:fs';
 import {dirname, resolve, relative, isAbsolute, sep, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
-import {prepareGeminiVeoShot,submitGeminiVeoShot,readGeminiVeoOperation,receiveGeminiVeoVideo} from '../../src/media/gemini-veo-video.mjs';
+import {prepareGeminiVeoShot,submitGeminiVeoShot,readGeminiVeoOperation,receiveGeminiVeoVideo,
+ assertGeminiVeoPreviewSubmissionWindow} from '../../src/media/gemini-veo-video.mjs';
 
 const die=(msg)=>{throw new TypeError(msg)};
 const text=x=>typeof x==='string'&&x.trim().length>0;
@@ -51,7 +52,7 @@ const parseLimit=x=>{
  return value;
 };
 
-export async function cinematicVeoCli(args,{env=process.env,fetch=globalThis.fetch,print=msg=>process.stdout.write(msg+'\n')}={}){
+export async function cinematicVeoCli(args,{env=process.env,fetch=globalThis.fetch,print=msg=>process.stdout.write(msg+'\n'),nowMs=Date.now()}={}){
  const [command,argument,other,...options]=args;
  if(command==='preview'){
   if(!argument||other!==undefined)die('usage: preview SHOT.json');
@@ -60,21 +61,26 @@ export async function cinematicVeoCli(args,{env=process.env,fetch=globalThis.fet
  }
  if(command==='submit'){
   if(!argument||!other)die('usage: submit SHOT.json PRIVATE_JOB_DIR --approve-paid --max-usd USD --operator REF');
-  if(options.length!==5||options[0]!=='--approve-paid'||options[1]!=='--max-usd'||options[3]!=='--operator')
+  if(![5,7].includes(options.length)||options[0]!=='--approve-paid'||options[1]!=='--max-usd'||options[3]!=='--operator'||
+     (options.length===7&&(options[5]!=='--provider-requalified'||!text(options[6]))))
     die('explicit paid approval, USD ceiling and operator required');
   const maxUsd=parseLimit(options[2]),operatorRef=options[4];
+  const providerRequalificationRef=options.length===7?options[6]:null;
   if(!text(operatorRef)||!text(env.GEMINI_API_KEY))die('spending operator and GEMINI_API_KEY are required');
   const source=loadSpecification(argument),dir=resolve(other);
   if(maxUsd<source.prepared.publicPlan.estimatedMaximumUsd)die('USD ceiling is below observed cinematic shot price');
+  // Admission before creating a one-time irreversible paid-attempt record.
+  assertGeminiVeoPreviewSubmissionWindow(source.prepared.publicPlan.model,{nowMs,providerRequalificationRef});
   mkdirSync(dir,{recursive:true,mode:0o700});
   // All durable effects for an ambiguous POST are protected by one exclusive
   // claim file. Even HTTP failure does not magically make retry safe.
   storeJSON(join(dir,'attempted.json'),{type:'GeminiVeoSubmissionAttempt',
     state:'POST_OUTCOME_UNKNOWN_UNTIL_OPERATION_OBSERVED',at:new Date().toISOString(),
     sourceSpecSha256:source.sourceSpecSha256,prepared:source.prepared.publicPlan,
-    spendingOperator:operatorRef,spendLimitUsd:maxUsd});
+    spendingOperator:operatorRef,spendLimitUsd:maxUsd,
+    providerRequalificationClaimRef:providerRequalificationRef});
   const submitted=await submitGeminiVeoShot(source.prepared,{apiKey:env.GEMINI_API_KEY,
-    spendAuthorized:true,maxUsd,operatorRef,fetch});
+    spendAuthorized:true,maxUsd,operatorRef,fetch,nowMs,providerRequalificationRef});
   storeJSON(join(dir,'submitted.json'),submitted);
   return print(JSON.stringify(submitted,null,2));
  }

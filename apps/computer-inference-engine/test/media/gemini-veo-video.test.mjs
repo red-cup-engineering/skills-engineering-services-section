@@ -5,6 +5,7 @@ import {
  prepareGeminiVeoShot,submitGeminiVeoShot,readGeminiVeoOperation,receiveGeminiVeoVideo
 } from '../../src/media/gemini-veo-video.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
+const BEFORE=Date.parse('2026-10-13T12:00:00Z');
 const png=Buffer.from('89504e470d0a1a0a0000000d49484452','hex');
 const asset=(id,b=png)=>({id,bytes:b,mimeType:'image/png',sha256:sha(b),rightsRef:'proof:original-generated-image-accepted-by-fiction-editor'});
 const input=()=>({shotId:'shot-001',sourceRef:'git:accepted-story-revision-1',
@@ -29,6 +30,8 @@ test('actual Gemini Veo REST packet binds original reference bytes, source and c
  assert.equal(a.publicPlan.requestSha256,b.publicPlan.requestSha256);
  assert.equal(JSON.stringify(a.publicPlan).includes(png.toString('base64')),false);
  assert.equal(a.publicPlan.priceBasis.currency,'USD');
+ assert.equal(a.publicPlan.modelLifecycle.earliestPossibleShutdownDate,'2026-10-22');
+ assert.equal(a.publicPlan.modelLifecycle.exactShutdownDateConfirmed,false);
  assert.match(a.publicPlan.note,/NOT Google Flow credits/u);
 });
 test('provider model capability, bounded duration and true rights/custody references are enforced before any API call',()=>{
@@ -58,7 +61,7 @@ test('live submission is blocked without spending approval and a separately boun
  for(const opts of [{},{spendAuthorized:true,maxUsd:0.79},{spendAuthorized:true,maxUsd:0.80,operatorRef:''}])
    await assert.rejects(()=>submitGeminiVeoShot(submission(),{apiKey:'do-not-log',fetch,...opts}),/operator|approved USD/u);
  assert.equal(calls,0);
- const result=await submitGeminiVeoShot(submission(),{apiKey:'private-test-key',fetch,operatorRef:'cinema-chief',spendAuthorized:true,maxUsd:0.80});
+ const result=await submitGeminiVeoShot(submission(),{apiKey:'private-test-key',fetch,operatorRef:'cinema-chief',spendAuthorized:true,maxUsd:0.80,nowMs:BEFORE});
  assert.equal(calls,1);
  assert.equal(result.status,'PROVIDER_OPERATION_PENDING');
  assert.equal(result.operationName,'operations/ok');
@@ -67,7 +70,7 @@ test('live submission is blocked without spending approval and a separately boun
 });
 test('provider POST uses exact documented API and 4xx or lost reply never silently trigger another paid request',async()=>{
  let count=0,seen;
- const opts={apiKey:'private-test-key',operatorRef:'cinema-chief',spendAuthorized:true,maxUsd:1};
+ const opts={apiKey:'private-test-key',operatorRef:'cinema-chief',spendAuthorized:true,maxUsd:1,nowMs:BEFORE};
  const fetch=async(url,req)=>{count++;seen={url,req};return response(200,{name:'models/veo-3.1-fast-generate-preview/operations/paid-1'})};
  const out=await submitGeminiVeoShot(submission(),{...opts,fetch});
  assert.equal(out.operationName,'models/veo-3.1-fast-generate-preview/operations/paid-1');
@@ -111,4 +114,24 @@ test('receives only allowlisted video bytes, verifies ISO media signature, and n
  assert.equal(unsafeCalls,0);
  await assert.rejects(()=>receiveGeminiVeoVideo('https://generativelanguage.googleapis.com/file',{apiKey:'private-key',fetch:async()=>response(302,null,{location:'http://evil.test/steal'})}),/not allowlisted/u);
  await assert.rejects(()=>receiveGeminiVeoVideo('https://generativelanguage.googleapis.com/file',{apiKey:'private-key',fetch:async()=>response(200,Buffer.alloc(18),{'content-type':'video/mp4'})}),/ISO base media/u);
+});
+
+test('announced earliest Veo preview shutdown holds new paid requests, not old receiving',async()=>{
+ const prepared=submission();let posts=0;
+ const fetch=async()=>{posts++;return response(200,{name:'operations/requalified'})};
+ const paid={apiKey:'private-test-key',operatorRef:'owner',spendAuthorized:true,
+  maxUsd:0.80,nowMs:Date.parse('2026-10-22T00:00:00Z'),fetch};
+ await assert.rejects(()=>submitGeminiVeoShot(prepared,paid),
+  err=>err.code==='VEO_PREVIEW_REQUALIFICATION_REQUIRED'&&
+   /gemini-omni-1.1-flash/u.test(err.message));
+ assert.equal(posts,0,'no paid API request without a recent model/price witness');
+ const admitted=await submitGeminiVeoShot(prepared,{...paid,
+  providerRequalificationRef:'provider:live-gemini-api-model-and-price-observation'});
+ assert.equal(posts,1);
+ assert.equal(admitted.status,'PROVIDER_OPERATION_PENDING');
+ assert.equal(admitted.providerRequalificationClaimRef,
+  'provider:live-gemini-api-model-and-price-observation');
+ const prior=await readGeminiVeoOperation('operations/old-paid',{apiKey:'test',
+  fetch:async()=>response(200,{name:'operations/old-paid',done:false})});
+ assert.equal(prior.status,'pending','read-only recovery outlives paid model admission');
 });

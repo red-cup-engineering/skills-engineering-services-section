@@ -13,11 +13,35 @@ import { createHash } from 'node:crypto';
 const API = 'https://generativelanguage.googleapis.com/v1beta';
 const DOC = 'https://ai.google.dev/gemini-api/docs/veo';
 const PRICE_DOC = 'https://ai.google.dev/gemini-api/docs/pricing';
+const DEPRECATION_DOC = 'https://ai.google.dev/gemini-api/docs/deprecations/';
+const EARLIEST_VEO_PREVIEW_SHUTDOWN = '2026-10-22';
+const REQUALIFY_AT_MS = Date.parse(EARLIEST_VEO_PREVIEW_SHUTDOWN+'T00:00:00Z');
 const CODECS = Object.freeze({
   'veo-3.1-generate-preview': Object.freeze({ '720p':0.40,'1080p':0.40,'4k':0.60 }),
   'veo-3.1-fast-generate-preview': Object.freeze({ '720p':0.10,'1080p':0.12,'4k':0.30 }),
   'veo-3.1-lite-generate-preview': Object.freeze({ '720p':0.05,'1080p':0.08 }),
 });
+/**
+ * The 2026-10-22 date is Google's EARLIEST POSSIBLE shutdown, not a
+ * confirmed outage. Old operation polling remains read-only and available.
+ * Beyond this boundary a new paid POST needs an operator's fresh, API-specific
+ * capability and pricing observation. The reference is a CLAIM, not a
+ * provider verification by this adapter; Flow UI grants do not qualify it.
+ */
+export function assertGeminiVeoPreviewSubmissionWindow(model,{
+  nowMs=Date.now(),providerRequalificationRef=null
+}={}){
+  if(!Object.prototype.hasOwnProperty.call(CODECS,model))
+    throw new TypeError('unsupported Veo preview API model');
+  if(!Number.isFinite(nowMs))throw new TypeError('finite API model qualification time required');
+  if(nowMs>=REQUALIFY_AT_MS&&
+      (typeof providerRequalificationRef!=='string'||!providerRequalificationRef.trim()||
+       providerRequalificationRef.length>2048)){
+    const error=new Error('Veo 3.1 preview has reached its earliest possible API shutdown date (2026-10-22). Requalify actual Gemini Developer API model availability and pricing, or migrate to gemini-omni-1.1-flash. Google Flow credits are a separate provider.');
+    error.code='VEO_PREVIEW_REQUALIFICATION_REQUIRED';
+    throw error;
+  }
+}
 const requireText = (x,label,max=8192) => {
   if(typeof x!=='string'||!x.trim()||x.length>max) throw new TypeError(`${label} requires bounded nonempty text`);
   return x;
@@ -106,6 +130,10 @@ export function prepareGeminiVeoShot(input){
     aspectRatio,resolution,durationSeconds,referenceAssets:Object.freeze(imageSources),
     requestSha256,estimatedMaximumUsd:quote,
     priceBasis:Object.freeze({observedDate:'2026-10-12',url:PRICE_DOC,currency:'USD',perOutputSecond:unitPrice}),
+    modelLifecycle:Object.freeze({state:'PREVIEW_EARLIEST_POSSIBLE_SHUTDOWN',
+      earliestPossibleShutdownDate:EARLIEST_VEO_PREVIEW_SHUTDOWN,
+      recommendedReplacement:'gemini-omni-1.1-flash',source:DEPRECATION_DOC,
+      exactShutdownDateConfirmed:false}),
     note:'Paid Gemini Developer API, NOT Google Flow credits; estimate only. Non-deterministic model output even with seed.'});
   return Object.freeze({publicPlan,request:Object.freeze({
     method:'POST',url:`${API}/models/${model}:predictLongRunning`,body
@@ -125,11 +153,12 @@ async function readJson(response){
 
 /** A LIVE billable submission. The caller retains attempt state BEFORE calling this. */
 export async function submitGeminiVeoShot(prepared,{apiKey,fetch=globalThis.fetch,
-  spendAuthorized=false,maxUsd=0,operatorRef}={}){
+  spendAuthorized=false,maxUsd=0,operatorRef,nowMs=Date.now(),providerRequalificationRef=null}={}){
   if(!prepared?.publicPlan||!prepared?.request)throw new TypeError('prepared cinematic shot required');
   requireText(operatorRef,'authorized spending operator',256);
   if(spendAuthorized!==true||!Number.isFinite(maxUsd)||maxUsd<prepared.publicPlan.estimatedMaximumUsd)
     throw new TypeError('a separately approved USD spend limit must cover the proposed shot');
+  assertGeminiVeoPreviewSubmissionWindow(prepared.publicPlan.model,{nowMs,providerRequalificationRef});
   const key=requireKey(apiKey);
   if(typeof fetch!=='function')throw new TypeError('provider fetch required');
   let response;
@@ -154,8 +183,8 @@ export async function submitGeminiVeoShot(prepared,{apiKey,fetch=globalThis.fetc
     model:prepared.publicPlan.model,shotId:prepared.publicPlan.shotId,
     requestSha256:prepared.publicPlan.requestSha256,
     estimatedMaximumUsd:prepared.publicPlan.estimatedMaximumUsd,
-    chargedAmountUsd:null,
-    note:'Submission accepted into provider queue; not finished/settled media or confirmed final charge.'});
+    chargedAmountUsd:null,providerRequalificationClaimRef:providerRequalificationRef,
+    note:'Submission accepted into provider queue; not finished/settled media or confirmed final charge. Requalification references are operator claims, not provider proofs.'});
 }
 
 /** READ ONLY: no second paid POST, safe for repeated receiving passes. */
