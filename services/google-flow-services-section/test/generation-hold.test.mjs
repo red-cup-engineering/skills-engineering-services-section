@@ -124,3 +124,20 @@ test('interruption between claim-file renames restores every original order',asy
  const pending=join(state,'orders/pending');assert.deepEqual((await readdir(pending)).sort(),['first.jsonl','second.jsonl']);
  assert.equal(await readFile(join(pending,'first.jsonl'),'utf8'),'{"consumer":"first"}\n');
 });
+
+
+test('pending Flow media is rechecked against real account credit rather than a presumed midnight',async t=>{
+ const state=await mkdtemp(join(tmpdir(),'flow-refresh-observation-'));
+ t.after(()=>rm(state,{recursive:true,force:true}));
+ const pending=join(state,'orders/pending');
+ await mkdir(pending,{recursive:true});
+ await writeFile(join(pending,'accepted-demand.jsonl'),
+   JSON.stringify({consumer:'causeway',medium:'video',model:'veo_3_1_t2v_lite',prompt:'original scene'})+'\n');
+ const now=new Date('2026-10-13T12:35:00.000Z');
+ const config={meters:[{id:'daily',anchor:'2026-10-02T07:00:00Z',budget:50}]};
+ const demand=flowQueueDemand({results:[],deferredForPacing:false},{state,config,now});
+ assert.equal(demand.nextAt,'2026-10-13T14:35:00.000Z');
+ assert(demand.watch.includes(pending));
+ assert.notEqual(demand.nextAt,'2026-10-14T07:00:00.000Z',
+   'a guessed Pacific-midnight schedule must not postpone the actual account balance recheck');
+});
