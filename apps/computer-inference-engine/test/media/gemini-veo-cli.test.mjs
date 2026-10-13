@@ -1,0 +1,83 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, writeFileSync, existsSync, readFileSync, rmSync, mkdirSync } from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createHash} from 'node:crypto';
+import {cinematicVeoCli} from '../../scripts/media/gemini-veo-shot.mjs';
+const png=Buffer.from('89504e470d0a1a0a0000000d49484452','hex');
+const hash=x=>createHash('sha256').update(x).digest('hex');
+const response=(status,body,headers={})=>({ok:status>=200&&status<300,status,headers:{get:k=>headers[k.toLowerCase()]??null},json:async()=>body,arrayBuffer:async()=>Buffer.from(body)});
+const fixture=()=>{
+ const root=mkdtempSync(join(tmpdir(),'redcup-veo-test-'));
+ writeFileSync(join(root,'character.png'),png);
+ const spec={shotId:'shot-in-world',sourceRef:'git:561-tv-episode-revision',
+  consumer:'causeway-original-fiction',mediaNeed:'urn:media-need:5656:1',
+  prompt:'Cinematic video of two original marine agents in a luminous glass-sponge temple, precise original performances, vibrant underwater lighting and moving camera.',
+  referenceImages:[{id:'char',path:'character.png',mimeType:'image/png',sha256:hash(png),rightsRef:'source:original-art-authorized'}],
+  model:'veo-3.1-fast-generate-preview',durationSeconds:8};
+ const path=join(root,'shot.json');writeFileSync(path,JSON.stringify(spec));
+ return {root,path,job:join(root,'private-job')};
+};
+const out=(messages=[])=>({messages,print:value=>messages.push(JSON.parse(value))});
+
+test('preview is truly credentialless: resolves real image bytes and outputs only hashes and USD estimate',async t=>{
+ const f=fixture();t.after(()=>rmSync(f.root,{recursive:true,force:true}));
+ const {messages,print}=out();
+ await cinematicVeoCli(['preview',f.path],{env:{},print});
+ assert.equal(messages[0].estimatedMaximumUsd,0.80);
+ assert.equal(messages[0].referenceAssets[0].sha256,hash(png));
+ assert.equal(JSON.stringify(messages).includes(png.toString('base64')),false);
+ assert.equal(existsSync(f.job),false);
+});
+test('a low USD budget cannot poison one-time paid submission state',async t=>{
+ const f=fixture();t.after(()=>rmSync(f.root,{recursive:true,force:true}));
+ await assert.rejects(()=>cinematicVeoCli(['submit',f.path,f.job,'--approve-paid','--max-usd','0.40','--operator','owner'],{env:{GEMINI_API_KEY:'key'},print:()=>{}}),/ceiling is below/u);
+ assert.equal(existsSync(f.job),false);
+ await assert.rejects(()=>cinematicVeoCli(['submit',f.path,f.job,'--approve-paid','--max-usd','1.00','--operator','owner'],{env:{},print:()=>{}}),/GEMINI_API_KEY/u);
+ assert.equal(existsSync(f.job),false);
+});
+test('actual submit -> poll -> download can resume with exact receipt and NEVER double-buy on restart',async t=>{
+ const f=fixture();t.after(()=>rmSync(f.root,{recursive:true,force:true}));
+ const film=Buffer.concat([Buffer.from([0,0,0,20]),Buffer.from('ftypisom'),Buffer.alloc(22)]);
+ let calls=0;
+ const fetch=async (url,req)=>{
+  calls++;
+  if(req.method==='POST')return response(200,{name:'operations/once'});
+  if(url.endsWith('/operations/once'))return response(200,{name:'operations/once',done:true,
+   response:{generateVideoResponse:{generatedSamples:[{video:{uri:'https://generativelanguage.googleapis.com/v1beta/files/clip:download'}}]}}});
+  return response(200,film,{'content-type':'video/mp4'});
+ };
+ const env={GEMINI_API_KEY:'unlogged-api-key'};
+ const created=out();
+ await cinematicVeoCli(['submit',f.path,f.job,'--approve-paid','--max-usd','0.80','--operator','cinema-director'],{env,fetch,print:created.print});
+ assert.equal(calls,1);
+ assert.equal(created.messages[0].operationName,'operations/once');
+ assert.ok(existsSync(join(f.job,'attempted.json')));
+ assert.ok(existsSync(join(f.job,'submitted.json')));
+ assert.equal(JSON.stringify(created.messages).includes('unlogged-api-key'),false);
+ await assert.rejects(()=>cinematicVeoCli(['submit',f.path,f.job,'--approve-paid','--max-usd','0.80','--operator','cinema-director'],{env,fetch,print:()=>{}}),/do not overwrite/u);
+ assert.equal(calls,1,'not a single additional paid POST');
+ const received=out();
+ await cinematicVeoCli(['receive',f.job,'--download'],{env,fetch,print:received.print});
+ assert.equal(received.messages[0].receivedVideoSha256,hash(film));
+ assert.equal(received.messages[0].state,'RECEIVED_PROVIDER_BYTES_AWAITING_MEDIA_REVIEW');
+ assert.ok(existsSync(join(f.job,received.messages[0].mediaRelativePath)));
+ assert.equal(readFileSync(join(f.job,received.messages[0].mediaRelativePath)).equals(film),true);
+ const before=calls;
+ await cinematicVeoCli(['receive',f.job,'--download'],{env,fetch,print:()=>{}});
+ assert.equal(calls,before+1,'a harmless status GET only; no second download after durable receiving');
+});
+test('ambiguous paid POST remains locked to one attempted request; no generated-operation receipt is invented',async t=>{
+ const f=fixture();t.after(()=>rmSync(f.root,{recursive:true,force:true}));
+ let called=0;
+ const env={GEMINI_API_KEY:'secret'};
+ await assert.rejects(()=>cinematicVeoCli(['submit',f.path,f.job,'--approve-paid','--max-usd','1.00','--operator','owner'],{
+  env,fetch:async()=>{called++;throw Error('lost connection after POST')},print:()=>{}}),e=>e.code==='VEO_SUBMISSION_UNCERTAIN');
+ assert.equal(called,1);
+ assert.equal(existsSync(join(f.job,'attempted.json')),true);
+ assert.equal(existsSync(join(f.job,'submitted.json')),false);
+ await assert.rejects(()=>cinematicVeoCli(['submit',f.path,f.job,'--approve-paid','--max-usd','1.00','--operator','owner'],{
+  env,fetch:async()=>{called++;return response(200,{name:'operations/double-billed'})},print:()=>{}}),/do not overwrite/u);
+ assert.equal(called,1);
+});
