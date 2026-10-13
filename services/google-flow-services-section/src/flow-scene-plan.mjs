@@ -106,6 +106,7 @@ export function planFlowReferencedSceneTrial({
     candidates.push(Object.freeze({
       modelKey:key,modelFamily:omni?'Gemini Omni Flash':veoLite?'Veo 3.1 Lite':'Veo 3.1 Fast',
       secondsPerShot:seconds,creditsPerShot:row.credits,totalCredits,
+      referenceResolution:omni?(key.endsWith('_360p')?'360p':'720p'):'Veo account/catalog default',
       aspect,availableWithinCeiling:totalCredits<=budget,
       supportedUIFeature:'Ingredients / References to Video',
       automatedWireSupport:false,
