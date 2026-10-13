@@ -1,4 +1,4 @@
-name: Google Flow scene planning
+name: Google video production providers (Flow planning and Gemini Veo paid boundary)
 on:
   push:
     paths:
@@ -6,6 +6,11 @@ on:
       - 'services/google-flow-services-section/src/flow-protocol.mjs'
       - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
       - 'services/google-flow-services-section/package.json'
+      - 'apps/computer-inference-engine/src/media/gemini-veo-video.mjs'
+      - 'apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs'
+      - 'apps/computer-inference-engine/test/media/gemini-veo-video.test.mjs'
+      - 'apps/computer-inference-engine/test/media/gemini-veo-cli.test.mjs'
+      - 'apps/computer-inference-engine/package.json'
       - '.github/workflows/google-flow-scene-plan.yml'
   pull_request:
     paths:
@@ -13,6 +18,11 @@ on:
       - 'services/google-flow-services-section/src/flow-protocol.mjs'
       - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
       - 'services/google-flow-services-section/package.json'
+      - 'apps/computer-inference-engine/src/media/gemini-veo-video.mjs'
+      - 'apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs'
+      - 'apps/computer-inference-engine/test/media/gemini-veo-video.test.mjs'
+      - 'apps/computer-inference-engine/test/media/gemini-veo-cli.test.mjs'
+      - 'apps/computer-inference-engine/package.json'
       - '.github/workflows/google-flow-scene-plan.yml'
 permissions:
   contents: read
@@ -24,7 +34,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Pure catalog, quote and hold-boundary tests
+      - name: Verify real Google video provider protocols and hold boundaries
         run: |
           node --check services/google-flow-services-section/src/flow-scene-plan.mjs
           node --test services/google-flow-services-section/test/flow-scene-plan.test.mjs
+          node --check apps/computer-inference-engine/src/media/gemini-veo-video.mjs
+          node --check apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs
+          node --test apps/computer-inference-engine/test/media/gemini-veo-video.test.mjs apps/computer-inference-engine/test/media/gemini-veo-cli.test.mjs
