@@ -27,4 +27,3 @@ export function createProviderAccountEntitlementResolver(observations, { now = (
       cashCost: "zero", paidOverage: "forbidden" }) : null;
   };
 }
-
