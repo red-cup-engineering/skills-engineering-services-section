@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {flowTextVideoOptions,planFlowTextVideoShot,planFlowReferencedSceneTrial,admitFlowVideoAdoption} from '../src/flow-scene-plan.mjs';
+import {isFlowTextVideoModelKey,videoTextRequest} from '../src/flow-protocol.mjs';
 const observed=()=>[
   {key:'veo_3_1_t2v_lite',medium:'video',credits:10,seconds:8},
   {key:'veo_3_1_t2v_fast',medium:'video',credits:20,seconds:8},
@@ -171,4 +172,30 @@ test('adopted cinematic Flow shot binds exact operator-declared visual identitie
   {...refs[0],rightsRef:''}]}),/rights claim/u);
  assert.throws(()=>admitFlowVideoAdoption({consumer:'fiction',sourceNi,referenceImages:[]}),
   /1–3 image identities/u);
+});
+
+
+test('Tunesday: raw Google Flow text RPC cannot silently discard visual references or select reference-only models',()=>{
+ const valid={prompt:'Original film scene with no image conditioning',
+  model:'veo_3_1_t2v_lite',aspect:'9:16',count:1,projectId:'qualified-test-project',
+  token:'test-token',newId:()=> 'TEST-UUID'};
+ assert.equal(isFlowTextVideoModelKey(valid.model),true);
+ assert.equal(isFlowTextVideoModelKey('abra_t2v_8s_360p'),true);
+ const submitted=videoTextRequest(valid);
+ assert.ok(Array.isArray(submitted));
+ assert.equal(submitted[0].length,1);
+ for(const variation of [
+  {model:'veo_3_1_r2v_lite'},
+  {model:'abra_i2v_8s'},
+  {model:'abra_edit'},
+  {referenceImages:[{identity:'ni:///sha-256;'+'A'.repeat(43)}]},
+  {referenceImages:[]},
+  {firstFrame:'ni:///sha-256;'+'B'.repeat(43)},
+  {lastFrame:null},
+  {sourceVideo:'already-filmed.mp4'},
+  {requiresIdentityLock:true},
+  {generationMode:'ingredients-to-video'}
+ ])assert.throws(()=>videoTextRequest({...valid,...variation}),/text-to-video only/u);
+ assert.equal(isFlowTextVideoModelKey('veo_3_1_r2v_lite'),false);
+ assert.equal(isFlowTextVideoModelKey('abra_i2v_8s'),false);
 });

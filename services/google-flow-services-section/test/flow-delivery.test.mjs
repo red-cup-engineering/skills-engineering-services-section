@@ -167,3 +167,20 @@ test('Flow does not advertise provider-neutral image generation when the current
   });
   assert.deepEqual(offer.capabilities, {});
 });
+
+
+test('Tunesday: final queued Flow video admission refuses reference/frame payloads and non-text models',()=>{
+ const original={consumer:'causeway-original-fiction',medium:'video',
+  model:'veo_3_1_t2v_lite',aspect:'9:16',
+  prompt:'Original actor moves through undersea silica architecture'};
+ assert.equal(admitOrder(JSON.stringify([original]))[0].kind,original.model);
+ for(const inappropriate of [
+   {model:'veo_3_1_r2v_lite'},
+   {model:'abra_i2v_8s'},
+   {requiresIdentityLock:true},
+   {referenceImages:[{id:'rill',sha256:'a'.repeat(64)}]},
+   {firstFrame:'original-rill-frame'},
+   {generationMode:'ingredients-to-video'}
+ ]) assert.throws(()=>admitOrder(JSON.stringify([{...original,...inappropriate}])),
+   /text-to-video only/u);
+});

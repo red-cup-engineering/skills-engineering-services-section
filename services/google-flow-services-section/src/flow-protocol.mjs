@@ -52,8 +52,38 @@ export function videoModelKey(model, aspect) {
   return aspect === '9:16' && model.startsWith('veo_') && !model.endsWith('_portrait') && !model.includes('_lite') ? `${model}_portrait` : model;
 }
 
+
+/** Existing wire route is ONLY text-to-video. A Flow catalog listing another
+ * video mode is not evidence that this RPC can submit its references/frames.
+ */
+export const isFlowTextVideoModelKey = model =>
+  typeof model==='string' &&
+  /^(?:veo_.+_t2v(?:_.+)?|abra_t2v_\d+s(?:_360p)?)$/u.test(model);
+
+/** Reject unsupported conditioning at the common pure boundary, before any
+ * allowance hold or billable request. Never silently discard source visuals.
+ */
+export function requireFlowTextVideoRequest(order){
+  if(!order||typeof order!=='object'||Array.isArray(order))
+    throw new TypeError('text-to-video order must be a structured record');
+  const unsupported=[
+    'referenceImages','referenceImage','references','ingredients',
+    'firstFrame','lastFrame','inputImage','inputImages','sourceVideo',
+    'referenceVideo','imageRef','image','frames','videoInput','mask'
+  ];
+  if(!isFlowTextVideoModelKey(order.model) ||
+     order.requiresIdentityLock===true ||
+     unsupported.some(key=>Object.prototype.hasOwnProperty.call(order,key)) ||
+     (order.generationMode!==undefined&&order.generationMode!=='text-to-video') ||
+     (order.mode!==undefined&&order.mode!=='text-to-video'))
+    throw new TypeError('Flow wire client supports text-to-video only; reference/image/frame/video conditioning is unsupported and cannot silently consume credits. Use the separately qualified Flow UI adoption or another admitted provider.');
+  return true;
+}
+
 /** Arguments of a text-to-video submission: `count` clips of one prompt. */
-export function videoTextRequest({ prompt, model, aspect = '16:9', count = 1, projectId, token, newId }) {
+export function videoTextRequest(order) {
+  requireFlowTextVideoRequest(order);
+  const {prompt,model,aspect='16:9',count=1,projectId,token,newId}=order;
   const code = requireAspect(VIDEO_ASPECT, aspect, 'video');
   const key = videoModelKey(model, aspect);
   const one = () => [[null, null, [[[prompt]]]], key, code, null, [null, null, null, null, newId(), newId()]];

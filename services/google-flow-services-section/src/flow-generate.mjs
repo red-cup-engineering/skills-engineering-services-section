@@ -47,7 +47,7 @@ import { allowanceLedgerPath, attemptAllowance, holdAllowance, readAllowanceLedg
 import { openRecaptchaMinter } from '@red-cup-engineering/assisted-browser-services-section/recaptcha';
 import { keepMediaInDrive, releaseMediaCache } from '@red-cup-engineering/google-drive-services-section/media';
 import { openGoogleFlow, storageStatePath } from './google-flow-client.mjs';
-import { videoModelKey } from './flow-protocol.mjs';
+import { videoModelKey, requireFlowTextVideoRequest } from './flow-protocol.mjs';
 import { admitFlowVideoAdoption } from './flow-scene-plan.mjs';
 import { appendCreditReading, balanceEvidence, creditJournalPath, flowAllowance, loadFlowAllowanceConfig } from './flow-credits.mjs';
 
@@ -96,6 +96,9 @@ export function admitOrder(text) {
     for (const field of ['consumer', 'medium', 'prompt', 'model']) if (typeof row[field] !== 'string' || !row[field].trim()) throw new TypeError(`order line ${index + 1} needs ${field}`);
     for (const field of ['mediaNeed', 'destination', 'allocation', 'purpose']) if (row[field] !== undefined && (typeof row[field] !== 'string' || !row[field].trim())) throw new TypeError(`order line ${index + 1}: ${field} must be nonempty text when supplied`);
     if (!['video', 'image'].includes(row.medium)) throw new TypeError(`order line ${index + 1}: medium is video or image`);
+    // Read the model family AND supplied controls at the final queue admission;
+    // upstream UI-only reference planners are not an executable RPC.
+    if(row.medium==='video')requireFlowTextVideoRequest(row);
     const count = row.count ?? 1;
     if (!Number.isSafeInteger(count) || count < 1 || count > 4) throw new TypeError(`order line ${index + 1}: count is 1 to 4, as Flow makes them`);
     const aspect = row.aspect ?? (row.medium === 'video' ? '16:9' : '1:1');

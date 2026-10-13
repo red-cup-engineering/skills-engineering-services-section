@@ -6,7 +6,7 @@
  * Actual credit holds/submission/custody belong to flow-generate.mjs after
  * independently admitted customer award and availability checks.
  */
-import {videoModelKey} from './flow-protocol.mjs';
+import {videoModelKey,isFlowTextVideoModelKey} from './flow-protocol.mjs';
 
 const requireText=(v,name)=>{if(typeof v!=='string'||!v.trim())throw new TypeError(`${name} requires text`);return v.trim()};
 const safeInt=(v,name,min=0)=>{if(!Number.isSafeInteger(v)||v<min)throw new TypeError(`${name} must be integer >= ${min}`);return v};
@@ -20,7 +20,7 @@ export function flowTextVideoOptions(catalog,{aspect='9:16'}={}) {
   const options=[];
   for(const row of catalog){
     if(!record(row)||row.medium!=='video'||typeof row.key!=='string')continue;
-    if(!/^(?:veo_.+_t2v(?:_.+)?|abra_t2v_\d+s(?:_360p)?)$/u.test(row.key))continue;
+    if(!isFlowTextVideoModelKey(row.key))continue;
     if(!Number.isSafeInteger(row.credits)||row.credits<0)continue;
     const effectiveKey=videoModelKey(row.key,aspect);
     // A portrait-specific Veo 3.1 model must actually be in the live catalog.
