@@ -34,6 +34,99 @@ export function flowTextVideoOptions(catalog,{aspect='9:16'}={}) {
   return Object.freeze(options.sort((a,b)=>a.credits-b.credits||a.model.localeCompare(b.model)));
 }
 
+
+/**
+ * Turn one exact dramatic source into a **usable Google Flow UI reference-video
+ * audition**, priced only from a just-observed account model catalog.
+ *
+ * The Flow product UI supports Ingredients to Video for Veo 3.1 Lite/Fast
+ * (8-second clips) and Gemini Omni Flash (4/6/8/10 seconds). This repository's
+ * Flow *wire client* currently supports TEXT-to-video only. Do NOT feed this
+ * result to flow-generate as if reference conditioning were supported.
+ *
+ * The output is an artist/operator handoff, not an approved MediaNeed,
+ * renderer invocation, source-of-truth world revision, accepted clip or spend.
+ */
+export function planFlowReferencedSceneTrial({
+  catalog, sourceRef, referenceImages, shots, consumer, destination,
+  maxCredits, aspect='9:16'
+}={}){
+  if(!Array.isArray(catalog))throw new TypeError('observed Flow model catalog is required');
+  if(!['9:16','16:9'].includes(aspect))throw new TypeError('invalid Flow video aspect');
+  const source=requireText(sourceRef,'exact source revision');
+  if(!/^(?:sha256:[a-f0-9]{64}|git:[a-f0-9]{40})$/u.test(source))
+    throw new TypeError('source revision must be exact sha256: or git: identity');
+  const owner=requireText(consumer,'consumer');
+  const delivery=requireText(destination,'destination');
+  const budget=safeInt(maxCredits,'maximum Flow credits',1);
+  if(!Array.isArray(shots)||shots.length<1||shots.length>8)
+    throw new TypeError('one to eight actual dramatic shots required');
+  if(!Array.isArray(referenceImages)||referenceImages.length<1||referenceImages.length>3)
+    return Object.freeze({type:'FlowReferencedSceneTrial',status:'HELD_MISSING_OR_TOO_MANY_REFERENCES',
+      sourceRef:source,reason:'Require 1–3 exact reference images before staging consistent characters'});
+  const labels=new Set(),references=referenceImages.map((item)=>{
+    if(!record(item))throw new TypeError('reference image must be object');
+    const label=requireText(item.label,'reference label');
+    if(labels.has(label))throw new TypeError('reference labels must be unique');labels.add(label);
+    if(!['character','environment','object'].includes(item.kind))
+      throw new TypeError('reference kind must be character/environment/object');
+    if(!/^ni:\/\/\/sha-256;[A-Za-z0-9_-]{43}$/u.test(item.identity))
+      throw new TypeError('reference image identity must be content-addressed NI');
+    return Object.freeze({label,kind:item.kind,identity:item.identity});
+  });
+  if(!references.some(ref=>ref.kind==='character'))
+    throw new TypeError('a character-continuity trial needs a character reference');
+  const ids=new Set(),take=shots.map((shot)=>{
+    if(!record(shot))throw new TypeError('shot must be object');
+    const id=requireText(shot.id,'shot ID');
+    if(!/^[a-z0-9][a-z0-9-]{0,79}$/u.test(id)||ids.has(id))
+      throw new TypeError('shot IDs must be distinct lowercase slugs');
+    ids.add(id);
+    const prompt=requireText(shot.prompt,'cinematic prompt');
+    if(prompt.length>6000)throw new TypeError('cinematic prompt is too long');
+    const seconds=safeInt(shot.seconds,'shot seconds',4);
+    if(![4,6,8,10].includes(seconds))throw new TypeError('shot seconds must be 4/6/8/10');
+    return Object.freeze({id,seconds,prompt});
+  });
+  const candidates=[];
+  for(const row of catalog){
+    if(!record(row)||row.medium!=='video'||typeof row.key!=='string'||
+      !Number.isSafeInteger(row.credits)||row.credits<0)continue;
+    const key=row.key;
+    const veoLite=key==='veo_3_1_r2v_lite';
+    const veoFast=/^veo_3_1_r2v_fast_(?:portrait|landscape)$/u.test(key);
+    const omni=/^abra_r2v_(?:4|6|8|10)s(?:_360p)?$/u.test(key);
+    if(!veoLite&&!veoFast&&!omni)continue;
+    if(veoFast && ((aspect==='9:16'&&!key.endsWith('_portrait'))||
+       (aspect==='16:9'&&!key.endsWith('_landscape'))))continue;
+    const seconds=omni?Number(key.match(/_r2v_(\d+)s/u)[1]):8;
+    if(take.some(shot=>shot.seconds!==seconds))continue;
+    if(row.seconds!=null && row.seconds!==seconds)continue;
+    const totalCredits=row.credits*take.length;
+    candidates.push(Object.freeze({
+      modelKey:key,modelFamily:omni?'Gemini Omni Flash':veoLite?'Veo 3.1 Lite':'Veo 3.1 Fast',
+      secondsPerShot:seconds,creditsPerShot:row.credits,totalCredits,
+      aspect,availableWithinCeiling:totalCredits<=budget,
+      supportedUIFeature:'Ingredients / References to Video',
+      automatedWireSupport:false,
+    }));
+  }
+  candidates.sort((a,b)=>a.totalCredits-b.totalCredits||a.modelKey.localeCompare(b.modelKey));
+  const feasible=candidates.filter(item=>item.availableWithinCeiling);
+  return Object.freeze({
+    type:'FlowReferencedSceneTrial',
+    status:feasible.length?'PREPARED_FLOW_UI_HANDOFF_NOT_SUBMITTED':
+      candidates.length?'HELD_CREDIT_CEILING':'HELD_NO_OBSERVED_UI_MODEL',
+    sourceRef:source,consumer:owner,destination:delivery,
+    references:Object.freeze(references),
+    shots:Object.freeze(take),aspect,maximumCredits:budget,
+    candidates:Object.freeze(candidates),cheapestFeasible:feasible[0]??null,
+    sequenceRule:'Reuse these exact source-character reference identities in every shot. Compare the same characters under a different camera/action; do not substitute a new reference silently.',
+    manualReceiver:'Generate in the actual Google Flow project UI; source-linked provider media IDs must be adopted via the existing Flow media custody path. This planner cannot click Flow or spend credits.',
+    limitation:'UI-only, unapproved development experiment. Flow credits are NOT Gemini Developer API dollars. Source binding, independent asset approval and rendered identity must still be checked.',
+  });
+}
+
 /**
  * A proposed 1-clip order only. It does not book credits, queue an order or
  * represent a working reference-image path. Callers MUST provide a real
