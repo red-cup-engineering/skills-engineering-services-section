@@ -11,6 +11,7 @@ on:
       - 'apps/computer-inference-engine/test/media/gemini-veo-video.test.mjs'
       - 'apps/computer-inference-engine/test/media/gemini-veo-cli.test.mjs'
       - 'apps/computer-inference-engine/package.json'
+      - 'apps/computer-inference-engine/test/package/distribution-files.json'
       - '.github/workflows/google-flow-scene-plan.yml'
   pull_request:
     paths:
@@ -23,6 +24,7 @@ on:
       - 'apps/computer-inference-engine/test/media/gemini-veo-video.test.mjs'
       - 'apps/computer-inference-engine/test/media/gemini-veo-cli.test.mjs'
       - 'apps/computer-inference-engine/package.json'
+      - 'apps/computer-inference-engine/test/package/distribution-files.json'
       - '.github/workflows/google-flow-scene-plan.yml'
 permissions:
   contents: read
@@ -41,3 +43,4 @@ jobs:
           node --check apps/computer-inference-engine/src/media/gemini-veo-video.mjs
           node --check apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs
           node --test apps/computer-inference-engine/test/media/gemini-veo-video.test.mjs apps/computer-inference-engine/test/media/gemini-veo-cli.test.mjs
+          node --test apps/computer-inference-engine/test/package/distribution.test.mjs
