@@ -31,6 +31,31 @@ test('eight endpoint roundtable jobs share global and per-provider capacity with
   assert.equal(Object.keys(result.summary.byEndpoint).length,8);
 });
 
+test('admitted independent zero-cash accounts fill idle lanes, while models on one key never overbook', async()=>{
+ const endpoints=[
+  endpoint('a1',{accountId:'shared',accountConcurrency:1}),
+  endpoint('a2',{accountId:'shared',accountConcurrency:1}),
+  endpoint('b',{accountId:'independent',accountConcurrency:1})
+ ];
+ const inFlight=new Map(),peak=new Map();
+ const jobs=Array.from({length:6},(_,i)=>job('diverse-'+i));
+ const run=await dispatchJobs(jobs,{endpoints,concurrency:3,fillAvailableCapacity:true},{
+  concurrency:3,attempts:1,invoke:async target=>{
+   const id=target.accountId;
+   const number=(inFlight.get(id)??0)+1;
+   inFlight.set(id,number);peak.set(id,Math.max(peak.get(id)??0,number));
+   await delay(12);
+   inFlight.set(id,number-1);
+   return {text:'received',usage:null,cost:null};
+  }
+ });
+ assert.equal(run.summary.completed,6);
+ assert.deepEqual(new Set(run.records.map(r=>r.endpoint)).has('b'),true,
+  'idle independently admitted account must perform work rather than waiting on a saturated alias');
+ assert.equal(peak.get('shared'),1,'two model aliases draw from one actual account budget');
+ assert.equal(peak.get('independent'),1);
+});
+
 test('rate-limited providers fall back within the attempt budget and preserve attempt evidence', async () => {
   const result = await dispatchJobs([job('fallback')], {endpoints:[endpoint('a'),endpoint('b')]}, {attempts:2,invoke:async e=>{
     if(e.id==='a')throw new EndpointRefusal('HTTP 429',{status:429,retryable:true,retryAfterMs:5});
@@ -67,6 +92,33 @@ test('catalog projection admits unauthenticated local and exact free cloud model
   assert.equal(result.endpoints.length,2);assert.equal(result.excluded[0].reason,'zero-cash-not-established');
   assert.ok(!JSON.stringify(result).includes('secret'));
   assert.equal(inferenceRegistryFromCatalog(catalog,{env:{}}).endpoints.length,1);
+});
+
+test('production catalog order powers the default zero-cash batch lane without duplicate compute per account',()=>{
+ const row={providerId:'local',keyed:true,chatCompletionsUrl:'http://127.0.0.1:11434/v1/chat/completions',
+  defaultModel:'local',auth:{mode:'none'},concurrency:3,
+  pricePerMillionTokensMicroUsd:{input:0,output:0},
+  entitlement:{model:'local',cashCost:'zero',paidOverage:'forbidden'}};
+ const first={...row,providerId:'cloud-a',defaultModel:'free-a',
+  chatCompletionsUrl:'https://example.invalid/chat',auth:{mode:'bearer'},
+  apiKeyEnvVar:'SHARED_KEY',concurrency:4,
+  entitlement:{model:'free-a',cashCost:'zero',paidOverage:'forbidden'}};
+ const second={...first,providerId:'cloud-b',defaultModel:'free-b',concurrency:2,
+  entitlement:{model:'free-b',cashCost:'zero',paidOverage:'forbidden'}};
+ const catalog={rows:[row,first,second,{...first,providerId:'paid',
+   entitlement:undefined,apiKeyEnvVar:'PAID_KEY'}],
+  routingPolicy:{order:['local','cloud-a','cloud-b','paid']}};
+ const native=inferenceRegistryFromCatalog(catalog,{env:{SHARED_KEY:'secret',PAID_KEY:'secret'}});
+ assert.deepEqual(native.endpoints.map(e=>e.id),['local','cloud-a','cloud-b']);
+ assert.equal(native.concurrency,7,'the shared cloud key contributes one max-4 lane plus the local three');
+ assert.deepEqual(native.excluded,[{id:'paid',reason:'zero-cash-not-established'}]);
+ assert.ok(!JSON.stringify(native).includes('secret'));
+ const localOnly=inferenceRegistryFromCatalog(catalog,{env:{}});
+ assert.deepEqual(localOnly.endpoints.map(e=>e.id),['local']);
+ assert.equal(localOnly.concurrency,3);
+ assert.equal(inferenceRegistryFromCatalog(catalog,{env:{SHARED_KEY:'yes'},concurrency:1}).concurrency,1,
+  'an operator may deliberately choose serialized jobs');
+ assert.throws(()=>inferenceRegistryFromCatalog(catalog,{env:{},concurrency:0}),/concurrency must be positive/u);
 });
 
 test('shared transport retains timeout and retry-after refusal and verifies successful JSON',async()=>{

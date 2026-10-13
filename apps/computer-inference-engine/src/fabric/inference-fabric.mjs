@@ -228,6 +228,15 @@ export function createInferenceScheduler(registry, options = {}) {
   if (new Set(endpoints.map((endpoint) => endpoint.id)).size !== endpoints.length) throw new TypeError("endpoint ids must be unique");
   const global = positiveInteger(options.concurrency, registry.concurrency ?? 1, "concurrency"), attemptsMax = positiveInteger(options.attempts, registry.attempts ?? 3, "attempts"), maxQueueDepth = positiveInteger(options.maxQueueDepth, 1024, "maxQueueDepth"), maxSeenIds = positiveInteger(options.maxSeenIds, 100000, "maxSeenIds");
   const state = new Map(endpoints.map((endpoint) => [endpoint.id, { inFlight: 0, next: 0, cooldownUntil: 0, leases: [] }])), observations = mergeObservations(registry.observations, options.observations), latencyCostPerMs = options.latencyCostPerMs ?? registry.latencyCostPerMs ?? 0, seenIds = new Set(options.seenIds ?? []), pending = [], endpointWaiters = new Set(), drainWaiters = [];
+  const accounts = new Map();
+  for (const endpoint of endpoints) {
+    const id = endpoint.accountId ?? endpoint.id;
+    const limit = endpoint.accountConcurrency ?? endpoint.concurrency ?? 1;
+    if (!Number.isSafeInteger(limit) || limit < 1) throw new TypeError("invalid shared inference account capacity");
+    const existing = accounts.get(id);
+    if (existing) existing.limit = Math.max(existing.limit, limit);
+    else accounts.set(id, { limit, inFlight: 0, leases: [] });
+  }
   if (seenIds.size > maxSeenIds || [...seenIds].some((id) => typeof id !== "string" || !id)) throw new TypeError("seenIds exceed maxSeenIds or contain an invalid id");
   let active = 0, accepting = true;
   const notifyEndpoints = () => { for (const resolve of [...endpointWaiters]) resolve(); }, waitForEndpoint = (signal) => {
@@ -257,18 +266,25 @@ export function createInferenceScheduler(registry, options = {}) {
       const now = Date.now(), nonCooling = candidates.filter(({ endpoint }) => state.get(endpoint.id).cooldownUntil <= now);
       if (!nonCooling.length) { const until = Math.min(...candidates.map(({ endpoint }) => state.get(endpoint.id).cooldownUntil)); try { await waitForAvailability(Math.max(1, until - now)); } catch (error) { if (error.message === "inference invocation cancelled") return cancelled(); throw error; } continue; }
       const priced = nonCooling.map((candidate) => {
-        const { endpoint, quote } = candidate, current = state.get(endpoint.id), capacity = endpoint.concurrency ?? 1, interval = Math.max(endpoint.minIntervalMs ?? 0, endpoint.rpm ? Math.ceil(60000 / endpoint.rpm) : 0), full = current.inFlight >= capacity;
-        const liveEstimates = current.leases.map((lease) => lease.expectedAt).filter(Number.isFinite), expectedLatency = profileFor(endpoint).expectedLatencyMs ?? 0;
+        const { endpoint, quote } = candidate, current = state.get(endpoint.id), account = accounts.get(endpoint.accountId ?? endpoint.id), capacity = endpoint.concurrency ?? 1, interval = Math.max(endpoint.minIntervalMs ?? 0, endpoint.rpm ? Math.ceil(60000 / endpoint.rpm) : 0), full = current.inFlight >= capacity || account.inFlight >= account.limit;
+        const liveEstimates = [...current.leases, ...account.leases].map((lease) => lease.expectedAt).filter(Number.isFinite), expectedLatency = profileFor(endpoint).expectedLatencyMs ?? 0;
         const capacityWaitMs = full ? Math.max(1, liveEstimates.length ? Math.min(...liveEstimates) - now : expectedLatency, liveEstimates.some((at) => at > now) ? 0 : expectedLatency) : 0;
         const paceWaitMs = full ? 0 : Math.max(0, current.next - now), predictedWaitMs = Math.max(capacityWaitMs, paceWaitMs), congestionShadowCost = predictedWaitMs * latencyCostPerMs;
         return { candidate, full, interval, predictedWaitMs, congestionShadowCost, effectiveExpectedResolutionCost: quote.expectedResolutionCost + congestionShadowCost };
       }).sort((left, right) => left.effectiveExpectedResolutionCost - right.effectiveExpectedResolutionCost || left.candidate.quote.expectedResolutionCost - right.candidate.quote.expectedResolutionCost || left.candidate.endpoint.id.localeCompare(right.candidate.endpoint.id));
-      const selected = priced[0], { endpoint, quote } = selected.candidate, current = state.get(endpoint.id);
+      // For admitted zero-cash capacity, hire another idle sovereign account
+      // rather than serially wait on the cheapest alphabetic model alias.
+      const selected = registry.fillAvailableCapacity === true ?
+        (priced.find((item) => !item.full) ?? priced[0]) : priced[0];
+      const { endpoint, quote } = selected.candidate, current = state.get(endpoint.id),
+        account = accounts.get(endpoint.accountId ?? endpoint.id);
       const congestionDecision = { consideredAtMs: Date.now() - began, selectedEndpoint: endpoint.id, predictedWaitMs: selected.predictedWaitMs, congestionShadowCost: selected.congestionShadowCost, effectiveExpectedResolutionCost: selected.effectiveExpectedResolutionCost, candidates: priced.map((item) => ({ endpoint: item.candidate.endpoint.id, predictedWaitMs: item.predictedWaitMs, congestionShadowCost: item.congestionShadowCost, effectiveExpectedResolutionCost: item.effectiveExpectedResolutionCost })) };
       if (routing.congestionDecisions.length < 32) routing.congestionDecisions.push(congestionDecision); else routing.congestionDecisionsTruncated = true;
       if (selected.full) { try { await waitForAvailability(selected.predictedWaitMs); } catch (error) { if (error.message === "inference invocation cancelled") return cancelled(); throw error; } continue; }
       const slot = Math.max(Date.now(), current.next), lease = { expectedAt: slot + (profileFor(endpoint).expectedLatencyMs ?? 0) }, attemptBegan = Date.now();
-      current.inFlight += 1; current.leases.push(lease); current.next = slot + selected.interval; routing.selectedEndpoints.push(endpoint.id);
+      current.inFlight += 1; current.leases.push(lease);
+      account.inFlight += 1; account.leases.push(lease);
+      current.next = slot + selected.interval; routing.selectedEndpoints.push(endpoint.id);
       try {
         await sleep(Math.max(0, slot - Date.now()), options.signal);
         const value = await abortableInvocation(options.invoke ?? invokeEndpoint, endpoint, job, options), outcome = options.dryRun ? "dry-run" : "completion", verification = outcome === "completion" ? (value.verification ?? verifyOutput(value, job)) : null, attempt = { endpoint: endpoint.id, outcome, latencyMs: Date.now() - attemptBegan, expectedResolutionCost: quote.expectedResolutionCost, unit: quote.unit };
@@ -277,7 +293,11 @@ export function createInferenceScheduler(registry, options = {}) {
       } catch (error) {
         const refusal = error instanceof EndpointRefusal ? error : null, attempt = { endpoint: endpoint.id, outcome: "refusal", reason: refusal ? refusal.message : error.message, latencyMs: Date.now() - attemptBegan, expectedResolutionCost: quote.expectedResolutionCost, unit: quote.unit, verificationFailure: /^output contract /.test(error.message), ...(refusal ? { status: refusal.status, retryable: refusal.retryable, retryAfterMs: refusal.retryAfterMs } : {}) };
         attempts.push(attempt); const observed = ((observations[endpoint.id] ??= {})[job.workType ?? "default"] ??= { attempts: 0, successes: 0, latencyMs: 0 }); observed.attempts += 1; observed.latencyMs += attempt.latencyMs; if (error.message === "inference invocation cancelled") return cancelled(); if (refusal?.retryable) { const cooldownMs = refusal.retryAfterMs ?? endpoint.cooldownMs ?? 1000; current.cooldownUntil = Math.max(current.cooldownUntil, Date.now() + cooldownMs); attempt.cooldownUntil = current.cooldownUntil; } candidates.splice(candidates.indexOf(selected.candidate), 1);
-      } finally { current.inFlight -= 1; current.leases.splice(current.leases.indexOf(lease), 1); notifyEndpoints(); }
+      } finally {
+        current.inFlight -= 1; current.leases.splice(current.leases.indexOf(lease), 1);
+        account.inFlight -= 1; account.leases.splice(account.leases.indexOf(lease), 1);
+        notifyEndpoints();
+      }
     }
     return { id: job.id, attempts, refusal: { type: "all-quoted-endpoints-refused" }, latencyMs: Date.now() - began, routing };
   }
@@ -346,21 +366,36 @@ export async function dispatchJobs(jobs, registry, options = {}) {
   try { await Promise.all(queue.map(async (job) => { const record = await scheduler.submit(job); records.push(record); await options.onRecord?.(record); })); } finally { await scheduler.close(); } const elapsedMs = Date.now() - started; return { records, summary: summarizeRecords(records, endpoints, elapsedMs) };
 }
 
-/** Project the shared catalog to scheduler configuration; credentials remain in env. */
-export function inferenceRegistryFromCatalog(catalog, { env = process.env, providerIds = catalog.routingPolicy?.freeFirstOrder, zeroCashOnly = true, concurrency = 1, attempts = 1 } = {}) {
+/** Project the shared catalog to scheduler configuration; credentials remain in env.
+ * Respect the existing ordered admission policy, not a second provider list.
+ * Independent account lanes may run concurrently; aliases sharing one key
+ * contribute only their maximum observed capacity, not the sum of model rows.
+ */
+export function inferenceRegistryFromCatalog(catalog, { env = process.env, providerIds = catalog?.routingPolicy?.freeFirstOrder ?? catalog?.routingPolicy?.order, zeroCashOnly = true, concurrency, attempts = 1 } = {}) {
   if (!Array.isArray(catalog?.rows) || !Array.isArray(providerIds) || new Set(providerIds).size !== providerIds.length) throw new TypeError("catalog rows and unique provider ids are required");
   const rows = new Map(catalog.rows.map((row) => [row.providerId, row]));
-  const endpoints = [], excluded = [];
+  const endpoints = [], excluded = [], accountCapacity = new Map();
   for (const id of providerIds) {
     const row = rows.get(id);
     const reason = !row ? "unknown-provider" : !row.keyed ? "not-armed" : zeroCashOnly && !isZeroCashProvider(row) ? "zero-cash-not-established" : row.auth?.mode !== "none" && !env[row.apiKeyEnvVar] ? "missing-credential" : null;
     if (reason) { excluded.push({ id, reason }); continue; }
     const url = row.chatCompletionsUrl.replace(/\{([A-Z][A-Z0-9_]*)\}/gu, (_, key) => env[key] ?? `{${key}}`);
     if (/\{[A-Z][A-Z0-9_]*\}/u.test(url)) { excluded.push({ id, reason: "unresolved-endpoint" }); continue; }
+    const capacity = row.concurrency ?? 1;
+    const account = row.apiKeyEnvVar ?? `unkeyed:${id}`;
+    accountCapacity.set(account, Math.max(accountCapacity.get(account) ?? 0, capacity));
     endpoints.push({ id, model: row.defaultModel, chatCompletionsUrl: url, apiKeyEnv: row.apiKeyEnvVar,
-      auth: row.auth, concurrency: row.concurrency ?? 1, ...(row.rpm ? { rpm: row.rpm } : {}),
+      auth: row.auth, concurrency: capacity, accountId: account,
+      accountConcurrency: capacity, ...(row.rpm ? { rpm: row.rpm } : {}),
       profile: { capabilities: row.capabilities ?? ["text"], expectedLatencyMs: 1000 },
     });
   }
-  return { endpoints, excluded, concurrency, attempts };
+  // Bounded parallelism cannot exceed account-local declared lanes. The
+  // default is not an authorization to spend: zero-cash admission is unchanged.
+  const safeConcurrency = concurrency ?? Math.max(1, Math.min(8,
+    [...accountCapacity.values()].reduce((sum, capacity) => sum + capacity, 0)));
+  if (!Number.isSafeInteger(safeConcurrency) || safeConcurrency < 1)
+    throw new TypeError("inference concurrency must be positive");
+  return { endpoints, excluded, concurrency: safeConcurrency, attempts,
+    fillAvailableCapacity: zeroCashOnly };
 }
