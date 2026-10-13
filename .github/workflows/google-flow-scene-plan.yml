@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'services/google-flow-services-section/src/flow-scene-plan.mjs'
+      - 'services/google-flow-services-section/src/flow-generate.mjs'
       - 'services/google-flow-services-section/src/flow-protocol.mjs'
       - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
       - 'services/google-flow-services-section/package.json'
@@ -16,6 +17,7 @@ on:
   pull_request:
     paths:
       - 'services/google-flow-services-section/src/flow-scene-plan.mjs'
+      - 'services/google-flow-services-section/src/flow-generate.mjs'
       - 'services/google-flow-services-section/src/flow-protocol.mjs'
       - 'services/google-flow-services-section/test/flow-scene-plan.test.mjs'
       - 'services/google-flow-services-section/package.json'
@@ -39,6 +41,7 @@ jobs:
       - name: Verify real Google video provider protocols and hold boundaries
         run: |
           node --check services/google-flow-services-section/src/flow-scene-plan.mjs
+          node --check services/google-flow-services-section/src/flow-generate.mjs
           node --test services/google-flow-services-section/test/flow-scene-plan.test.mjs
           node --check apps/computer-inference-engine/src/media/gemini-veo-video.mjs
           node --check apps/computer-inference-engine/scripts/media/gemini-veo-shot.mjs
