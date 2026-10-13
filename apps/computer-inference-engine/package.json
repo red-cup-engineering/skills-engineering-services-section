@@ -63,6 +63,7 @@
     "./media/subscription-allowances": "./src/media/subscription-allowances.mjs",
     "./media/allowance-book": "./src/media/allowance-book.mjs",
     "./media/resource-prices": "./src/media/resource-prices.mjs",
+    "./media/gemini-veo-video": "./src/media/gemini-veo-video.mjs",
     "./media/allowance-supplies": "./src/media/allowance-supplies.mjs",
     "./media/zero-cash-generation": "./src/media/zero-cash-generation.mjs",
     "./openai": "./src/openai/openai-compatible-chat-completion.mjs",
@@ -145,7 +146,8 @@
     "run-captured-command": "./scripts/cost/run-captured-command.mjs",
     "serve-provider-inference": "./scripts/openai/serve-provider-inference.mjs",
     "exercise-free-tool-agent": "./scripts/openai/exercise-free-tool-agent.mjs",
-    "inference-allowance": "scripts/media/allowance-status.mjs"
+    "inference-allowance": "scripts/media/allowance-status.mjs",
+    "gemini-veo-shot": "./scripts/media/gemini-veo-shot.mjs"
   },
   "scripts": {
     "test": "node --test \"test/**/*.test.mjs\"",
