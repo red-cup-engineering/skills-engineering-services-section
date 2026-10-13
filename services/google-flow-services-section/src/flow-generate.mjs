@@ -48,6 +48,7 @@ import { openRecaptchaMinter } from '@red-cup-engineering/assisted-browser-servi
 import { keepMediaInDrive, releaseMediaCache } from '@red-cup-engineering/google-drive-services-section/media';
 import { openGoogleFlow, storageStatePath } from './google-flow-client.mjs';
 import { videoModelKey } from './flow-protocol.mjs';
+import { admitFlowVideoAdoption } from './flow-scene-plan.mjs';
 import { appendCreditReading, balanceEvidence, creditJournalPath, flowAllowance, loadFlowAllowanceConfig } from './flow-credits.mjs';
 
 // Exit status of a run that a person must unblock (EX_TEMPFAIL): the job is not done, and retrying alone will not do it.
@@ -134,6 +135,7 @@ async function keep({ flow, order, lot, url, mediaId, credits, account }) {
     ...(order.destination ? { destination: order.destination } : {}),
     ...(order.allocation ? { allocation: order.allocation } : {}),
     ...(order.purpose ? { purpose: order.purpose } : {}),
+    ...(order.generationModeClaim ? { generationModeClaim: order.generationModeClaim, modeEvidence: 'operator-assertion-only' } : {}),
   };
   journal({ ...completion, consumer: order.consumer, ...lineage });
   // Retain the received artifact even if Drive is temporarily unavailable; the publisher
@@ -318,19 +320,53 @@ export async function runFlowOrder(order, { projectId, dryRun = false, config = 
  * Keep `mediaIds`, clips already made in the project, for `consumer`: each finished one is stored
  * and journaled as a generation's output is. Answers what was kept or why not.
  */
-export async function adoptFlowMedia(mediaIds, { consumer, projectId, config = loadFlowAllowanceConfig() } = {}) {
-  if (typeof consumer !== 'string' || !consumer.trim()) throw new TypeError('adopted media need the consumer they are kept for');
-  const flow = await openGoogleFlow();
+export async function adoptFlowMedia(mediaIds, {
+  consumer, projectId, config = loadFlowAllowanceConfig(), sourceNi = null,
+  mediaNeed = null, destination = null, allocation = null, purpose = null,
+  generationMode = null, promptText = null, open = openGoogleFlow,
+} = {}) {
+  // These inputs are claims from an operator, not provider attestations.
+  const ctx = admitFlowVideoAdoption({ consumer, sourceNi, mediaNeed, destination,
+    allocation, purpose, generationMode });
+  if(promptText!==null && (typeof promptText!=='string'||!promptText.trim()||promptText.length>6000))
+    throw new TypeError('original production prompt claim must be 1–6000 characters');
+  const flow = await open();
   const kept = [];
   for (const mediaId of mediaIds) {
     try {
       const row = await flow.media(mediaId, { projectId });
-      if (row.status !== 'done' || !row.videoUrl) { kept.push({ consumer, mediaId, status: row.status }); continue; }
-      const kind = row.model ?? 'unknown';
-      const lot = createMediaArtifactWorkLot({ workLot: `google-flow:${consumer}:${mediaId}`, principal: consumer, capability: 'text-to-video', prompt: row.prompt ?? '', sources: [], outputMimeType: 'video/mp4' });
-      kept.push(await keep({ flow, order: { consumer, kind, aspect: null }, lot, url: row.videoUrl, mediaId, credits: null, account: config.account }));
+      if (row.status !== 'done' || !row.videoUrl) {
+        kept.push({ consumer, mediaId, status: row.status }); continue;
+      }
+      const observedPrompt = typeof row.prompt==='string'&&row.prompt.trim()?row.prompt:null;
+      if(observedPrompt && promptText && observedPrompt!==promptText) {
+        kept.push({ consumer, mediaId, status:'HELD_PROMPT_CONFLICT',
+          reason:'Flow returned a different prompt; do not ascribe the operator input to this media ID' }); continue;
+      }
+      const prompt = observedPrompt ?? promptText;
+      if(!prompt) {
+        kept.push({ consumer, mediaId, status:'HELD_MISSING_PRODUCTION_PROMPT',
+          reason:'Provide an exact prompt claim or retrieve it from Flow before receiving this movie' }); continue;
+      }
+      const kind = row.model ?? 'unknown-provider-model';
+      const sources=ctx.sourceNi?[{identity:ctx.sourceNi,role:'operator-asserted-source'}]:[];
+      const lot = createMediaArtifactWorkLot({
+        workLot: ctx.mediaNeed ?? ('google-flow:'+consumer+':'+mediaId), principal: consumer,
+        // Flow UI clips may be reference-conditioned, interpolated or edited.
+        // The Flow media endpoint does not attest the generation mode.
+        capability:'video-generation-mode-unverified', prompt, sources,
+        outputMimeType:'video/mp4',
+      });
+      kept.push(await keep({
+        flow, order:{ consumer, kind, aspect:null,
+          mediaNeed:ctx.mediaNeed, destination:ctx.destination,
+          allocation:ctx.allocation, purpose:ctx.purpose,
+          generationModeClaim:ctx.generationModeClaim,
+        },
+        lot, url:row.videoUrl, mediaId, credits:null, account:config.account,
+      }));
     } catch (error) {
-      kept.push({ consumer, mediaId, failed: error.message });
+      kept.push({ consumer, mediaId, failed:error.message });
     }
   }
   return kept;
@@ -659,6 +695,8 @@ if (import.meta.main) {
     project: { type: 'string' }, 'dry-run': { type: 'boolean' }, adopt: { type: 'boolean' },
     consumer: { type: 'string' }, queue: { type: 'boolean' }, resume: { type: 'boolean' },
     inventory: { type: 'boolean' }, deliver: { type: 'string' }, destination: { type: 'string' }, 'public-address': { type: 'string' },
+    'source-ni': { type:'string' }, 'media-need': { type:'string' }, allocation: { type:'string' }, purpose: { type:'string' },
+    'mode-claim': { type:'string' }, 'prompt-file': { type:'string' },
   } })
   if (values.resume) {
     const { verificationRequired, ...pacing } = readPacing();
@@ -696,7 +734,12 @@ if (import.meta.main) {
   const config = loadFlowAllowanceConfig();
   const projectId = values.project ?? process.env.GOOGLE_FLOW_PROJECT ?? config.project;
   if (values.adopt) {
-    process.stdout.write(`${JSON.stringify(await adoptFlowMedia(positionals, { consumer: values.consumer, projectId, config }), null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(await adoptFlowMedia(positionals, { consumer: values.consumer, projectId, config,
+      sourceNi: values['source-ni'] ?? null,mediaNeed: values['media-need'] ?? null,
+      destination:values.destination ?? null,allocation:values.allocation ?? null,purpose:values.purpose ?? null,
+      generationMode:values['mode-claim'] ?? null,
+      promptText:values['prompt-file'] ? readFileSync(values['prompt-file'],'utf8').trim():null,
+    }), null, 2)}\n`);
     process.exit(0);
   }
   const order = admitOrder(readFileSync(positionals[0] === '-' ? 0 : positionals[0], 'utf8'));
