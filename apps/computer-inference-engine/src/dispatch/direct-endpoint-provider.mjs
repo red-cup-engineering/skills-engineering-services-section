@@ -301,7 +301,7 @@ function normalizeDirectEndpointDescriptor(entry, env = process.env, resolveAcco
     ...descriptor,
     configurationIdentity: directEndpointConfigurationIdentity(descriptor),
   });
-  if (accountEntitlement) accountEntitlementVerifiers.set(admitted, entitlementResolver);
+  accountEntitlementVerifiers.set(admitted, entitlementResolver);
   if (allowanceStore !== undefined) allowanceLedgerCustody.set(admitted, allowanceStore);
   return admitted;
 }
@@ -359,6 +359,14 @@ export function isDirectEndpointZeroCashEligible(descriptor) {
   if (isCommandEndpoint(descriptor)) return false;
   if (descriptor?.accountEntitlement) return accountEntitlementVerifiers.get(descriptor)?.(descriptor) != null;
   return descriptor?.zeroCashEligible === true;
+}
+
+/** Resolve retained account evidence for an exact media endpoint/model.
+ * Credential and provider stay in the descriptor owner's private custody.
+ * Policy/catalog eligibility never becomes a fresh account observation. */
+export function resolveDirectEndpointAccountEntitlement(descriptor, { endpoint, model } = {}) {
+  const resolve = accountEntitlementVerifiers.get(descriptor);
+  return resolve?.({ provider: descriptor.provider, apiKey: descriptor.apiKey, endpoint, model }) ?? null;
 }
 
 /** Admission facts shared by planning inspection and the actual direct lane. */

@@ -4,8 +4,7 @@ import { spawn } from "node:child_process";
 import { homedir, tmpdir } from "node:os";
 import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { loadDirectEndpointProviderDescriptors } from "../dispatch/direct-endpoint-provider.mjs";
-import { createProviderAccountEntitlementResolver, renewProviderAccountEntitlement } from "../dispatch/provider-account-entitlement.mjs";
+import { loadDirectEndpointProviderDescriptors, resolveDirectEndpointAccountEntitlement } from "../dispatch/direct-endpoint-provider.mjs";
 import { currentProviderAvailability, observeProviderAvailability } from "../dispatch/provider-availability.mjs";
 
 // Free-tier models first: gemini-2.5-pro-preview-tts has no free quota (429 on this key on
@@ -138,13 +137,12 @@ function recordResponse(provider, response, now) {
 
 function descriptorFor(provider, env) {
   const descriptor = loadDirectEndpointProviderDescriptors(env).find((item) => item.provider === provider);
-  if (!descriptor?.zeroCashEligible || !descriptor.apiKey || !Array.isArray(descriptor.capabilityModels?.["text-to-speech"])) return null;
+  if (!descriptor?.apiKey || !Array.isArray(descriptor.capabilityModels?.["text-to-speech"])) return null;
   return descriptor;
 }
 
 function admitExactSpeechModel(descriptor, endpoint, model) {
-  const observation = renewProviderAccountEntitlement({ provider: descriptor.provider, endpoint, model, apiKey: descriptor.apiKey, policy: descriptor.zeroCashPolicy });
-  const entitlement = observation && createProviderAccountEntitlementResolver([observation])({ provider: descriptor.provider, endpoint, model, apiKey: descriptor.apiKey });
+  const entitlement = resolveDirectEndpointAccountEntitlement(descriptor, { endpoint, model });
   if (!entitlement) throw new SpeechSynthesisObstruction("zero-cash-entitlement-not-admitted", { provider: descriptor.provider, model });
   return entitlement;
 }
