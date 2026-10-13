@@ -118,13 +118,44 @@ export function planFlowReferencedSceneTrial({
     type:'FlowReferencedSceneTrial',
     status:feasible.length?'PREPARED_FLOW_UI_HANDOFF_NOT_SUBMITTED':
       candidates.length?'HELD_CREDIT_CEILING':'HELD_NO_OBSERVED_UI_MODEL',
-    sourceRef:source,consumer:owner,destination:delivery,
+    sourceRef:source,
+    sourceNi:source.startsWith('sha256:') ? 'ni:///sha-256;'+Buffer.from(source.slice(7),'hex').toString('base64url') : null,
+    consumer:owner,destination:delivery,
     references:Object.freeze(references),
     shots:Object.freeze(take),aspect,maximumCredits:budget,
     candidates:Object.freeze(candidates),cheapestFeasible:feasible[0]??null,
     sequenceRule:'Reuse these exact source-character reference identities in every shot. Compare the same characters under a different camera/action; do not substitute a new reference silently.',
     manualReceiver:'Generate in the actual Google Flow project UI; source-linked provider media IDs must be adopted via the existing Flow media custody path. This planner cannot click Flow or spend credits.',
     limitation:'UI-only, unapproved development experiment. Flow credits are NOT Gemini Developer API dollars. Source binding, independent asset approval and rendered identity must still be checked.',
+  });
+}
+
+
+/** Operator-owned metadata for Flow media received from the UI.
+ * The Flow provider can prove the media ID and returned bytes, but its public
+ * media response does NOT prove which editor controls, source or rights were
+ * used. Each extra field below remains an operator claim until reviewed.
+ */
+export function admitFlowVideoAdoption({
+  consumer, sourceNi=null, mediaNeed=null, destination=null,
+  allocation=null, purpose=null, generationMode=null,
+}={}){
+  const owner=requireText(consumer,'Flow media consumer');
+  const optional=(s,label)=>s===null?null:requireText(s,label);
+  const source=optional(sourceNi,'source NI');
+  if(source!==null&&!/^ni:\/\/\/sha-256;[A-Za-z0-9_-]{43}$/u.test(source))
+    throw new TypeError('adopted source must be an exact content-addressed NI');
+  const mode=optional(generationMode,'operator generation-mode claim');
+  if(mode!==null&&!['text-to-video','ingredients-to-video','frames-to-video','video-edit','unknown'].includes(mode))
+    throw new TypeError('adoption generation mode must be a bounded known description');
+  return Object.freeze({
+    consumer:owner,sourceNi:source,
+    mediaNeed:optional(mediaNeed,'media need'),
+    destination:optional(destination,'media destination'),
+    allocation:optional(allocation,'media allocation'),
+    purpose:optional(purpose,'media purpose'),
+    generationModeClaim:mode,
+    observationStatus:'OPERATOR_CLAIMS_NOT_PROVIDER_ATTESTATIONS',
   });
 }
 
