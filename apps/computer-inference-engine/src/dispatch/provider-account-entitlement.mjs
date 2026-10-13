@@ -28,26 +28,3 @@ export function createProviderAccountEntitlementResolver(observations, { now = (
   };
 }
 
-/**
- * Renews, for one exact provider, endpoint, model and credential, the dated observation a zero-cash
- * provider's declared policy stands for: cash cost zero, paid overage forbidden, no billing account
- * bound, valid for one hour from `now`. The caller admits only a descriptor that is zero-cash eligible; a
- * policy that declares any other cash cost or permits paid overage renews nothing.
- * @param {{provider: string, endpoint: string, model: string, apiKey: string, policy?: object, now?: Function}} input
- * @returns {object|null} A `ProviderAccountEntitlementObservation`, or null when nothing can be renewed.
- */
-export function renewProviderAccountEntitlement({ provider, endpoint, model, apiKey, policy = {}, now = () => Date.now() } = {}) {
-  if (typeof apiKey !== "string" || apiKey.length === 0) return null;
-  if (policy?.cashCost !== undefined && policy.cashCost !== "zero") return null;
-  if (policy?.paidOverage !== undefined && policy.paidOverage !== "forbidden") return null;
-  const observedAt = Number(now()) - 1_000;
-  if (!Number.isFinite(observedAt)) return null;
-  return Object.freeze({
-    type: "ProviderAccountEntitlementObservation", providerIdentity: provider, endpoint, model,
-    credentialSha256: sha256Hex(apiKey),
-    accountIdentity: policy?.accountIdentity ?? `urn:zero-cash-policy:${provider}`,
-    evidenceIdentity: policy?.evidenceIdentity ?? `urn:zero-cash-policy:${provider}:${model}`,
-    observedAt: new Date(observedAt).toISOString(), validUntil: new Date(observedAt + 3_600_000).toISOString(),
-    cashCost: "zero", paidOverage: "forbidden", billingEnabled: false, billingAccountBound: false,
-  });
-}
