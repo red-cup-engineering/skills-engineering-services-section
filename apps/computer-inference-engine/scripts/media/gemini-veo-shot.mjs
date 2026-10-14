@@ -92,7 +92,19 @@ export async function cinematicVeoCli(args,{env=process.env,fetch=globalThis.fet
   const operation=await readGeminiVeoOperation(submitted.operationName,{apiKey:env.GEMINI_API_KEY,fetch});
   if(other!=='--download'||operation.status!=='generated')return print(JSON.stringify({status:operation.status,operationName:operation.operationName,note:operation.note??null}));
   const completion=join(dir,'received.json');
-  if(existsSync(completion))return print(readFileSync(completion,'utf8').trim());
+  if(existsSync(completion)){
+    const recorded=JSON.parse(readFileSync(completion,'utf8'));
+    if(recorded.type!=='GeminiVeoProviderByteReceipt'||
+       !/^[a-f0-9]{64}$/.test(recorded.receivedVideoSha256??'')||
+       recorded.mediaRelativePath!=='media/'+recorded.receivedVideoSha256+'.mp4')
+      die('existing video receipt is malformed; do not assert received footage');
+    const stored=join(dir,recorded.mediaRelativePath);
+    if(!existsSync(stored))die('received video bytes are missing; existing receipt alone is not media');
+    const bytes=readFileSync(stored);
+    if(bytes.length!==recorded.bytes||sha(bytes)!==recorded.receivedVideoSha256)
+      die('received video bytes differ from recorded size or SHA-256');
+    return print(JSON.stringify(recorded,null,2));
+  }
   const video=await receiveGeminiVeoVideo(operation.videoUri,{apiKey:env.GEMINI_API_KEY,fetch});
   const media=join(dir,'media');mkdirSync(media,{recursive:true,mode:0o700});
   const file=join(media,video.sha256+'.mp4');
