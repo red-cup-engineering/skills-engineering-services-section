@@ -49,11 +49,20 @@ function admitFinancialControl(value) {
   };
 }
 
-function financialRefusal(binding, evaluatedAt) {
+// All admission paths compare validated epoch milliseconds. Re-parsing an epoch
+// with Date.parse would produce NaN and silently disable the interval gates.
+function availabilityRefusal(binding, time) {
+  if (time < Date.parse(binding.observedAt) || time < Date.parse(binding.validFrom)
+    || time >= Date.parse(binding.validUntil) || time >= Date.parse(binding.resetsAt)) {
+    return "resource-availability-evidence-not-current";
+  }
+  return null;
+}
+
+function financialRefusal(binding, time) {
   const control = binding.financialControl;
-  const time = Date.parse(evaluatedAt);
-  if (time >= Date.parse(control.meterValidUntil)) return "resource-meter-evidence-not-current";
-  if (time >= Date.parse(control.costValidUntil)) return "resource-cost-evidence-not-current";
+  if (time < Date.parse(control.meterObservedAt) || time >= Date.parse(control.meterValidUntil)) return "resource-meter-evidence-not-current";
+  if (time < Date.parse(control.costObservedAt) || time >= Date.parse(control.costValidUntil)) return "resource-cost-evidence-not-current";
   const hasCost = control.consideration.some(({ amount }) => positive(amount));
   if (control.costState === "candidate") return "resource-cost-is-candidate";
   if (hasCost && control.costState !== "committed") return "resource-cost-not-committed";
@@ -69,7 +78,7 @@ function financialRefusal(binding, evaluatedAt) {
 export function evaluateWorkResourceControl(value, evaluatedAt) {
   const binding = admitWorkResourceBinding(value);
   const instantValue = instant(evaluatedAt, "resource control evaluatedAt");
-  const reason = financialRefusal(binding, instantValue);
+  const reason = availabilityRefusal(binding, instantValue) ?? financialRefusal(binding, instantValue);
   return Object.freeze({ type: "WorkResourceControlEvaluation", disposition: reason ? "refused" : "admitted",
     ...(reason ? { reason } : {}), binding });
 }
@@ -130,11 +139,9 @@ export function createWorkResourceReservations({ store, binding: candidate, maxi
     async observe(request) {
       object(request, "resource availability observation request");
       const evaluatedAtEpoch = instant(request.evaluatedAt, "evaluatedAt");
-      if (evaluatedAtEpoch < Date.parse(binding.observedAt) || evaluatedAtEpoch < Date.parse(binding.validFrom)
-        || evaluatedAtEpoch >= Date.parse(binding.validUntil) || evaluatedAtEpoch >= Date.parse(binding.resetsAt)) {
-        return observation(request.evaluatedAt, "refused", "resource-availability-evidence-not-current");
-      }
-      const financial = financialRefusal(binding, request.evaluatedAt);
+      const availability = availabilityRefusal(binding, evaluatedAtEpoch);
+      if (availability) return observation(request.evaluatedAt, "refused", availability);
+      const financial = financialRefusal(binding, evaluatedAtEpoch);
       if (financial) return observation(request.evaluatedAt, "refused", financial);
       let current;
       try { current = await store.get(key); } catch { return observation(request.evaluatedAt, "refused", "resource-store-read-unavailable"); }
@@ -172,12 +179,10 @@ export function createWorkResourceReservations({ store, binding: candidate, maxi
       const executionIdentity = request.action === "attempt" ? text(request.executionIdentity ?? randomUUID(), "executionIdentity") : undefined;
       const requested = request.action === "reserve" ? resources(request.resources) : undefined;
       if (requested?.length === 0) throw new TypeError("reservation requires at least one resource dimension");
-      if (["reserve", "attempt"].includes(request.action) && (evaluatedAt < Date.parse(binding.observedAt) || evaluatedAt < Date.parse(binding.validFrom)
-        || evaluatedAt >= Date.parse(binding.validUntil) || evaluatedAt >= Date.parse(binding.resetsAt))) {
-        return answer(request, "refused", "resource-availability-evidence-not-current");
-      }
       if (["reserve", "attempt"].includes(request.action)) {
-        const financial = financialRefusal(binding, request.evaluatedAt);
+        const availability = availabilityRefusal(binding, evaluatedAt);
+        if (availability) return answer(request, "refused", availability);
+        const financial = financialRefusal(binding, evaluatedAt);
         if (financial) return answer(request, "refused", financial);
       }
       for (let conflict = 0; conflict <= maximumConflicts; conflict += 1) {

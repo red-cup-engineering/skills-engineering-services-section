@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
 import { createWorkResourceReservations, evaluateWorkResourceControl, workResourceAccountKey } from "./work-placement/resource-reservations.mjs";
 
 const integer = (value) => Number.isSafeInteger(value) && value >= 0;
@@ -59,6 +60,12 @@ export function createInferenceResourceReservations({ store, resolveBinding, res
         const hold = await getHold(descriptor, resources);
         if (!hold.claim) hold.claim = action(hold, "attempt").then(() => { hold.attempted = true; });
         await hold.claim;
+        // Reservation persistence can outlast evidence or the caller's lifecycle.
+        // Re-resolve immediately before transport entry, without an intervening
+        // await, and never spend a replacement pool under the original hold.
+        if (closed) throw new Error("resource-execution-tree-closed");
+        if (packet.signal?.aborted) throw new Error("receiver-cancelled-before-resource-invocation");
+        if (!isDeepStrictEqual(bindingFor(descriptor), hold.binding)) throw new Error("resource-capacity-anchor-mismatch");
         try {
           const result = await invoke(packet);
           const exchanges = result?.exchanges;
