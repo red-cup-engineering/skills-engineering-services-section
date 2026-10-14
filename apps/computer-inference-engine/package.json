@@ -145,7 +145,6 @@
     "justify-free-first-order": "./scripts/openai/justify-free-first-order.mjs",
     "run-captured-command": "./scripts/cost/run-captured-command.mjs",
     "serve-provider-inference": "./scripts/openai/serve-provider-inference.mjs",
-    "exercise-free-tool-agent": "./scripts/openai/exercise-free-tool-agent.mjs",
     "inference-allowance": "scripts/media/allowance-status.mjs",
     "gemini-veo-shot": "./scripts/media/gemini-veo-shot.mjs"
   },
