@@ -18,7 +18,7 @@ function requireTimestamp(value, context) {
 }
 
 function requireNonNegativeInteger(value, context) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`derive-set-of-usage-records-from-token-usage-summaries: ${context} must be a non-negative integer`);
+  if (!Number.isSafeInteger(value) || value < 0) throw new TypeError(`derive-set-of-usage-records-from-token-usage-summaries: ${context} must be a non-negative safe integer`);
   return value;
 }
 
@@ -68,7 +68,15 @@ function isZeroUsageCounts(usage) {
 }
 
 function addUsageCounts(a, b) {
-  return Object.fromEntries(COUNT_FIELDS.map((field) => [field, a[field] + b[field]]));
+  // Provider-token counts are economic quantities: an inexact JS integer is
+  // neither a measurement nor a lawful exchange/accounting unit. Refuse
+  // aggregates that exceed the exact range even when each turn is valid.
+  return Object.fromEntries(COUNT_FIELDS.map((field) => {
+    const total = a[field] + b[field];
+    if (!Number.isSafeInteger(total))
+      throw new RangeError('inference usage aggregate exceeds exact safe integer range: ' + field);
+    return [field, total];
+  }));
 }
 
 /**
@@ -141,6 +149,9 @@ function groupTurnEventsByModel(events) {
  */
 
 function pushUsageRecord(usageRecords, { sessionId, source, provider, model, observedAt, usage, recordId }) {
+  const combinedOutput = usage.outputTokens + usage.reasoningOutputTokens;
+  if (!Number.isSafeInteger(combinedOutput))
+    throw new RangeError('inference output and reasoning usage exceeds exact safe integer range');
   usageRecords.push({
     recordId,
     sessionId,
@@ -148,7 +159,7 @@ function pushUsageRecord(usageRecords, { sessionId, source, provider, model, obs
     model,
     timestamp: observedAt,
     inputTokens: usage.inputTokens,
-    outputTokens: usage.outputTokens + usage.reasoningOutputTokens,
+    outputTokens: combinedOutput,
     cacheReadTokens: usage.cacheReadInputTokens,
     cacheCreationTokens: usage.cacheCreationInputTokens,
   });

@@ -185,3 +185,39 @@ test("refuses a model group whose turn events carry non-zero generic cachedInput
   assert.equal(result.refusals[0].reason, "ambiguous-cache-accounting");
   assert.equal(result.refusals[0].model, "gpt-5-codex");
 });
+
+test("refuses token counts above safe integer precision before pricing an untrustworthy quantity",()=>{
+ const summary={
+  kind:"metroplat.agent-session.token-usage-summary",provider:"provider",
+  sessionId:"large",source:"test/unsafe",observedAt:"2026-10-13T20:00:00Z",
+  models:["model"],total:{...baseTotal,inputTokens:Number.MAX_SAFE_INTEGER+1}
+ };
+ assert.throws(()=>deriveSetOfUsageRecordsFromTokenUsageSummaries({summaries:[summary]}),
+  /non-negative safe integer/u);
+});
+
+test("refuses a multi-turn model aggregate that loses integer precision even when each turn is valid",()=>{
+ const summary={
+  kind:"metroplat.agent-session.token-usage-summary",provider:"provider",
+  sessionId:"large",source:"test/turn-overflow",observedAt:"2026-10-13T20:00:00Z",
+  models:["model"],total:baseTotal,events:[
+   {model:"model",usageKind:"turn",usage:{...baseTotal,inputTokens:Number.MAX_SAFE_INTEGER}},
+   {model:"model",usageKind:"turn",usage:{...baseTotal,inputTokens:1}}
+  ]
+ };
+ assert.throws(()=>deriveSetOfUsageRecordsFromTokenUsageSummaries({summaries:[summary]}),
+  /aggregate exceeds exact safe integer range/u);
+});
+
+test("refuses double-rounded output and reasoning quantities but retains exact boundary values",()=>{
+ const summary={
+  kind:"metroplat.agent-session.token-usage-summary",provider:"provider",
+  sessionId:"large",source:"test/reasoning-overflow",observedAt:"2026-10-13T20:00:00Z",
+  models:["model"],total:{...baseTotal,outputTokens:Number.MAX_SAFE_INTEGER,reasoningOutputTokens:1}
+ };
+ assert.throws(()=>deriveSetOfUsageRecordsFromTokenUsageSummaries({summaries:[summary]}),
+  /output and reasoning usage exceeds exact safe integer range/u);
+ summary.total={...baseTotal,outputTokens:Number.MAX_SAFE_INTEGER-1,reasoningOutputTokens:1};
+ const accepted=deriveSetOfUsageRecordsFromTokenUsageSummaries({summaries:[summary]});
+ assert.equal(accepted.usageRecords[0].outputTokens,Number.MAX_SAFE_INTEGER);
+});
