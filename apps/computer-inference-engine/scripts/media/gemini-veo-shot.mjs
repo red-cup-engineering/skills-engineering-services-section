@@ -67,10 +67,21 @@ function assertStoredMedia(file,digest,length){
  * operations. Does not refresh, replace, or claim editorial acceptance.
  */
 export function verifyCinematicVeoMedia(dir){
+ const attempted=JSON.parse(readFileSync(join(dir,'attempted.json'),'utf8'));
  const submitted=JSON.parse(readFileSync(join(dir,'submitted.json'),'utf8'));
  const recorded=JSON.parse(readFileSync(join(dir,'received.json'),'utf8'));
- if(submitted.type!=='GeminiVeoSubmittedShot'||
+ if(attempted.type!=='GeminiVeoSubmissionAttempt'||
+    attempted.state!=='POST_OUTCOME_UNKNOWN_UNTIL_OPERATION_OBSERVED'||
+    attempted.prepared?.type!=='GeminiVeoCinematicShot'||
+    !HEX_256.test(submitted.requestSha256??'')||
+    submitted.type!=='GeminiVeoSubmittedShot'||
+    submitted.provider!=='urn:ame:google-gemini-developer-api'||
+    attempted.prepared.requestSha256!==submitted.requestSha256||
+    attempted.prepared.model!==submitted.model||
+    attempted.prepared.shotId!==submitted.shotId||
+    attempted.prepared.provider!==submitted.provider||
     recorded.type!=='GeminiVeoProviderByteReceipt'||
+    recorded.state!=='RECEIVED_PROVIDER_BYTES_AWAITING_MEDIA_REVIEW'||
     !HEX_256.test(recorded.receivedVideoSha256??'')||
     recorded.mediaRelativePath!=='media/'+recorded.receivedVideoSha256+'.mp4'||
     recorded.sourceRequestSha256!==submitted.requestSha256||
