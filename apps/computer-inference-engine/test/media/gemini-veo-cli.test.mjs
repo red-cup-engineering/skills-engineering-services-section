@@ -81,6 +81,15 @@ test('actual submit -> poll -> download can resume with exact receipt and NEVER 
  writeFileSync(receiptPath,JSON.stringify({...receipt,operationName:'operations/other'}));
  await assert.rejects(()=>cinematicVeoCli(['verify',f.job],{env:{},print:()=>{}}),/does not match/u);
  writeFileSync(receiptPath,JSON.stringify(receipt));
+ const attemptPath=join(f.job,'attempted.json');
+ const attempt=JSON.parse(readFileSync(attemptPath,'utf8'));
+ writeFileSync(attemptPath,JSON.stringify({...attempt,
+  prepared:{...attempt.prepared,requestSha256:'0'.repeat(64)}}));
+ await assert.rejects(()=>cinematicVeoCli(['verify',f.job],{env:{},print:()=>{}}),/does not match/u);
+ writeFileSync(attemptPath,JSON.stringify(attempt));
+ writeFileSync(receiptPath,JSON.stringify({...receipt,state:'PUBLISHED'}));
+ await assert.rejects(()=>cinematicVeoCli(['verify',f.job],{env:{},print:()=>{}}),/does not match/u);
+ writeFileSync(receiptPath,JSON.stringify(receipt));
  rmSync(stored);
  await assert.rejects(()=>cinematicVeoCli(['verify',f.job],{env:{},print:()=>{}}),/bytes are missing/u);
 });
