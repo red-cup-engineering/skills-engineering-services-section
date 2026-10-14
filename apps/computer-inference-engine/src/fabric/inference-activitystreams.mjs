@@ -4,6 +4,7 @@ import { dataArtifactFiles } from "@red-cup-engineering/eavt-services-section/da
 import { journalPath } from "@red-cup-engineering/eavt-services-section/journal-path";
 import { ACTIVITYSTREAMS_CONTEXT } from "@red-cup-engineering/activitypub-services-section/activitystreams";
 import { semanticId } from "@red-cup-engineering/computer-content-address-engineering-services-section/semiotic-content-address";
+import { isNiUri } from "@red-cup-engineering/uri-services-section/ni-uri";
 
 export const INFERENCE_ACTOR = "urn:ame:logical-inference-service-section";
 export const INFERENCE_ACTIVITYSTREAMS_CONTRACT = "inference-fabric-activitystreams-service";
@@ -196,7 +197,7 @@ export function createInferenceActivityStreams({ broker, dataRoot, now = () => n
     if (!owner || owner.buyer !== activity.actor || owner.jobDigest !== activity.object.jobDigest) return persist("inquiry", activity, refusal(activity, "buyer is not authorized to receive this job result", "query-not-authorized"), at);
     const result = broker.replay(activity.object.id);
     if (!result) return persist("inquiry", activity, refusal(activity, "accepted inference has not reached terminal settlement", "result-not-settled", { retryable: true }), at);
-    if (result.jobDigest && `sha256:${result.jobDigest}` !== owner.jobDigest) return persist("inquiry", activity, refusal(activity, "terminal result digest does not match the accepted job", "settlement-digest-conflict"), at);
+    if (!isNiUri(result.jobDigest) || result.jobDigest !== owner.jobDigest) return persist("inquiry", activity, refusal(activity, "terminal result digest does not match the accepted job", "settlement-digest-conflict"), at);
     return persist("inquiry", activity, response("Accept", activity, {
       type: "InferenceSettlementResult",
       contract: INFERENCE_ACTIVITYSTREAMS_CONTRACT,
