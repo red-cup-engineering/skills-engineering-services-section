@@ -8,12 +8,13 @@
  * submit SPEC.json PRIVATE_JOB_DIR --approve-paid --max-usd 0.80 --operator REF [--provider-requalified PROVIDER-EVIDENCE-REF]
  * receive PRIVATE_JOB_DIR                 (read-only provider status)
  * receive PRIVATE_JOB_DIR --download      (retrieve and hash completed video)
+ * verify PRIVATE_JOB_DIR                  (offline original-media integrity check)
  *
  * No automatic retries on a paid POST; the attempted record survives a crash.
  * Google Flow UI credits do NOT pay for this distinct Gemini Developer API.
  */
 import {createHash} from 'node:crypto';
-import {existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync, openSync, closeSync} from 'node:fs';
+import {existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync, openSync, closeSync, lstatSync} from 'node:fs';
 import {dirname, resolve, relative, isAbsolute, sep, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {prepareGeminiVeoShot,submitGeminiVeoShot,readGeminiVeoOperation,receiveGeminiVeoVideo,
@@ -45,6 +46,42 @@ function storeJSON(path,content){
  if(existsSync(path))die('record already exists; do not overwrite or repeat a paid submission');
  const fd=openSync(path,'wx',0o600);
  try{writeFileSync(fd,JSON.stringify(content,null,2)+'\n');}finally{closeSync(fd)}
+}
+const HEX_256=/^[a-f0-9]{64}$/u;
+/** Verify the original provider media at custody, not artistic quality or publication. */
+function assertStoredMedia(file,digest,length){
+ if(!HEX_256.test(digest)||!Number.isSafeInteger(length)||length<12)
+   die('invalid original media digest or byte count');
+ let info;
+ try{info=lstatSync(file)}catch(error){
+   if(error.code==='ENOENT')die('received video bytes are missing; receipt alone is not media');
+   throw error;
+ }
+ if(!info.isFile()||info.isSymbolicLink())
+   die('received video must be a regular locally stored file, not a link');
+ if(info.size!==length)die('received video bytes differ from recorded size');
+ if(sha(readFileSync(file))!==digest)die('received video SHA-256 differs from receipt');
+}
+/**
+ * An offline local custody assay for post-production, including expired API
+ * operations. Does not refresh, replace, or claim editorial acceptance.
+ */
+export function verifyCinematicVeoMedia(dir){
+ const submitted=JSON.parse(readFileSync(join(dir,'submitted.json'),'utf8'));
+ const recorded=JSON.parse(readFileSync(join(dir,'received.json'),'utf8'));
+ if(submitted.type!=='GeminiVeoSubmittedShot'||
+    recorded.type!=='GeminiVeoProviderByteReceipt'||
+    !HEX_256.test(recorded.receivedVideoSha256??'')||
+    recorded.mediaRelativePath!=='media/'+recorded.receivedVideoSha256+'.mp4'||
+    recorded.sourceRequestSha256!==submitted.requestSha256||
+    recorded.operationName!==submitted.operationName||
+    recorded.model!==submitted.model||
+    recorded.shotId!==submitted.shotId)
+   die('video receipt does not match the original submitted operation and shot');
+ assertStoredMedia(join(dir,recorded.mediaRelativePath),
+   recorded.receivedVideoSha256,recorded.bytes);
+ return Object.freeze({...recorded,localCustody:'VERIFIED_ORIGINAL_MP4_BYTES',
+   custodyNote:'Local size and SHA-256 match submission-linked receipt. Not cinematic QA, rights approval, confirmed charge, or public publication.'});
 }
 const parseLimit=x=>{
  const value=Number(x);
@@ -84,6 +121,10 @@ export async function cinematicVeoCli(args,{env=process.env,fetch=globalThis.fet
   storeJSON(join(dir,'submitted.json'),submitted);
   return print(JSON.stringify(submitted,null,2));
  }
+ if(command==='verify'){
+  if(!argument||other!==undefined||options.length)die('usage: verify PRIVATE_JOB_DIR');
+  return print(JSON.stringify(verifyCinematicVeoMedia(resolve(argument)),null,2));
+ }
  if(command==='receive'){
   if(!argument|| (other!==undefined&&other!=='--download')||options.length)die('usage: receive PRIVATE_JOB_DIR [--download]');
   if(!text(env.GEMINI_API_KEY))die('GEMINI_API_KEY required to receive an existing operation');
@@ -92,23 +133,17 @@ export async function cinematicVeoCli(args,{env=process.env,fetch=globalThis.fet
   const operation=await readGeminiVeoOperation(submitted.operationName,{apiKey:env.GEMINI_API_KEY,fetch});
   if(other!=='--download'||operation.status!=='generated')return print(JSON.stringify({status:operation.status,operationName:operation.operationName,note:operation.note??null}));
   const completion=join(dir,'received.json');
-  if(existsSync(completion)){
-    const recorded=JSON.parse(readFileSync(completion,'utf8'));
-    if(recorded.type!=='GeminiVeoProviderByteReceipt'||
-       !/^[a-f0-9]{64}$/.test(recorded.receivedVideoSha256??'')||
-       recorded.mediaRelativePath!=='media/'+recorded.receivedVideoSha256+'.mp4')
-      die('existing video receipt is malformed; do not assert received footage');
-    const stored=join(dir,recorded.mediaRelativePath);
-    if(!existsSync(stored))die('received video bytes are missing; existing receipt alone is not media');
-    const bytes=readFileSync(stored);
-    if(bytes.length!==recorded.bytes||sha(bytes)!==recorded.receivedVideoSha256)
-      die('received video bytes differ from recorded size or SHA-256');
-    return print(JSON.stringify(recorded,null,2));
-  }
+  if(existsSync(completion))return print(JSON.stringify(verifyCinematicVeoMedia(dir),null,2));
   const video=await receiveGeminiVeoVideo(operation.videoUri,{apiKey:env.GEMINI_API_KEY,fetch});
   const media=join(dir,'media');mkdirSync(media,{recursive:true,mode:0o700});
   const file=join(media,video.sha256+'.mp4');
-  if(!existsSync(file)){const fd=openSync(file,'wx',0o600);try{writeFileSync(fd,video.bytes)}finally{closeSync(fd)}}
+  // Refuse damaged existing bytes even when the provider just returned a
+  // valid fresh copy: never create a false receipt for a corrupt local MP4.
+  try{
+    const fd=openSync(file,'wx',0o600);
+    try{writeFileSync(fd,video.bytes)}finally{closeSync(fd)}
+  }catch(error){if(error.code!=='EEXIST')throw error}
+  assertStoredMedia(file,video.sha256,video.bytes.length);
   const output={type:'GeminiVeoProviderByteReceipt',
     state:video.state,sourceRequestSha256:submitted.requestSha256,operationName:submitted.operationName,
     receivedVideoSha256:video.sha256,mediaRelativePath:'media/'+video.sha256+'.mp4',
@@ -117,7 +152,7 @@ export async function cinematicVeoCli(args,{env=process.env,fetch=globalThis.fet
   storeJSON(completion,output);
   return print(JSON.stringify(output,null,2));
  }
- die('usage: gemini-veo-shot.mjs preview|submit|receive ...');
+ die('usage: gemini-veo-shot.mjs preview|submit|receive|verify ...');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
  try{await cinematicVeoCli(process.argv.slice(2));}catch(error){
