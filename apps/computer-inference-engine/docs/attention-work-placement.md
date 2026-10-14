@@ -89,6 +89,69 @@ An unselected count of zero only means the supplied model selected every
 admitted atom. It does not mean zero remaining actual contradiction.
 Actual receiving and a new measurement must establish removal.
 
+## Joint, account-safe inference capacity (without another scheduler)
+
+The same **Red Cup** inference decision is now consumed by
+\`decideQualifiedCapacityFlow\`, exposed through the **existing** JSONL
+\`scripts/dispatch/decide-work-placement.mjs\` command. Pass one JSON object
+with \`type: "QualifiedCapacityFlowRequest"\`, a source-identified
+\`evaluatedAt\`, original \`candidates: [{demand,offers,observations}]\`,
+and a current \`capacityPools\` array.
+
+Each pool is an exact provider/account/window observation:
+\`{providerIdentity, accountIdentity, windowIdentity, evidenceRef,
+observedAt, validUntil, availableSlots}\`. An available slot means one
+simultaneous **qualified job opportunity**, *not* CPU seconds, tokens, USD,
+Flow subscription credits or actual account purchasing authority.
+
+The original single-work policy first determines feasible offers. Only
+**single or demonstrably equivalent top-tier offers**, with accepted
+implementation, source rights, data custody and current account windows,
+enter the graph. Incomparable choices and lower-ranked providers are held,
+not secretly dispatched. Different offers for one account/window converge
+on ONE capacity bottleneck; their nominal \`availableCapacity\` cannot be
+summed into new compute.
+
+The shared \`@red-cup-engineering/metrologic/obstruction/capacity-flow\`
+computes exact maximum throughput with the existing directed-incidence
+conservation interpretation and a min-cut witness. Consider the practical
+case where an exclusive job needs GPU, a flexible original script-writing
+job can use GPU *or* a lawful free CPU provider, and each has one slot:
+independent, first-choice GPU selection places one; joint routing
+places both by moving the flexible workload to CPU. This is more useful
+capacity **only when those qualified provider slots actually exist**.
+
+\`additionalPlaceableViaJointRouting\` is a difference between two
+**counterfactual read-only algorithms on supplied evidence**, never a
+count of new server instances or completed jobs. The result retains
+every demand/source, offer, provider, account/window and evidence
+identity, an exact math witness, and specific held reasons.
+
+A returned \`assignment\` **MUST** still enter the original shared
+\`createWorkResourceReservations\` CAS account/window store with fresh
+per-dimension resources, original authority and a qualified executing
+office before dispatch. It is never an already-paid reservation. Unknown
+or stale account evidence, a contradictory offer, cross-client rights,
+and an external market listing without an actual customer request do
+not become permission or a market-gap signal. Completed work needs an
+independent receiving journal. The math's gauge invariance is relabeling
+invariance of the capacity graph, *not* permission manipulation by the
+FOUR/Klein symmetry group.
+
+### Runnable entrypoint
+
+Use the original inference command, passing one \`QualifiedCapacityFlowRequest\`
+JSON object per line on stdin. For example, a producing office can send
+two original \`TypedWorkDemand\` packets, their already-qualified
+\`NormalizedWorkOffer\` options, and two currently observed account windows.
+It receives \`assignments\`, \`unrouted\`, \`poolUse\`, \`minCut\` inside
+\`mathematicalWitness\`, and \`accountReservationState: "not-reserved"\`.
+No new provider, scheduler, money or command-line distribution is installed
+by this readout. Integration regression:
+\`node --test test/dispatch/capacity-flow-placement.test.mjs\` in the actual
+joined workspace; it invokes the existing JSONL CLI too. The pure
+Metrologic law has its separate mathematical tests.
+
 ## Scientific scope
 
 The applied Economics `AttentionAllocation.lean` uses natural-number cost
