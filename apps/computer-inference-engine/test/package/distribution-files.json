@@ -69,7 +69,6 @@
   "scripts/ollama/exercise-local-ollama-tools.mjs",
   "scripts/openai/dispatch-chat-completion.mjs",
   "scripts/openai/execute-provider-inference.mjs",
-  "scripts/openai/exercise-free-tool-agent.mjs",
   "scripts/openai/exercise-tool-agent.mjs",
   "scripts/openai/infer.mjs",
   "scripts/openai/justify-free-first-order.mjs",

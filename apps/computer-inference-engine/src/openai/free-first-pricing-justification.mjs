@@ -47,7 +47,7 @@ export function purchaseRecordToObservation(purchaseRecord, taskClass) {
 }
 
 /**
- * Compares the catalog's hardcoded routingPolicy.freeFirstOrder against the
+ * Compares the catalog's hardcoded routingPolicy.order against the
  * order capability-pricing-service's rankExpectedResolutionPrices would
  * choose from the same armed rows and observed history. This never changes
  * live dispatch order (selectFreeFirstProvider still owns that); it returns
@@ -57,7 +57,7 @@ export function purchaseRecordToObservation(purchaseRecord, taskClass) {
  * A row priced at exactly zero cannot be turned into a pricing-service
  * offer at all (see catalogRowToPricingOffer); such rows are reported in
  * `unrankable` rather than silently dropped or faked. When every armed
- * candidate is free-tier -- the entire catalog's current state -- `ranked`
+ * candidate has exact zero-price terms, `ranked`
  * is empty and `pricingOrder`/`agree` are `null`: there is no price signal
  * among free offers for the pricing service to rank, so the hardcoded
  * order stands unchallenged for lack of a signal, not for lack of wiring.
@@ -67,7 +67,7 @@ export function purchaseRecordToObservation(purchaseRecord, taskClass) {
  */
 export function justifyFreeFirstOrder(catalog, { observations = [], taskClass = "chat-completion", nominalTokens } = {}) {
   const byId = new Map(catalog.rows.map((row) => [row.providerId, row]));
-  const hardcodedOrder = catalog.routingPolicy.freeFirstOrder.filter((providerId) => byId.get(providerId)?.keyed);
+  const hardcodedOrder = catalog.routingPolicy.order.filter((providerId) => byId.get(providerId)?.keyed);
   const priceable = [], unrankable = [];
   for (const providerId of hardcodedOrder) {
     const price = computePurchasePrice(byId.get(providerId), { input: { quantity: (nominalTokens ?? DEFAULT_NOMINAL_TOKENS).input }, output: { quantity: (nominalTokens ?? DEFAULT_NOMINAL_TOKENS).output } });
@@ -76,7 +76,7 @@ export function justifyFreeFirstOrder(catalog, { observations = [], taskClass = 
   if (priceable.length === 0) {
     return {
       taskClass, hardcodedOrder, unrankable, pricingOrder: null, agree: null, ranked: [],
-      basis: "every armed free-first candidate prices at exactly zero; capability-pricing-service's rankExpectedResolutionPrices requires a strictly positive consideration.amount and cannot rank a zero-price offer set",
+      basis: "every armed catalog candidate prices at exactly zero; capability-pricing-service's rankExpectedResolutionPrices requires a strictly positive consideration.amount and cannot rank a zero-price offer set",
     };
   }
   const offers = priceable.map((providerId) => catalogRowToPricingOffer(byId.get(providerId), nominalTokens));

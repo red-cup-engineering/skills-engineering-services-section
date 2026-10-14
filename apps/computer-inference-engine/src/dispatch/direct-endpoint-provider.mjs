@@ -495,8 +495,16 @@ export const DEFAULT_DIRECT_ENDPOINT_PROVIDER_CONFIG = fileURLToPath(new URL("..
 export function loadDirectEndpointProviderDescriptors(env = process.env, { configPath, catalogPath, accountEntitlements, accountEntitlementsPath = env.DIRECT_ENDPOINT_ACCOUNT_ENTITLEMENTS, pricingRoot = pricingRootOf(env), now } = {}) {
   const descriptors = [];
   const availabilityObservations = pricingRoot ? loadObservations({ dataRoot: pricingRoot }) : [];
-  const observations = accountEntitlements ?? (accountEntitlementsPath ? JSON.parse(readFileSync(accountEntitlementsPath, "utf8")) : []);
-  const resolveAccountEntitlement = createProviderAccountEntitlementResolver(observations, { now });
+  // The bound private carrier is re-read at every exact entitlement inquiry.
+  // A caller-supplied observation array remains an explicit immutable source.
+  const injectedResolver = accountEntitlements == null ? undefined
+    : createProviderAccountEntitlementResolver(accountEntitlements, { now });
+  const resolveAccountEntitlement = injectedResolver ?? (facts => {
+    let observations;
+    try { observations = accountEntitlementsPath ? JSON.parse(readFileSync(accountEntitlementsPath, "utf8")) : []; }
+    catch { throw new TypeError("private account entitlement carrier unavailable"); }
+    return createProviderAccountEntitlementResolver(observations, { now })(facts);
+  });
   const catalogRowsById = providerCatalogRowsById(catalogPath);
   const explicitList = nonEmpty(env.DIRECT_ENDPOINT_PROVIDERS) !== null;
   if (configPath === undefined && !explicitList) configPath = DEFAULT_DIRECT_ENDPOINT_PROVIDER_CONFIG;

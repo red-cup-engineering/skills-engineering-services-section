@@ -11,6 +11,6 @@ The packet is `{ model, messages, params?, "max-tokens"? }`. Packet and exchange
 
 The catalog records observed model availability and price evidence with dates. Provider rosters change: a past successful call is evidence for that date. Unpriced provider data is excluded from automatic routing.
 
-`dispatchFreeFirstChatCompletion` remains the free-first routing loop used by current application consumers. New standalone work uses the observed inference-work-lot dispatcher and records the receiving customer's disposition. `selectFreeFirstProvider` and `isZeroCashProvider` expose the older route's selection and exact zero-cash admission predicates.
+`dispatchFreeFirstChatCompletion` serves current application consumers through the catalog's authored `routingPolicy.order`; an explicit `zeroCashOnly` request retains the shared zero-cash admission. New standalone work uses the observed inference-work-lot dispatcher and records the receiving customer's disposition. `selectFreeFirstProvider` and `isZeroCashProvider` expose the older route's selection and exact zero-cash admission predicates.
 
 `computePurchasePrice` reports exact rational purchase price from catalog rates and witnessed usage; it never estimates tokens. The receipt and pricing-justification CLI commands use that same price implementation.
