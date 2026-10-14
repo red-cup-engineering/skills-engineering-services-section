@@ -225,28 +225,28 @@ export async function runOpenAiCompatibleChatExchange(packet, config, request = 
 
 /**
  * @typedef {object} FreeFirstRoutingPolicy
- * @property {string[]} freeFirstOrder - providerId values in try-order; every entry must be a free tier.
+ * @property {string[]} order - providerId values in the authored catalog try-order.
  */
 
 /**
- * Selects the next free-tier provider row to try, in the routing policy's
+ * Selects the next provider row to try, in the routing policy's
  * declared order, skipping unarmed rows and any providerId the caller has
  * already ruled out for this attempt (e.g. one that just refused with a
  * rate limit). This function's only source of candidates is
- * routingPolicy.freeFirstOrder -- there is no code path from here to a
- * paid or frontier provider; a caller that wants one must go around this
- * function entirely, as an explicit separate decision.
+ * routingPolicy.order -- there is no code path from here to a
+ * provider outside that authored order. Zero-cash callers additionally require
+ * the existing machine-readable provider admission.
  * @param {ProviderCatalogRow[]} rows
  * @param {FreeFirstRoutingPolicy} routingPolicy
  * @param {{ excludeProviderIds?: string[] }} [options]
- * @returns {ProviderCatalogRow|null} the next row to try, or null once every free-first candidate is excluded or unarmed.
+ * @returns {ProviderCatalogRow|null} the next row to try, or null once every declared candidate is excluded or unarmed.
  */
 export function selectFreeFirstProvider(rows, routingPolicy, { excludeProviderIds = [], zeroCashOnly = false } = {}) {
   if (!Array.isArray(rows)) throw new TypeError("rows must be an array");
-  if (!routingPolicy || !Array.isArray(routingPolicy.freeFirstOrder)) throw new TypeError("routingPolicy.freeFirstOrder must be an array");
+  if (!routingPolicy || !Array.isArray(routingPolicy.order)) throw new TypeError("routingPolicy.order must be an array");
   const excluded = new Set(excludeProviderIds);
   const byId = new Map(rows.map((row) => [row.providerId, row]));
-  for (const providerId of routingPolicy.freeFirstOrder) {
+  for (const providerId of routingPolicy.order) {
     if (excluded.has(providerId)) continue;
     const row = byId.get(providerId);
     if (row && row.keyed && (!zeroCashOnly || isZeroCashProvider(row))) return row;
@@ -269,10 +269,10 @@ export function isRateLimitRefusal(refusalValue) {
 }
 
 /**
- * Builds the exact packet to send for one free-first attempt against one
+ * Builds the exact packet to send for one catalog attempt against one
  * row. A model id is frequently valid for only the provider it was chosen
  * for, so the row's own last-verified `defaultModel` overrides the
- * caller's `packet.model` whenever the row has one -- a free-first retry
+ * caller's `packet.model` whenever the row has one -- a catalog retry
  * moves across providers, and reusing the caller's original model id
  * across that move produces a spurious hard refusal (missing-model)
  * instead of a genuine retry.
@@ -307,11 +307,10 @@ function admitZeroCashParameters(params = {}) {
 }
 
 /**
- * Programmatic free-first dispatch entrypoint: given an already-parsed
+ * Programmatic catalog dispatch entrypoint: given an already-parsed
  * catalog and packet (no file paths, no argv), walks
- * `catalog.routingPolicy.freeFirstOrder`, retrying the next free provider
- * only on a rate-limit refusal, and stops -- never falls back to a paid or
- * frontier provider -- once every free-first candidate is exhausted or
+ * `catalog.routingPolicy.order`, retrying the next declared provider
+ * on each provider refusal, and stops once every declared candidate is exhausted or
  * unarmed. Existing application consumers still call this older loop.
  * New standalone inference work uses the observed inference-work-lot
  * dispatcher and records a receiving customer's disposition.
@@ -328,7 +327,7 @@ export async function dispatchFreeFirstChatCompletion({ catalog, packet, zeroCas
   for (;;) {
     const row = selectFreeFirstProvider(catalog.rows, catalog.routingPolicy, { excludeProviderIds: excluded, zeroCashOnly });
     if (!row) {
-      return { ok: false, tried, reason: "free-first-exhausted", note: "every free-tier provider in routingPolicy.freeFirstOrder is unarmed or was excluded this attempt; this function does not fall back to a paid or frontier provider" };
+      return { ok: false, tried, reason: "free-first-exhausted", note: "every provider in the authored routingPolicy.order is unarmed or was excluded this attempt" };
     }
     const apiKey = row.anonymousApiKey ?? (row.apiKeyEnvVars ?? [row.apiKeyEnvVar]).map((name) => env[name]).find(Boolean);
     if (!apiKey && row.auth?.mode !== "none") {
@@ -345,7 +344,7 @@ export async function dispatchFreeFirstChatCompletion({ catalog, packet, zeroCas
     }
     // Any provider-side failure (rate limit, HTTP error, timeout, missing model,
     // reasoning-only or empty answer) is one provider's problem: the packet was
-    // already admitted, so the next free provider gets it.
+    // already admitted, so the next declared provider gets it.
     tried.push({ providerId: row.providerId, outcome: exchange.outcome, grounds: exchange.refusal?.grounds, unmet: exchange.refusal?.unmet });
     excluded.push(row.providerId);
   }

@@ -8,7 +8,7 @@ import { argument } from "@red-cup-engineering/javascript-node-services-section/
 
 /**
  * Reports whether capability-pricing-service's expected-consideration
- * ranking agrees with the catalog's hardcoded routingPolicy.freeFirstOrder,
+ * ranking agrees with the catalog's hardcoded routingPolicy.order,
  * using whatever purchase-receipt history exists in the named inference
  * purchase journal root as observations. Read-only: never changes live
  * dispatch order.

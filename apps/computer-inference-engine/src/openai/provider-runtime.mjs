@@ -206,16 +206,16 @@ export async function runProviderExchange(provider, packet, { resourceRoot, env 
 const credentialed = (row, env) => row.executable ? Boolean(resolveExecutable(row.executable, env))
   : row.auth?.mode === "none" || Boolean(row.anonymousApiKey) || (row.apiKeyEnvVars ?? [row.apiKeyEnvVar]).some((name) => env[name]);
 
-/** Free-first providers whose credential is present, in routing order. */
+/** Providers whose credential is present, in the actual authored catalog order. */
 export function armedFreeProviders(env = process.env) {
-  return catalog.routingPolicy.freeFirstOrder
+  return catalog.routingPolicy.order
     .map((providerId) => catalog.rows.find((row) => row.providerId === providerId))
     .filter((row) => row?.keyed && credentialed(row, env));
 }
 
 /**
  * One completion from the engine's own catalog: each `prefer` entry ({providerId, model?})
- * first, then the free-first order. A preferred provider's failure falls through to the next.
+ * first, then the authored catalog order. A preferred provider's failure falls through to the next.
  */
 export async function dispatchFreeFirst(packet, { prefer = [], env = process.env, request = fetch } = {}) {
   const tried = [];
