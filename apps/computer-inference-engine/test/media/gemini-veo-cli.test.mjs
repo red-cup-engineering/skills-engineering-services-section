@@ -68,6 +68,21 @@ test('actual submit -> poll -> download can resume with exact receipt and NEVER 
  const before=calls;
  await cinematicVeoCli(['receive',f.job,'--download'],{env,fetch,print:()=>{}});
  assert.equal(calls,before+1,'a harmless status GET only; no second download after durable receiving');
+ const offline=out();
+ await cinematicVeoCli(['verify',f.job],{env:{},fetch:()=>{throw Error('offline verification must not call provider')},print:offline.print});
+ assert.equal(offline.messages[0].localCustody,'VERIFIED_ORIGINAL_MP4_BYTES');
+ assert.equal(calls,before+1,'offline custody does not need the Gemini API');
+ const stored=join(f.job,received.messages[0].mediaRelativePath);
+ writeFileSync(stored,Buffer.alloc(film.length));
+ await assert.rejects(()=>cinematicVeoCli(['verify',f.job],{env:{},print:()=>{}}),/SHA-256 differs/u);
+ writeFileSync(stored,film);
+ const receiptPath=join(f.job,'received.json');
+ const receipt=JSON.parse(readFileSync(receiptPath,'utf8'));
+ writeFileSync(receiptPath,JSON.stringify({...receipt,operationName:'operations/other'}));
+ await assert.rejects(()=>cinematicVeoCli(['verify',f.job],{env:{},print:()=>{}}),/does not match/u);
+ writeFileSync(receiptPath,JSON.stringify(receipt));
+ rmSync(stored);
+ await assert.rejects(()=>cinematicVeoCli(['verify',f.job],{env:{},print:()=>{}}),/bytes are missing/u);
 });
 test('ambiguous paid POST remains locked to one attempted request; no generated-operation receipt is invented',async t=>{
  const f=fixture();t.after(()=>rmSync(f.root,{recursive:true,force:true}));
@@ -99,4 +114,24 @@ test('preview retirement hold leaves no poisoned attempt and accepts explicit op
  assert.equal(posts,1);
  assert.equal(seen.messages[0].providerRequalificationClaimRef,'provider:verified-current-api-price');
  assert.equal(existsSync(join(f.job,'attempted.json')),true);
+});
+
+test('first media receipt refuses pre-existing corrupt MP4 without inventing accepted custody',async t=>{
+ const f=fixture();t.after(()=>rmSync(f.root,{recursive:true,force:true}));
+ const film=Buffer.concat([Buffer.from([0,0,0,20]),Buffer.from('ftypisom'),Buffer.alloc(22)]);
+ const fetch=async(url,req)=>{
+  if(req.method==='POST')return response(200,{name:'operations/once'});
+  if(url.endsWith('/operations/once'))return response(200,{name:'operations/once',done:true,
+   response:{generateVideoResponse:{generatedSamples:[{video:{uri:'https://generativelanguage.googleapis.com/v1beta/files/clip:download'}}]}}});
+  return response(200,film,{'content-type':'video/mp4'});
+ };
+ const env={GEMINI_API_KEY:'secret'};
+ await cinematicVeoCli(['submit',f.path,f.job,'--approve-paid','--max-usd','0.80','--operator','cinema-director'],
+  {env,fetch,print:()=>{},nowMs:BEFORE});
+ const stored=join(f.job,'media',hash(film)+'.mp4');
+ mkdirSync(join(f.job,'media'));
+ writeFileSync(stored,Buffer.alloc(film.length));
+ await assert.rejects(()=>cinematicVeoCli(['receive',f.job,'--download'],{env,fetch,print:()=>{}}),/SHA-256 differs/u);
+ assert.equal(existsSync(join(f.job,'received.json')),false,'never attest corrupt bytes');
+ assert.equal(readFileSync(stored).equals(Buffer.alloc(film.length)),true,'do not destroy original evidence');
 });
