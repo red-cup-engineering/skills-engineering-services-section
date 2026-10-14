@@ -28,6 +28,10 @@ test('actual Gemini Veo REST packet binds original reference bytes, source and c
  assert.equal(a.request.body.instances[0].referenceImages[1].referenceType,'asset');
  assert.equal(a.request.body.instances[0].referenceImages[0].image.inlineData.data,png.toString('base64'));
  assert.equal(a.publicPlan.requestSha256,b.publicPlan.requestSha256);
+ assert.equal(a.publicPlan.promptSha256,sha(Buffer.from(input().prompt,'utf8')));
+ assert.notEqual(prepareGeminiVeoShot({...input(),prompt:input().prompt+' Unapproved extra dialogue.'})
+  .publicPlan.promptSha256,a.publicPlan.promptSha256,
+  'a changed dramatic line cannot preserve original screenplay commitment');
  assert.equal(JSON.stringify(a.publicPlan).includes(png.toString('base64')),false);
  assert.equal(a.publicPlan.priceBasis.currency,'USD');
  assert.equal(a.publicPlan.modelLifecycle.earliestPossibleShutdownDate,'2026-10-22');
@@ -80,6 +84,26 @@ test('provider POST uses exact documented API and 4xx or lost reply never silent
  assert.equal(count,1);
  await assert.rejects(()=>submitGeminiVeoShot(submission(),{...opts,fetch:async()=>{throw Error('socket went away with account token')}}),e=>e.code==='VEO_SUBMISSION_UNCERTAIN'&&!String(e).includes('account token'));
  await assert.rejects(()=>submitGeminiVeoShot(submission(),{...opts,fetch:async()=>response(403,{error:{message:'sensitive'}})}),e=>e.code==='VEO_SUBMISSION_REFUSED_OR_UNCERTAIN'&&!String(e).includes('sensitive'));
+});
+test('paid Veo POST refuses changed approved prompt, altered request body or foreign endpoint before billing',async()=>{
+ const source=submission(),params={apiKey:'private-test-key',operatorRef:'cinema-chief',
+  spendAuthorized:true,maxUsd:1,nowMs:BEFORE};
+ let posts=0;
+ const fetch=async()=>{posts++;return response(200,{name:'operations/paid'})};
+ const body=source.request.body;
+ const wrongDialogue={...source,request:{...source.request,body:{...body,
+  instances:[{...body.instances[0],prompt:body.instances[0].prompt+' A new unauthorized line.'}]}}};
+ await assert.rejects(()=>submitGeminiVeoShot(wrongDialogue,{...params,fetch}),
+  /differs from its source-bound prompt/u);
+ const wrongClaim={...source,publicPlan:{...source.publicPlan,
+  promptSha256:'a'.repeat(64)}};
+ await assert.rejects(()=>submitGeminiVeoShot(wrongClaim,{...params,fetch}),
+  /differs from its source-bound prompt/u);
+ const wrongTarget={...source,request:{...source.request,
+  url:'https://other.example/models/veo-3.1-fast-generate-preview:predictLongRunning'}};
+ await assert.rejects(()=>submitGeminiVeoShot(wrongTarget,{...params,fetch}),
+  /differs from its source-bound prompt/u);
+ assert.equal(posts,0,'no dollar-denominated POST can occur after original prompt or request custody was altered');
 });
 test('polls only the existing operation, reports provider failures, and refuses foreign names/URLs',async()=>{
  let url;

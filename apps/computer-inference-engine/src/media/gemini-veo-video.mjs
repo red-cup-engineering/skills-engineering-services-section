@@ -128,7 +128,7 @@ export function prepareGeminiVeoShot(input){
     provider:'urn:ame:google-gemini-developer-api',shotId,sourceRef,consumer,mediaNeed,
     model,mode:refs.length?'reference-to-video':first?'frames-to-video':'text-to-video',
     aspectRatio,resolution,durationSeconds,referenceAssets:Object.freeze(imageSources),
-    requestSha256,estimatedMaximumUsd:quote,
+    requestSha256,promptSha256:sha(Buffer.from(prompt,'utf8')),estimatedMaximumUsd:quote,
     priceBasis:Object.freeze({observedDate:'2026-10-12',url:PRICE_DOC,currency:'USD',perOutputSecond:unitPrice}),
     modelLifecycle:Object.freeze({state:'PREVIEW_EARLIEST_POSSIBLE_SHUTDOWN',
       earliestPossibleShutdownDate:EARLIEST_VEO_PREVIEW_SHUTDOWN,
@@ -158,6 +158,18 @@ export async function submitGeminiVeoShot(prepared,{apiKey,fetch=globalThis.fetc
   requireText(operatorRef,'authorized spending operator',256);
   if(spendAuthorized!==true||!Number.isFinite(maxUsd)||maxUsd<prepared.publicPlan.estimatedMaximumUsd)
     throw new TypeError('a separately approved USD spend limit must cover the proposed shot');
+  // Paid transport must carry the very bytes that its public provenance
+  // describes. A fabricated prepared pair could otherwise change a line of
+  // dialogue and submit a different request while keeping the old source NI.
+  // This is a local assertion, not provider attestation or new ledger.
+  const plan=prepared.publicPlan,req=prepared.request;
+  const actualPrompt=req?.body?.instances?.[0]?.prompt;
+  if(req?.method!=='POST'||req.url!==`${API}/models/${plan.model}:predictLongRunning`||
+     typeof actualPrompt!=='string'||!actualPrompt.trim()||
+     !HEX.test(plan.promptSha256??'')||
+     sha(Buffer.from(actualPrompt,'utf8'))!==plan.promptSha256||
+     sha(Buffer.from(JSON.stringify(req.body)))!==plan.requestSha256)
+    throw new TypeError('paid Veo request differs from its source-bound prompt or original wire digest');
   assertGeminiVeoPreviewSubmissionWindow(prepared.publicPlan.model,{nowMs,providerRequalificationRef});
   const key=requireKey(apiKey);
   if(typeof fetch!=='function')throw new TypeError('provider fetch required');
