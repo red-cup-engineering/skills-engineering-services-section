@@ -182,6 +182,7 @@ export function decideQualifiedCapacityFlow({
  const poolUse=sourcePools.map(([key,pool])=>Object.freeze({
   providerIdentity:pool.providerIdentity,accountIdentity:pool.accountIdentity,
   windowIdentity:pool.windowIdentity,evidenceRef:pool.evidenceRef,
+  observedAt:pool.observedAt,validUntil:pool.validUntil,
   claimedAvailableSlots:pool.availableSlots,
   proposedSlots:poolAssigned.get(key)??0,
   spareSlots:pool.availableSlots-(poolAssigned.get(key)??0)

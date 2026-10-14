@@ -82,6 +82,9 @@ test('source-qualified capacity flow doubles placement under same observed resou
  assert.equal(result.mathematicalWitness.maxRoutable,'2');
  assert.equal(result.mathematicalWitness.minCut.capacity,'2');
  assert.equal(result.accountReservationState,'not-reserved');
+ assert.equal(result.poolUse.find(x=>x.accountIdentity==='account:gpu').observedAt,observed);
+ assert.equal(result.poolUse.find(x=>x.accountIdentity==='account:cpu').validUntil,until,
+  'operations must receive expiry, not only the original slot estimate');
  assert.equal(result.acceptedCustomerOutcomes,0);
  assert.match(result.limitation,/neither generates compute nor proves demand/u);
 });
