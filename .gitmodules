@@ -6,3 +6,6 @@
 	path = apps/computer-inference-engine
 	url = https://github.com/red-cup-engineering/computer-inference-engine.git
 	branch = main
+[submodule "services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section"]
+	path = services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section
+	url = https://github.com/red-cup-engineering/claude-code-services-section.git
