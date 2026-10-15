@@ -1,1 +1,0 @@
-{"elapsedMs":9717,"jobsPerMinute":74.09694350108057,"completed":12,"refused":0,"p50LatencyMs":2890,"p95LatencyMs":7703,"byEndpoint":{"groq-llama-3.1-8b-instant":{"completed":4,"refused":2},"gemini-3.1-flash-lite":{"completed":8,"refused":0}}}

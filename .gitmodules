@@ -2,3 +2,7 @@
 	path = services/gemini-services-section/services/gemini-notebook-services-section
 	url = https://github.com/red-cup-engineering/gemini-notebook-services-section.git
 	branch = main
+[submodule "computer-inference-engine"]
+	path = apps/computer-inference-engine
+	url = https://github.com/red-cup-engineering/computer-inference-engine.git
+	branch = main

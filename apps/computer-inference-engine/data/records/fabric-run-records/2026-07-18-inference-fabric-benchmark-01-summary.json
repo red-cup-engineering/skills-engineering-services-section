@@ -1,1 +1,0 @@
-{"elapsedMs":459820,"jobsPerMinute":1.0438867382888957,"completed":8,"refused":0,"p50LatencyMs":11491,"p95LatencyMs":411804,"byEndpoint":{"groq-llama-3.1-8b-instant":{"completed":2,"refused":0},"gemini-3.1-flash-lite":{"completed":2,"refused":0},"openrouter-llama-3.3-70b-free":{"completed":0,"refused":4},"claude-code-claude-sonnet-4-6":{"completed":4,"refused":0}}}

@@ -1,1 +1,0 @@
-{"model": "claude-opus-4-8", "messages": [{"role": "user", "content": "Say hello in one short sentence."}], "max-tokens": 256}
