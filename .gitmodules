@@ -9,3 +9,11 @@
 [submodule "services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section"]
 	path = services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section
 	url = https://github.com/red-cup-engineering/claude-code-services-section.git
+[submodule "services/google-flow-services-section"]
+	path = services/google-flow-services-section
+	url = https://github.com/red-cup-engineering/google-flow-services-section.git
+	branch = main
+[submodule "services/image-authoring-service"]
+	path = services/image-authoring-service
+	url = https://github.com/red-cup-engineering/image-authoring-service.git
+	branch = main
