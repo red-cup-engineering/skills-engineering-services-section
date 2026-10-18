@@ -2,6 +2,11 @@
   "name": "@red-cup-engineering/skills-services-section",
   "version": "0.1.0",
   "description": "Writes one Agent Skills SKILL.md through the Markdown file writing service.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/computer-inference-system-services-section.git",
+    "directory": "services/agent-services-section/services/skills-services-section"
+  },
   "type": "module",
   "license": "MIT",
   "private": false,
