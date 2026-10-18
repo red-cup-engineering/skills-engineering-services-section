@@ -2,6 +2,11 @@
   "name": "@red-cup-engineering/compare-projection-to-path-service",
   "version": "0.1.0",
   "description": "Compares a skill record's would-be projection against what actually sits at a target directory, read-only. Reports a missing SKILL.md, a missing or byte-differing script, and SKILL.md content differing from what would be rendered.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/computer-inference-system-services-section.git",
+    "directory": "services/agent-services-section/services/skills-services-section/services/skill-comparison-services-section/services/compare-projection-to-path-service"
+  },
   "type": "module",
   "license": "MIT",
   "private": false,

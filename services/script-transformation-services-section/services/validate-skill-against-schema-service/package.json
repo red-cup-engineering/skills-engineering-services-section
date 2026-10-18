@@ -2,6 +2,11 @@
   "name": "@red-cup-engineering/validate-skill-against-schema-service",
   "version": "0.1.0",
   "description": "Validates a candidate skill record against a Draft 2020-12 schema by importing the published json-schema-services-section evaluator and calling it as a function — never by spawning a subprocess.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/computer-inference-system-services-section.git",
+    "directory": "services/agent-services-section/services/skills-services-section/services/script-transformation-services-section/services/validate-skill-against-schema-service"
+  },
   "type": "module",
   "license": "MIT",
   "private": false,
