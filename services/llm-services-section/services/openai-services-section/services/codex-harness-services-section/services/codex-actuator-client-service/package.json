@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "description": "Parameterized Codex-side evidence selection and external actuator invocation without domain doctrine or generated skills.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/computer-inference-system-services-section.git",
+    "directory": "services/llm-services-section/services/openai-services-section/services/codex-harness-services-section/services/codex-actuator-client-service"
+  },
   "exports": {
     ".": "./src/client.mjs"
   },

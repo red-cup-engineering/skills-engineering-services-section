@@ -1,6 +1,10 @@
 {
   "name": "@red-cup-engineering/computer-inference-system-services-section",
   "version": "0.2.5",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/computer-inference-system-services-section.git"
+  },
   "type": "module",
   "description": "Groups the computer inference system: the inference engine and the services composed over it."
 }

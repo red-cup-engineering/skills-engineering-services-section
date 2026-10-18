@@ -2,6 +2,11 @@
   "name": "@red-cup-engineering/transform-javascript-script-to-skill-service",
   "version": "0.1.0",
   "description": "Reads a JavaScript script's leading declaration header and transforms it into a candidate skill record and body, purely — no filesystem, no child process.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/computer-inference-system-services-section.git",
+    "directory": "services/agent-services-section/services/skills-services-section/services/script-transformation-services-section/services/transform-javascript-script-to-skill-service"
+  },
   "type": "module",
   "license": "MIT",
   "private": false,

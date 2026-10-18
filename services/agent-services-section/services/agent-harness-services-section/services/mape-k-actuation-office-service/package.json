@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "description": "Generates a provider's MAPE-K actuation-office record and its seven duty records from bare-cedar-fog-codex-actuation-office's shape, generalized across providers rather than hand-copied per provider.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/computer-inference-system-services-section.git",
+    "directory": "services/agent-services-section/services/agent-harness-services-section/services/mape-k-actuation-office-service"
+  },
   "exports": {
     ".": "./src/generator.mjs"
   },
