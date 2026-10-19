@@ -41,3 +41,7 @@
 	path = services/agent-services-section/services/skills-services-section/services/script-transformation-services-section/services/find-skill-scripts-in-a-directory-service
 	url = https://github.com/red-cup-engineering/find-skill-scripts-in-a-directory-service.git
 	branch = main
+[submodule "mape-k-actuation-office-service"]
+	path = services/agent-services-section/services/agent-harness-services-section/services/mape-k-actuation-office-service
+	url = https://github.com/red-cup-engineering/mape-k-actuation-office-service.git
+	branch = main
