@@ -37,3 +37,7 @@
 	path = services/agent-services-section/services/skills-services-section/services/script-transformation-services-section/services/transform-javascript-script-to-skill-service
 	url = https://github.com/red-cup-engineering/transform-javascript-script-to-skill-service.git
 	branch = main
+[submodule "find-skill-scripts-in-a-directory-service"]
+	path = services/agent-services-section/services/skills-services-section/services/script-transformation-services-section/services/find-skill-scripts-in-a-directory-service
+	url = https://github.com/red-cup-engineering/find-skill-scripts-in-a-directory-service.git
+	branch = main
