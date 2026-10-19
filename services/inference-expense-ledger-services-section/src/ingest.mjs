@@ -1,5 +1,5 @@
 // Ingest agent-session transcripts into expense records for one UTC day.
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { expenseRecordsOfAgent, inWindow } from "./agent-expense.mjs";
 import { findPriceClaim } from "./published-prices.mjs";
@@ -71,6 +71,39 @@ export function writeExpenseRecords(records, outDir, day) {
   for (const [sessionId, rows] of bySession) {
     const file = path.join(dir, `${sessionId}.jsonl`);
     rows.sort((a, b) => (a.agent.id + a.model).localeCompare(b.agent.id + b.model));
+    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
+    written.push(file);
+    // The day ingest covers every agent of the session, so it supersedes the per-agent files an agent's end wrote.
+    for (const row of rows) rmSync(path.join(dir, sessionId, `${row.agent.id}.jsonl`), { force: true });
+  }
+  return written;
+}
+
+/**
+ * Expense records of ONE agent's transcript, one set per UTC day its requests fall on (an agent's end is recorded
+ * without waiting for the day ingest). `agent` is `{harness, sessionId, agentId, role, meta}`; usage fields only.
+ */
+export function ingestAgentTranscript({ file, agent, claims, allowLaterPrices = false, now = new Date() }) {
+  const requests = readClaudeTranscript(file);
+  const days = [...new Set(requests.map((request) => request.at.slice(0, 10)))].sort();
+  const observedThrough = now.toISOString();
+  return days.flatMap((day) => {
+    const window = { since: `${day}T00:00:00.000Z`, until: `${nextDay(day)}T00:00:00.000Z` };
+    return expenseRecordsOfAgent(agent, requests.filter((request) => inWindow(request, window)), { claims, day, provider: "anthropic", observedThrough, allowLaterPrices });
+  });
+}
+
+/** One JSONL file per agent and day under `<out>/<day>/<sessionId>/<agentId>.jsonl`; replaces an earlier record of the same agent. Returns the paths written. */
+export function writeAgentExpenseRecords(records, outDir) {
+  const written = [];
+  const byFile = new Map();
+  for (const record of records) {
+    const file = path.join(outDir, record.day, record.sessionId, `${record.agent.id}.jsonl`);
+    byFile.set(file, [...(byFile.get(file) ?? []), record]);
+  }
+  for (const [file, rows] of byFile) {
+    mkdirSync(path.dirname(file), { recursive: true });
+    rows.sort((a, b) => a.model.localeCompare(b.model));
     writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
     written.push(file);
   }

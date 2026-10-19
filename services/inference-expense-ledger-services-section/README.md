@@ -70,6 +70,9 @@ and reads usage fields only from transcripts, never prompts, tool inputs or resu
   agent continued from a HANDOFF-token record (model and limits in `src/context-budget.mjs`). An agent
   whose window starts with more than THRESHOLD minus HANDOFF tokens already in context is reported not
   simulable.
+- `scripts/ingest-one-agent-transcript.mjs --transcript F --session S --agent A [--out DIR] [--allow-later-price-claim]` prices one
+  finished agent into `<out>/<day>/<session>/<agent>.jsonl` (usage fields only), so a SubagentStop hook records every
+  agent's cost without a command; the day ingest later supersedes those files.
 - `scripts/report-agent-context-budgets.mjs --day D [--budget 200000]` reads the ledger and lists each
   agent's peak and final context, turns over budget and cost, over-budget agents first.
 - `scripts/record-agent-assignment.mjs derive --session ID` derives assignments and outcomes from the lead
