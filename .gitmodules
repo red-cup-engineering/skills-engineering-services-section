@@ -25,3 +25,7 @@
 	path = services/agent-services-section/services/skills-services-section/services/skill-projection-services-section/services/project-skill-to-path-service
 	url = https://github.com/red-cup-engineering/project-skill-to-path-service.git
 	branch = main
+[submodule "compare-projection-to-path-service"]
+	path = services/agent-services-section/services/skills-services-section/services/skill-comparison-services-section/services/compare-projection-to-path-service
+	url = https://github.com/red-cup-engineering/compare-projection-to-path-service.git
+	branch = main
