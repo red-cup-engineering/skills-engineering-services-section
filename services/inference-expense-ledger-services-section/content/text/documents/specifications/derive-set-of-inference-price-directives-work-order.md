@@ -5,9 +5,9 @@
 - `source-and-model-in-metadata`: Every rendered price directive carries the entry's `provider`, `model`, `token_class`, and `sourceUrl` in its Beancount metadata.
 - `exact-decimal-price`: Every rendered price is the entry's own plain decimal string, validated through the ledger section's decimal primitives, never a floating-point number.
 ## Prohibitions
-- `no-network-io`: The operation performs no network call, file read, or file write; it is a pure function of its input.
-- `no-float-money`: No price value is parsed or computed with a native floating-point arithmetic operator.
-- `no-malformed-entry-silent-pass`: A price-list entry missing `provider`, `model`, `date`, `sourceUrl`, or either required price field is refused with a `TypeError` naming the missing field, never silently dropped or defaulted.
+- `no-network-io`: The operation performs no network call, file read, or file write; it is a pure function of its input. [claims: pure-data-transformation]
+- `no-float-money`: No price value is parsed or computed with a native floating-point arithmetic operator. [claims: native-float-misstates-decimals]
+- `no-malformed-entry-silent-pass`: A price-list entry missing `provider`, `model`, `date`, `sourceUrl`, or either required price field is refused with a `TypeError` naming the missing field, never silently dropped or defaulted. [claims: malformed-input-outside-domain]
 ## Laws
 - `pure-data-transformation-law` | The language law (asserted 2026-08-30) | v1 | .claude/rules/org-layering.md | Applies to deriveSetOfInferencePriceDirectives as data transformation, never I/O. | I/O with a system is written in Node; a decision that is only data transformation performs no I/O of its own.
 - `standards-first-data-law` | Standards-first data, networking, and deployment (specified 2026-09-04) | v1 | .claude/rules/org-layering.md | Applies to the inference price directives as a plain-text double-entry account primitive. | An existing open standard is preferred over a house format every time one fits; plain-text double-entry accounting (Beancount) is named as one of the preferred standards.
@@ -17,6 +17,11 @@
 - `beancount-double-entry-syntax` | Beancount | v3.2 | https://beancount.github.io/docs/beancount_language_syntax.html | Applies to every rendered `price` directive. | Directives use Beancount's plain-text `price` directive syntax; conformance is verified by `bean-check`.
 ## Open questions
 none
+## Claims
+- `dep-computer-ledger-system-services-section` | measured | dependency | @red-cup-engineering/computer-ledger-system-services-section@0.2.0 is published on the Group registry | none | data/records/2026-10-19-work-order-evidence/npm-view-red-cup-engineering-computer-ledger-system-services-section-0-2-0.json | sha256:17aa8b1f0046f26500660945a69ab13b974d0810d14edefde42e25e89d8960e5 | npm view of @red-cup-engineering/computer-ledger-system-services-section@0.2.0 returned its name, version and integrity (2026-10-19)
+- `pure-data-transformation` | derived | world | A decision that is only data transformation performs no I/O of its own | none | constraint:pure-data-transformation-law | The law states that I/O with a system is written in Node and a pure data transformation performs none
+- `native-float-misstates-decimals` | measured | behavior | Native floating-point addition of the decimal prices 0.1 and 0.2 does not return 0.3 | none | data/records/2026-10-19-work-order-evidence/native-float-decimal-sum.json | sha256:2088d7b408b8b3088e54620fc1a9e6265b923045f824139c2acad9dacc0041a7 | The sum evaluated in Node is 0.30000000000000004 and is not equal to 0.3 (recorded run, 2026-10-19)
+- `malformed-input-outside-domain` | derived | world | A request or field not of its declared type lies outside the operation's input domain | none | constraint:node-esm-operation; citation:Red Cup reconcile-typed-boundaries skill, a boundary admits only its declared type | Refusing an out-of-domain input is the typed boundary's own behavior, not a further choice
 ## Package
 ```json
 {"packageName":"@red-cup-engineering/derive-set-of-inference-price-directives-service","packageVersion":"0.1.0","license":"UNLICENSED","dependencies":{"@red-cup-engineering/computer-ledger-system-services-section":"0.2.0"},"devDependencies":{}}
