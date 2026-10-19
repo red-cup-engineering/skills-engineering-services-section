@@ -233,13 +233,12 @@ export function deriveSetOfInferenceExpenseTransactions(input) {
     const key = `${record.provider} ${record.model} ${date}`;
     if (!groups.has(key)) {
       groups.set(key, {
-        provider: record.provider, model: record.model, date, recordIds: [], sessionIds: [],
+        provider: record.provider, model: record.model, date, recordIds: [],
         tokens: { input: 0, output: 0, "cache-read": 0, "cache-write": 0 },
       });
     }
     const group = groups.get(key);
     group.recordIds.push(record.recordId);
-    if (!group.sessionIds.includes(record.sessionId)) group.sessionIds.push(record.sessionId);
     group.tokens.input += record.inputTokens;
     group.tokens.output += record.outputTokens;
     group.tokens["cache-read"] += record.cacheReadTokens ?? 0;
@@ -277,7 +276,6 @@ export function deriveSetOfInferenceExpenseTransactions(input) {
       model: group.model,
       record_count: String(group.recordIds.length),
       witness_record_ids: group.recordIds.join(","),
-      session_ids: group.sessionIds.join(","),
       input_tokens: String(group.tokens.input),
       output_tokens: String(group.tokens.output),
       cache_read_tokens: String(group.tokens["cache-read"]),
@@ -356,23 +354,9 @@ test("aggregates two records for the same day/provider/model into one balanced t
   assert.match(tx.directive, /Expenses:Inference-and-Compute:Claude\s+7 USD/u);
   assert.match(tx.directive, /Liabilities:Accounts-Payable:Claude\s+-7 USD/u);
   assert.match(tx.directive, /witness_record_ids: "r1,r2"/u);
-  assert.match(tx.directive, /session_ids: "s1"/u);
   assert.equal(result.accountsToOpen.length, 2);
   assert.equal(result.totalUsd, "7");
   assert.equal(result.refusals.length, 0);
-});
-
-test("carries every distinct sessionId in a group as comma-joined session_ids metadata", () => {
-  const result = deriveSetOfInferenceExpenseTransactions({
-    usageRecords: [
-      { recordId: "r1", sessionId: "s1", provider: "claude", model: "claude-sonnet-5", timestamp: "2026-09-04T10:00:00.000Z", inputTokens: 1000000, outputTokens: 0, cacheReadTokens: 0, cacheCreationTokens: 0 },
-      { recordId: "r2", sessionId: "s2", provider: "claude", model: "claude-sonnet-5", timestamp: "2026-09-04T11:00:00.000Z", inputTokens: 0, outputTokens: 500000, cacheReadTokens: 0, cacheCreationTokens: 0 },
-      { recordId: "r3", sessionId: "s1", provider: "claude", model: "claude-sonnet-5", timestamp: "2026-09-04T12:00:00.000Z", inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheCreationTokens: 0 },
-    ],
-    priceDirectives,
-  });
-  assert.equal(result.transactionCount, 1);
-  assert.match(result.transactions[0].directive, /session_ids: "s1,s2"/u);
 });
 
 test("refuses a group with a used token class that has no matching price directive", () => {
