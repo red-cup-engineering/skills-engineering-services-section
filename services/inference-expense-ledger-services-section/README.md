@@ -72,7 +72,10 @@ and reads usage fields only from transcripts, never prompts, tool inputs or resu
   simulable.
 - `scripts/report-agent-context-budgets.mjs --day D [--budget 200000]` reads the ledger and lists each
   agent's peak and final context, turns over budget and cost, over-budget agents first.
-- `scripts/record-agent-assignment.mjs assigned|outcome` appends to the assignment journal
+- `scripts/record-agent-assignment.mjs derive --session ID` derives assignments and outcomes from the lead
+  transcript (Agent tool calls: description, prompt digest, tool-use and agent id; task-notification status;
+  never prompts or reports) and appends the new ones, idempotently, to the assignment journal. `assigned|outcome` remain as a manual override.
+  The journal is
   (`data/records/agent-assignments/journal.jsonl`): which agent (by id or tool-use id) the lead gave a Work
   item, and later its outcome. `scripts/report-work-cost.mjs` joins that journal to the ledger and prints
   each Work item's agents, turns, tokens and cost, and names any assignment matching no ledger record.

@@ -28,6 +28,9 @@ export function assignmentEvent(input, now = new Date()) {
   const title = text(input.title, "title", { optional: true });
   const summary = text(input.summary, "summary", { optional: true, max: 1000 });
   if (title !== undefined) row.title = title;
+  const promptDigest = text(input.promptDigest, "promptDigest", { optional: true, max: 64 });
+  if (promptDigest !== undefined) row.promptDigest = promptDigest;
+  if (input.derived === true) row.derived = true;
   if (event === "outcome") {
     if (!OUTCOME_STATUSES.includes(input.status)) throw new TypeError(`status must be one of ${OUTCOME_STATUSES.join(", ")}`);
     row.status = input.status;
