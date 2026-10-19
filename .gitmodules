@@ -29,3 +29,7 @@
 	path = services/agent-services-section/services/skills-services-section/services/skill-comparison-services-section/services/compare-projection-to-path-service
 	url = https://github.com/red-cup-engineering/compare-projection-to-path-service.git
 	branch = main
+[submodule "validate-skill-against-schema-service"]
+	path = services/agent-services-section/services/skills-services-section/services/script-transformation-services-section/services/validate-skill-against-schema-service
+	url = https://github.com/red-cup-engineering/validate-skill-against-schema-service.git
+	branch = main
