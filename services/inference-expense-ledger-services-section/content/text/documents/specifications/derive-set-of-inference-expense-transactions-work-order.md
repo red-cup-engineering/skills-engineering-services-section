@@ -1,16 +1,16 @@
 # derive-set-of-inference-expense-transactions
 ## Requirements
-- `aggregated-per-day-per-provider-model`: Token-usage records are grouped by provider, model, and calendar date (the first 10 characters of the record's timestamp), and one Beancount transaction is rendered per group.
+- `aggregated-per-day-per-provider-model`: Token-usage records are grouped by provider, model, and calendar date (the first {{date-prefix-length}} characters of the record's timestamp), and one Beancount transaction is rendered per group.
 - `priced-against-directives`: Each group's cost is the sum, over every token class with a non-zero token count in the group (input, output, cache-read, cache-write), of the group's summed token count for that class divided into millions and multiplied by the matching price directive's per-million-token price, at or before the group's date; every division and multiplication is exact decimal arithmetic, never a floating-point number.
 - `posts-expense-against-payable`: Each transaction posts the group's total USD cost to `Expenses:Inference-and-Compute:<Provider>` and its exact negation to `Liabilities:Accounts-Payable:<Provider>`, `<Provider>` being the provider name capitalized into one Beancount account component.
 - `witness-and-count-in-metadata`: Each transaction carries the group's record count and the comma-joined usage-record ids that composed it (its witnesses) as Beancount metadata, alongside the summed token counts per class.
 - `accounts-opened-at-first-use`: The output names one `open` directive, dated no later than its account's first use, for every `Expenses:Inference-and-Compute:<Provider>` or `Liabilities:Accounts-Payable:<Provider>` account any transaction references and that is not already named in the input's `openAccounts`.
 - `refusal-without-price-directive`: A group with a non-zero token count in a class for which no matching price directive exists on or before the group's date is refused as a whole, naming every constituent record id and the missing class, and produces no transaction.
 ## Prohibitions
-- `no-network-io`: The operation performs no network call, file read, or file write; it is a pure function of its input.
-- `no-float-money`: No monetary computation uses a native floating-point arithmetic operator; every amount is parsed, divided, added, or multiplied through exact decimal-string arithmetic.
-- `no-unbalanced-transaction`: A rendered transaction's two postings must always sum to exactly zero USD.
-- `no-silent-price-guess`: A token class with a non-zero token count and no matching price directive must never be priced at zero or skipped silently; its group is refused instead.
+- `no-network-io`: The operation performs no network call, file read, or file write; it is a pure function of its input. [claims: pure-data-transformation]
+- `no-float-money`: No monetary computation uses a native floating-point arithmetic operator; every amount is parsed, divided, added, or multiplied through exact decimal-string arithmetic. [claims: native-float-misstates-decimals]
+- `no-unbalanced-transaction`: A rendered transaction's two postings must always sum to exactly zero USD. [claims: postings-balance-per-currency]
+- `no-silent-price-guess`: A token class with a non-zero token count and no matching price directive must never be priced at zero or skipped silently; its group is refused instead. [claims: a-missing-price-is-a-refusal]
 ## Laws
 - `pure-data-transformation-law` | The language law (asserted 2026-08-30) | v1 | .claude/rules/org-layering.md | Applies to deriveSetOfInferenceExpenseTransactions as data transformation, never I/O. | I/O with a system is written in Node; a decision that is only data transformation performs no I/O of its own.
 - `standards-first-data-law` | Standards-first data, networking, and deployment (specified 2026-09-04) | v1 | .claude/rules/org-layering.md | Applies to the inference expense candidates as a plain-text double-entry account primitive. | An existing open standard is preferred over a house format every time one fits; plain-text double-entry accounting (Beancount) is named as one of the preferred standards.
@@ -21,6 +21,13 @@
 - `beancount-double-entry-syntax` | Beancount | v3.2 | https://beancount.github.io/docs/beancount_language_syntax.html | Applies to every rendered `open` and transaction directive. | Directives use Beancount's plain-text double-entry syntax: dated `open` accounts and `*` transactions whose postings sum to zero per currency; conformance is verified by `bean-check`.
 ## Open questions
 none
+## Claims
+- `dep-computer-ledger-system-services-section` | measured | dependency | @red-cup-engineering/computer-ledger-system-services-section@0.2.0 is published on the Group registry | none | data/records/2026-10-19-work-order-evidence/npm-view-red-cup-engineering-computer-ledger-system-services-section-0-2-0.json | sha256:17aa8b1f0046f26500660945a69ab13b974d0810d14edefde42e25e89d8960e5 | npm view of @red-cup-engineering/computer-ledger-system-services-section@0.2.0 returned its name, version and integrity (2026-10-19)
+- `pure-data-transformation` | derived | world | A decision that is only data transformation performs no I/O of its own | none | constraint:pure-data-transformation-law | The law states that I/O with a system is written in Node and a pure data transformation performs none
+- `native-float-misstates-decimals` | measured | behavior | Native floating-point addition of the decimal prices 0.1 and 0.2 does not return 0.3 | none | data/records/2026-10-19-work-order-evidence/native-float-decimal-sum.json | sha256:2088d7b408b8b3088e54620fc1a9e6265b923045f824139c2acad9dacc0041a7 | The sum evaluated in Node is 0.30000000000000004 and is not equal to 0.3 (recorded run, 2026-10-19)
+- `date-prefix-length` | derived | parameter | The calendar date of an ISO 8601 timestamp is its first ten characters, YYYY-MM-DD | 10 characters | constraint:iso-8601-date-time | Four year digits, a hyphen, two month digits, a hyphen and two day digits make ten characters
+- `postings-balance-per-currency` | derived | world | A Beancount transaction's postings sum to zero per currency | none | constraint:beancount-double-entry-syntax; requirement:posts-expense-against-payable | The syntax standard defines a balanced transaction this way, and the requirement posts the cost and its exact negation
+- `a-missing-price-is-a-refusal` | derived | world | A class with tokens and no price directive on or before the date cannot be priced, so its group is refused as a whole | none | requirement:refusal-without-price-directive | The requirement states the refusal and that no transaction is produced for the group
 ## Package
 ```json
 {"packageName":"@red-cup-engineering/derive-set-of-inference-expense-transactions-service","packageVersion":"0.2.0","license":"UNLICENSED","dependencies":{"@red-cup-engineering/computer-ledger-system-services-section":"0.2.0"},"devDependencies":{}}
