@@ -10,6 +10,7 @@ import { readClaudeTranscript, readCodexRollout } from "../src/session-transcrip
 import { ingestAgentSessions, writeExpenseRecords } from "../src/ingest.mjs";
 import { contextBudgetReport, simulateHandoff } from "../src/context-budget.mjs";
 import { appendAssignmentEvent, readAssignmentEvents, workCostRollup } from "../src/work-cost.mjs";
+import { deriveAssignmentEvents, syncDerivedEvents } from "../src/assignment-derive.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const claims = loadPriceClaims(path.join(here, "../data/records/2026-10-19-anthropic-published-prices.json"));
@@ -190,4 +191,26 @@ test("per-Work roll-up joins assignments to the ledger and names assignments it 
   const beta = rollup.find((work) => work.workId === "work:beta");
   assert.deepEqual(beta.unmatchedAssignments, ["gone"]);
   assert.equal(beta.status, "open");
+});
+
+test("assignments and outcomes derive from the lead transcript's tool-call metadata, idempotently, never storing content", () => {
+  const project = scratch();
+  const row = (type, extra) => JSON.stringify({ type, timestamp: "2026-10-19T03:00:00Z", ...extra });
+  const secret = "SECRET-PROMPT-AND-REPORT";
+  writeFileSync(path.join(project, "sess-9.jsonl"), [
+    row("assistant", { message: { content: [{ type: "tool_use", id: "toolu_A", name: "Agent", input: { description: "Do A", prompt: secret } }, { type: "tool_use", id: "toolu_B", name: "Agent", input: { description: "Do B", prompt: secret } }] } }),
+    row("user", { toolUseResult: { status: "async_launched", agentId: "agentA" }, message: { content: [{ type: "tool_result", tool_use_id: "toolu_A", content: "launched" }] } }),
+    row("queue-operation", { operation: "enqueue", content: `<task-notification><task-id>agentA</task-id><tool-use-id>toolu_A</tool-use-id><status>completed</status><summary>${secret}</summary></task-notification>` }),
+    row("queue-operation", { operation: "enqueue", content: "<task-notification><task-id>bgjob</task-id><tool-use-id>toolu_Bash</tool-use-id><status>completed</status></task-notification>" }),
+  ].join("\n"));
+  mkdirSync(path.join(project, "sess-9", "subagents"), { recursive: true });
+  writeFileSync(path.join(project, "sess-9", "subagents", "agent-agentB.meta.json"), JSON.stringify({ toolUseId: "toolu_B", description: "Do B" }));
+  const events = deriveAssignmentEvents(project, "sess-9");
+  assert.deepEqual(events.map((e) => `${e.event}:${e.toolUseId}:${e.agentId}:${e.status ?? ""}`), ["assigned:toolu_A:agentA:", "outcome:toolu_A:agentA:done", "assigned:toolu_B:agentB:"]);
+  assert.equal(events[0].title, "Do A");
+  assert.equal(events[0].promptDigest.length, 16);
+  assert.ok(!JSON.stringify(events).includes(secret));
+  const journal = path.join(scratch(), "journal.jsonl");
+  assert.equal(syncDerivedEvents(journal, events, appendAssignmentEvent).length, 3);
+  assert.equal(syncDerivedEvents(journal, events, appendAssignmentEvent).length, 0);
 });
