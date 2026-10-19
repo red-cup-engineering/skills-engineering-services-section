@@ -1,0 +1,147 @@
+{
+  "about": "Anthropic first-party per-model prices as published, each a measured claim with its source and observation date. Cache hits for claude-opus-5-5 and claude-sonnet-5-5 are 0.05x base input per the page footnote; others 0.1x. claude-haiku-5-5 is deliberately absent: its price depends on prompt size (up to or over 100,000 tokens) and per-request tiering is not yet implemented.",
+  "claims": [
+    {
+      "id": "anthropic/claude-opus-5-5/standard/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-opus-5-5",
+      "speed": "standard",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Model pricing table row",
+      "usdPerMillionTokens": {
+        "input": "4",
+        "cacheWrite5m": "5",
+        "cacheWrite1h": "8",
+        "cacheRead": "0.20",
+        "output": "20"
+      }
+    },
+    {
+      "id": "anthropic/claude-opus-5/standard/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-opus-5",
+      "speed": "standard",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Model pricing table row",
+      "usdPerMillionTokens": {
+        "input": "5",
+        "cacheWrite5m": "6.25",
+        "cacheWrite1h": "10",
+        "cacheRead": "0.50",
+        "output": "25"
+      }
+    },
+    {
+      "id": "anthropic/claude-opus-4-8/standard/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-opus-4-8",
+      "speed": "standard",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Model pricing table row",
+      "usdPerMillionTokens": {
+        "input": "5",
+        "cacheWrite5m": "6.25",
+        "cacheWrite1h": "10",
+        "cacheRead": "0.50",
+        "output": "25"
+      }
+    },
+    {
+      "id": "anthropic/claude-sonnet-5-5/standard/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "speed": "standard",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Model pricing table row",
+      "usdPerMillionTokens": {
+        "input": "2",
+        "cacheWrite5m": "2.50",
+        "cacheWrite1h": "4",
+        "cacheRead": "0.10",
+        "output": "10"
+      }
+    },
+    {
+      "id": "anthropic/claude-sonnet-5/standard/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "speed": "standard",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Model pricing table row",
+      "usdPerMillionTokens": {
+        "input": "2",
+        "cacheWrite5m": "2.50",
+        "cacheWrite1h": "4",
+        "cacheRead": "0.20",
+        "output": "10"
+      }
+    },
+    {
+      "id": "anthropic/claude-sonnet-4-6/standard/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6",
+      "speed": "standard",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Model pricing table row",
+      "usdPerMillionTokens": {
+        "input": "3",
+        "cacheWrite5m": "3.75",
+        "cacheWrite1h": "6",
+        "cacheRead": "0.30",
+        "output": "15"
+      }
+    },
+    {
+      "id": "anthropic/claude-haiku-4-5/standard/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5",
+      "speed": "standard",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Model pricing table row",
+      "usdPerMillionTokens": {
+        "input": "1",
+        "cacheWrite5m": "1.25",
+        "cacheWrite1h": "2",
+        "cacheRead": "0.10",
+        "output": "5"
+      }
+    },
+    {
+      "id": "anthropic/claude-opus-5-5/fast/2026-10-19",
+      "kind": "published-model-price-claim",
+      "epistemicStatus": "measured",
+      "provider": "anthropic",
+      "model": "claude-opus-5-5",
+      "speed": "fast",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observedAt": "2026-10-19",
+      "observedBy": "WebFetch of the provider pricing page, Fast mode table row",
+      "note": "The page publishes only input and output for fast mode; cache classes are unpriced, so a fast turn that touched the cache is reported unpriced.",
+      "usdPerMillionTokens": {
+        "input": "8",
+        "output": "40"
+      }
+    }
+  ]
+}
