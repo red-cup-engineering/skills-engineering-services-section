@@ -1,0 +1,20 @@
+[submodule "project-skill-to-path-service"]
+	path = services/skill-projection-services-section/services/project-skill-to-path-service
+	url = https://github.com/red-cup-engineering/project-skill-to-path-service.git
+	branch = main
+[submodule "compare-projection-to-path-service"]
+	path = services/skill-comparison-services-section/services/compare-projection-to-path-service
+	url = https://github.com/red-cup-engineering/compare-projection-to-path-service.git
+	branch = main
+[submodule "validate-skill-against-schema-service"]
+	path = services/script-transformation-services-section/services/validate-skill-against-schema-service
+	url = https://github.com/red-cup-engineering/validate-skill-against-schema-service.git
+	branch = main
+[submodule "transform-javascript-script-to-skill-service"]
+	path = services/script-transformation-services-section/services/transform-javascript-script-to-skill-service
+	url = https://github.com/red-cup-engineering/transform-javascript-script-to-skill-service.git
+	branch = main
+[submodule "find-skill-scripts-in-a-directory-service"]
+	path = services/script-transformation-services-section/services/find-skill-scripts-in-a-directory-service
+	url = https://github.com/red-cup-engineering/find-skill-scripts-in-a-directory-service.git
+	branch = main
