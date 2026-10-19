@@ -17,3 +17,7 @@
 	path = services/image-authoring-service
 	url = https://github.com/red-cup-engineering/image-authoring-service.git
 	branch = main
+[submodule "codex-actuator-client-service"]
+	path = services/llm-services-section/services/openai-services-section/services/codex-harness-services-section/services/codex-actuator-client-service
+	url = https://github.com/red-cup-engineering/codex-actuator-client-service.git
+	branch = main
