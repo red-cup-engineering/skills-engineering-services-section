@@ -29,3 +29,7 @@
 	path = services/agent-services-section/services/skills-services-section
 	url = https://github.com/red-cup-engineering/skills-services-section.git
 	branch = main
+[submodule "inference-expense-ledger-services-section"]
+	path = services/inference-expense-ledger-services-section
+	url = https://github.com/red-cup-engineering/inference-expense-ledger-services-section.git
+	branch = main
