@@ -16,7 +16,7 @@ const ledgerComponent = (value, kind) => {
   return value;
 };
 const ledgerDay = (value) => {
-  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/u.test(value) ||
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/u.test(value) ||
       !Number.isFinite(Date.parse(`${value}T00:00:00.000Z`)) ||
       new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) !== value)
     throw new TypeError("invalid ledger UTC day");
@@ -108,7 +108,7 @@ export function writeExpenseRecords(records, outDir, day) {
     refuseRedirectedDir(agentDir);
     const file = path.join(dir, `${sessionId}.jsonl`);
     rows.sort((a, b) => (a.agent.id + a.model).localeCompare(b.agent.id + b.model));
-    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\\n") + "\\n");
+    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
     written.push(file);
     // Day receipts supersede single-agent receipts only in the same owned session directory.
     for (const row of rows) {
@@ -154,7 +154,7 @@ export function writeAgentExpenseRecords(records, outDir) {
     refuseRedirectedDir(dayDir);
     refuseRedirectedDir(sessionDir);
     rows.sort((a, b) => a.model.localeCompare(b.model));
-    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\\n") + "\\n");
+    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
     written.push(file);
   }
   return written;
