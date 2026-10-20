@@ -1,5 +1,5 @@
 // Ingest agent-session transcripts into expense records for one UTC day.
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { expenseRecordsOfAgent, inWindow } from "./agent-expense.mjs";
 import { findPriceClaim } from "./published-prices.mjs";
@@ -7,6 +7,32 @@ import { simulateHandoff } from "./context-budget.mjs";
 import { listClaudeAgentTranscripts, readClaudeTranscript, readCodexRollout } from "./session-transcripts.mjs";
 
 const nextDay = (day) => new Date(Date.parse(`${day}T00:00:00.000Z`) + 86_400_000).toISOString().slice(0, 10);
+
+// Expense ledger source identifiers become filesystem components. Never accept path
+// separators, dot-only names, control characters or unbounded user-supplied IDs.
+const ledgerComponent = (value, kind) => {
+  if (typeof value !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/u.test(value))
+    throw new TypeError(`invalid ${kind} ledger path component`);
+  return value;
+};
+const ledgerDay = (value) => {
+  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/u.test(value) ||
+      !Number.isFinite(Date.parse(`${value}T00:00:00.000Z`)) ||
+      new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) !== value)
+    throw new TypeError("invalid ledger UTC day");
+  return value;
+};
+// The output root belongs to the operator; within it, do not follow an existing
+// symlinked day/session directory to write or unlink entries outside that root.
+const refuseRedirectedDir = (dir) => {
+  try {
+    const info = lstatSync(dir);
+    if (!info.isDirectory() || info.isSymbolicLink())
+      throw new TypeError("refusing redirected or non-directory ledger path");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+};
 
 function* codexRollouts(root) {
   if (!existsSync(root)) return;
@@ -63,18 +89,32 @@ export function ingestAgentSessions({ claudeProjects, codexRoots = [], claims, d
 
 /** One JSONL file per session under `<out>/<day>/`; returns the paths written. */
 export function writeExpenseRecords(records, outDir, day) {
-  const dir = path.join(outDir, day);
-  mkdirSync(dir, { recursive: true });
+  const receivedDay = ledgerDay(day);
   const bySession = new Map();
-  for (const record of records) bySession.set(record.sessionId, [...(bySession.get(record.sessionId) ?? []), record]);
+  // Preflight the entire batch before making any filesystem changes.
+  for (const record of records) {
+    if (record?.day !== receivedDay) throw new TypeError("ledger record/day mismatch");
+    const sessionId = ledgerComponent(record.sessionId, "sessionId");
+    ledgerComponent(record.agent?.id, "agentId");
+    bySession.set(sessionId, [...(bySession.get(sessionId) ?? []), record]);
+  }
+  const dir = path.join(outDir, receivedDay);
+  refuseRedirectedDir(dir);
+  mkdirSync(dir, { recursive: true });
+  refuseRedirectedDir(dir);
   const written = [];
   for (const [sessionId, rows] of bySession) {
+    const agentDir = path.join(dir, sessionId);
+    refuseRedirectedDir(agentDir);
     const file = path.join(dir, `${sessionId}.jsonl`);
     rows.sort((a, b) => (a.agent.id + a.model).localeCompare(b.agent.id + b.model));
-    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
+    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\\n") + "\\n");
     written.push(file);
-    // The day ingest covers every agent of the session, so it supersedes the per-agent files an agent's end wrote.
-    for (const row of rows) rmSync(path.join(dir, sessionId, `${row.agent.id}.jsonl`), { force: true });
+    // Day receipts supersede single-agent receipts only in the same owned session directory.
+    for (const row of rows) {
+      refuseRedirectedDir(agentDir);
+      rmSync(path.join(agentDir, `${row.agent.id}.jsonl`), { force: true });
+    }
   }
   return written;
 }
@@ -97,14 +137,24 @@ export function ingestAgentTranscript({ file, agent, claims, allowLaterPrices = 
 export function writeAgentExpenseRecords(records, outDir) {
   const written = [];
   const byFile = new Map();
+  // Complete input validation before the first directory or file write.
   for (const record of records) {
-    const file = path.join(outDir, record.day, record.sessionId, `${record.agent.id}.jsonl`);
+    const day = ledgerDay(record?.day);
+    const sessionId = ledgerComponent(record.sessionId, "sessionId");
+    const agentId = ledgerComponent(record.agent?.id, "agentId");
+    const file = path.join(outDir, day, sessionId, `${agentId}.jsonl`);
     byFile.set(file, [...(byFile.get(file) ?? []), record]);
   }
   for (const [file, rows] of byFile) {
-    mkdirSync(path.dirname(file), { recursive: true });
+    const sessionDir = path.dirname(file);
+    const dayDir = path.dirname(sessionDir);
+    refuseRedirectedDir(dayDir);
+    refuseRedirectedDir(sessionDir);
+    mkdirSync(sessionDir, { recursive: true });
+    refuseRedirectedDir(dayDir);
+    refuseRedirectedDir(sessionDir);
     rows.sort((a, b) => a.model.localeCompare(b.model));
-    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
+    writeFileSync(file, rows.map((row) => JSON.stringify(row)).join("\\n") + "\\n");
     written.push(file);
   }
   return written;
