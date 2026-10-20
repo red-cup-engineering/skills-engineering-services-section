@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -52,4 +52,55 @@ test("the script prices one transcript and prints one JSON line; missing argumen
   assert.equal(result.turns, 2);
   assert.match(result.pricedUsd, /^\d+\.\d+$/u);
   assert.equal(spawnSync(process.execPath, [script, "--transcript", file], { encoding: "utf8" }).status, 2);
+});
+
+
+test("ledger file identifiers refuse traversal, invalid dates and mixed-day writes before filesystem effects", () => {
+  const { dir, file } = transcript();
+  try {
+    const [record] = ingestAgentTranscript({ file, agent, claims, allowLaterPrices: true });
+    const out = path.join(dir, "refused-out");
+    const bad = [
+      { ...record, sessionId: "../outside" },
+      { ...record, sessionId: "..\\\\outside" },
+      { ...record, agent: { ...record.agent, id: "../../outside" } },
+      { ...record, agent: { ...record.agent, id: "bad\\\\name" } },
+      { ...record, agent: { ...record.agent, id: "." } },
+      { ...record, day: "../outside" },
+      { ...record, day: "2026-02-30" },
+    ];
+    for (const row of bad) {
+      assert.throws(() => writeAgentExpenseRecords([row], out), /invalid (sessionId|agentId|ledger UTC day)/);
+      assert.ok(!existsSync(out), "invalid record must not create a destination directory");
+    }
+    assert.throws(() => writeExpenseRecords([{ ...record, sessionId: "../escape" }], out, record.day), /sessionId/);
+    assert.throws(() => writeExpenseRecords([record], out, "../outside"), /UTC day/);
+    assert.throws(() => writeExpenseRecords([record], out, "2026-10-20"), /record\\/day mismatch/);
+    assert.ok(!existsSync(out), "day ingest refuses all malformed input before creating directories");
+    const script = path.join(here, "../scripts/ingest-one-agent-transcript.mjs");
+    const badCli = spawnSync(process.execPath, [script, "--transcript", file, "--session", "../escape", "--agent", "abc123", "--out", out, "--allow-later-price-claim"], { encoding: "utf8" });
+    assert.equal(badCli.status, 2, "CLI refuses untrusted session names");
+    assert.ok(!existsSync(out), "invalid CLI input cannot write an expense receipt");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("ledger refuses redirected day and session parents, without modifying outside files", () => {
+  const { dir, file } = transcript();
+  try {
+    const [record] = ingestAgentTranscript({ file, agent, claims, allowLaterPrices: true });
+    const out = path.join(dir, "out"), external = path.join(dir, "external");
+    mkdirSync(external);
+    const sentinel = path.join(external, "abc123.jsonl");
+    writeFileSync(sentinel, "original receipt");
+    mkdirSync(out);
+    symlinkSync(external, path.join(out, record.day), "dir");
+    assert.throws(() => writeAgentExpenseRecords([record], out), /redirected/);
+    assert.throws(() => writeExpenseRecords([record], out, record.day), /redirected/);
+    rmSync(path.join(out, record.day));
+    mkdirSync(path.join(out, record.day));
+    symlinkSync(external, path.join(out, record.day, record.sessionId), "dir");
+    assert.throws(() => writeAgentExpenseRecords([record], out), /redirected/);
+    assert.throws(() => writeExpenseRecords([record], out, record.day), /redirected/);
+    assert.equal(readFileSync(sentinel, "utf8"), "original receipt");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
