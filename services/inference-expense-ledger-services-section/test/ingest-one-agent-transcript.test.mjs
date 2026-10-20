@@ -75,7 +75,7 @@ test("ledger file identifiers refuse traversal, invalid dates and mixed-day writ
     }
     assert.throws(() => writeExpenseRecords([{ ...record, sessionId: "../escape" }], out, record.day), /sessionId/);
     assert.throws(() => writeExpenseRecords([record], out, "../outside"), /UTC day/);
-    assert.throws(() => writeExpenseRecords([record], out, "2026-10-20"), /record\\/day mismatch/);
+    assert.throws(() => writeExpenseRecords([record], out, "2026-10-20"), /record.day mismatch/);
     assert.ok(!existsSync(out), "day ingest refuses all malformed input before creating directories");
     const script = path.join(here, "../scripts/ingest-one-agent-transcript.mjs");
     const badCli = spawnSync(process.execPath, [script, "--transcript", file, "--session", "../escape", "--agent", "abc123", "--out", out, "--allow-later-price-claim"], { encoding: "utf8" });
