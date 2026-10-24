@@ -1,6 +1,6 @@
 [submodule "services/gemini-services-section/services/gemini-notebook-services-section"]
 	path = services/gemini-services-section/services/gemini-notebook-services-section
-	url = https://github.com/red-cup-engineering/gemini-notebook-services-section.git
+	url = https://github.com/red-cup-engineering/gemini-notebook-engineering-services-section.git
 	branch = main
 [submodule "computer-inference-engine"]
 	path = apps/computer-inference-engine
@@ -8,10 +8,10 @@
 	branch = main
 [submodule "services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section"]
 	path = services/llm-services-section/services/anthropic-services-section/services/claude-services-section/services/claude-code-services-section
-	url = https://github.com/red-cup-engineering/claude-code-services-section.git
+	url = https://github.com/red-cup-engineering/claude-code-engineering-services-section.git
 [submodule "services/google-flow-services-section"]
 	path = services/google-flow-services-section
-	url = https://github.com/red-cup-engineering/google-flow-services-section.git
+	url = https://github.com/red-cup-engineering/google-flow-engineering-services-section.git
 	branch = main
 [submodule "services/image-authoring-service"]
 	path = services/image-authoring-service
@@ -27,9 +27,9 @@
 	branch = main
 [submodule "skills-services-section"]
 	path = services/agent-services-section/services/skills-services-section
-	url = https://github.com/red-cup-engineering/skills-services-section.git
+	url = https://github.com/red-cup-engineering/skills-engineering-services-section.git
 	branch = main
 [submodule "inference-expense-ledger-services-section"]
 	path = services/inference-expense-ledger-services-section
-	url = https://github.com/red-cup-engineering/inference-expense-ledger-services-section.git
+	url = https://github.com/red-cup-engineering/inference-expense-ledger-engineering-services-section.git
 	branch = main
