@@ -7,7 +7,7 @@ computer-system engineering rather than beneath computer inference.
 ## Holdings
 
 - `services/skills-services-section` — writes an Agent Skills `SKILL.md`
-  through the Markdown file writing service (package `@red-cup-engineering/skills-services-section`).
+  through the Markdown file writing service (package `@red-cup-engineering/skills-engineering-services-section`).
 - `services/agent-cockpit-services-section` — provenance-bound promotions of
   the firm's agent-cockpit code (operator surfaces for supervising
   multi-agent work) and the cold-red-gate MASH platform capture.
