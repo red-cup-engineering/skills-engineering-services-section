@@ -1,5 +1,5 @@
 {
-  "name": "@red-cup-engineering/skills-engineering-services-section",
+  "name": "@red-cup-engineering/skills-services-section",
   "version": "0.1.0",
   "description": "Writes one Agent Skills SKILL.md through the Markdown file writing service.",
   "repository": {
