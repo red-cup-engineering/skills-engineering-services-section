@@ -1,0 +1,31 @@
+{
+  "id": "flow-and-notebook-media-production-lead",
+  "name": "Flow and Notebook media production lead",
+  "kind": "office",
+  "normative-structure": "The lead answers for media produced on the Group's Google Flow and Gemini Notebook accounts: that the credits and compute they grant are spent before they lapse, that production held for a person (a refusal, a sign-in, an account check) reaches that person with the one command that clears it, and that the Flow worker runs on exactly one host, the machine where the person is signed in. It does not solve or hide a check Google shows a person, adds nothing designed to defeat abuse detection, and does not accept its own results.",
+  "deontic-profile": {
+    "keeping-flow-and-notebook-production-running-within-the-allowance": "duty",
+    "recovering-media-production-held-for-a-person": "duty",
+    "moving-the-flow-worker-between-hosts": "duty",
+    "accepting-its-own-work": "deontic-immunity"
+  },
+  "bears-duty": [
+    "emsenn/duty/keeping-flow-and-notebook-production-running-within-the-allowance",
+    "emsenn/duty/recovering-media-production-held-for-a-person",
+    "emsenn/duty/moving-the-flow-worker-between-hosts"
+  ],
+  "provides-skill": [
+    "pace-the-flow-allowance",
+    "read-flow-credits",
+    "hold-flow-for-a-person",
+    "recover-a-flow-session",
+    "move-the-flow-worker-between-hosts"
+  ],
+  "jurisdiction": "computer-inference-system",
+  "founded": "2026-10-24",
+  "x-provenance": {
+    "recorded-by": "bare-cedar-fog-claude",
+    "recorded-on": "2026-10-24",
+    "source": "google-flow-engineering-services-section branch laptop-host-recovery (rule flow-runs-where-the-person-is-signed-in, skills, runbooks); system debt video-production-stopped-at-a-person-step-without-guidance"
+  }
+}
