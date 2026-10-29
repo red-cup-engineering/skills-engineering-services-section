@@ -1,0 +1,25 @@
+{
+  "name": "@emsenn/groq-inference-team",
+  "type": "module",
+  "bin": {
+    "solicit-service": "./src/contract-groq-inference.js",
+    "invoke-service": "./src/contract-groq-inference.js"
+  },
+  "scripts": {
+    "check": "node --check run-one-exchange.mjs && node --check src/contract-groq-inference.js && node --check test/contract-groq-inference.test.js",
+    "test": "node --test test/contract-groq-inference.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sovereign-state-enterprise"
+  ],
+  "x-agentic-metro-enterprise": {
+    "node-id": "groq-inference-team",
+    "operation-catalog": {
+      "solicit-service": { "contract": "groq-inference-service", "accepts": "ActivityStreams Offer<ServiceSolicitation>", "returns": "ActivityStreams Offer<ExecutableServiceOffer>|Question|Reject" },
+      "invoke-service": { "contract": "groq-inference-service", "accepts": "ActivityStreams Accept<ServiceContract>", "returns": "ActivityStreams Accept<GroqInferenceResult>|Reject" }
+    }
+  }
+}

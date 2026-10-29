@@ -1,0 +1,38 @@
+{
+  "kind": "metroplat.contract",
+  "id": "inference-fabric-service",
+  "scope": "host-local inference procurement carrier",
+  "operations": {
+    "submit-inference": {
+      "accepts": "NDJSON<InferenceFabricJob>",
+      "returns": "NDJSON<InferenceSubmissionReceipt>",
+      "completion": "receipt proves synchronous admission status; provider settlement remains asynchronous",
+      "statuses": ["admitted", "refused", "already-settled"]
+    },
+    "query-inference-result": {
+      "accepts": "InferenceResultQuery{id}",
+      "returns": "durable terminal result or result-not-settled",
+      "providerSpendOnReplay": false
+    },
+    "observe-inference-market": {
+      "accepts": "InferenceMarketSnapshotQuery",
+      "returns": "body-free capacity, throughput, refusal, consideration, resource, and supplier evidence"
+    }
+  },
+  "invariants": [
+    "one broker process owns one scheduler journal replay index and duplicate-id set",
+    "a receipt-only connection is released after admission and never waits for provider settlement",
+    "admitted work survives caller disconnect and journals before terminal delivery",
+    "job ids are bound to canonical SHA-256 payload digests and changed-payload reuse is refused",
+    "provider choice minimizes observed expected resolution cost among capable comparable suppliers",
+    "socket clients cannot stop the broker",
+    "market snapshots omit prompts completion bodies commands and credential metadata"
+  ],
+  "bounds": ["line bytes", "input bytes", "connections", "pending writes", "queue depth", "seen ids", "provider concurrency", "provider rpm", "attempts", "timeouts"],
+  "boundary": {
+    "carrier": "mode-0600 host-local Unix socket",
+    "classification": "raw InferenceFabricJob InferenceSubmission and query values remain intra-enterprise A2A",
+    "interEnterpriseStatus": "the same local carrier now also accepts the separately typed inference-fabric-activitystreams-service semantic face; no network ActivityPub delivery or x402 settlement is claimed"
+  },
+  "evidence": ["append-only terminal journal", "admission receipts", "market snapshots", "supplier-local exchange records"]
+}

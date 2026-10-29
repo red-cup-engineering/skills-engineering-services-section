@@ -1,0 +1,84 @@
+{
+  "name": "@emsenn/organizing-with-llm-agents",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Organizing with LLM agents: language-model agent organizing downstream of @emsenn/organizing-with-agents, with JSON-Schema endpoint/inference carriers, agentic run settlement, aperiodic LLM dreaming, host holography, harness topology, and provider wire codecs.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "clean": "rm -rf dist .tmp/test-dist",
+    "check": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "pnpm run build && node --test \"test/*.test.mjs\"",
+    "rebuild": "pnpm run clean && pnpm run build"
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./algebra": {
+      "types": "./dist/algebra/index.d.mts",
+      "import": "./dist/algebra/index.mjs"
+    },
+    "./running": {
+      "types": "./dist/running/index.d.mts",
+      "import": "./dist/running/index.mjs"
+    },
+    "./dreaming": {
+      "types": "./dist/dreaming/index.d.mts",
+      "import": "./dist/dreaming/index.mjs"
+    },
+    "./holography": {
+      "types": "./dist/holography/index.d.mts",
+      "import": "./dist/holography/index.mjs"
+    },
+    "./harness": {
+      "types": "./dist/harness/index.d.mts",
+      "import": "./dist/harness/index.mjs"
+    },
+    "./session": {
+      "types": "./dist/session/index.d.mts",
+      "import": "./dist/session/index.mjs"
+    },
+    "./mount": {
+      "types": "./dist/mount/index.d.mts",
+      "import": "./dist/mount/index.mjs"
+    },
+    "./codecs/anthropic": {
+      "types": "./dist/codecs/anthropic/index.d.mts",
+      "import": "./dist/codecs/anthropic/index.mjs"
+    },
+    "./codecs/openai": {
+      "types": "./dist/codecs/openai/index.d.mts",
+      "import": "./dist/codecs/openai/index.mjs"
+    },
+    "./codecs/openai-chat": {
+      "types": "./dist/codecs/openai-chat/index.d.mts",
+      "import": "./dist/codecs/openai-chat/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@emsenn/animating": "workspace:*",
+    "@emsenn/organizing-with-agents": "workspace:*",
+    "@emsenn/content": "workspace:*",
+    "@emsenn/knowing": "workspace:*",
+    "@emsenn/relating": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "decommissioned"
+  ]
+}

@@ -1,0 +1,18 @@
+[Unit]
+Description=LISS cheapest-sufficient inference broker
+Requires=liss-inference.socket
+After=liss-inference.socket
+
+[Service]
+Type=simple
+EnvironmentFile=-%h/.config/561-group/agents.env
+ExecStart=/usr/bin/node %h/services/logical-inference-service-section/src/serve-inference-socket.mjs --registry %h/services/logical-inference-service-section/content/config/inference-fabric-runtime.json --journal %S/liss-inference/results.jsonl --activitystreams-data-root %S/liss-inference --concurrency 6 --max-queue-depth 1024 --restart-on-registry-change
+StateDirectory=liss-inference
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+
+[Install]
+WantedBy=default.target

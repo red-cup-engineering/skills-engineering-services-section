@@ -1,0 +1,29 @@
+{
+  "name": "@red-cup-engineering/bare-cedar-fog-npu-inference-team",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Sovereign short-source typed RMN inference provider over bare-cedar-fog-operated local silicon.",
+  "bin": {
+    "execute-rmn-inference": "./src/execute-rmn-inference.mjs",
+    "serve-inference-a2a": "./scripts/serve-a2a.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/execute-rmn-inference.test.mjs test/provider-boundary.test.mjs",
+    "test:ollama-provider": "node --test test/ollama-tool-exchange.test.mjs",
+    "assay:local-tools": "node scripts/exercise-local-ollama-tools.mjs"
+  },
+  "dependencies": {
+    "@a2a-js/sdk": "1.0.0-beta.0",
+    "@lenticule-science/wit-transition-assay": "0.4.0",
+    "@red-cup-engineering/a2a-services-section": "0.12.0",
+    "@red-cup-engineering/computer-code-engineering-services-section": "0.1.0",
+    "@red-cup-engineering/computer-inference-engine": "0.1.0",
+    "@red-cup-engineering/ethereum-engineering-services-section": "0.15.0",
+    "@red-cup-engineering/relation-model-notation-cbor-codec": "0.1.2",
+    "@red-cup-engineering/uri-services-section": "0.1.0",
+    "@red-cup-engineering/witness-journal-document-service": "0.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

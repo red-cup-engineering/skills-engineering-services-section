@@ -1,0 +1,52 @@
+{
+  "name": "@emsenn/logical-inference-service-section",
+  "version": "0.2.0",
+  "description": "A directly contractable cheapest-sufficient inference router over the section's provider teams.",
+  "type": "module",
+  "bin": {
+    "solicit-service": "../../../scripts/contract-routed-inference.mjs",
+    "invoke-service": "../../../scripts/contract-routed-inference.mjs",
+    "dispatch-jsonl": "../../../scripts/dispatch-jsonl.mjs",
+    "probe-openai-endpoint": "../../../scripts/probe-openai-endpoint.mjs",
+    "serve-inference-jsonl": "../../../scripts/serve-inference-jsonl.mjs",
+    "serve-inference-socket": "../../../scripts/serve-inference-socket.mjs",
+    "request-inference-socket": "../../../scripts/request-inference-socket.mjs",
+    "prepare-code-review-job": "../../../scripts/prepare-code-review-job.mjs",
+    "prepare-private-worker": "../../../scripts/prepare-private-worker.mjs"
+  },
+  "scripts": {
+    "check": "node --check ../../../src/routing-law.mjs && node --check ../../../scripts/contract-routed-inference.mjs && node --check ../../../src/inference-fabric.mjs && node --check ../../../src/inference-broker.mjs && node --check ../../../src/inference-jsonl-session.mjs && node --check ../../../scripts/dispatch-jsonl.mjs && node --check ../../../scripts/probe-openai-endpoint.mjs && node --check ../../../scripts/serve-inference-jsonl.mjs && node --check ../../../scripts/serve-inference-socket.mjs && node --check ../../../scripts/request-inference-socket.mjs && node --check ../../../scripts/prepare-code-review-job.mjs && node --check ../../../scripts/prepare-private-worker.mjs && node --check test/contract-routed-inference.test.js && node --check test/inference-fabric.test.mjs && node --check test/inference-fabric-boundary.test.mjs && node --check test/inference-fabric-probe.test.mjs && node --check test/inference-fabric-service.test.mjs && node --check test/inference-socket-service.test.mjs && node --check test/prepare-code-review-job.test.mjs && node --check test/prepare-private-worker.test.mjs && node --check test/inference-fabric-harness-helper.mjs",
+    "test": "node --test test/contract-routed-inference.test.js test/inference-fabric.test.mjs test/inference-fabric-boundary.test.mjs test/inference-fabric-probe.test.mjs test/inference-fabric-service.test.mjs test/inference-socket-service.test.mjs test/prepare-code-review-job.test.mjs test/prepare-private-worker.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "x-agentic-metro-enterprise": {
+    "node-id": "logical-inference-service-section",
+    "owners": [
+      "561-group",
+      "red-cup-engineering"
+    ],
+    "membrane": {
+      "law": "lib/",
+      "lasting-instances": "content/",
+      "append-only-instances": "data/"
+    },
+    "admission": "a directly addressed ActivityStreams solicitation or an accepted provider-authored route whose finite tier chain, models, sufficiency predicates, and resource effects are fixed",
+    "refusal": "uncheckable sufficiency, changed route terms, missing effects, provider unavailability, non-forward escalation, and empty admissible-sufficient intersection",
+    "operation-catalog": {
+      "solicit-service": {
+        "contract": "liss-inference-service",
+        "accepts": "ActivityStreams Offer<ServiceSolicitation>",
+        "returns": "ActivityStreams Offer<ExecutableServiceOffer>|Question|Reject",
+        "timeoutMs": 30000
+      },
+      "invoke-service": {
+        "contract": "liss-inference-service",
+        "accepts": "ActivityStreams Accept<ServiceContract>",
+        "returns": "ActivityStreams Accept<RoutedInferenceResult>|Reject",
+        "timeoutMs": 1200000
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "@red-cup-engineering/gemini-inference-team",
+  "type": "module",
+  "files": [
+    "README.md",
+    "scripts/",
+    "src/",
+    "content/agent-card-signing/",
+    "content/agent-cards/",
+    "content/deployment/",
+    "content/evm/accounts/"
+  ],
+  "bin": {
+    "execute-rmn-inference": "./src/execute-rmn-inference.mjs",
+    "serve-inference-a2a": "./scripts/serve-a2a.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "2.12.0",
+    "@lenticule-science/wit-transition-assay": "0.4.0",
+    "@red-cup-engineering/a2a-agent-card-key-service": "0.4.0",
+    "@red-cup-engineering/a2a-contracted-agent-service": "0.5.0",
+    "@red-cup-engineering/computer-data-engine": "0.10.0",
+    "@red-cup-engineering/computer-inference-system-services-section": "0.2.4",
+    "@red-cup-engineering/relation-model-notation-cbor-codec": "0.1.1",
+    "@red-cup-engineering/relation-model-notation-conformance": "0.13.0",
+    "@red-cup-engineering/settlement-account-binding-service": "0.1.0",
+    "@red-cup-engineering/witness-journal-document-service": "0.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "sovereign-state-enterprise"
+  ],
+  "scripts": {
+    "test": "node --test test/execute-rmn-inference.test.mjs test/provider-boundary.test.mjs"
+  },
+  "devDependencies": {
+    "@red-cup-engineering/relation-model-notation-runtime": "0.10.0"
+  },
+  "version": "0.2.1-dev.0"
+}

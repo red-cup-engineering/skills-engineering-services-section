@@ -1,0 +1,57 @@
+{
+  "id": "exchange-20260720-032626-be6293",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Write exactly one publication headline and nothing else: no label, Markdown, quotation marks, URL, explanation, or alternate.\n\nJournalistic product: service-brief/v1.\n\nAssignment: jill scott review joyous phones free taste concerts\n\nUpstream source headline: Jill Scott review – joyous phones-free show is a taste of how all concerts should be\n\nCreate original headline language. Do not copy, lightly edit, or preserve the upstream source headline.\n\nMake the headline as attractive, vivid, specific, and useful as the admitted reporting allows.\n\nName the actual subject. A curiosity gap may delay a detail, never the topic or factual payoff.\n\nDo not strengthen allegation, estimate, interpretation, causation, scope, urgency, intimacy, scandal, or certainty.\n\nPrefer a concrete actor, consequence, conflict, deadline, result, surprise, or reader benefit already established in the body.\n\nKeep it under 120 characters.\n\nARTICLE BODY:\n\nAt the Kings Theatre in Brooklyn on July 17, 2026, Jill Scott performed a 90-minute show that required audience members to secure their smartphones in Yondr pouches [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). This technical restriction, similar to measures employed by artists like Jack White and Phoebe Bridgers, set the parameters for a performance that focused on direct connection rather than digital documentation [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). While initial resistance to such mandates is common, the environment created a collective atmosphere that mirrored a neighborhood block party rather than a standard commercial concert [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review).\n\n## The Mechanics of Intimacy\nThe stage design reinforced this sense of domestic scale, featuring a yard sale setup outside an A-frame house with boxes labeled \"Ugliness,\" \"Clutter,\" and \"Self doubt\" [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). Within this space, Scott navigated a repertoire spanning 26 years of neo-soul, blending conversational humor with technical vocal performance [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). During the song \"The Way,\" she interacted with the 3,000-strong audience to bridge the gap between performer and crowd, transforming the routine act of shouting out breakfast staples into a rhythmic exchange that anchored the show’s themes of sensuality and personal history [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review).\n\n## Artistic Agency and Audience Response\nScott’s stage presence, marked by frequent costume changes involving elaborate headwear, served as a vehicle for her stated philosophy of personal sovereignty [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). She maintained a dialogue with the audience that challenged digital-age expectations, openly criticizing the transactional nature of online pornography compared to the \"different rhythm\" of live human passion [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). This spontaneity extended to her musical arrangements, where she traded lines with her backing vocalists, known as Freeman, and interpolated R&B classics like Jackie Wilson’s \"(Your Love Keeps Lifting Me) Higher and Higher\" with her six-piece band [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review).\n\n## A Measured Shift in Performance Space\nThe absence of phones did not isolate the performance but instead allowed for an unmediated interaction with the artist's technical capabilities [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). By prioritizing the immediate, shared experience over the ability to record or broadcast the event, the concert functioned as a temporary closed circuit of exchange [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review). As Scott noted, the audience’s long-term relationship with her music—spanning the two decades since her debut—informed the emotional weight of the night, suggesting that when the infrastructure of digital mediation is removed, the remaining variable is the durability of the performer’s connection to the room [Jill Scott review – joyous phones-free show is a taste of how all concerts should be](https://www.theguardian.com/music/2026/jul/17/jill-scott-concert-review)."
+      }
+    ],
+    "max-tokens": 1500
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "Jill Scott Ditches Devices, Unfolds Unbridled Joy",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-1854f55b-a1f5-48ec-98bf-3dc0e1990c5f",
+      "object": "chat.completion",
+      "created": 1784517986,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Jill Scott Ditches Devices, Unfolds Unbridled Joy"
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.011061233,
+        "prompt_tokens": 1209,
+        "prompt_time": 0.106894651,
+        "completion_tokens": 15,
+        "completion_time": 0.045586308,
+        "total_tokens": 1224,
+        "total_time": 0.152480959
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_e2c608b1d6",
+      "x_groq": {
+        "id": "req_01kxyrz1xpezbvhvdteextv3cd",
+        "seed": 930851020
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.354,
+    "denomination": "groq-api-requests"
+  }
+}

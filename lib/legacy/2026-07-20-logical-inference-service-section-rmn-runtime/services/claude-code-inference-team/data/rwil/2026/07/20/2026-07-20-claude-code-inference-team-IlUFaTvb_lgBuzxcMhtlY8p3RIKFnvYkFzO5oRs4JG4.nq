@@ -1,0 +1,7 @@
+<ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> <urn:emsenn:rwil:semantic-object> <ni:///sha-256;HwWK2pLyoGkkP5wT1C4A8njlhmtRmLAfcgMAmTDeVt4> <ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> .
+<ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> <urn:prov:generatedAtTime> "2026-07-20T17:05:42.070Z" <ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> .
+<ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> <urn:rmn:completion> "ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14" <ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> .
+<ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> <urn:rmn:disposition> "completion" <ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> .
+<ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> <urn:rmn:evidence> "ni:///sha-256;F0GQZaj72Q1duF65pargFxSXLyEEqoNF4pIufaA8mjk" <ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> .
+<ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> <urn:rmn:proposal> "ni:///sha-256;6lU-9Ge25KDeLlj-aiR0wI8xTzYXV8kzYY2_ichQurM" <ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> .
+<ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> <urn:rmn:witness> "ni:///sha-256;jbSb_FKLL7-zeJiYgEPUXKlr2dK5PfBcoPDOk8tfDSg" <ni:///sha-256;RZlwrmvg9O8NMyUqQf6-n3WMIu9OUp5v-8M4p1M4j14> .

@@ -1,0 +1,63 @@
+{
+  "kind": "metroplat.contract",
+  "id": "inference-fabric-activitystreams-service",
+  "scope": "LISS-owned inter-enterprise inference contracting semantics over the persistent cheapest-sufficient broker",
+  "actor": "urn:ame:logical-inference-service-section",
+  "operations": {
+    "solicit-service": {
+      "accepts": "ActivityStreams Offer<ServiceSolicitation>{contract,request:InferenceFabricJob}",
+      "returns": "ActivityStreams Offer<ExecutableServiceOffer>|Reject<Refusal>",
+      "effect": "none",
+      "terms": "provider-authored job digest, registry digest, comparable expected resolution consideration, and quoted supplier path"
+    },
+    "invoke-service": {
+      "accepts": "ActivityStreams Accept<ServiceContract>{offer:exact-provider-offer|provider-offer-id,considerationAcceptance,capability}",
+      "returns": "ActivityStreams Accept<InferenceSubmissionResult>|Reject<Refusal>",
+      "completion": "the response settles admission only and never waits for provider completion",
+      "effect": "provider-local append and one broker.admit call"
+    },
+    "query-service": {
+      "accepts": "ActivityStreams Question<InferenceResultQuery>{id,jobDigest}",
+      "returns": "ActivityStreams Accept<InferenceSettlementResult>|Reject<Refusal>",
+      "authorization": "the querying actor must be the buyer bound to the admitted contract",
+      "providerSpendOnReplay": false
+    }
+  },
+  "invariants": [
+    "the adapter shares the one persistent LISS broker and never creates another scheduler",
+    "every ingress is exactly addressed to urn:ame:logical-inference-service-section before broker state is read or changed",
+    "a provider offer is bound to exact job bytes, comparable consideration, one registry digest, and one buyer",
+    "invocation accepts either exact bytes or the immutable id of a provider-issued offer and always resolves the canonical offer from LISS's journal before checking the actor-bound attenuated capability",
+    "broker admission is asynchronous and returns an immediate typed receipt",
+    "provider offers contracts submission responses ownership bindings inquiries and refusals are append-only LISS records",
+    "startup replays the ActivityStreams journal in causal order before either persistent carrier accepts ingress",
+    "changed activity-id bytes, changed job-id bytes, stale registry offers, buyer swaps, and unauthorized result inquiries are refused",
+    "unknown and unauthorized job inquiries share a non-disclosing authorization refusal",
+    "result inquiry never exposes a different buyer's prompt result or job existence",
+    "mutable caller envelope references are never retained as adapter state",
+    "x402 authorization payment and settlement are not claimed by this contract"
+  ],
+  "boundary": {
+    "semanticFace": "ActivityStreams service-specific Offer/Accept/Question/Reject envelopes",
+    "currentCarriers": [
+      "mode-0600 host-local Unix socket for supervised host clients",
+      "long-lived bounded stdin/stdout JSONL process for pipes, batch workers, and sandboxes that cannot bind a socket"
+    ],
+    "carrierEquivalence": "both carriers attach the same ActivityStreams adapter to the same persistent broker state machine and append-only journals",
+    "networkActivityPub": "missing separately hireable Web Services Section > ActivityPub Services Section provider; no network federation is claimed",
+    "rawNdjson": "remains intra-enterprise A2A",
+    "x402": "owned by the separately hireable metered-inference-tollbooth and any funded facilitator it contracts"
+  },
+  "records": {
+    "activityStreams": "data/journals/activitystreams/YYYY/MM/DD/YYYY-MM-DD-logical-inference-service-section-activitystreams.jsonl",
+    "terminalInference": "the broker's append-only terminal journal",
+    "priceAndCapacity": "InferenceMarketSnapshot and provider-authored offer scope"
+  },
+  "implementation": [
+    "src/inference-activitystreams.mjs",
+    "src/serve-inference-socket.mjs",
+    "src/serve-inference-jsonl.mjs",
+    "src/contract-inference-fabric.mjs"
+  ],
+  "supersedesForNewProcurement": "liss-inference-service synchronous child-process route; retained as contract-routed-inference-legacy for compatibility"
+}

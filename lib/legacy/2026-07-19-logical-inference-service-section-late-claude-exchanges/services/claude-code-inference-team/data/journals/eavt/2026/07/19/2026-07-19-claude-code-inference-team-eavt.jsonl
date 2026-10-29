@@ -1,0 +1,4 @@
+{"e":"urn:sha256:c4e7c94405c3bd8acfd09cc8b9f5d46ede2056edb3db48836e6fbfc3b7a135d8","a":"activity/outcome","v":"offer.emitted","t":"urn:sha256:5059ddb097473c3d40beb4b5b251be16cbe3833c01bc230556d1773f16f16d9f"}
+{"e":"urn:sha256:e3d86e45cbe33a13b0f963746d8d9a85f061ee84123042258da40ebdd056e186","a":"activity/outcome","v":"activity.rejected","t":"urn:sha256:b1840b467628ba09e9c7e447271fa137af0478fb8b6fb6080ea10d7feac657a3"}
+{"e":"urn:sha256:c4e7c94405c3bd8acfd09cc8b9f5d46ede2056edb3db48836e6fbfc3b7a135d8","a":"activity/outcome","v":"offer.emitted","t":"urn:sha256:5059ddb097473c3d40beb4b5b251be16cbe3833c01bc230556d1773f16f16d9f"}
+{"e":"urn:sha256:e3d86e45cbe33a13b0f963746d8d9a85f061ee84123042258da40ebdd056e186","a":"activity/outcome","v":"contract.completed","t":"urn:sha256:20abb92d5c97aaa07301cceed72a814ab51aff0f65607bd4ab6bcfe13db24acf"}

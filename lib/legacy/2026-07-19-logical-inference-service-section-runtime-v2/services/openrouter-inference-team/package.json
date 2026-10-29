@@ -1,0 +1,11 @@
+{
+  "name": "@emsenn/openrouter-inference-team",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sovereign-state-enterprise"
+  ],
+  "scripts": {"check": "node --check run-one-exchange.mjs && node --check test/auth-alias.test.mjs", "test": "node --test test/auth-alias.test.mjs"}
+}

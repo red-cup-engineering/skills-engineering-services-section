@@ -1,0 +1,27 @@
+{
+  "name": "@red-cup-engineering/openrouter-inference-team",
+  "type": "module",
+  "dependencies": {
+    "@red-cup-engineering/openai-compatible-chat-completion-service": "0.4.0",
+    "@red-cup-engineering/a2a-contracted-agent-service": "0.9.0",
+    "@red-cup-engineering/computer-inference-system-services-section": "0.1.0",
+    "@red-cup-engineering/relation-model-notation-conformance": "0.1.0",
+    "@lenticule-science/wit-transition-assay": "0.4.0",
+    "@red-cup-engineering/witness-journal-document-service": "0.1.0",
+    "@red-cup-engineering/settlement-account-binding-service": "0.1.0"
+  },
+  "bin": {
+    "execute-rmn-inference": "./src/execute-rmn-inference.mjs",
+    "serve-inference-a2a": "./scripts/serve-a2a.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sovereign-state-enterprise"
+  ],
+  "scripts": {
+    "test": "node --test test/auth-alias.test.mjs test/free-tier-admission.test.mjs test/project-chat-completion.test.mjs test/provider-boundary.test.mjs test/stateless-boundary.test.mjs"
+  },
+  "version": "0.1.2"
+}

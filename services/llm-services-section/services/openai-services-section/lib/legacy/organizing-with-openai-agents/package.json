@@ -1,0 +1,88 @@
+{
+  "name": "@emsenn/organizing-with-openai-agents",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Organizing with OpenAI-dialect agents: endpoint resolution, inference, agentic run settlement, coding-agent session memory, run-trace projection into findings/work/cost, and cross-agent handoff for OpenAI-compatible endpoints downstream of @emsenn/organizing-with-llm-agents.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "clean": "rm -rf dist .tmp/test-dist",
+    "check": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json && chmod +x dist/scripts/run.mjs dist/scripts/session.mjs",
+    "prepack": "pnpm run rebuild",
+    "rebuild": "pnpm run clean && pnpm run build"
+  },
+  "bin": {
+    "openai-agent": "./dist/scripts/run.mjs",
+    "openai-agent-session": "./dist/scripts/session.mjs"
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./endpoints": {
+      "types": "./dist/endpoints.d.mts",
+      "import": "./dist/endpoints.mjs"
+    },
+    "./inference": {
+      "types": "./dist/inference.d.mts",
+      "import": "./dist/inference.mjs"
+    },
+    "./topology": {
+      "types": "./dist/topology.d.mts",
+      "import": "./dist/topology.mjs"
+    },
+    "./harness": {
+      "types": "./dist/harness.d.mts",
+      "import": "./dist/harness.mjs"
+    },
+    "./run": {
+      "types": "./dist/run.d.mts",
+      "import": "./dist/run.mjs"
+    },
+    "./pulse": {
+      "types": "./dist/pulse.d.mts",
+      "import": "./dist/pulse.mjs"
+    },
+    "./memory": {
+      "types": "./dist/memory.d.mts",
+      "import": "./dist/memory.mjs"
+    },
+    "./session": {
+      "types": "./dist/session/index.d.mts",
+      "import": "./dist/session/index.mjs"
+    },
+    "./scripts/run": {
+      "types": "./dist/scripts/run.d.mts",
+      "import": "./dist/scripts/run.mjs"
+    },
+    "./scripts/session": {
+      "types": "./dist/scripts/session.d.mts",
+      "import": "./dist/scripts/session.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@emsenn/animating": "workspace:*",
+    "@emsenn/computing": "workspace:*",
+    "@emsenn/organizing-with-llm-agents": "workspace:*",
+    "@emsenn/knowing": "workspace:*",
+    "@emsenn/relating": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "decommissioned"
+  ]
+}

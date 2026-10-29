@@ -1,0 +1,7 @@
+<ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> <urn:emsenn:rwil:semantic-object> <ni:///sha-256;eAb5XUhN64N5Gu6ihhN0IxLrqM7-p6UuORH6F1ElSu4> <ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> .
+<ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> <urn:prov:generatedAtTime> "2026-07-20T12:53:42.723Z" <ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> .
+<ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> <urn:rmn:completion> "ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0" <ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> .
+<ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> <urn:rmn:disposition> "completion" <ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> .
+<ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> <urn:rmn:evidence> "ni:///sha-256;WBxjDxR9Sptduo7qgd_mfA9zVR5StR4UYO-c-Kz_9g0" <ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> .
+<ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> <urn:rmn:proposal> "ni:///sha-256;6lcmu_Co5BsqN6soJE80mtpv8BbRDDbG7ahw26Dj8TI" <ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> .
+<ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> <urn:rmn:witness> "ni:///sha-256;EkbdI3LSmVli_B2YbAx-6J-9LnZcHIv83l6Qb7XBu88" <ni:///sha-256;B0AbqLM70CFpNbJiM894rCHYpQ1rP2BHzjGVVMRHub0> .

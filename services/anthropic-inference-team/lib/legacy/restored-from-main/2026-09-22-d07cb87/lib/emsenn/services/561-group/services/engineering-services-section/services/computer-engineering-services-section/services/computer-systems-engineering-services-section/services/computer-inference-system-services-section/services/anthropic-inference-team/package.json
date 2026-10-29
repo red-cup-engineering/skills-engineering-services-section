@@ -1,0 +1,55 @@
+{
+  "name": "@red-cup-engineering/anthropic-inference-team",
+  "type": "module",
+  "description": "The Anthropic Messages API boundary: request/response wire validation, an effect-only HTTP+SSE streaming client, and Anthropic-specific witnessed token-usage extraction. This team owns its Anthropic boundary directly and shares no client code with another settlement.",
+  "scripts": {
+    "check": "node --check run-one-exchange.mjs && node --check src/env.mjs && node --check src/messages-schema.mjs && node --check src/messages-codec.mjs && node --check src/messages-client.mjs && node --check src/messages-accumulator.mjs && node --check src/token-usage.mjs && node --check scripts/send-anthropic-message.mjs && node --check scripts/count-anthropic-message-tokens.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sovereign-state-enterprise",
+    "anthropic",
+    "inference"
+  ],
+  "version": "0.2.1",
+  "files": [
+    "package.json",
+    "src/",
+    "scripts/",
+    "run-one-exchange.mjs",
+    "content/",
+    "types/"
+  ],
+  "exports": {
+    "./messages-schema": {
+      "types": "./types/messages-schema.d.mts",
+      "import": "./src/messages-schema.mjs"
+    },
+    "./messages-codec": {
+      "types": "./types/messages-codec.d.mts",
+      "import": "./src/messages-codec.mjs"
+    },
+    "./messages-client": {
+      "types": "./types/messages-client.d.mts",
+      "import": "./src/messages-client.mjs"
+    },
+    "./messages-accumulator": {
+      "types": "./types/messages-accumulator.d.mts",
+      "import": "./src/messages-accumulator.mjs"
+    },
+    "./token-usage": {
+      "types": "./types/token-usage.d.mts",
+      "import": "./src/token-usage.mjs"
+    },
+    "./env": "./src/env.mjs"
+  },
+  "dependencies": {
+    "@red-cup-engineering/http-services-section": "0.6.0",
+    "@red-cup-engineering/llm-cost-optimization-services-section": "0.1.11",
+    "@red-cup-engineering/computer-data-serialization-services-section": "0.1.0",
+    "@red-cup-engineering/jsonl-services-section": "0.1.0"
+  }
+}

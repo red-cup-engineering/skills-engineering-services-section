@@ -1,0 +1,102 @@
+{
+  "name": "@red-cup-engineering/inference-dispatch-service",
+  "version": "0.37.3",
+  "type": "module",
+  "description": "Customer-side direct inference contracting with bounded provider capabilities, plural barter consideration, explicit compacts, A2A 1.0 work settlement, and addressed semantic-record custody.",
+  "exports": {
+    ".": "./src/typed-rmn-inference-procurement.mjs",
+    "./typed-rmn-inference-procurement": "./src/typed-rmn-inference-procurement.mjs",
+    "./inference-dispatch": "./src/inference-dispatch.mjs",
+    "./discovered-work-placement": "./src/discovered-work-placement.mjs",
+    "./direct-endpoint-provider": "./src/direct-endpoint-provider.mjs",
+    "./client": {
+      "types": "./types/client.d.ts",
+      "import": "./src/client.mjs"
+    },
+    "./provider-admission": "./src/provider-admission.mjs",
+    "./sovereign-provider-interface": "./src/sovereign-provider-interface.mjs",
+    "./consideration": "./src/consideration.mjs",
+    "./consideration-close": "./src/consideration-close.mjs",
+    "./expected-resolution-pricing-client": "./src/expected-resolution-pricing-client.mjs",
+    "./customer-assay-typed-inference": "./src/customer-assay-typed-inference.mjs",
+    "./knowledge-vault-work-lots": "./src/knowledge-vault-work-lots.mjs",
+    "./inference-resource-inspection": "./src/inference-resource-inspection.mjs",
+    "./carriers": "./src/inference-work-carriers.mjs",
+    "./inference-work-verbs": "./scripts/inference-work-verbs.mjs",
+    "./p10-digestion": "./src/p10-digestion.mjs",
+    "./src/client.mjs": "./src/client.mjs",
+    "./src/consideration.mjs": "./src/consideration.mjs"
+  },
+  "files": [
+    "README.md",
+    "content/",
+    "schemas/",
+    "scripts/",
+    "src/",
+    "types/"
+  ],
+  "bin": {
+    "exercise-npu-procurement": "scripts/exercise-npu-procurement.mjs",
+    "check-inference-providers": "scripts/check-inference-providers.mjs",
+    "contract-codex-inference-work": "scripts/contract-codex-inference-work.mjs",
+    "record-codex-inference-outcome": "scripts/record-codex-inference-outcome.mjs",
+    "smoke-inference-dispatch-mcp": "scripts/smoke-inference-dispatch-mcp.mjs",
+    "serve-inference-dispatch-mcp": "scripts/serve-inference-dispatch-mcp.mjs",
+    "serve-expected-resolution-pricing": "scripts/serve-expected-resolution-pricing.mjs",
+    "serve-inference-work-lot-a2a": "scripts/server.mjs",
+    "close-pending-consideration": "scripts/close-pending-consideration.mjs",
+    "derive-inference-pnl": "scripts/derive-inference-pnl.mjs",
+    "run-mechanical-inference": "scripts/run-mechanical-inference.mjs",
+    "post-set-of-inference-purchases-to-ledger": "scripts/post-set-of-inference-purchases-to-ledger.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/model-routing-feedback.test.mjs test/discovered-work-placement.test.mjs test/direct-endpoint-provider.test.mjs test/provider-card-liveness-cache.test.mjs test/market-round-witness.test.mjs test/witness-journal-settlement-store.test.mjs test/contract-codex-inference-work.test.mjs test/record-codex-inference-outcome.test.mjs test/rmn-provider-signing.test.mjs test/consideration.test.mjs test/consideration-close.test.mjs test/typed-rmn-inference-procurement.test.mjs test/customer-assay-typed-inference.test.mjs test/knowledge-vault-work-lots.test.mjs test/provider-admission.test.mjs test/p10-digestion.test.mjs test/inference-dispatch.test.mjs test/expected-resolution-pricing.test.mjs test/a2a-market.test.mjs test/client.test.mjs test/user-swarm.test.mjs test/inference-dispatch-configured-customer.test.mjs test/inference-cash-control.test.mjs test/derive-inference-pnl.test.mjs test/mechanical-subtask-classification.test.mjs test/run-mechanical-inference.test.mjs test/post-set-of-inference-purchases-to-ledger.test.mjs test/server-package-assembly.test.mjs test/chat-completion-turn.test.mjs test/resource-reservation-execution.test.mjs test/provider-account-entitlement.test.mjs test/resource-reservation-adapters.test.mjs test/inference-resource-inspection.test.mjs test/inference-work-carriers.test.mjs",
+    "check:carriers": "node --check src/inference-work-carriers.mjs && node --check src/modern-rmn-carrier.mjs && node --check src/sovereign-provider-interface.mjs && node --check test/inference-work-carriers.test.mjs",
+    "test:carriers": "node --test test/inference-work-carriers.test.mjs",
+    "close:consideration": "node scripts/close-pending-consideration.mjs",
+    "smoke:mcp": "node scripts/smoke-inference-dispatch-mcp.mjs"
+  },
+  "dependencies": {
+    "@lenticule-science/metrologic": "0.3.0",
+    "@red-cup-engineering/a2a-services-section": "1.0.0",
+    "@red-cup-engineering/agent-harness-computer-system-engineering-services-section": "0.1.0",
+    "@red-cup-engineering/computer-inference-engine": "0.1.0",
+    "@red-cup-engineering/computer-inference-engine/openai": "0.6.3",
+    "@red-cup-engineering/computer-inference-engine/tokens/token-compactification": "0.1.5",
+    "@red-cup-engineering/computer-inference-engine/fabric/execute-typed-inference-effect": "0.2.5",
+    "@red-cup-engineering/computer-system-engine": "0.1.0",
+    "@red-cup-engineering/computer-system-platform": "0.5.3",
+    "@red-cup-engineering/data-custody-directory-service": "0.3.0",
+    "@red-cup-engineering/energy-bank": "0.3.1",
+    "@red-cup-engineering/http-services-section": "0.1.0",
+    "@red-cup-engineering/javascript-file-services-section": "0.1.0",
+    "@red-cup-engineering/javascript-node-services-section": "0.3.0",
+    "@red-cup-engineering/json-schema-services-section": "0.3.0",
+    "@red-cup-engineering/json-services-section": "1.0.0",
+    "@red-cup-engineering/mcp-engineering-services-section": "0.1.0",
+    "@red-cup-engineering/relation-model-notation": "0.3.0",
+    "@red-cup-engineering/relation-model-notation-conformance": "0.13.1"
+  },
+  "peerDependencies": {
+    "@lenticule-science/wit-transition-assay": "0.4.0",
+    "@red-cup-engineering/category-reference-index-service": "0.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@lenticule-science/wit-transition-assay": {
+      "optional": true
+    },
+    "@red-cup-engineering/category-reference-index-service": {
+      "optional": true
+    }
+  },
+  "license": "UNLICENSED",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "keywords": [],
+  "author": "",
+  "engines": {
+    "node": ">=22.13"
+  }
+}

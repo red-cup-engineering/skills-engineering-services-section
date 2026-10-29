@@ -1,0 +1,49 @@
+{
+  "name": "@emsenn/claude-code-inference-team",
+  "version": "0.2.0",
+  "description": "A directly contractable Claude Code print-mode inference provider.",
+  "type": "module",
+  "bin": {
+    "solicit-service": "./src/contract-claude-code.js",
+    "invoke-service": "./src/contract-claude-code.js"
+  },
+  "scripts": {
+    "check": "node --check run-one-exchange.mjs && node --check src/contract-claude-code.js",
+    "test": "node --test test/contract-claude-code.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "sovereign-state-enterprise"
+  ],
+  "x-agentic-metro-enterprise": {
+    "node-id": "claude-code-inference-team",
+    "owners": [
+      "561-group",
+      "red-cup-engineering",
+      "logical-inference-service-section"
+    ],
+    "membrane": {
+      "law": "lib/",
+      "lasting-instances": "content/",
+      "append-only-instances": "data/"
+    },
+    "admission": "a directly addressed ActivityStreams ServiceSolicitation or an Accept carrying an attenuated capability for one provider-authored executable offer",
+    "refusal": "unmatched intent, incomplete packet, changed accepted terms, missing account effects, or exhaustion of the provider's bounded exchange pilot",
+    "operation-catalog": {
+      "solicit-service": {
+        "contract": "claude-code-inference-service",
+        "accepts": "ActivityStreams Offer<ServiceSolicitation>",
+        "returns": "ActivityStreams Offer<ExecutableServiceOffer>|Question|Reject",
+        "timeoutMs": 30000
+      },
+      "invoke-service": {
+        "contract": "claude-code-inference-service",
+        "accepts": "ActivityStreams Accept<ServiceContract>",
+        "returns": "ActivityStreams Accept<ClaudeCodeInferenceResult>|Reject",
+        "timeoutMs": 920000
+      }
+    }
+  }
+}
