@@ -1,0 +1,25 @@
+[Unit]
+Description=Canonical Gemini inference team A2A service on Cold Red Gate
+Documentation=file://%h/.local/share/561-group/releases/gemini-inference-team/current/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/561-group/releases/gemini-inference-team/current
+EnvironmentFile=-%h/.config/561-group/agents.env
+Environment=PORT=8790
+Environment=HOST=127.0.0.1
+Environment=BASE_URL=http://127.0.0.1:8790
+Environment=AGENT_CARD_SIGNING_KEY=%h/.config/561-group/agent-card-signing/gemini-inference-team-ed25519-private.pem
+Environment=AGENT_CARD_JWKS=%h/.local/share/561-group/releases/gemini-inference-team/current/content/agent-card-signing/jwks.json
+Environment=GEMINI_WITNESS_JOURNAL_ROOT=%h/.local/state/561-group/gemini-inference-team
+ExecStartPre=/usr/bin/mkdir -p %h/.local/state/561-group/gemini-inference-team
+ExecStart=/usr/bin/node scripts/serve-a2a.mjs
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

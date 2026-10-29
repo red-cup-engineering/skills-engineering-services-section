@@ -1,0 +1,21 @@
+{
+  "id": "openrouter-requests",
+  "account": "urn:ame:561-group-openrouter-account",
+  "product": "openrouter",
+  "unit": "percent-of-window",
+  "draws": "every",
+  "admits": "open",
+  "because": "OpenRouter states each response's request window in X-RateLimit-Limit, X-RateLimit-Remaining and X-RateLimit-Reset (epoch milliseconds). The window is read only from those statements, never counted from the house's calls, since the account's other callers draw on it too.",
+  "meters": [
+    {
+      "id": "requests",
+      "law": "stated",
+      "hours": 24,
+      "budget": 100,
+      "because": "the request window the provider states on every response"
+    }
+  ],
+  "costs": {
+    "request": null
+  }
+}

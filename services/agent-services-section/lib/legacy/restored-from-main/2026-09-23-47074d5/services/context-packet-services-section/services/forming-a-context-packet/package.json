@@ -1,0 +1,24 @@
+{
+  "name": "@red-cup-engineering/forming-a-context-packet",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Forms one deterministic, content-addressed context packet without judging or trading it.",
+  "exports": {
+    ".": "./src/forming-a-context-packet.mjs",
+    "./carriers": "./src/carriers.mjs"
+  },
+  "files": [
+    "src/",
+    "schemas/",
+    "README.md"
+  ],
+  "scripts": {
+    "check": "node --check src/forming-a-context-packet.mjs && node --check src/carriers.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@red-cup-engineering/computer-system-engine": "0.1.0",
+    "@red-cup-engineering/json-schema-services-section": "0.3.0",
+    "@red-cup-engineering/json-services-section": "1.0.0"
+  }
+}

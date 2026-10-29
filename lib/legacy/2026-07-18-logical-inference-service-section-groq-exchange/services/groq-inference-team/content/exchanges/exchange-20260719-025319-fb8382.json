@@ -1,0 +1,57 @@
+{
+  "id": "exchange-20260719-025319-fb8382",
+  "packet": {
+    "model": "llama-3.1-8b-instant",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Write 350 to 500 characters of sober newsroom prose explaining that this is a private inference-route proof, not a reported public event. Include this source URL verbatim exactly once: https://example.com/primary. Do not use a heading or JSON."
+      }
+    ],
+    "max-tokens": 400
+  },
+  "outcome": "completion",
+  "completion": {
+    "model": "llama-3.1-8b-instant",
+    "text": "This report is a private, in-house analysis conducted for internal purposes only. It is not based on a publicly reported event or confirmed incident. \n\nAs part of our internal research and development activities, we have generated a theoretical scenario and associated evidence, which may be of interest to select stakeholders. The information presented within this context is not intended for external dissemination.\n\nFor reference purposes, our primary source has been cited as follows: https://example.com/primary. \n\nThis analysis should not be considered a formally documented report or any form of public opinion.",
+    "finish-reason": "stop",
+    "raw": {
+      "id": "chatcmpl-fe9d08bb-7631-45c8-93cd-e811f1c1c9c3",
+      "object": "chat.completion",
+      "created": 1784429600,
+      "model": "llama-3.1-8b-instant",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "This report is a private, in-house analysis conducted for internal purposes only. It is not based on a publicly reported event or confirmed incident. \n\nAs part of our internal research and development activities, we have generated a theoretical scenario and associated evidence, which may be of interest to select stakeholders. The information presented within this context is not intended for external dissemination.\n\nFor reference purposes, our primary source has been cited as follows: https://example.com/primary. \n\nThis analysis should not be considered a formally documented report or any form of public opinion."
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "queue_time": 0.034717818,
+        "prompt_tokens": 87,
+        "prompt_time": 0.005832082,
+        "completion_tokens": 110,
+        "completion_time": 0.293105833,
+        "total_tokens": 197,
+        "total_time": 0.298937915
+      },
+      "usage_breakdown": null,
+      "system_fingerprint": "fp_e2c608b1d6",
+      "x_groq": {
+        "id": "req_01kxw4nq84eaev8zq0tbbcjr15",
+        "seed": 1313665301
+      },
+      "service_tier": "on_demand"
+    }
+  },
+  "cost": {
+    "fuel-consumed": 1,
+    "wall-time-seconds": 0.441,
+    "denomination": "groq-api-requests"
+  }
+}

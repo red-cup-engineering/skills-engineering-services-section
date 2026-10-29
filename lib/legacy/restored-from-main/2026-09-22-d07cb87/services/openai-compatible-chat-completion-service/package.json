@@ -1,0 +1,59 @@
+{
+  "name": "@red-cup-engineering/openai-compatible-chat-completion-service",
+  "version": "0.6.3",
+  "type": "module",
+  "description": "One generic OpenAI-compatible chat-completions adapter, parameterized by provider data (base URL, API-key env var, model) -- the shared dispatch surface any OpenAI-compatible free-tier provider is admitted through, instead of a hand-built copy per provider.",
+  "files": [
+    "README.md",
+    "content/",
+    "scripts/",
+    "src/"
+  ],
+  "exports": {
+    ".": "./src/openai-compatible-chat-completion.mjs",
+    "./free-first-pricing-justification": "./src/free-first-pricing-justification.mjs",
+    "./chat-turn-contract": {
+      "types": "./src/chat-turn-contract.d.ts",
+      "default": "./src/chat-turn-contract.mjs"
+    },
+    "./package.json": "./package.json",
+    "./exchange-cli": "./src/exchange-cli.mjs",
+    "./provider-runtime": "./src/provider-runtime.mjs",
+    "./chat-completion-carriers": "./src/chat-completion-carriers.mjs",
+    "./tool-agent": "./src/tool-agent.mjs",
+    "./infer": "./scripts/infer.mjs"
+  },
+  "bin": {
+    "dispatch-chat-completion": "scripts/dispatch-chat-completion.mjs",
+    "dispatch-free-first-chat-completion": "scripts/dispatch-free-first-chat-completion.mjs",
+    "dispatch-free-first-chat-completion-with-receipt": "scripts/dispatch-free-first-chat-completion-with-receipt.mjs",
+    "justify-free-first-order": "scripts/justify-free-first-order.mjs",
+    "execute-provider-inference": "scripts/execute-provider-inference.mjs",
+    "serve-provider-inference": "scripts/serve-provider-inference.mjs",
+    "infer": "./scripts/infer.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/*.mjs scripts/*.mjs test/*.test.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@red-cup-engineering/a2a-services-section": "1.0.0",
+    "@red-cup-engineering/agent-harness-computer-system-engineering-services-section": "0.1.0",
+    "@red-cup-engineering/animating": "0.1.0",
+    "@red-cup-engineering/capability-pricing-service": "0.1.0",
+    "@red-cup-engineering/computer-blockchain-system-services-section": "0.1.0",
+    "@red-cup-engineering/computer-inference-system-services-section": "0.2.5",
+    "@red-cup-engineering/computer-system-engine": "0.1.0",
+    "@red-cup-engineering/computer-system-platform": "0.1.0",
+    "@red-cup-engineering/javascript-file-services-section": "0.1.0",
+    "@red-cup-engineering/javascript-node-services-section": "0.3.0",
+    "@red-cup-engineering/playing": "0.1.0",
+    "@red-cup-engineering/relating": "0.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

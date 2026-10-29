@@ -1,0 +1,26 @@
+{
+  "name": "Logical Inference Service Section",
+  "description": "Executes one recursively composed RMN inference procurement seam and returns its witnessed completion or refusal.",
+  "supportedInterfaces": [
+    { "url": "${BASE_URL}/a2a/jsonrpc", "protocolBinding": "JSONRPC", "tenant": "", "protocolVersion": "1.0" },
+    { "url": "${BASE_URL}/a2a/rest", "protocolBinding": "HTTP+JSON", "tenant": "", "protocolVersion": "1.0" }
+  ],
+  "provider": { "url": "https://emsenn.net/", "organization": "Logical Inference Service Section via A2A Services Section" },
+  "version": "3.0.0",
+  "capabilities": { "streaming": false, "pushNotifications": false, "extensions": [], "extendedAgentCard": false },
+  "securitySchemes": {},
+  "securityRequirements": [],
+  "defaultInputModes": ["application/rmn+cbor"],
+  "defaultOutputModes": ["application/rmn+cbor", "text/plain"],
+  "skills": [{
+    "id": "procure-exact-rmn-inference-child",
+    "name": "Procure exact RMN inference child",
+    "description": "Validates one outer RMN effect bundle containing one exact child bundle and Agent Card, executes that child through A2A 1.0, and returns a witnessed outer completion.",
+    "tags": ["rmn", "a2a", "inference", "chu-hoare"],
+    "examples": [],
+    "inputModes": ["application/rmn+cbor"],
+    "outputModes": ["application/rmn+cbor", "text/plain"],
+    "securityRequirements": []
+  }],
+  "signatures": []
+}

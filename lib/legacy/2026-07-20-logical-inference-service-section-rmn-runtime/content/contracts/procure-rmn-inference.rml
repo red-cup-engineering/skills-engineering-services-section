@@ -1,0 +1,4 @@
+#lang rmn/v2
+(predicate "procures-exact-rmn-inference-child"
+  (base "ChildInferenceProposalAndAgentCard")
+  (base "WitnessedChildCompletionOrRefusal"))

@@ -1,0 +1,272 @@
+{
+  "baseDir": "../..",
+  "concurrency": 2,
+  "attempts": 4,
+  "attemptBudgetBasis": "the four enabled price tiers must all remain reachable; a smaller ceiling made the Claude fallback quotable but unreachable for general inquiry",
+  "latencyCostPerMs": 0.0001,
+  "costEstimateBasis": "bootstrap estimates; relative values are deliberately provisional and are emitted in routing quotes",
+  "endpoints": [
+    {
+      "id": "groq-llama-3.1-8b-instant",
+      "type": "harness",
+      "enabled": true,
+      "command": "services/groq-inference-team/run-one-exchange.mjs",
+      "model": "llama-3.1-8b-instant",
+      "concurrency": 1,
+      "rpm": 20,
+      "timeoutMs": 90000,
+      "capabilities": [
+        "chat",
+        "classification",
+        "extraction",
+        "summarization",
+        "general-reasoning"
+        ,"json-output"
+      ],
+      "workTypes": [
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "code-review"
+      ],
+      "cost": {
+        "unit": "relative-resolution-cost-v1",
+        "dispatch": 0.05,
+        "inference": 0.3,
+        "verification": 0.1,
+        "scarcity": 0.05
+      },
+      "successPrior": {
+        "default": 0.68,
+        "byWorkType": {
+          "classification": 0.9,
+          "extraction": 0.88,
+          "summarization": 0.82,
+          "inquiry": 0.62,
+          "code-review": 0.3
+        },
+        "difficultyPenalty": 0.6
+      },
+      "expectedLatencyMs": 900,
+      "bootstrapEstimate": true
+    },
+    {
+      "id": "gemini-3.1-flash-lite",
+      "type": "harness",
+      "enabled": true,
+      "command": "services/gemini-inference-team/run-one-exchange.mjs",
+      "model": "gemini-3.1-flash-lite",
+      "concurrency": 1,
+      "rpm": 15,
+      "timeoutMs": 100000,
+      "capabilities": [
+        "chat",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "multimodal",
+        "json-output",
+        "json-schema-output"
+      ],
+      "workTypes": [
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry"
+      ],
+      "cost": {
+        "unit": "relative-resolution-cost-v1",
+        "dispatch": 0.05,
+        "inference": 0.34,
+        "verification": 0.1,
+        "scarcity": 0.06
+      },
+      "successPrior": {
+        "default": 0.7,
+        "byWorkType": {
+          "classification": 0.91,
+          "extraction": 0.92,
+          "summarization": 0.84,
+          "inquiry": 0.7
+        },
+        "difficultyPenalty": 0.5
+      },
+      "expectedLatencyMs": 1100,
+      "bootstrapEstimate": true
+    },
+    {
+      "id": "openrouter-llama-3.3-70b-free",
+      "type": "harness",
+      "enabled": true,
+      "command": "services/openrouter-inference-team/run-one-exchange.mjs",
+      "model": "meta-llama/llama-3.3-70b-instruct:free",
+      "concurrency": 1,
+      "rpm": 8,
+      "timeoutMs": 120000,
+      "capabilities": [
+        "chat",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "code-review",
+        "json-output",
+        "json-schema-output"
+      ],
+      "workTypes": [
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "code-review"
+      ],
+      "cost": {
+        "unit": "relative-resolution-cost-v1",
+        "dispatch": 0.05,
+        "inference": 0.24,
+        "verification": 0.12,
+        "scarcity": 0.09
+      },
+      "successPrior": {
+        "default": 0.62,
+        "byWorkType": {
+          "classification": 0.76,
+          "extraction": 0.72,
+          "summarization": 0.72,
+          "inquiry": 0.68,
+          "code-review": 0.48
+        },
+        "difficultyPenalty": 0.62
+      },
+      "expectedLatencyMs": 1800,
+      "bootstrapEstimate": true
+    },
+    {
+      "id": "claude-code-claude-sonnet-4-6",
+      "type": "harness",
+      "enabled": true,
+      "command": "services/claude-code-inference-team/run-one-exchange.mjs",
+      "cwd": "services/claude-code-inference-team",
+      "adapter": "claude-json-schema",
+      "model": "claude-sonnet-4-6",
+      "concurrency": 1,
+      "rpm": 4,
+      "timeoutMs": 330000,
+      "capabilities": [
+        "chat",
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "code-review",
+        "software-engineering",
+        "json-output",
+        "json-schema-output"
+      ],
+      "workTypes": [
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "code-review"
+      ],
+      "cost": {
+        "unit": "relative-resolution-cost-v1",
+        "dispatch": 0.2,
+        "inference": 1,
+        "verification": 0.2,
+        "scarcity": 0.1
+      },
+      "successPrior": {
+        "default": 0.86,
+        "byWorkType": {
+          "classification": 0.86,
+          "extraction": 0.88,
+          "summarization": 0.9,
+          "inquiry": 0.94,
+          "code-review": 0.97
+        },
+        "difficultyPenalty": 0.15
+      },
+      "expectedLatencyMs": 60000,
+      "estimateEvidence": "2026-07-18 live code-review attempts ranged from 26s to the former 240s carrier bound; 60s prevents the scheduler from pricing Claude as a 5s supplier while the 330s outer bound lets the provider team's own 300s fuel budget settle first"
+    },
+    {
+      "id": "nvidia-inference-pilot",
+      "type": "harness",
+      "enabled": false,
+      "disabledReason": "bounded pilot exhausted; no capacity graduation is authorized",
+      "command": "services/nvidia-inference-team/run-one-exchange.mjs",
+      "model": "meta/llama-3.1-8b-instruct",
+      "capabilities": [
+        "chat",
+        "classification",
+        "extraction"
+      ],
+      "workTypes": [
+        "classification",
+        "extraction"
+      ],
+      "cost": {
+        "unit": "relative-resolution-cost-v1",
+        "dispatch": 0.1,
+        "inference": 0.4,
+        "verification": 0.1,
+        "scarcity": 0.5
+      },
+      "successPrior": {
+        "default": 0.5,
+        "difficultyPenalty": 0.6
+      },
+      "expectedLatencyMs": 1500,
+      "bootstrapEstimate": true
+    },
+    {
+      "id": "tailscale-vllm-template",
+      "type": "openai-compatible",
+      "enabled": false,
+      "disabledReason": "template only; enable after probe-openai-endpoint reports admitted=true and replace measured fields",
+      "baseUrlEnv": "TAILSCALE_VLLM_BASE_URL",
+      "apiKeyEnv": "TAILSCALE_VLLM_API_KEY",
+      "model": "REPLACE_WITH_VLLM_MODEL",
+      "concurrency": 1,
+      "rpm": 10,
+      "timeoutMs": 120000,
+      "capabilities": [
+        "chat",
+        "json",
+        "classification",
+        "extraction",
+        "summarization"
+      ],
+      "workTypes": [
+        "classification",
+        "extraction",
+        "summarization",
+        "inquiry",
+        "code-review"
+      ],
+      "cost": {
+        "unit": "relative-resolution-cost-v1",
+        "dispatch": 0.2,
+        "inference": 0.8,
+        "verification": 0.2,
+        "scarcity": 0.2
+      },
+      "successPrior": {
+        "default": 0.5,
+        "difficultyPenalty": 0.5
+      },
+      "expectedLatencyMs": 1500,
+      "bootstrapEstimate": true
+    }
+  ],
+  "projection": {
+    "type": "InferenceFabricRegistryProjection",
+    "generatedAt": "2026-07-19T03:40:37.516Z",
+    "baseRegistryDigest": "479b75b160803a397f7d279cb476aca3ba77bd250383f6176fc99ef918ad5df1",
+    "admissions": 0
+  }
+}

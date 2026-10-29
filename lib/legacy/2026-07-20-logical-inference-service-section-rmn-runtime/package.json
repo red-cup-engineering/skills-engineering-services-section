@@ -1,0 +1,49 @@
+{
+  "name": "@emsenn/logical-inference-service-section",
+  "version": "0.5.0",
+  "description": "A2A 1.0 agent for one recursively composed typed RMN inference seam.",
+  "type": "module",
+  "bin": {
+    "execute-rmn-inference-seam": "./src/contract-rmn-inference.mjs",
+    "serve-inference-a2a": "./scripts/serve-a2a.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/contract-rmn-inference.mjs && node --check src/collect-colony-activity.mjs && node --check scripts/serve-a2a.mjs && node --check test/contract-rmn-inference.test.mjs && node --check test/collect-colony-activity.test.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@emsenn/a2a-services-section": "file:../web-services-section/services/a2a-services-section",
+    "@emsenn/rmn-semantic-conformance": "file:../../../lenticule-science/services/obsmetrological-services-section/services/rmn-semantic-conformance",
+    "@emsenn/rwil-rdf-services": "file:../../../lenticule-science/services/obsmetrological-services-section/services/rwil-rdf-services"
+  },
+  "x-agentic-metro-enterprise": {
+    "node-id": "logical-inference-service-section",
+    "owners": [
+      "561-group",
+      "red-cup-engineering"
+    ],
+    "membrane": {
+      "law": "lib/",
+      "lasting-instances": "content/",
+      "append-only-instances": "data/"
+    },
+    "admission": "one standard A2A 1.0 Message carrying one canonical outer RMN effect bundle that recursively contains one exact child RMN effect bundle and one A2A 1.0 Agent Card URL",
+    "refusal": "malformed RMN, noncomposing accounts, changed child proposal, non-bottom proposal, A2A refusal, invalid child completion, or non-cover outcome",
+    "operation-catalog": {
+      "invoke-inference": {
+        "law": "ni:///sha-256;dPKjAceg6De7UofMmCvs-nIEt9oszzMKBawJJn3YMr8",
+        "accepts": "A2A 1.0 Message<application/rmn+cbor OuterEffect<ChildEffect,AgentCardURL>>>",
+        "returns": "A2A 1.0 Message<application/rmn+cbor WitnessedOuterCompletion>|standard A2A refusal",
+        "semanticProvider": "rmn-semantic-conformance",
+        "communicationProvider": "a2a-services-section",
+        "persistentCoordinator": false,
+        "providerSelection": false,
+        "legacyCompatibility": false
+      }
+    }
+  }
+}

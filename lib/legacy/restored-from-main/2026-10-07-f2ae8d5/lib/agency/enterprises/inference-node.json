@@ -1,0 +1,32 @@
+{
+  "id": "inference-node",
+  "name": "Inference Node",
+  "kind": "node",
+  "entity": "561-group-llc",
+  "faces": "The Group's agents and offices, and external buyers through the A2A work-lot server, who contract bounded inference work lots across admitted sovereign providers, with receipts and x402/A2A settlement.",
+  "offices": [
+    "inference-node-lead"
+  ],
+  "host": "bare-cedar-fog",
+  "takes": {
+    "words": [
+      "inference",
+      "work lot",
+      "work-lot",
+      "ollama",
+      "openrouter",
+      "groq",
+      "nvidia nim",
+      "workers ai"
+    ]
+  },
+  "assesses": {
+    "work": "assessing-inference-node-demand",
+    "skill": "assess-taken-demand"
+  },
+  "x-provenance": {
+    "recorded-by": "claude-opus-5-5",
+    "recorded-on": "2026-09-30",
+    "source": "561-group-services-section/content/text/documents/articles/notes/2026/09/30/2026-09-30-note-on-micro-enterprises-holding-their-own-work.md"
+  }
+}
