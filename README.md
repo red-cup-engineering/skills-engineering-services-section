@@ -56,3 +56,8 @@ framing modules. Source preparation and worker admission remain explicit steps.
 `request-inference-socket` streams jobs or ActivityStreams contract activities
 from stdin or `--input` through the same durable socket owner. There is no
 separate stdio broker host or contract-specific socket client.
+
+## Earlier work
+
+- Restored files at `lib/legacy/2026-06-16-8347014` (restore commit 8347014); `lib/legacy/2026-06-18-30a3ea3` (restore commit 30a3ea3), from the 561-group/bare-cedar-fog history.
+- Added free-compute provider package manifests (`services/free-compute-dev/...`) to `lib/legacy/2026-07-28-free-compute-dev` (restore commit 78303d7), from the 561-group/bare-cedar-fog history.

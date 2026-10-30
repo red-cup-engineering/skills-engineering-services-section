@@ -1,0 +1,49 @@
+{
+  "name": "@free-compute/deno-deploy-free-compute-provider",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Signed bounded edge compute admitted only while Deno reports the owning organization free_verified.",
+  "bin": {
+    "invoke-deno-free-compute": "./bin/invoke-deno-free-compute.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs && deno test test/*.test.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "x-agentic-metro-enterprise": {
+    "node-id": "deno-deploy-free-compute-provider",
+    "owners": [
+      "561-group",
+      "free-compute-dev"
+    ],
+    "membrane": {
+      "law": "lib/",
+      "lasting-instances": "content/",
+      "append-only-instances": "data/"
+    },
+    "admission": "one Ed25519-signed canonical request while the live Deno organization plan is exactly free_verified",
+    "refusal": "Pro or unknown plan, unsigned or stale request, arbitrary code, caller-selected algorithm or work factor, outbound fetch, upload, durable state, secret at the cloud boundary, or noncanonical input"
+  },
+  "license": "LicenseRef-561Group-1.0",
+  "x-semiotic-voxel": {
+    "profile": "org.harmonious-union.semiotic-voxel.v1",
+    "owner": "free-compute",
+    "kind": "capability-cell",
+    "actor": "urn:ame:deno-deploy-free-compute-provider",
+    "operations": [
+      "deno-deploy-free-compute-provider"
+    ],
+    "capabilities": [
+      {
+        "capability": "deno-deploy-free-compute-provider",
+        "faces": [
+          "deno-deploy-free-compute-provider"
+        ]
+      }
+    ],
+    "package": "@free-compute/deno-deploy-free-compute-provider"
+  }
+}
