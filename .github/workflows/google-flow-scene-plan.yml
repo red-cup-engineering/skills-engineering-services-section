@@ -34,7 +34,7 @@ permissions:
   contents: read
 jobs:
   flow-scene-plan:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, bare-cedar-fog]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
