@@ -1,6 +1,0 @@
-{
-  "run": "node v24.19.0: the sum 0.1 + 0.2 and the product 1.1 * 3 in native floating point",
-  "sum": 0.30000000000000004,
-  "product": 3.3000000000000003,
-  "sumEqualsPointThree": false
-}

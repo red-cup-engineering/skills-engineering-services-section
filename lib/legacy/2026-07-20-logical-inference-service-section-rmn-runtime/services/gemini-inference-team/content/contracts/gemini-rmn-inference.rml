@@ -1,4 +1,0 @@
-#lang rmn/v2
-(predicate "generates-gemini-inference-for-typed-marks"
-  (base "InstructionInputModelAndModeMarks")
-  (base "InferenceCompletionOrRefusalEvidence"))

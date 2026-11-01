@@ -1,6 +1,0 @@
-{
-  "type": "NvidiaTypedInferenceCapacityPolicy",
-  "maximumConcurrentLots": 1,
-  "unit": "provider-request-slot",
-  "authority": "provider-local exclusive request-slot admission"
-}

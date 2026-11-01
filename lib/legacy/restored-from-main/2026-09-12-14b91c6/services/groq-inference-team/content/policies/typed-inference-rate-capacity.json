@@ -1,8 +1,0 @@
-{
-  "type": "GroqTypedInferenceRateCapacityPolicy",
-  "tokensPerMinute": 6000,
-  "minimumLiveExchangeIntervalMilliseconds": 60000,
-  "maximumConcurrentLots": 1,
-  "admissionTimeoutMilliseconds": 30000,
-  "authority": "one provider-local kernel flock lease plus one monotone last-live-admission timestamp"
-}
