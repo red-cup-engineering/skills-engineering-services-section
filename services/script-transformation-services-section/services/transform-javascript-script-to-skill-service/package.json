@@ -1,0 +1,32 @@
+{
+  "name": "@red-cup-engineering/transform-javascript-script-to-skill-service",
+  "version": "0.1.1",
+  "description": "Reads a JavaScript script's leading declaration header and transforms it into a candidate skill record and body, purely — no filesystem, no child process.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/skills-engineering-services-section.git",
+    "directory": "services/script-transformation-services-section/services/transform-javascript-script-to-skill-service"
+  },
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "exports": {
+    ".": "./src/transform-javascript-script-to-skill.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/transform-javascript-script-to-skill.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/561-group/.github/blob/main/TIPS.md"
+  }
+}

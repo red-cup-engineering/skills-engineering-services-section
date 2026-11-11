@@ -1,0 +1,35 @@
+{
+  "name": "@red-cup-engineering/find-skill-scripts-in-a-directory-service",
+  "version": "0.2.0",
+  "description": "Discovers JSDoc projectable script-skill candidates with source-qualified refusals via the original transformer.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/skills-engineering-services-section.git",
+    "directory": "services/script-transformation-services-section/services/find-skill-scripts-in-a-directory-service"
+  },
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "exports": {
+    ".": "./src/find-skill-scripts-in-a-directory.mjs"
+  },
+  "scripts": {
+    "check": "node --check src/find-skill-scripts-in-a-directory.mjs",
+    "test": "node --test test/*.test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@red-cup-engineering/transform-javascript-script-to-skill-service": "0.1.0"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/561-group/.github/blob/main/TIPS.md"
+  }
+}
