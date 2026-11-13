@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
-import { renderAgentSkillMarkdown } from "@red-cup-engineering/skills-services-section";
+import { renderAgentSkillMarkdown } from "@red-cup-engineering/skills-engineering-services-section";
 
 /**
  * Project one skill record and its source script into the directory shape
@@ -9,7 +9,7 @@ import { renderAgentSkillMarkdown } from "@red-cup-engineering/skills-services-s
  * This is the only package in the skills split that writes to disk.
  *
  * SKILL.md is rendered by IMPORTING `renderAgentSkillMarkdown` from
- * `@red-cup-engineering/skills-services-section` rather than hand-rolling
+ * `@red-cup-engineering/skills-engineering-services-section` rather than hand-rolling
  * YAML — the legacy `project-a-skill.js` carried its own `yamlScalar`
  * quoter; that duplication is exactly what this split removes. One
  * consequence worth stating plainly: the shared renderer routes the body

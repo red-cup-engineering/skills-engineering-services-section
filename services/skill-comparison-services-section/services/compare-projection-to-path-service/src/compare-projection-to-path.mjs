@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
-import { renderAgentSkillMarkdown } from "@red-cup-engineering/skills-services-section";
+import { renderAgentSkillMarkdown } from "@red-cup-engineering/skills-engineering-services-section";
 
 /**
  * Compare a skill record's would-be projection against what actually sits

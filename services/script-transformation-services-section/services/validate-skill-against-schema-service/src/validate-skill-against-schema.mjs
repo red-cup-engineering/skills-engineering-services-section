@@ -1,10 +1,10 @@
-import { createSchema, schemaCorpus, validateInstance } from "@red-cup-engineering/json-schema-services-section";
+import { createSchema, schemaCorpus, validateInstance } from "@red-cup-engineering/json-schema-engineering-services-section";
 
 /**
  * Validate a candidate skill record against a JSON Schema, by IMPORTING the
  * published Draft 2020-12 evaluator and calling it as a function — never by
  * spawning a subprocess and piping JSON over stdin. `read-a-schema.mjs` in
- * `@red-cup-engineering/json-schema-services-section` composes these same two
+ * `@red-cup-engineering/json-schema-engineering-services-section` composes these same two
  * calls (`createSchema` then `validateInstance`) from its own CLI; this
  * service is that composition, reusable as a library call.
  *
