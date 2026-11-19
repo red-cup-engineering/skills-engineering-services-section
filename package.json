@@ -8,7 +8,6 @@
   },
   "type": "module",
   "license": "MIT",
-  "private": false,
   "exports": {
     ".": {
       "types": "./types/index.d.mts",
@@ -18,9 +17,6 @@
   "bin": {
     "write-agent-skill": "./scripts/write-agent-skill.mjs"
   },
-  "scripts": {
-    "verify": "npm pack --dry-run"
-  },
   "files": [
     "scripts/",
     "content/",
@@ -28,14 +24,7 @@
     "types/",
     "README.md"
   ],
-  "engines": {
-    "node": ">=22"
-  },
   "dependencies": {
     "@red-cup-engineering/markdown-file-writing-service": "^0.1.0"
-  },
-  "funding": {
-    "type": "individual",
-    "url": "https://github.com/561-group/.github/blob/main/TIPS.md"
   }
 }
