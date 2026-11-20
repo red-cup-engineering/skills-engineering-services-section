@@ -139,8 +139,8 @@ export function deriveScriptSkillPage(entries, { query = "", after = null, limit
     throw new TypeError("bounded query, page size and source cursor required");
 
   const terms = query.toLowerCase().trim().split(/\s+/u).filter(Boolean);
-  const candidates = [], rejections = [];
-  let previous = "", examined = 0, admissible = 0, matched = 0, rejected = 0;
+  const candidates = [], refusals = [];
+  let previous = "", examined = 0, admissible = 0, matched = 0, refused = 0;
   let lastSelected = null, additional = false;
   for (const row of entries) {
     if (!row || typeof row !== "object" || Array.isArray(row) ||
@@ -157,8 +157,8 @@ export function deriveScriptSkillPage(entries, { query = "", after = null, limit
     previous = key;
     examined++;
     const decline = reason => {
-      rejected++;
-      if (rejections.length < 8) rejections.push(Object.freeze({ source: key, reason }));
+      refused++;
+      if (refusals.length < 8) refusals.push(Object.freeze({ source: key, reason }));
     };
     if (typeof row.source !== "string" || row.source.length > 262144 ||
         typeof row.sha256 !== "string" || !/^[a-f0-9]{64}$/u.test(row.sha256)) {
@@ -210,7 +210,7 @@ export function deriveScriptSkillPage(entries, { query = "", after = null, limit
     query, after, limit,
     coverage: Object.freeze({
       examined, validScriptDeclarations: admissible, queryMatches: matched,
-      refused: rejected, refusalExamples: Object.freeze(rejections),
+      refused, refusalExamples: Object.freeze(refusals),
       sourceSnapshotQualified: false,
     }),
     candidates: Object.freeze(candidates),
