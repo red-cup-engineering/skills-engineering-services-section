@@ -1,0 +1,30 @@
+{
+  "name": "@red-cup-engineering/skills-engineering-services-section",
+  "version": "0.1.2-dev.0",
+  "description": "Writes one Agent Skills SKILL.md through the Markdown file writing service.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/red-cup-engineering/skills-engineering-services-section.git"
+  },
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.mts",
+      "import": "./src/write-agent-skill.mjs"
+    }
+  },
+  "bin": {
+    "write-agent-skill": "./scripts/write-agent-skill.mjs"
+  },
+  "files": [
+    "scripts/",
+    "content/",
+    "src/",
+    "types/",
+    "README.md"
+  ],
+  "dependencies": {
+    "@red-cup-engineering/markdown-file-writing-service": "^0.1.0"
+  }
+}
